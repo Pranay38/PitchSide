@@ -4,8 +4,8 @@ import { blogPosts as defaultPosts } from "../data/posts";
 const POSTS_KEY = "pitchside_posts";
 const ADMIN_KEY = "pitchside_admin_auth";
 
-// Admin password — change this to your desired password
-const ADMIN_PASSWORD = "pitchside2026";
+// Admin password (change via Vercel Environment Variables)
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "pitchside2026";
 
 // API base URL — in production (Vercel) this is the same domain
 const API_BASE = "/api";
