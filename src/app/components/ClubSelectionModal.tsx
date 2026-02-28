@@ -74,6 +74,20 @@ export function ClubSelectionModal({ isOpen, onSelectClub, onSkip }: ClubSelecti
 
                 {/* Club List */}
                 <div className="overflow-y-auto flex-1 px-6 pb-4 scrollbar-thin">
+                    {/* Show Everything option */}
+                    <button
+                        onClick={onSkip}
+                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-[#16A34A]/10 hover:bg-[#16A34A]/20 transition-colors mb-4 text-left"
+                    >
+                        <div className="w-8 h-8 rounded-full bg-[#16A34A]/20 flex items-center justify-center flex-shrink-0">
+                            <span className="text-lg">🌍</span>
+                        </div>
+                        <span className="text-sm font-semibold text-[#16A34A]">
+                            Show Everything
+                        </span>
+                        <span className="ml-auto text-[#16A34A]">›</span>
+                    </button>
+
                     {Object.entries(filteredGroups).map(([league, leagueClubs]) => (
                         <div key={league} className="mb-4">
                             <p className="text-xs font-bold text-[#94A3B8] dark:text-gray-500 uppercase tracking-wider mb-2 px-1">

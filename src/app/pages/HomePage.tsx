@@ -8,7 +8,7 @@ import { useClubPreference } from "../hooks/useClubPreference";
 import { Inbox } from "lucide-react";
 
 export function HomePage() {
-  const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding } = useClubPreference();
+  const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
   const [showModal, setShowModal] = useState(!isOnboarded);
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 6;
@@ -50,6 +50,7 @@ export function HomePage() {
   };
 
   const handleSkip = () => {
+    clearPreference();
     skipOnboarding();
     setShowModal(false);
   };
@@ -144,8 +145,8 @@ export function HomePage() {
                     key={page}
                     onClick={() => setCurrentPage(page)}
                     className={`min-w-[40px] h-[40px] rounded-lg transition-all text-sm font-medium ${currentPage === page
-                        ? "bg-[#16A34A] text-white shadow-md shadow-[#16A34A]/25"
-                        : "border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
+                      ? "bg-[#16A34A] text-white shadow-md shadow-[#16A34A]/25"
+                      : "border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                   >
                     {page}
