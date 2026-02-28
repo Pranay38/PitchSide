@@ -8,6 +8,7 @@ export interface BlogPost {
   tags: string[];
   date: string;
   readTime: string;
+  thisWeek?: boolean;
 }
 
 export const blogPosts: BlogPost[] = [

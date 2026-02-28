@@ -71,7 +71,7 @@ export function HomePage() {
   // This Week in Football (only show when not searching or filtering)
   const thisWeekPosts = useMemo(() => {
     if (searchQuery || activeTag) return [];
-    return blogPosts.filter((p) => p.id !== featuredPost?.id).slice(0, 3);
+    return blogPosts.filter((p) => p.thisWeek && p.id !== featuredPost?.id).slice(0, 21);
   }, [blogPosts, featuredPost, searchQuery, activeTag]);
 
   // Remaining posts for grid (excluding featured and this week)

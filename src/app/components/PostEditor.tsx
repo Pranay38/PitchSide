@@ -4,7 +4,7 @@ import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName } from
 import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
-import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2 } from "lucide-react";
+import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame } from "lucide-react";
 
 /** Categories that are NOT club-specific */
 const GENERAL_CATEGORIES = [
@@ -81,6 +81,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const clubDropdownRef = useRef<HTMLDivElement>(null);
     const [tagInput, setTagInput] = useState("");
     const [tags, setTags] = useState<string[]>(post?.tags || []);
+    const [thisWeek, setThisWeek] = useState(post?.thisWeek || false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Derive the effective "club" field based on category
@@ -214,6 +215,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             tags: tags.length > 0 ? tags : [effectiveClub],
             date: post?.date || formatDate(),
             readTime: calculateReadTime(plainText),
+            thisWeek,
         });
     };
 
@@ -542,6 +544,23 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 ))}
                             </div>
                         )}
+
+                        {/* This Week Options */}
+                        <div className="mt-6 flex border-t border-gray-100 dark:border-gray-800 pt-6 items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${thisWeek ? 'bg-orange-500/10 text-orange-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
+                                    <Flame className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-[#0F172A] dark:text-white mb-0.5">Feature in "This Week"</p>
+                                    <p className="text-xs text-[#64748B] dark:text-gray-400">Show this post in the dedicated 🔥 section on the homepage.</p>
+                                </div>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" className="sr-only peer" checked={thisWeek} onChange={(e) => setThisWeek(e.target.checked)} />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#16A34A]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#16A34A]"></div>
+                            </label>
+                        </div>
                     </div>
 
                     {/* Rich Text Content */}
