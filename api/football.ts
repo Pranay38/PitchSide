@@ -27,16 +27,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const name = req.query.name as string;
             if (!name) return res.status(400).json({ error: "Missing name parameter" });
 
-            const response = await fetch(`${BASE_URL}/players?search=${encodeURIComponent(name)}&season=2024`, {
-                headers: { "x-apisports-key": API_KEY },
-            });
-            const data = await response.json();
+            // API-Football requires league or team with search. Search top leagues in parallel.
+            const TOP_LEAGUES = [39, 140, 135, 78, 61]; // PL, La Liga, Serie A, Bundesliga, Ligue 1
+            const leagueParam = req.query.league as string;
+            const leagues = leagueParam ? [parseInt(leagueParam)] : TOP_LEAGUES;
 
-            if (data.errors && Object.keys(data.errors).length > 0) {
-                return res.status(429).json({ error: "API rate limit reached", details: data.errors });
+            const results = await Promise.all(
+                leagues.map(async (leagueId) => {
+                    try {
+                        const r = await fetch(
+                            `${BASE_URL}/players?search=${encodeURIComponent(name)}&league=${leagueId}&season=2024`,
+                            { headers: { "x-apisports-key": API_KEY } }
+                        );
+                        const d = await r.json();
+                        if (d.errors && Object.keys(d.errors).length > 0) return [];
+                        return (d.response || []).slice(0, 5);
+                    } catch {
+                        return [];
+                    }
+                })
+            );
+
+            // Flatten, deduplicate by player ID, take top 15
+            const seen = new Set<number>();
+            const allPlayers: any[] = [];
+            for (const batch of results) {
+                for (const item of batch) {
+                    if (!seen.has(item.player.id)) {
+                        seen.add(item.player.id);
+                        allPlayers.push(item);
+                    }
+                }
             }
 
-            const players = (data.response || []).slice(0, 10).map((item: any) => ({
+            const players = allPlayers.slice(0, 15).map((item: any) => ({
                 id: item.player.id,
                 name: item.player.name,
                 firstName: item.player.firstname,
