@@ -52,13 +52,6 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             </button>
           )}
 
-          {/* Compare Players */}
-          <Link
-            to="/compare"
-            className="text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors hidden sm:inline-flex items-center gap-1"
-          >
-            Compare ⚡
-          </Link>
 
           <ThemeToggle />
         </div>
