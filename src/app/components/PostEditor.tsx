@@ -69,7 +69,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [dragOver, setDragOver] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [category, setCategory] = useState<string>(() => {
-        if (post?.club && allClubNames.includes(post.club)) return "club";
+        if (post?.club && getAllClubNames().includes(post.club)) return "club";
         return post?.club || "General";
     });
     const [club, setClub] = useState(post?.club || "");

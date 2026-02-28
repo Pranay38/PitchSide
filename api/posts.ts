@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "./_db";
+import { connectToDatabase } from "./_db.js";
 
 // Default seed posts (used when DB is empty on first run)
-import { blogPosts as defaultPosts } from "../src/app/data/posts";
+import { blogPosts as defaultPosts } from "../src/app/data/posts.js";
 
 const COLLECTION = "posts";
 
