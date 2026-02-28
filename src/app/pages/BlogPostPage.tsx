@@ -6,6 +6,8 @@ import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
 import { getAllPosts } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
+import { ReadingProgress } from "../components/ReadingProgress";
+import { CommentSection } from "../components/CommentSection";
 import { toast } from "sonner";
 
 export function BlogPostPage() {
@@ -78,6 +80,7 @@ export function BlogPostPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+      <ReadingProgress />
       <Header favoriteClub={favoriteClub} />
 
       <main>
@@ -174,6 +177,11 @@ export function BlogPostPage() {
                 Copy Link
               </button>
             </div>
+          </div>
+
+          {/* Comments */}
+          <div className="mb-12">
+            <CommentSection postId={post.id} />
           </div>
 
           {/* Navigation */}
