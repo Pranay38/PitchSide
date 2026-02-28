@@ -1,0 +1,38 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>PitchSide — Football Analysis & Opinion</title>
+      <meta name="description" content="PitchSide is a clean, modern football blog featuring in-depth analysis, tactical breakdowns, and opinion pieces for passionate football fans." />
+      <meta name="theme-color" content="#16A34A" />
+
+      <!-- Open Graph -->
+      <meta property="og:title" content="PitchSide — Football Analysis & Opinion" />
+      <meta property="og:description" content="Clean, modern football blog with in-depth analysis for passionate fans." />
+      <meta property="og:type" content="website" />
+
+      <!-- Google Fonts: Inter -->
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+      <!-- Inline theme script to prevent flash -->
+      <script>
+        (function() {
+          try {
+            var theme = localStorage.getItem('pitchside_theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+              document.documentElement.classList.add('dark');
+            }
+          } catch(e) {}
+        })();
+      </script>
+    </head>
+
+    <body>
+      <div id="root"></div>
+      <script type="module" src="/src/main.tsx"></script>
+    </body>
+  </html>
