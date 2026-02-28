@@ -11,17 +11,17 @@ export function ReadingProgress() {
                 setProgress(Math.min(100, (scrollTop / docHeight) * 100));
             }
         };
+        // Calculate initial progress
+        handleScroll();
         window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    if (progress <= 0) return null;
-
     return (
-        <div className="fixed top-0 left-0 right-0 z-[100] h-[3px]">
+        <div className="fixed top-0 left-0 right-0 z-[200] h-1 bg-gray-200/50 dark:bg-gray-800/50">
             <div
-                className="h-full bg-gradient-to-r from-[#16A34A] to-[#4ade80] transition-[width] duration-100 ease-out"
-                style={{ width: `${progress}%` }}
+                className="h-full bg-gradient-to-r from-[#16A34A] to-[#4ade80] shadow-sm shadow-[#16A34A]/50"
+                style={{ width: `${progress}%`, transition: "width 150ms ease-out" }}
             />
         </div>
     );

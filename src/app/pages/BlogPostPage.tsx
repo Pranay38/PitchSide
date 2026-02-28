@@ -71,6 +71,12 @@ export function BlogPostPage() {
           "_blank"
         );
         break;
+      case "reddit":
+        window.open(
+          `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`,
+          "_blank"
+        );
+        break;
       case "copy":
         navigator.clipboard.writeText(url);
         toast.success("Link copied to clipboard!");
@@ -169,6 +175,12 @@ export function BlogPostPage() {
                 className="px-5 py-2.5 bg-[#1DA1F2] text-white rounded-lg hover:bg-[#1A91DA] transition-all duration-200 font-medium text-sm hover:shadow-lg hover:shadow-[#1DA1F2]/25"
               >
                 X (Twitter)
+              </button>
+              <button
+                onClick={() => handleShare("reddit")}
+                className="px-5 py-2.5 bg-[#FF4500] text-white rounded-lg hover:bg-[#E03D00] transition-all duration-200 font-medium text-sm hover:shadow-lg hover:shadow-[#FF4500]/25"
+              >
+                Reddit
               </button>
               <button
                 onClick={() => handleShare("copy")}

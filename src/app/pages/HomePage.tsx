@@ -68,10 +68,17 @@ export function HomePage() {
   // Featured post (first in filtered list)
   const featuredPost = filteredPosts[0] || null;
 
-  // Remaining posts for grid (excluding featured)
+  // This Week in Football (only show when not searching or filtering)
+  const thisWeekPosts = useMemo(() => {
+    if (searchQuery || activeTag) return [];
+    return blogPosts.filter((p) => p.id !== featuredPost?.id).slice(0, 3);
+  }, [blogPosts, featuredPost, searchQuery, activeTag]);
+
+  // Remaining posts for grid (excluding featured and this week)
   const remainingPosts = useMemo(() => {
-    return filteredPosts.filter((p) => p.id !== featuredPost?.id);
-  }, [filteredPosts, featuredPost]);
+    const excludeIds = new Set([featuredPost?.id, ...thisWeekPosts.map(p => p.id)]);
+    return filteredPosts.filter((p) => p.id && !excludeIds.has(p.id));
+  }, [filteredPosts, featuredPost, thisWeekPosts]);
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -157,8 +164,8 @@ export function HomePage() {
             <button
               onClick={() => { setActiveTag(null); setCurrentPage(1); }}
               className={`flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full transition-all ${!activeTag
-                  ? "bg-[#16A34A] text-white shadow-sm"
-                  : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                ? "bg-[#16A34A] text-white shadow-sm"
+                : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
                 }`}
             >
               All
@@ -168,8 +175,8 @@ export function HomePage() {
                 key={tag}
                 onClick={() => handleTagClick(tag)}
                 className={`flex-shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full transition-all whitespace-nowrap ${activeTag === tag
-                    ? "bg-[#16A34A] text-white shadow-sm"
-                    : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  ? "bg-[#16A34A] text-white shadow-sm"
+                  : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
                   }`}
               >
                 {tag}
@@ -207,6 +214,20 @@ export function HomePage() {
           <div className="flex items-center gap-2 mb-6 px-4 py-2.5 rounded-xl bg-[#16A34A]/5 border border-[#16A34A]/10">
             <span className="text-sm text-[#16A34A] font-medium">⚡ {favoriteClub} posts shown first</span>
           </div>
+        )}
+
+        {/* This Week in Football */}
+        {thisWeekPosts.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-bold text-[#0F172A] dark:text-white mb-6 flex items-center gap-2">
+              <span className="text-2xl">🔥</span> This Week in Football
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {thisWeekPosts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Posts Grid */}
