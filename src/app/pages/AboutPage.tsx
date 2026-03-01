@@ -15,10 +15,10 @@ export function AboutPage() {
                 {/* Hero */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#16A34A]/10 mb-6">
-                        <span className="text-4xl">⚽</span>
+                        <video src="/logo.mp4" autoPlay loop muted playsInline className="w-12 h-12 object-contain rounded" />
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold text-[#0F172A] dark:text-white mb-4">
-                        About PitchSide
+                        About The Touchline Dribble
                     </h1>
                     <p className="text-lg text-[#64748B] dark:text-gray-400 leading-relaxed max-w-lg mx-auto">
                         From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions for the beautiful game.
@@ -60,7 +60,7 @@ export function AboutPage() {
                             <h2 className="text-xl font-bold text-[#0F172A] dark:text-white mb-1">Pranay Agrawal</h2>
                             <p className="text-sm text-[#16A34A] font-medium mb-3">Founder & Writer</p>
                             <p className="text-sm text-[#64748B] dark:text-gray-400 leading-relaxed mb-4">
-                                Football obsessive since childhood. I started PitchSide to combine my love for the beautiful game with data-driven analysis.
+                                Football obsessive since childhood. I started The Touchline Dribble to combine my love for the beautiful game with data-driven analysis.
                                 Every article is written with the goal of making you see the game differently.
                             </p>
                             <div className="flex items-center justify-center sm:justify-start gap-3">

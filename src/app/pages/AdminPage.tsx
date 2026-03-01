@@ -125,9 +125,9 @@ export function AdminPage() {
                 <div className="max-w-[1100px] mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link to="/" className="flex items-center gap-2">
-                            <span className="text-2xl">⚽</span>
+                            <video src="/logo.mp4" autoPlay loop muted playsInline className="w-8 h-8 object-contain rounded" />
                             <span className="text-xl font-bold bg-gradient-to-r from-[#16A34A] to-[#22c55e] bg-clip-text text-transparent">
-                                PitchSide
+                                The Touchline Dribble
                             </span>
                         </Link>
                         <span className="px-2 py-0.5 text-xs font-medium bg-[#16A34A]/10 text-[#16A34A] rounded-full">

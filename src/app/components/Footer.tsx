@@ -35,9 +35,9 @@ export function Footer() {
           {/* Brand Column */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">⚽</span>
+              <video src="/logo.mp4" autoPlay loop muted playsInline className="w-8 h-8 object-contain rounded" />
               <span className="text-xl font-bold bg-gradient-to-r from-[#16A34A] to-[#4ade80] bg-clip-text text-transparent">
-                PitchSide
+                The Touchline Dribble
               </span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed mb-4">
@@ -105,7 +105,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-10 pt-6 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-gray-500">
-            &copy; 2026 PitchSide. All rights reserved.
+            &copy; 2026 The Touchline Dribble. All rights reserved.
           </p>
           <p className="text-xs text-gray-500 flex items-center gap-1">
             Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> for the beautiful game

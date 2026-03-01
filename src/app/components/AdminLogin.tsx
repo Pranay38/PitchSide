@@ -31,7 +31,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
                             <Lock className="w-7 h-7 text-white" />
                         </div>
                         <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">
-                            PitchSide Admin
+                            The Touchline Dribble Admin
                         </h1>
                         <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
                             Enter your password to manage posts
