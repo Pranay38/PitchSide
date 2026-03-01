@@ -15,7 +15,7 @@ export function AboutPage() {
                 {/* Hero */}
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#16A34A]/10 mb-6">
-                        <video src="/logo.mp4" autoPlay loop muted playsInline className="w-12 h-12 object-contain rounded" />
+                        <img src="/logo.png" alt="The Touchline Dribble" className="w-12 h-12 object-contain rounded" />
                     </div>
                     <h1 className="text-3xl md:text-4xl font-bold text-[#0F172A] dark:text-white mb-4">
                         About The Touchline Dribble

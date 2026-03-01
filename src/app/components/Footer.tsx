@@ -35,7 +35,7 @@ export function Footer() {
           {/* Brand Column */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <video src="/logo.mp4" autoPlay loop muted playsInline className="w-8 h-8 object-contain rounded" />
+              <img src="/logo.png" alt="The Touchline Dribble" className="w-8 h-8 object-contain rounded" />
               <span className="text-xl font-bold bg-gradient-to-r from-[#16A34A] to-[#4ade80] bg-clip-text text-transparent">
                 The Touchline Dribble
               </span>

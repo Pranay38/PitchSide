@@ -21,7 +21,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
       <div className="max-w-[1100px] mx-auto px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <video src="/logo.mp4" autoPlay loop muted playsInline className="w-8 h-8 object-contain rounded" />
+          <img src="/logo.png" alt="The Touchline Dribble" className="w-8 h-8 object-contain rounded" />
           <span className="text-xl font-bold bg-gradient-to-r from-[#16A34A] to-[#22c55e] bg-clip-text text-transparent">
             The Touchline Dribble
           </span>
