@@ -15,7 +15,7 @@ import {
     exportPostsAsJSON,
     importPostsFromJSON,
 } from "../lib/postStorage";
-import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload } from "lucide-react";
+import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 
 type View = "list" | "create" | "edit";
@@ -27,6 +27,51 @@ export function AdminPage() {
     const [posts, setPosts] = useState<BlogPost[]>(() => getAllPosts());
     const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
     const importFileRef = useRef<HTMLInputElement>(null);
+    const [subscriberCount, setSubscriberCount] = useState(0);
+    const [notifyingPostId, setNotifyingPostId] = useState<string | null>(null);
+
+    const fetchSubscriberCount = useCallback(async () => {
+        try {
+            const res = await fetch("/api/subscribers");
+            if (res.ok) {
+                const data = await res.json();
+                setSubscriberCount(data.count || 0);
+            }
+        } catch {
+            // API not available
+        }
+    }, []);
+
+    const notifySubscribers = async (post: BlogPost) => {
+        if (subscriberCount === 0) {
+            toast.info("No subscribers yet.");
+            return;
+        }
+        if (!window.confirm(`Send email notification about "${post.title}" to ${subscriberCount} subscriber(s)?`)) {
+            return;
+        }
+        setNotifyingPostId(post.id);
+        try {
+            const res = await fetch("/api/notify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: post.title,
+                    excerpt: post.excerpt,
+                    postId: post.id,
+                }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                toast.success(data.message || "Notifications sent!");
+            } else {
+                toast.error(data.error || "Failed to send notifications.");
+            }
+        } catch {
+            toast.error("Failed to send notifications. Check your email configuration.");
+        }
+        setNotifyingPostId(null);
+    };
 
     const refreshPosts = useCallback(async () => {
         const latest = await getAllPostsAsync();
@@ -35,8 +80,11 @@ export function AdminPage() {
 
     // Load posts from API on mount
     useEffect(() => {
-        if (isAuthed) refreshPosts();
-    }, [isAuthed, refreshPosts]);
+        if (isAuthed) {
+            refreshPosts();
+            fetchSubscriberCount();
+        }
+    }, [isAuthed, refreshPosts, fetchSubscriberCount]);
 
     const handleLogin = () => {
         setIsAuthed(true);
@@ -173,6 +221,12 @@ export function AdminPage() {
                         <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
                             {posts.length} article{posts.length !== 1 ? "s" : ""} published
                         </p>
+                        <div className="flex items-center gap-1.5 mt-1">
+                            <Mail className="w-3.5 h-3.5 text-[#16A34A]" />
+                            <p className="text-sm text-[#16A34A] font-medium">
+                                {subscriberCount} subscriber{subscriberCount !== 1 ? "s" : ""}
+                            </p>
+                        </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <button
@@ -254,6 +308,14 @@ export function AdminPage() {
 
                                 {/* Actions */}
                                 <div className="flex items-center gap-1 flex-shrink-0">
+                                    <button
+                                        onClick={() => notifySubscribers(post)}
+                                        disabled={notifyingPostId === post.id}
+                                        className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors disabled:opacity-50"
+                                        title="Notify Subscribers"
+                                    >
+                                        <Send className={`w-4 h-4 ${notifyingPostId === post.id ? 'animate-pulse' : ''}`} />
+                                    </button>
                                     <button
                                         onClick={() => navigate(`/post/${post.id}`)}
                                         className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors"

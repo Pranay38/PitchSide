@@ -6,24 +6,42 @@ import { toast } from "sonner";
 export function Footer() {
   const [email, setEmail] = useState("");
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !email.includes("@")) {
       toast.error("Please enter a valid email address");
       return;
     }
-    // Store subscriber in localStorage for now
     try {
-      const subscribers = JSON.parse(localStorage.getItem("pitchside_subscribers") || "[]");
-      if (subscribers.includes(email.trim())) {
-        toast.info("You're already subscribed! 🎉");
+      const res = await fetch("/api/subscribers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (data.alreadySubscribed) {
+          toast.info("You're already subscribed! 🎉");
+        } else {
+          toast.success("Subscribed! Check your inbox for a welcome email ⚽");
+        }
       } else {
-        subscribers.push(email.trim());
-        localStorage.setItem("pitchside_subscribers", JSON.stringify(subscribers));
-        toast.success("Subscribed! You'll hear from us soon ⚽");
+        toast.error(data.error || "Something went wrong. Please try again.");
       }
     } catch {
-      toast.success("Subscribed! You'll hear from us soon ⚽");
+      // Fallback to localStorage if API is not available
+      try {
+        const subscribers = JSON.parse(localStorage.getItem("pitchside_subscribers") || "[]");
+        if (subscribers.includes(email.trim())) {
+          toast.info("You're already subscribed! 🎉");
+        } else {
+          subscribers.push(email.trim());
+          localStorage.setItem("pitchside_subscribers", JSON.stringify(subscribers));
+          toast.success("Subscribed! You'll hear from us soon ⚽");
+        }
+      } catch {
+        toast.success("Subscribed! You'll hear from us soon ⚽");
+      }
     }
     setEmail("");
   };
