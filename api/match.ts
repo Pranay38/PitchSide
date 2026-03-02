@@ -1,15 +1,18 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 /**
- * Uses API-Football (via RapidAPI) for rich match statistics.
+ * Uses API-Football for rich match statistics.
  * Free tier: 100 requests/day — plenty for click-to-view stats.
  *
- * Required env var: RAPIDAPI_KEY
- * Sign up free at: https://rapidapi.com/api-sports/api/api-football
+ * Required env var: RAPIDAPI_KEY (works with both api-football.com and RapidAPI keys)
+ * Sign up free at: https://www.api-football.com/ or https://rapidapi.com/api-sports/api/api-football
  */
 
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || "";
-const BASE_URL = "https://api-football-v1.p.rapidapi.com/v3";
+const API_KEY = process.env.RAPIDAPI_KEY || "";
+
+// Try direct endpoint first, RapidAPI as fallback
+const DIRECT_URL = "https://v3.football.api-sports.io";
+const RAPID_URL = "https://api-football-v1.p.rapidapi.com/v3";
 
 // Map football-data.org competition codes to API-Football league IDs
 const LEAGUE_MAP: Record<string, number> = {
@@ -21,9 +24,18 @@ const LEAGUE_MAP: Record<string, number> = {
 };
 
 async function apiFootballFetch(endpoint: string) {
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
+    // Try direct api-football.com endpoint first
+    try {
+        const res = await fetch(`${DIRECT_URL}${endpoint}`, {
+            headers: { "x-apisports-key": API_KEY },
+        });
+        if (res.ok) return res.json();
+    } catch { /* fall through to RapidAPI */ }
+
+    // Fallback: RapidAPI endpoint
+    const res = await fetch(`${RAPID_URL}${endpoint}`, {
         headers: {
-            "x-rapidapi-key": RAPIDAPI_KEY,
+            "x-rapidapi-key": API_KEY,
             "x-rapidapi-host": "api-football-v1.p.rapidapi.com",
         },
     });
@@ -38,7 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (req.method === "OPTIONS") return res.status(200).end();
     if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
-    if (!RAPIDAPI_KEY) return res.status(500).json({ error: "RAPIDAPI_KEY not configured." });
+    if (!API_KEY) return res.status(500).json({ error: "RAPIDAPI_KEY not configured." });
 
     const homeTeam = req.query.home as string;
     const awayTeam = req.query.away as string;
