@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Trophy } from "lucide-react";
 
 const API_KEY = "7bbf2fad2c61ebe166e1633b964fcae3";
-const WIDGET_SCRIPT = "https://widgets.api-sports.io/3.1.0/widgets.js";
+const WIDGET_SCRIPT_URL = "https://widgets.api-sports.io/3.1.0/widgets.js";
 
 const COMPETITIONS = [
     { code: "39", name: "Premier League" },
@@ -14,22 +14,82 @@ const COMPETITIONS = [
 
 type Tab = "games" | "standings";
 
+// Load widget script once globally
+let scriptLoaded = false;
+function loadWidgetScript(): Promise<void> {
+    if (scriptLoaded) return Promise.resolve();
+    return new Promise((resolve) => {
+        // Remove any existing widget scripts first
+        document.querySelectorAll('script[src*="widgets.api-sports.io"]').forEach(s => s.remove());
+
+        const script = document.createElement("script");
+        script.src = WIDGET_SCRIPT_URL;
+        script.type = "module";
+        script.onload = () => {
+            scriptLoaded = true;
+            resolve();
+        };
+        script.onerror = () => resolve(); // still resolve to avoid hanging
+        document.body.appendChild(script);
+    });
+}
+
 export function FixturesWidget() {
     const [activeComp, setActiveComp] = useState("39");
     const [tab, setTab] = useState<Tab>("games");
-    const [widgetKey, setWidgetKey] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const switchComp = (code: string) => {
-        setActiveComp(code);
-        setWidgetKey(k => k + 1); // force re-render
-    };
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
 
-    const switchTab = (t: Tab) => {
-        setTab(t);
-        setWidgetKey(k => k + 1);
-    };
+        // Clear container
+        container.innerHTML = "";
 
-    const isCL = activeComp === "2";
+        // Create widget element
+        const widget = document.createElement("api-sports-widget" as any);
+        widget.setAttribute("data-type", tab);
+        widget.setAttribute("data-league", activeComp);
+        widget.setAttribute("data-season", "2024");
+        widget.setAttribute("data-show-toolbar", "true");
+        widget.setAttribute("data-show-errors", "false");
+        widget.setAttribute("data-show-logos", "true");
+        widget.setAttribute("data-theme", "grey");
+        widget.setAttribute("data-color", "#16A34A");
+
+        if (tab === "games") {
+            widget.setAttribute("data-modal-game", "true");
+            widget.setAttribute("data-modal-standings", "true");
+            widget.setAttribute("data-modal-team", "true");
+            widget.setAttribute("data-modal-player", "true");
+        } else {
+            widget.setAttribute("data-modal-game", "true");
+            widget.setAttribute("data-modal-team", "true");
+            widget.setAttribute("data-modal-player", "true");
+        }
+
+        // Create config element
+        const config = document.createElement("api-sports-widget" as any);
+        config.setAttribute("data-type", "config");
+        config.setAttribute("data-key", API_KEY);
+        config.setAttribute("data-sport", "football");
+        config.setAttribute("data-refresh", tab === "games" ? "60" : "300");
+        config.setAttribute("data-show-logos", "true");
+        config.setAttribute("data-favorite", "true");
+
+        container.appendChild(widget);
+        container.appendChild(config);
+
+        // Load widget script
+        // Reset scriptLoaded to force re-init on each render
+        scriptLoaded = false;
+        document.querySelectorAll('script[src*="widgets.api-sports.io"]').forEach(s => s.remove());
+        loadWidgetScript();
+
+        return () => {
+            container.innerHTML = "";
+        };
+    }, [activeComp, tab]);
 
     return (
         <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
@@ -41,13 +101,13 @@ export function FixturesWidget() {
                 </h3>
                 <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
                     <button
-                        onClick={() => switchTab("games")}
+                        onClick={() => setTab("games")}
                         className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${tab === "games" ? "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white shadow-sm" : "text-[#64748B] dark:text-gray-400"}`}
                     >
                         Fixtures
                     </button>
                     <button
-                        onClick={() => switchTab("standings")}
+                        onClick={() => setTab("standings")}
                         className={`px-3 py-1 text-xs font-semibold rounded-md transition-all ${tab === "standings" ? "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white shadow-sm" : "text-[#64748B] dark:text-gray-400"}`}
                     >
                         Table
@@ -60,7 +120,7 @@ export function FixturesWidget() {
                 {COMPETITIONS.map(c => (
                     <button
                         key={c.code}
-                        onClick={() => switchComp(c.code)}
+                        onClick={() => setActiveComp(c.code)}
                         className={`flex-shrink-0 px-3 py-1.5 text-xs font-semibold rounded-full transition-all ${activeComp === c.code ? "bg-[#16A34A] text-white shadow-sm" : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"}`}
                     >
                         {c.name}
@@ -69,67 +129,7 @@ export function FixturesWidget() {
             </div>
 
             {/* Widget Container */}
-            <div key={widgetKey} className="min-h-[300px]">
-                {tab === "games" ? (
-                    <div
-                        dangerouslySetInnerHTML={{
-                            __html: `
-                                <api-sports-widget
-                                    data-type="games"
-                                    data-league="${activeComp}"
-                                    data-season="2024"
-                                    data-show-toolbar="true"
-                                    data-show-errors="false"
-                                    data-show-logos="true"
-                                    data-modal-game="true"
-                                    data-modal-standings="true"
-                                    data-modal-team="true"
-                                    data-modal-player="true"
-                                    data-theme="grey"
-                                    data-color="#16A34A"
-                                ></api-sports-widget>
-                                <api-sports-widget
-                                    data-type="config"
-                                    data-key="${API_KEY}"
-                                    data-sport="football"
-                                    data-refresh="60"
-                                    data-show-logos="true"
-                                    data-favorite="true"
-                                ></api-sports-widget>
-                                <script type="module" src="${WIDGET_SCRIPT}"></script>
-                            `,
-                        }}
-                    />
-                ) : (
-                    <div
-                        dangerouslySetInnerHTML={{
-                            __html: `
-                                <api-sports-widget
-                                    data-type="standings"
-                                    data-league="${activeComp}"
-                                    data-season="2024"
-                                    data-show-toolbar="true"
-                                    data-show-errors="false"
-                                    data-show-logos="true"
-                                    data-modal-game="true"
-                                    data-modal-team="true"
-                                    data-modal-player="true"
-                                    data-theme="grey"
-                                    data-color="#16A34A"
-                                ></api-sports-widget>
-                                <api-sports-widget
-                                    data-type="config"
-                                    data-key="${API_KEY}"
-                                    data-sport="football"
-                                    data-refresh="300"
-                                    data-show-logos="true"
-                                ></api-sports-widget>
-                                <script type="module" src="${WIDGET_SCRIPT}"></script>
-                            `,
-                        }}
-                    />
-                )}
-            </div>
+            <div ref={containerRef} className="min-h-[400px]" />
         </div>
     );
 }
