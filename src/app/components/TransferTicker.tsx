@@ -20,7 +20,8 @@ export function TransferTicker() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("/api/transfers")
+        // Use a cache buster to force Vercel's Edge Network to serve fresh data
+        fetch(`/api/transfers?t=${Date.now()}`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) setItems(data);

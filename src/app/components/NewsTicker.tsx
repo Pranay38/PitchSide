@@ -37,7 +37,8 @@ export function NewsTicker() {
         setLoading(true);
         setError("");
         try {
-            const res = await fetch("/api/news");
+            // Include cache buster
+            const res = await fetch(`/api/news?t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 setNews(data.news || []);
