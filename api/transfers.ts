@@ -98,7 +98,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 move: `${t.from} → ${t.to}`,
                 fee: t.fee,
                 performance: perf,
-                window: t.window
+                window: t.window,
+                tm_url: t.tm_url
             };
         });
 

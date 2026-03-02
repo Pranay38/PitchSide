@@ -151,8 +151,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return true;
         });
 
+        // Filter to ensure only football-related content (just in case other sports leak in)
+        const footballKeywords = ["football", "soccer", "premier league", "champions league", "serie a", "la liga", "bundesliga", "ligue 1", "fa cup", "world cup", "euro ", "fifa", "uefa", "madrid", "barcelona", "united", "city", "arsenal", "chelsea", "liverpool", "bayern", "juventus", "psg"];
+        const soccerOnly = unique.filter(item => {
+            const text = (item.title + " " + item.description).toLowerCase();
+            return footballKeywords.some(kw => text.includes(kw)) || item.source !== "BBC Sport"; // BBC Sport Football feed is reliable, others might need filtering
+        });
+
         // Return top 25 stories
-        const news = unique.slice(0, 25);
+        const news = soccerOnly.slice(0, 25);
 
         res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=600");
         return res.status(200).json({

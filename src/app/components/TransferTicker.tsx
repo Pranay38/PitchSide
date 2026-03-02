@@ -12,6 +12,7 @@ interface TickerItem {
     window?: string;
     text?: string;
     link?: string;
+    tm_url?: string;
 }
 
 export function TransferTicker() {
@@ -53,7 +54,13 @@ export function TransferTicker() {
                         <div key={i} className="flex items-center shrink-0 pr-8 group">
                             {item.type === "transfer" ? (
                                 <>
-                                    <span className="text-[#38BDF8] font-bold text-xs">{item.player}</span>
+                                    {item.tm_url ? (
+                                        <a href={item.tm_url} target="_blank" rel="noreferrer" className="text-[#38BDF8] hover:text-white transition-colors font-bold text-xs underline decoration-transparent hover:decoration-[#38BDF8] underline-offset-4">
+                                            {item.player}
+                                        </a>
+                                    ) : (
+                                        <span className="text-[#38BDF8] font-bold text-xs">{item.player}</span>
+                                    )}
                                     <span className="mx-2 text-gray-500 text-[10px]">|</span>
                                     <span className="text-gray-300 text-xs font-medium">{item.move}</span>
                                     <span className="mx-2 text-gray-500 text-[10px]">|</span>
