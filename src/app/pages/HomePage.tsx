@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
@@ -9,7 +9,7 @@ import { Search, X, Filter } from "lucide-react";
 import { FixturesWidget } from "../components/FixturesWidget";
 import { NewsTicker } from "../components/NewsTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
-import { FanPulse } from "../components/FanPulse";
+
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
@@ -121,6 +121,7 @@ export function HomePage() {
     setCurrentPage(1);
   };
 
+
   if (blogPosts.length === 0) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
@@ -146,28 +147,32 @@ export function HomePage() {
       />
 
       <main className="max-w-[1100px] mx-auto px-6 py-8">
-        {/* Top Widgets Grid: Fixtures, FPL, News */}
-        <section className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-[#1E293B]">
-            <FixturesWidget />
+        <section className="mb-8 rounded-3xl border border-gray-200/70 dark:border-gray-800 bg-gradient-to-br from-white via-[#F8FAFC] to-[#ECFDF3] dark:from-[#111827] dark:via-[#0F172A] dark:to-[#052e16] p-6 md:p-7 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.14em] font-semibold text-[#16A34A]">Editorial Feed</p>
+              <h1 className="text-2xl md:text-3xl font-black text-[#0F172A] dark:text-white mt-1.5">Football stories first, data when you want it.</h1>
+              <p className="text-sm text-[#64748B] dark:text-gray-400 mt-2 max-w-2xl">
+                Match previews, tactical takes, transfer analysis, and club-specific updates in one clean reading flow.
+              </p>
+            </div>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="px-3 py-1.5 text-xs font-semibold rounded-full bg-white/80 dark:bg-[#1F2937]/80 text-[#16A34A] border border-[#16A34A]/20">
+                {blogPosts.length} total posts
+              </span>
+              {favoriteClub && (
+                <span className="px-3 py-1.5 text-xs font-semibold rounded-full bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/20">
+                  {favoriteClub} priority
+                </span>
+              )}
+            </div>
           </div>
-          <div className="lg:col-span-1 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
-            <FPLAnalyzer />
-          </div>
-          <div className="col-span-1 md:col-span-2 lg:col-span-1 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
-            <NewsTicker />
-          </div>
-        </section>
-
-        {/* Fan Pulse — Reactions, X/Twitter, Sentiment */}
-        <section className="mb-8">
-          <FanPulse />
         </section>
 
         {/* Search + Filter Section */}
-        <div className="mb-8 space-y-4">
+        <div className="mb-8 space-y-4 bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 rounded-2xl p-4 md:p-5 shadow-sm">
           {/* Search Bar */}
-          <div className="relative max-w-md">
+          <div className="relative max-w-xl">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
             <input
               type="text"
@@ -236,6 +241,27 @@ export function HomePage() {
             <PostCard post={featuredPost} featured />
           </section>
         )}
+
+        {/* Live Action Widgets */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm uppercase tracking-wider font-bold text-[#64748B] dark:text-gray-400">
+              Live Action & Intel
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-[#1E293B]">
+              <FixturesWidget />
+            </div>
+            <div className="border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-[#1E293B]">
+              <NewsTicker />
+            </div>
+            <div className="border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-[#1E293B]">
+              <FPLAnalyzer />
+            </div>
+          </div>
+        </section>
+
 
         {/* Club Personalization Note */}
         {favoriteClub && !searchQuery && !activeTag && (
