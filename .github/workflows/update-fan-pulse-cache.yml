@@ -1,0 +1,46 @@
+name: Update Fan Pulse Cache
+
+on:
+  schedule:
+    - cron: "45 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-fan-pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pipeline dependencies
+        run: pip install -r scripts/requirements-fan-pulse.txt
+
+      - name: Install spaCy English model
+        run: python -m spacy download en_core_web_sm
+
+      - name: Generate fan pulse cache
+        env:
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USER_AGENT: ${{ secrets.REDDIT_USER_AGENT }}
+        run: python scripts/generate_fan_pulse_cache.py
+
+      - name: Commit updated cache
+        run: |
+          if git diff --quiet -- public/data/fan_pulse_cache.json; then
+            echo "No fan pulse cache changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/fan_pulse_cache.json
+          git commit -m "chore: refresh fan pulse cache"
+          git push

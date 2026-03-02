@@ -29,4 +29,42 @@
   - Schedule: daily at `03:15 UTC`
   - Trigger: also supports manual `workflow_dispatch`
   - Output updated: `public/data/transfers_scraped.json`
+
+## Fan Pulse Daily ML Cache
+
+Fan Pulse supports a daily precomputed cache generated from hot posts and top comments in `r/soccer`.
+
+- Script: `scripts/generate_fan_pulse_cache.py`
+- Output: `public/data/fan_pulse_cache.json`
+- Workflow: `.github/workflows/update-fan-pulse-cache.yml`
+
+### Generate cache locally
+
+1. Install pipeline dependencies:
+   `pip install -r scripts/requirements-fan-pulse.txt`
+2. Install spaCy English model:
+   `python -m spacy download en_core_web_sm`
+3. Run generator:
+   `python scripts/generate_fan_pulse_cache.py`
+
+Optional credentials for higher Reddit reliability (recommended for GitHub Actions):
+
+- `REDDIT_CLIENT_ID`
+- `REDDIT_CLIENT_SECRET`
+- `REDDIT_USER_AGENT`
+
+If credentials are not provided, the script automatically falls back to Reddit public JSON endpoints.
+
+### Automated daily refresh
+
+The GitHub Actions workflow:
+
+- Schedule: daily at `03:45 UTC`
+- Trigger: also supports manual `workflow_dispatch`
+- Output updated: `public/data/fan_pulse_cache.json`
+
+Runtime behavior:
+
+- `/api/fan-pulse` reads the daily cache first.
+- If the cache file is missing or that topic is unavailable, it falls back to live fetching.
   
