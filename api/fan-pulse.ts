@@ -113,22 +113,90 @@ function analyzeSentiment(texts: string[]): SentimentResult {
 /* ── Reddit fetch helpers ── */
 const REDDIT_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept": "application/json",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,application/json;q=0.8,*/*;q=0.7",
     "Accept-Language": "en-US,en;q=0.9",
 };
 
-async function fetchRedditHotPosts(limit = 15): Promise<RedditPost[]> {
+const REDDIT_JSON_URLS = [
+    (sub: string, sort: string, limit: number) => `https://old.reddit.com/r/${sub}/${sort}.json?limit=${limit}&raw_json=1`,
+    (sub: string, sort: string, limit: number) => `https://www.reddit.com/r/${sub}/${sort}.json?limit=${limit}&raw_json=1`,
+    (sub: string, sort: string, limit: number) => `https://api.reddit.com/r/${sub}/${sort}?limit=${limit}&raw_json=1`,
+];
+
+async function tryRedditFetch(urlBuilders: ((sub: string, sort: string, limit: number) => string)[], sub: string, sort: string, limit: number): Promise<any | null> {
+    for (const buildUrl of urlBuilders) {
+        try {
+            const url = buildUrl(sub, sort, limit);
+            const res = await fetch(url, {
+                headers: REDDIT_HEADERS,
+                signal: AbortSignal.timeout(8000),
+                redirect: "follow",
+            });
+            if (!res.ok) {
+                console.error(`Reddit ${url}: ${res.status}`);
+                continue;
+            }
+            const contentType = res.headers.get("content-type") || "";
+            if (!contentType.includes("json")) {
+                console.error(`Reddit ${url}: non-JSON response (${contentType})`);
+                continue;
+            }
+            return await res.json();
+        } catch (err) {
+            console.error(`Reddit fetch error:`, err);
+        }
+    }
+    return null;
+}
+
+// RSS fallback for when all JSON APIs are blocked
+async function fetchRedditRSSPosts(limit = 15): Promise<RedditPost[]> {
     try {
-        const res = await fetch(`https://www.reddit.com/r/soccer/hot.json?limit=${limit}&raw_json=1`, {
-            headers: REDDIT_HEADERS,
+        const res = await fetch(`https://www.reddit.com/r/soccer/hot/.rss?limit=${limit}`, {
+            headers: { ...REDDIT_HEADERS, "Accept": "application/rss+xml,application/xml,text/xml" },
             signal: AbortSignal.timeout(8000),
         });
-        if (!res.ok) {
-            console.error(`Reddit hot posts: ${res.status} ${res.statusText}`);
-            return [];
+        if (!res.ok) return [];
+        const xml = await res.text();
+
+        const entries: RedditPost[] = [];
+        const entryRegex = /<entry>(.*?)<\/entry>/gs;
+        let match;
+        while ((match = entryRegex.exec(xml)) !== null && entries.length < limit) {
+            const entry = match[1];
+            const title = (entry.match(/<title>(.*?)<\/title>/s)?.[1] || "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+            const link = entry.match(/<link\s+href="(.*?)"/)?.[1] || "";
+            const id = entry.match(/<id>(.*?)<\/id>/)?.[1] || "";
+            const updated = entry.match(/<updated>(.*?)<\/updated>/)?.[1] || "";
+            const author = entry.match(/<name>(.*?)<\/name>/)?.[1] || "Anonymous";
+            const category = entry.match(/<category\s+term="(.*?)"/)?.[1] || "";
+
+            if (!title || title.startsWith("[Match Thread]") && entries.length > 3) continue;
+
+            // Extract post ID from Reddit URL
+            const postIdMatch = link.match(/comments\/([a-z0-9]+)/);
+            entries.push({
+                id: postIdMatch?.[1] || id,
+                title: title.replace(/^\[.*?\]\s*/, ""),
+                score: 0,
+                numComments: 0,
+                permalink: link.startsWith("http") ? link : `https://www.reddit.com${link}`,
+                created: updated ? new Date(updated).toISOString() : new Date().toISOString(),
+                flair: category || "",
+                author: author.replace("/u/", ""),
+            });
         }
-        const data = await res.json();
-        return (data.data?.children || [])
+        return entries;
+    } catch {
+        return [];
+    }
+}
+
+async function fetchRedditHotPosts(limit = 15): Promise<RedditPost[]> {
+    // Try JSON APIs first
+    const data = await tryRedditFetch(REDDIT_JSON_URLS, "soccer", "hot", limit);
+    if (data?.data?.children?.length > 0) {
+        return data.data.children
             .map((c: any) => c.data)
             .filter((p: any) => p && !p.stickied)
             .map((p: any) => ({
@@ -141,42 +209,55 @@ async function fetchRedditHotPosts(limit = 15): Promise<RedditPost[]> {
                 flair: p.link_flair_text || "",
                 author: p.author || "Anonymous",
             }));
-    } catch {
-        return [];
     }
+
+    // Fallback to RSS
+    console.log("Reddit JSON blocked, falling back to RSS");
+    return fetchRedditRSSPosts(limit);
 }
 
 async function fetchPostComments(postId: string, limit = 25): Promise<RedditComment[]> {
-    try {
-        const res = await fetch(
-            `https://www.reddit.com/r/soccer/comments/${postId}.json?sort=top&limit=${limit}&raw_json=1`,
-            { headers: REDDIT_HEADERS, signal: AbortSignal.timeout(8000) }
-        );
-        if (!res.ok) {
-            console.error(`Reddit comments: ${res.status} ${res.statusText}`);
-            return [];
-        }
-        const data = await res.json();
+    // Try multiple URL forms
+    const urls = [
+        `https://old.reddit.com/r/soccer/comments/${postId}.json?sort=top&limit=${limit}&raw_json=1`,
+        `https://www.reddit.com/r/soccer/comments/${postId}.json?sort=top&limit=${limit}&raw_json=1`,
+    ];
 
-        // Second element in array is the comments listing
-        const commentListing = data?.[1]?.data?.children || [];
-        return commentListing
-            .map((c: any) => c.data)
-            .filter((c: any) => c && c.body && c.author !== "AutoModerator" && c.body !== "[deleted]" && c.body !== "[removed]")
-            .slice(0, limit)
-            .map((c: any) => ({
-                id: c.id,
-                author: c.author || "Anonymous",
-                body: (c.body || "").slice(0, 500),
-                score: c.score || 0,
-                awards: c.total_awards_received || 0,
-                permalink: `https://www.reddit.com${c.permalink || ""}`,
-                created: c.created_utc ? new Date(c.created_utc * 1000).toISOString() : new Date().toISOString(),
-                flair: c.author_flair_text || "",
-            }));
-    } catch {
-        return [];
+    for (const url of urls) {
+        try {
+            const res = await fetch(url, {
+                headers: REDDIT_HEADERS,
+                signal: AbortSignal.timeout(8000),
+                redirect: "follow",
+            });
+            if (!res.ok) continue;
+            const contentType = res.headers.get("content-type") || "";
+            if (!contentType.includes("json")) continue;
+            const data = await res.json();
+
+            // Second element in array is the comments listing
+            const commentListing = data?.[1]?.data?.children || [];
+            if (commentListing.length > 0) {
+                return commentListing
+                    .map((c: any) => c.data)
+                    .filter((c: any) => c && c.body && c.author !== "AutoModerator" && c.body !== "[deleted]" && c.body !== "[removed]")
+                    .slice(0, limit)
+                    .map((c: any) => ({
+                        id: c.id,
+                        author: c.author || "Anonymous",
+                        body: (c.body || "").slice(0, 500),
+                        score: c.score || 0,
+                        awards: c.total_awards_received || 0,
+                        permalink: `https://www.reddit.com${c.permalink || ""}`,
+                        created: c.created_utc ? new Date(c.created_utc * 1000).toISOString() : new Date().toISOString(),
+                        flair: c.author_flair_text || "",
+                    }));
+            }
+        } catch {
+            continue;
+        }
     }
+    return [];
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
