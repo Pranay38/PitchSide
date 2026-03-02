@@ -1,82 +1,115 @@
-import { useState, useEffect, useRef } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { ChevronDown, ChevronUp, ExternalLink, RefreshCw } from "lucide-react";
 
 interface FeedSource {
+    id: string;
     name: string;
     handle: string;
     icon: string;
-    url: string;
+    profileUrl: string;
+}
+
+interface SocialItem {
+    id: string;
+    title: string;
+    summary: string;
+    link: string;
+    pubDate: string;
+    source: string;
+    sourceIcon: string;
 }
 
 const FEEDS: FeedSource[] = [
-    { name: "Premier League", handle: "@premierleague", icon: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", url: "https://twitter.com/premierleague" },
-    { name: "Champions League", handle: "@ChampionsLeague", icon: "🏆", url: "https://twitter.com/ChampionsLeague" },
-    { name: "La Liga", handle: "@LaLigaEN", icon: "🇪🇸", url: "https://twitter.com/LaLigaEN" },
-    { name: "Serie A", handle: "@SerieA_EN", icon: "🇮🇹", url: "https://twitter.com/SerieA_EN" },
-    { name: "Bundesliga", handle: "@Bundesliga_EN", icon: "🇩🇪", url: "https://twitter.com/Bundesliga_EN" },
-    { name: "Fabrizio Romano", handle: "@FabrizioRomano", icon: "🔔", url: "https://twitter.com/FabrizioRomano" },
-    { name: "r/soccer", handle: "Reddit", icon: "🟠", url: "https://www.reddit.com/r/soccer" },
+    { id: "premier-league", name: "Premier League", handle: "@premierleague", icon: "🏴", profileUrl: "https://x.com/premierleague" },
+    { id: "champions-league", name: "Champions League", handle: "@ChampionsLeague", icon: "🏆", profileUrl: "https://x.com/ChampionsLeague" },
+    { id: "la-liga", name: "La Liga", handle: "@LaLigaEN", icon: "🇪🇸", profileUrl: "https://x.com/LaLigaEN" },
+    { id: "serie-a", name: "Serie A", handle: "@SerieA_EN", icon: "🇮🇹", profileUrl: "https://x.com/SerieA_EN" },
+    { id: "bundesliga", name: "Bundesliga", handle: "@Bundesliga_EN", icon: "🇩🇪", profileUrl: "https://x.com/Bundesliga_EN" },
+    { id: "fabrizio-romano", name: "Fabrizio Romano", handle: "@FabrizioRomano", icon: "🔔", profileUrl: "https://x.com/FabrizioRomano" },
+    { id: "r-soccer", name: "r/soccer", handle: "Reddit", icon: "🟠", profileUrl: "https://www.reddit.com/r/soccer" },
 ];
+
+function timeAgo(dateStr: string): string {
+    const now = Date.now();
+    const date = new Date(dateStr).getTime();
+    if (!date) return "";
+    const diff = now - date;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "Just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+}
 
 export function SocialFeed() {
     const [selectedFeed, setSelectedFeed] = useState(0);
     const [expanded, setExpanded] = useState(true);
-    const timelineRef = useRef<HTMLDivElement>(null);
+    const [items, setItems] = useState<SocialItem[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [lastUpdated, setLastUpdated] = useState("");
 
     const feed = FEEDS[selectedFeed];
 
-    // Load/reload Twitter embed widget script
+    const fetchFeed = useCallback(async () => {
+        setLoading(true);
+        setError("");
+
+        try {
+            const response = await fetch(`/api/news?source=${encodeURIComponent(feed.id)}&t=${Date.now()}`);
+            if (!response.ok) {
+                throw new Error("Could not load feed.");
+            }
+            const payload = await response.json();
+            setItems(payload.items || []);
+            setLastUpdated(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+        } catch (fetchError: any) {
+            setError(fetchError?.message || "Failed to load social feed.");
+        } finally {
+            setLoading(false);
+        }
+    }, [feed.id]);
+
     useEffect(() => {
         if (!expanded) return;
+        fetchFeed();
+        const timer = setInterval(fetchFeed, 3 * 60 * 1000);
+        return () => clearInterval(timer);
+    }, [expanded, fetchFeed]);
 
-        // For Twitter feeds, dynamically load the Twitter widget js
-        if (feed.url.includes("twitter.com")) {
-            // Clear old content
-            if (timelineRef.current) {
-                timelineRef.current.innerHTML = `
-                    <a class="twitter-timeline"
-                       href="${feed.url}"
-                       data-theme="dark"
-                       data-chrome="noheader nofooter noborders transparent"
-                       data-tweet-limit="5"
-                       data-width="100%"
-                       data-height="500">
-                        Loading ${feed.name}...
-                    </a>
-                `;
-            }
-
-            // Load or re-trigger Twitter widget script
-            const existingScript = document.querySelector('script[src*="platform.twitter.com"]');
-            if (existingScript) {
-                // Re-render if script already loaded
-                (window as any).twttr?.widgets?.load?.(timelineRef.current);
-            } else {
-                const script = document.createElement("script");
-                script.src = "https://platform.twitter.com/widgets.js";
-                script.async = true;
-                script.charset = "utf-8";
-                document.body.appendChild(script);
-            }
-        }
-    }, [selectedFeed, expanded, feed]);
-
-    const isReddit = feed.url.includes("reddit.com");
+    const visibleItems = useMemo(() => items.slice(0, 15), [items]);
 
     return (
         <div className="bg-white dark:bg-[#0F172A] rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-            {/* Header */}
             <div
-                onClick={() => setExpanded(!expanded)}
+                onClick={() => setExpanded((prev) => !prev)}
                 className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-sky-500/10 via-sky-500/5 to-transparent cursor-pointer select-none"
             >
                 <div className="flex items-center justify-between">
                     <h3 className="text-base font-black text-[#0F172A] dark:text-white tracking-tight flex items-center gap-2">
                         <span className="text-xl">📱</span>
                         Social Media Feeds
-                        <span className="ml-2 text-[10px] font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded-full uppercase tracking-wider">Live</span>
+                        <span className="ml-2 text-[10px] font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            Live
+                        </span>
                     </h3>
-                    {expanded ? <ChevronUp className="w-4 h-4 text-[#94A3B8]" /> : <ChevronDown className="w-4 h-4 text-[#94A3B8]" />}
+                    <div className="flex items-center gap-2">
+                        {expanded && (
+                            <button
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    fetchFeed();
+                                }}
+                                className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                title="Refresh"
+                            >
+                                <RefreshCw className={`w-3.5 h-3.5 text-[#94A3B8] ${loading ? "animate-spin" : ""}`} />
+                            </button>
+                        )}
+                        {expanded ? <ChevronUp className="w-4 h-4 text-[#94A3B8]" /> : <ChevronDown className="w-4 h-4 text-[#94A3B8]" />}
+                    </div>
                 </div>
                 {!expanded && (
                     <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] mt-1">
@@ -87,54 +120,72 @@ export function SocialFeed() {
 
             {expanded && (
                 <>
-                    {/* Feed Selector */}
                     <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800 flex gap-1.5 flex-wrap">
-                        {FEEDS.map((f, i) => (
+                        {FEEDS.map((source, idx) => (
                             <button
-                                key={f.name}
-                                onClick={() => setSelectedFeed(i)}
-                                className={`text-[10px] font-bold px-2.5 py-1.5 rounded-full transition-all ${selectedFeed === i
+                                key={source.id}
+                                onClick={() => setSelectedFeed(idx)}
+                                className={`text-[10px] font-bold px-2.5 py-1.5 rounded-full transition-all ${
+                                    selectedFeed === idx
                                         ? "bg-sky-500 text-white shadow-sm"
                                         : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-[#94A3B8] hover:bg-gray-200 dark:hover:bg-gray-700"
-                                    }`}
+                                }`}
                             >
-                                {f.icon} {f.name}
+                                {source.icon} {source.name}
                             </button>
                         ))}
                     </div>
 
-                    {/* Feed Content */}
-                    <div className="relative w-full bg-[#0F172A]" style={{ minHeight: 500 }}>
-                        {isReddit ? (
-                            <iframe
-                                src="https://www.redditmedia.com/r/soccer/hot/?ref=share&ref_source=embed&utm_medium=widgets&utm_source=embedv2&utm_term=23&utm_name=post_embed&embed=true&theme=dark"
-                                title="r/soccer"
-                                className="w-full border-0"
-                                style={{ height: 500 }}
-                                sandbox="allow-scripts allow-same-origin allow-popups"
-                                loading="lazy"
-                            />
+                    <div className="max-h-[560px] overflow-y-auto">
+                        {loading && items.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-20">
+                                <RefreshCw className="w-6 h-6 animate-spin text-sky-500 mb-2" />
+                                <span className="text-xs text-[#94A3B8] font-medium">Loading {feed.name}...</span>
+                            </div>
+                        ) : error && items.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-20 text-center px-6">
+                                <p className="text-sm font-semibold text-red-500">{error}</p>
+                                <p className="text-xs text-[#94A3B8] mt-2">This widget now uses API data directly (no blocked X/Reddit embeds).</p>
+                            </div>
                         ) : (
-                            <div
-                                ref={timelineRef}
-                                className="w-full overflow-auto p-4"
-                                style={{ height: 500 }}
-                            >
-                                <div className="flex flex-col items-center justify-center h-full gap-3">
-                                    <div className="w-8 h-8 border-3 border-sky-500 border-t-transparent rounded-full animate-spin" />
-                                    <span className="text-xs text-[#94A3B8] font-medium">Loading {feed.name}...</span>
-                                </div>
+                            <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                                {visibleItems.map((item) => (
+                                    <a
+                                        key={item.id}
+                                        href={item.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors group"
+                                    >
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="min-w-0">
+                                                <p className="text-[13px] font-semibold text-[#0F172A] dark:text-white leading-snug line-clamp-2 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+                                                    {item.title}
+                                                </p>
+                                                {item.summary && (
+                                                    <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] mt-1 line-clamp-2">{item.summary}</p>
+                                                )}
+                                                <div className="flex items-center gap-2 mt-2">
+                                                    <span className="text-[10px] font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/30 px-1.5 py-0.5 rounded">
+                                                        {item.sourceIcon} {item.source}
+                                                    </span>
+                                                    <span className="text-[10px] text-[#94A3B8]">{timeAgo(item.pubDate)}</span>
+                                                </div>
+                                            </div>
+                                            <ExternalLink className="w-3 h-3 text-[#94A3B8] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5" />
+                                        </div>
+                                    </a>
+                                ))}
                             </div>
                         )}
                     </div>
 
-                    {/* Footer */}
                     <div className="bg-gray-50/80 dark:bg-[#0B1120]/80 p-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                         <p className="text-[9px] text-[#94A3B8]">
-                            Social feeds update in real-time
+                            Feed source: X timelines + Reddit hot {lastUpdated ? `• Updated ${lastUpdated}` : ""}
                         </p>
                         <a
-                            href={feed.url}
+                            href={feed.profileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-[10px] font-bold text-sky-500 hover:text-sky-400 transition-colors"

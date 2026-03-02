@@ -3,6 +3,24 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 const API_KEY = process.env.FOOTBALL_DATA_KEY || "";
 const BASE_URL = "https://api.football-data.org/v4";
 
+function normalizeWebsiteUrl(rawUrl: string | null | undefined): string | null {
+    const value = String(rawUrl || "").trim();
+    if (!value) return null;
+    if (/^https?:\/\//i.test(value)) return value.replace(/^http:\/\//i, "https://");
+    if (/^[a-z0-9.-]+\.[a-z]{2,}/i.test(value)) return `https://${value}`;
+    return null;
+}
+
+function buildOfficialUrl(teamName: string, website: string | null | undefined): string {
+    const normalized = normalizeWebsiteUrl(website);
+    if (normalized) return normalized;
+    return `https://www.google.com/search?q=${encodeURIComponent(`${teamName} official website`)}`;
+}
+
+function buildSofascorePlayerUrl(playerName: string): string {
+    return `https://www.sofascore.com/search?q=${encodeURIComponent(playerName)}`;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -14,6 +32,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
         const competition = req.query.competition as string || "PL";
+        const view = (req.query.view as string || "table").toLowerCase();
+
+        if (view === "scorers") {
+            const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 20, 1), 50);
+            const scorersResponse = await fetch(
+                `${BASE_URL}/competitions/${competition}/scorers`,
+                { headers: { "X-Auth-Token": API_KEY } }
+            );
+
+            if (!scorersResponse.ok) {
+                const errorText = await scorersResponse.text();
+                console.error("Scorers API error:", scorersResponse.status, errorText);
+                return res.status(scorersResponse.status).json({ error: "Failed to fetch top scorers." });
+            }
+
+            const scorersData = await scorersResponse.json();
+            const scorers = (scorersData.scorers || []).slice(0, limit).map((entry: any, idx: number) => ({
+                rank: idx + 1,
+                player: entry.player?.name || "Unknown",
+                team: entry.team?.shortName || entry.team?.name || "Unknown",
+                goals: entry.goals ?? 0,
+                assists: entry.assists ?? null,
+                penalties: entry.penalties ?? 0,
+                played: entry.playedMatches ?? null,
+                nationality: entry.player?.nationality || null,
+            }));
+
+            res.setHeader("Cache-Control", "s-maxage=600, stale-while-revalidate=1200");
+            return res.status(200).json({
+                competition,
+                view: "scorers",
+                count: scorers.length,
+                scorers,
+            });
+        }
 
         const response = await fetch(
             `${BASE_URL}/competitions/${competition}/standings`,

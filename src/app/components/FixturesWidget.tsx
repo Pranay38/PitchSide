@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Trophy, Calendar, Loader2, ChevronLeft, ChevronRight, TableProperties, Swords } from "lucide-react";
+import { Trophy, Calendar, Loader2, ChevronLeft, ChevronRight, TableProperties, Swords, Target } from "lucide-react";
 
 /* ── Types ── */
 interface Match {
@@ -15,12 +15,21 @@ interface KnockoutMatch extends Match {
     aggregateAway: number | null;
 }
 
-
 interface StandingEntry {
     position: number;
     team: { name: string; crest: string };
     played: number; won: number; draw: number; lost: number;
     gf: number; ga: number; gd: number; points: number;
+}
+
+interface ScorerEntry {
+    rank: number;
+    player: string;
+    team: string;
+    goals: number;
+    assists: number | null;
+    penalties: number;
+    played: number | null;
 }
 
 /* ── Constants ── */
@@ -30,10 +39,11 @@ const COMPETITIONS = [
     { code: "PD", name: "La Liga", emoji: "🇪🇸" },
     { code: "BL1", name: "Bundesliga", emoji: "🇩🇪" },
     { code: "SA", name: "Serie A", emoji: "🇮🇹" },
+    { code: "FL1", name: "Ligue 1", emoji: "🇫🇷" },
 ];
 
 type ViewMode = "recent" | "next" | "prev";
-type Tab = "fixtures" | "table" | "knockouts";
+type Tab = "fixtures" | "table" | "knockouts" | "scorers";
 
 const STAGE_LABELS: Record<string, string> = {
     PLAYOFF: "Playoff Round", LAST_16: "Round of 16", ROUND_OF_16: "Round of 16",
@@ -59,8 +69,6 @@ function StatusBadge({ status }: { status: string }) {
     if (status === "FINISHED") return <span className="px-2 py-0.5 text-[10px] font-bold text-emerald-700 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-900/40 rounded-full">FT</span>;
     return null;
 }
-
-
 
 /* ── Match Row ── */
 function MatchRow({ match }: { match: Match }) {
@@ -96,13 +104,13 @@ export function FixturesWidget() {
     const [matches, setMatches] = useState<Match[]>([]);
     const [standings, setStandings] = useState<StandingEntry[]>([]);
     const [knockouts, setKnockouts] = useState<KnockoutMatch[]>([]);
+    const [scorers, setScorers] = useState<ScorerEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [activeComp, setActiveComp] = useState("PL");
     const [viewMode, setViewMode] = useState<ViewMode>("recent");
     const [offset, setOffset] = useState(0);
     const [tab, setTab] = useState<Tab>("fixtures");
-
 
     const fetchMatches = useCallback(async () => {
         setLoading(true); setError("");
@@ -124,7 +132,21 @@ export function FixturesWidget() {
         setLoading(false);
     }, [activeComp]);
 
-    useEffect(() => { tab === "fixtures" ? fetchMatches() : fetchStandings(); }, [tab, fetchMatches, fetchStandings]);
+    const fetchScorers = useCallback(async () => {
+        setLoading(true); setError("");
+        try {
+            const res = await fetch(`/api/standings?competition=${activeComp}&view=scorers&limit=20`);
+            if (res.ok) { const d = await res.json(); setScorers(d.scorers || []); }
+            else setError((await res.json().catch(() => ({}))).error || "Failed to load top scorers.");
+        } catch { setError("Could not load top scorers."); }
+        setLoading(false);
+    }, [activeComp]);
+
+    useEffect(() => {
+        if (tab === "fixtures") fetchMatches();
+        else if (tab === "scorers") fetchScorers();
+        else fetchStandings();
+    }, [tab, fetchMatches, fetchStandings, fetchScorers]);
 
     const switchComp = (code: string) => { setActiveComp(code); setOffset(0); setViewMode("recent"); if (code !== "CL" && tab === "knockouts") setTab("fixtures"); };
     const goNext = () => { if (viewMode === "recent") { setViewMode("next"); setOffset(0); } else if (viewMode === "next") setOffset(o => o + 3); else { if (offset <= 1) { setViewMode("recent"); setOffset(0); } else setOffset(o => Math.max(0, o - 3)); } };
@@ -147,6 +169,7 @@ export function FixturesWidget() {
                     <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
                         <button onClick={() => setTab("fixtures")} className={`px-3 py-1.5 text-[11px] font-semibold rounded-md transition-all ${tab === "fixtures" ? "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white shadow-sm" : "text-[#64748B]"}`}>Fixtures</button>
                         <button onClick={() => setTab("table")} className={`px-3 py-1.5 text-[11px] font-semibold rounded-md transition-all flex items-center gap-1 ${tab === "table" ? "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white shadow-sm" : "text-[#64748B]"}`}><TableProperties className="w-3 h-3" />Table</button>
+                        <button onClick={() => setTab("scorers")} className={`px-3 py-1.5 text-[11px] font-semibold rounded-md transition-all flex items-center gap-1 ${tab === "scorers" ? "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white shadow-sm" : "text-[#64748B]"}`}><Target className="w-3 h-3" />Scorers</button>
                         {isCL && <button onClick={() => setTab("knockouts")} className={`px-3 py-1.5 text-[11px] font-semibold rounded-md transition-all flex items-center gap-1 ${tab === "knockouts" ? "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white shadow-sm" : "text-[#64748B]"}`}><Swords className="w-3 h-3" />Knockouts</button>}
                     </div>
                 </div>
@@ -216,6 +239,32 @@ export function FixturesWidget() {
                                 ))}
                             </tbody>
                         </table>
+                    )
+                ) : tab === "scorers" ? (
+                    scorers.length === 0 ? (
+                        <div className="text-center py-12"><Target className="w-8 h-8 text-[#94A3B8] mx-auto mb-2" /><p className="text-sm text-[#64748B]">No top scorer data available</p></div>
+                    ) : (
+                        <div className="divide-y divide-gray-100 dark:divide-gray-800">
+                            {scorers.map(entry => (
+                                <div key={`${entry.rank}-${entry.player}`} className="px-4 py-3 flex items-center justify-between gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <span className="w-7 h-7 rounded-full bg-[#16A34A]/10 text-[#16A34A] text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+                                            {entry.rank}
+                                        </span>
+                                        <div className="min-w-0">
+                                            <p className="text-[13px] font-semibold text-[#0F172A] dark:text-white truncate">{entry.player}</p>
+                                            <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] truncate">{entry.team}{entry.played ? ` • ${entry.played} apps` : ""}</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right flex-shrink-0">
+                                        <p className="text-[14px] font-black text-[#0F172A] dark:text-white">{entry.goals} <span className="text-[10px] font-semibold text-[#94A3B8]">G</span></p>
+                                        <p className="text-[10px] text-[#94A3B8]">
+                                            {entry.assists ?? 0} A{entry.penalties > 0 ? ` • ${entry.penalties} pen` : ""}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     )
                 ) : (
                     orderedStages.length === 0 ? (

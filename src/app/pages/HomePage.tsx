@@ -9,7 +9,6 @@ import { Search, X, Filter } from "lucide-react";
 import { FixturesWidget } from "../components/FixturesWidget";
 import { NewsTicker } from "../components/NewsTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
-import { LiveScoresWidget } from "../components/LiveScoresWidget";
 import { SocialFeed } from "../components/SocialFeed";
 
 export function HomePage() {
@@ -158,11 +157,6 @@ export function HomePage() {
           <div className="col-span-1 md:col-span-2 lg:col-span-1 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
             <NewsTicker />
           </div>
-        </section>
-
-        {/* Live Scores & Stats Widgets */}
-        <section className="mb-8">
-          <LiveScoresWidget />
         </section>
 
         {/* Social Media Feeds */}

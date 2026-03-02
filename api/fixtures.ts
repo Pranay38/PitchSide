@@ -3,6 +3,20 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 const API_KEY = process.env.FOOTBALL_DATA_KEY || "";
 const BASE_URL = "https://api.football-data.org/v4";
 
+function normalizeWebsiteUrl(rawUrl: string | null | undefined): string | null {
+    const value = String(rawUrl || "").trim();
+    if (!value) return null;
+    if (/^https?:\/\//i.test(value)) return value.replace(/^http:\/\//i, "https://");
+    if (/^[a-z0-9.-]+\.[a-z]{2,}/i.test(value)) return `https://${value}`;
+    return null;
+}
+
+function buildOfficialUrl(teamName: string, website: string | null | undefined): string {
+    const normalized = normalizeWebsiteUrl(website);
+    if (normalized) return normalized;
+    return `https://www.google.com/search?q=${encodeURIComponent(`${teamName} official website`)}`;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
@@ -53,10 +67,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             dateTo = req.query.dateTo as string || now.toISOString().split("T")[0];
         }
 
-        const response = await fetch(
+        const [response, teamsResponse] = await Promise.all([
+            fetch(
             `${BASE_URL}/competitions/${competitions}/matches?dateFrom=${dateFrom}&dateTo=${dateTo}`,
             { headers: { "X-Auth-Token": API_KEY } }
-        );
+            ),
+            fetch(
+                `${BASE_URL}/competitions/${competitions}/teams`,
+                { headers: { "X-Auth-Token": API_KEY } }
+            ).catch(() => null),
+        ]);
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -65,6 +85,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         const data = await response.json();
+        const teamWebsiteMap = new Map<number, string | null>();
+
+        if (teamsResponse && teamsResponse.ok) {
+            const teamsData = await teamsResponse.json();
+            for (const team of teamsData.teams || []) {
+                teamWebsiteMap.set(team.id, normalizeWebsiteUrl(team.website));
+            }
+        }
 
         const matches = (data.matches || []).map((match: any) => ({
             id: match.id,
@@ -72,8 +100,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             utcDate: match.utcDate,
             status: match.status,
             matchday: match.matchday,
-            homeTeam: { name: match.homeTeam?.shortName || match.homeTeam?.name || "", crest: match.homeTeam?.crest || "" },
-            awayTeam: { name: match.awayTeam?.shortName || match.awayTeam?.name || "", crest: match.awayTeam?.crest || "" },
+            homeTeam: {
+                id: match.homeTeam?.id || null,
+                name: match.homeTeam?.shortName || match.homeTeam?.name || "",
+                crest: match.homeTeam?.crest || "",
+                officialUrl: buildOfficialUrl(
+                    match.homeTeam?.shortName || match.homeTeam?.name || "Team",
+                    teamWebsiteMap.get(match.homeTeam?.id) || null
+                ),
+            },
+            awayTeam: {
+                id: match.awayTeam?.id || null,
+                name: match.awayTeam?.shortName || match.awayTeam?.name || "",
+                crest: match.awayTeam?.crest || "",
+                officialUrl: buildOfficialUrl(
+                    match.awayTeam?.shortName || match.awayTeam?.name || "Team",
+                    teamWebsiteMap.get(match.awayTeam?.id) || null
+                ),
+            },
             score: { home: match.score?.fullTime?.home ?? null, away: match.score?.fullTime?.away ?? null },
         }));
 
