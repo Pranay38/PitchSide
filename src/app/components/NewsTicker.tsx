@@ -31,6 +31,7 @@ export function NewsTicker() {
     const [error, setError] = useState("");
     const [expanded, setExpanded] = useState(true);
     const [visibleCount, setVisibleCount] = useState(8);
+    const [failedImages, setFailedImages] = useState<Record<string, true>>({});
     const tickerRef = useRef<HTMLDivElement>(null);
 
     const fetchNews = useCallback(async () => {
@@ -114,16 +115,21 @@ export function NewsTicker() {
                                         className="flex gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
                                     >
                                         {/* Thumbnail */}
-                                        {item.imageUrl && (
-                                            <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+                                        <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+                                            {item.imageUrl && !failedImages[item.imageUrl] ? (
                                                 <img
                                                     src={item.imageUrl}
                                                     alt=""
                                                     className="w-full h-full object-cover"
-                                                    onError={e => (e.currentTarget.parentElement!.style.display = "none")}
+                                                    loading="lazy"
+                                                    onError={() => setFailedImages(prev => ({ ...prev, [item.imageUrl!]: true }))}
                                                 />
-                                            </div>
-                                        )}
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-xl bg-gradient-to-br from-amber-100 to-sky-100 dark:from-amber-900/30 dark:to-sky-900/30">
+                                                    {item.sourceIcon || "📰"}
+                                                </div>
+                                            )}
+                                        </div>
                                         {/* Content */}
                                         <div className="flex-1 min-w-0">
                                             <h4 className="text-[13px] font-semibold text-[#0F172A] dark:text-white leading-snug line-clamp-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">

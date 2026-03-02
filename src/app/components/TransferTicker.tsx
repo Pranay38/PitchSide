@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ArrowRightLeft } from "lucide-react";
 
 interface TickerItem {
@@ -19,16 +19,26 @@ export function TransferTicker() {
     const [items, setItems] = useState<TickerItem[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Use a cache buster to force Vercel's Edge Network to serve fresh data
-        fetch(`/api/transfers?t=${Date.now()}`)
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data)) setItems(data);
-                setLoading(false);
-            })
-            .catch(() => setLoading(false));
+    const fetchTicker = useCallback(async () => {
+        try {
+            const res = await fetch(`/api/transfers?t=${Date.now()}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            if (Array.isArray(data) && data.length > 0) {
+                setItems(data);
+            }
+        } catch {
+            // Keep previous items on transient fetch errors.
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchTicker();
+        const interval = setInterval(fetchTicker, 3 * 60 * 1000); // Refresh every 3 minutes
+        return () => clearInterval(interval);
+    }, [fetchTicker]);
 
     if (loading || items.length === 0) return null;
 

@@ -8,7 +8,6 @@ import { useClubPreference } from "../hooks/useClubPreference";
 import { Search, X, Filter } from "lucide-react";
 import { FixturesWidget } from "../components/FixturesWidget";
 import { NewsTicker } from "../components/NewsTicker";
-import { TransferTicker } from "../components/TransferTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
 
 export function HomePage() {
@@ -144,9 +143,6 @@ export function HomePage() {
         onSelectClub={handleSelectClub}
         onSkip={handleSkip}
       />
-
-      {/* Full-width Transfer Ticker at the top */}
-      <TransferTicker />
 
       <main className="max-w-[1100px] mx-auto px-6 py-8">
         {/* Top Widgets Grid: Fixtures, FPL, News */}

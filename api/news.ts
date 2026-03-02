@@ -50,36 +50,92 @@ function extractFromXML(xml: string, tag: string): string {
     return match ? match[1].trim() : "";
 }
 
-function extractImageFromItem(itemXml: string): string | null {
-    // 1. media:content
-    const mediaContentMatch = itemXml.match(/<media:content[^>]+url=["']([^"']+)["']/i);
-    if (mediaContentMatch && mediaContentMatch[1].match(/\.(jpg|jpeg|png|webp|gif)/i)) {
-        return mediaContentMatch[1];
-    }
+function decodeEntities(text: string): string {
+    return text
+        .replace(/<!\[CDATA\[|\]\]>/g, "")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, "\"")
+        .replace(/&#039;/g, "'")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&#x2F;|&#47;/gi, "/")
+        .replace(/&colon;/gi, ":");
+}
 
-    // 2. media:thumbnail
-    const mediaThumbMatch = itemXml.match(/<media:thumbnail[^>]+url=["']([^"']+)["']/i);
-    if (mediaThumbMatch && mediaThumbMatch[1].match(/\.(jpg|jpeg|png|webp|gif)/i)) {
-        return mediaThumbMatch[1];
-    }
+function normalizeUrl(rawUrl: string): string | null {
+    const decoded = decodeEntities(rawUrl).replace(/\\\//g, "/").trim();
+    if (!decoded) return null;
 
-    // 3. enclosure
-    const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["']/i);
-    if (enclosureMatch && enclosureMatch[1].match(/\.(jpg|jpeg|png|webp|gif)/i)) {
-        return enclosureMatch[1];
-    }
-
-    // 4. Try image in description
-    const descImgMatch = itemXml.match(/<img[^>]+src=["']([^"']+)["']/i);
-    if (descImgMatch) {
-        return descImgMatch[1];
-    }
-
+    if (decoded.startsWith("//")) return `https:${decoded}`;
+    if (/^https?:\/\//i.test(decoded)) return decoded.replace(/^http:\/\//i, "https://");
     return null;
 }
 
+function isLikelyImageUrl(url: string): boolean {
+    return /\.(jpg|jpeg|png|webp|gif|avif|svg)(\?|$)/i.test(url)
+        || /[?&](img|image|url)=/i.test(url)
+        || /(images?|photo|media|uploads?)/i.test(url);
+}
+
+function extractImageFromItem(itemXml: string): string | null {
+    const candidates: string[] = [];
+    const seen = new Set<string>();
+
+    const addCandidate = (rawUrl: string, requireImageHint: boolean = false) => {
+        const normalized = normalizeUrl(rawUrl);
+        if (!normalized) return;
+        if (requireImageHint && !isLikelyImageUrl(normalized)) return;
+        if (seen.has(normalized)) return;
+        seen.add(normalized);
+        candidates.push(normalized);
+    };
+
+    // 1. media:* and enclosure tags
+    const mediaTagRegex = /<(media:content|media:thumbnail|enclosure)\b([^>]*)>/gi;
+    let mediaMatch;
+    while ((mediaMatch = mediaTagRegex.exec(itemXml)) !== null) {
+        const attrs = mediaMatch[2] || "";
+        const urlMatch = attrs.match(/\burl=["']([^"']+)["']/i);
+        if (!urlMatch) continue;
+
+        const typeMatch = attrs.match(/\btype=["']([^"']+)["']/i);
+        const hasImageType = !!typeMatch && typeMatch[1].toLowerCase().startsWith("image/");
+        addCandidate(urlMatch[1], !hasImageType);
+    }
+
+    // 2. Rich content fields (description/content:encoded/summary)
+    const richFields = [
+        extractFromXML(itemXml, "description"),
+        extractFromXML(itemXml, "content:encoded"),
+        extractFromXML(itemXml, "summary"),
+        itemXml, // Last resort: parse full item XML for embedded image URLs
+    ];
+
+    for (const field of richFields) {
+        const decoded = decodeEntities(field);
+
+        let imgMatch;
+        const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+        while ((imgMatch = imgRegex.exec(decoded)) !== null) {
+            addCandidate(imgMatch[1]);
+        }
+
+        const ogImageMatch = decoded.match(/<meta[^>]+(?:property|name)=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+        if (ogImageMatch) addCandidate(ogImageMatch[1]);
+
+        let directMatch;
+        const directImageRegex = /(https?:\/\/[^"'\s<>]+(?:\.(?:jpg|jpeg|png|webp|gif|avif|svg)|[?&](?:img|image|url)=)[^"'\s<>]*)/gi;
+        while ((directMatch = directImageRegex.exec(decoded)) !== null) {
+            addCandidate(directMatch[1]);
+        }
+    }
+
+    return candidates[0] || null;
+}
+
 function stripHtml(html: string): string {
-    return html.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&nbsp;/g, " ").trim();
+    return decodeEntities(html).replace(/<[^>]+>/g, "").trim();
 }
 
 async function fetchFeed(feed: typeof RSS_FEEDS[0]): Promise<NewsItem[]> {

@@ -1,0 +1,125 @@
+{
+  "generatedAt": "2026-03-02T14:33:45.918Z",
+  "season": "2025/26",
+  "source": "bootstrap_static_seed",
+  "count": 13,
+  "transfers": [
+    {
+      "player": "Kylian Mbappé",
+      "from": "PSG",
+      "to": "Real Madrid",
+      "fee": "Free",
+      "window": "Summer 2025",
+      "tm_url": "https://www.transfermarkt.com/kylian-mbappe/profil/spieler/342229",
+      "performance": "Dominating La Liga. 15+ goals across all competitions."
+    },
+    {
+      "player": "Julián Álvarez",
+      "from": "Man City",
+      "to": "Atletico Madrid",
+      "fee": "€75m",
+      "window": "Summer 2025",
+      "tm_url": "https://www.transfermarkt.com/julian-alvarez/profil/spieler/576024",
+      "performance": "Leading the line for Simeone. Crucial playmaker."
+    },
+    {
+      "player": "Leny Yoro",
+      "from": "Lille",
+      "to": "Man Utd",
+      "fee": "€62m",
+      "window": "Summer 2025",
+      "tm_url": "https://www.transfermarkt.com/leny-yoro/profil/spieler/922247",
+      "fpl_id": 651
+    },
+    {
+      "player": "Riccardo Calafiori",
+      "from": "Bologna",
+      "to": "Arsenal",
+      "fee": "€45m",
+      "window": "Summer 2025",
+      "tm_url": "https://www.transfermarkt.com/riccardo-calafiori/profil/spieler/502821",
+      "fpl_id": 622
+    },
+    {
+      "player": "Michael Olise",
+      "from": "Crystal Palace",
+      "to": "Bayern Munich",
+      "fee": "€53m",
+      "window": "Summer 2025",
+      "tm_url": "https://www.transfermarkt.com/michael-olise/profil/spieler/566723",
+      "performance": "Lighting up the Bundesliga with pinpoint crossing."
+    },
+    {
+      "player": "Joshua Zirkzee",
+      "from": "Bologna",
+      "to": "Man Utd",
+      "fee": "€42m",
+      "window": "Summer 2025",
+      "tm_url": "https://www.transfermarkt.com/joshua-zirkzee/profil/spieler/435648",
+      "fpl_id": 634
+    },
+    {
+      "player": "Dominic Solanke",
+      "from": "Bournemouth",
+      "to": "Tottenham",
+      "fee": "£65m",
+      "window": "Summer 2025",
+      "tm_url": "https://www.transfermarkt.com/dominic-solanke/profil/spieler/258889",
+      "fpl_id": 85
+    },
+    {
+      "player": "Viktor Gyökeres",
+      "from": "Sporting CP",
+      "to": "Man Utd",
+      "fee": "€80m",
+      "window": "Winter 2026",
+      "tm_url": "https://www.transfermarkt.com/viktor-gyokeres/profil/spieler/325443",
+      "fpl_id": 923
+    },
+    {
+      "player": "Martin Zubimendi",
+      "from": "Real Sociedad",
+      "to": "Man City",
+      "fee": "€60m",
+      "window": "Winter 2026",
+      "tm_url": "https://www.transfermarkt.com/martin-zubimendi/profil/spieler/613306",
+      "fpl_id": 924
+    },
+    {
+      "player": "Leroy Sané",
+      "from": "Bayern Munich",
+      "to": "Arsenal",
+      "fee": "€40m",
+      "window": "Winter 2026",
+      "tm_url": "https://www.transfermarkt.com/leroy-sane/profil/spieler/192565",
+      "fpl_id": 925
+    },
+    {
+      "player": "Marc Guéhi",
+      "from": "Crystal Palace",
+      "to": "Newcastle",
+      "fee": "€65m",
+      "window": "Winter 2026",
+      "tm_url": "https://www.transfermarkt.com/marc-guehi/profil/spieler/392757",
+      "fpl_id": 218
+    },
+    {
+      "player": "Scott McTominay",
+      "from": "Man Utd",
+      "to": "Napoli",
+      "fee": "€30m",
+      "window": "Summer 2025",
+      "tm_url": "https://www.transfermarkt.com/scott-mctominay/profil/spieler/314385",
+      "performance": "Instant fan-favorite, scoring crucial goals in Serie A."
+    },
+    {
+      "player": "Conor Gallagher",
+      "from": "Chelsea",
+      "to": "Atletico Madrid",
+      "fee": "€42m",
+      "window": "Summer 2025",
+      "tm_url": "https://www.transfermarkt.com/conor-gallagher/profil/spieler/433182",
+      "performance": "Engine in midfield, adapting well to Simeone's system."
+    }
+  ]
+}
