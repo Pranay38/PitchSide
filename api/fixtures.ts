@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-const API_KEY = process.env.FOOTBALL_API_KEY || "";
+const API_KEY = process.env.FOOTBALL_DATA_KEY || "";
 const BASE_URL = "https://api.football-data.org/v4";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -18,7 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (!API_KEY) {
-        return res.status(500).json({ error: "FOOTBALL_API_KEY not configured." });
+        return res.status(500).json({ error: "FOOTBALL_DATA_KEY not configured." });
     }
 
     try {
