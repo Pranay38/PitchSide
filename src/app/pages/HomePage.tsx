@@ -9,7 +9,8 @@ import { Search, X, Filter } from "lucide-react";
 import { FixturesWidget } from "../components/FixturesWidget";
 import { NewsTicker } from "../components/NewsTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
-import { WeeklyDigest } from "../components/WeeklyDigest";
+import { LiveScoresWidget } from "../components/LiveScoresWidget";
+import { SocialFeed } from "../components/SocialFeed";
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
@@ -159,9 +160,14 @@ export function HomePage() {
           </div>
         </section>
 
-        {/* Weekly Stat Digest — full width */}
+        {/* Live Scores & Stats Widgets */}
         <section className="mb-8">
-          <WeeklyDigest />
+          <LiveScoresWidget />
+        </section>
+
+        {/* Social Media Feeds */}
+        <section className="mb-8">
+          <SocialFeed />
         </section>
 
         {/* Search + Filter Section */}
