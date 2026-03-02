@@ -51,17 +51,29 @@ function extractFromXML(xml: string, tag: string): string {
 }
 
 function extractImageFromItem(itemXml: string): string | null {
-    // Try media:content or media:thumbnail
-    const mediaMatch = itemXml.match(/url=["']([^"']+\.(?:jpg|jpeg|png|webp|gif)[^"']*)/i);
-    if (mediaMatch) return mediaMatch[1];
+    // 1. media:content
+    const mediaContentMatch = itemXml.match(/<media:content[^>]+url=["']([^"']+)["']/i);
+    if (mediaContentMatch && mediaContentMatch[1].match(/\.(jpg|jpeg|png|webp|gif)/i)) {
+        return mediaContentMatch[1];
+    }
 
-    // Try enclosure
-    const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["']/);
-    if (enclosureMatch && enclosureMatch[1].match(/\.(jpg|jpeg|png|webp|gif)/i)) return enclosureMatch[1];
+    // 2. media:thumbnail
+    const mediaThumbMatch = itemXml.match(/<media:thumbnail[^>]+url=["']([^"']+)["']/i);
+    if (mediaThumbMatch && mediaThumbMatch[1].match(/\.(jpg|jpeg|png|webp|gif)/i)) {
+        return mediaThumbMatch[1];
+    }
 
-    // Try image in description
-    const descImgMatch = itemXml.match(/<img[^>]+src=["']([^"']+)["']/);
-    if (descImgMatch) return descImgMatch[1];
+    // 3. enclosure
+    const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["']/i);
+    if (enclosureMatch && enclosureMatch[1].match(/\.(jpg|jpeg|png|webp|gif)/i)) {
+        return enclosureMatch[1];
+    }
+
+    // 4. Try image in description
+    const descImgMatch = itemXml.match(/<img[^>]+src=["']([^"']+)["']/i);
+    if (descImgMatch) {
+        return descImgMatch[1];
+    }
 
     return null;
 }

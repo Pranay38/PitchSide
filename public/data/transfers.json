@@ -1,0 +1,130 @@
+[
+    {
+        "player": "Kylian Mbappé",
+        "from": "PSG",
+        "to": "Real Madrid",
+        "fee": "Free",
+        "window": "Summer 2024",
+        "performance": "10 goals, 4 assists. Slightly subdued but crucial."
+    },
+    {
+        "player": "Julián Álvarez",
+        "from": "Man City",
+        "to": "Atletico Madrid",
+        "fee": "€75m",
+        "window": "Summer 2024",
+        "performance": "6 goals, 2 assists. Finding his feet in Spain."
+    },
+    {
+        "player": "Leny Yoro",
+        "from": "Lille",
+        "to": "Man Utd",
+        "fee": "€62m",
+        "window": "Summer 2024",
+        "fpl_id": 651
+    },
+    {
+        "player": "Riccardo Calafiori",
+        "from": "Bologna",
+        "to": "Arsenal",
+        "fee": "€45m",
+        "window": "Summer 2024",
+        "fpl_id": 622
+    },
+    {
+        "player": "Michael Olise",
+        "from": "Crystal Palace",
+        "to": "Bayern Munich",
+        "fee": "€53m",
+        "window": "Summer 2024",
+        "performance": "7 goals, 5 assists. Electric impact in Germany."
+    },
+    {
+        "player": "Joshua Zirkzee",
+        "from": "Bologna",
+        "to": "Man Utd",
+        "fee": "€42m",
+        "window": "Summer 2024",
+        "fpl_id": 634
+    },
+    {
+        "player": "Dominic Solanke",
+        "from": "Bournemouth",
+        "to": "Tottenham",
+        "fee": "£65m",
+        "window": "Summer 2024",
+        "fpl_id": 85
+    },
+    {
+        "player": "Matthijs de Ligt",
+        "from": "Bayern Munich",
+        "to": "Man Utd",
+        "fee": "€45m",
+        "window": "Summer 2024",
+        "fpl_id": 649
+    },
+    {
+        "player": "João Félix",
+        "from": "Atletico Madrid",
+        "to": "Chelsea",
+        "fee": "£46m",
+        "window": "Summer 2024",
+        "fpl_id": 659
+    },
+    {
+        "player": "Viktor Gyökeres",
+        "from": "Sporting CP",
+        "to": "Man Utd",
+        "fee": "€80m",
+        "window": "Winter 2025",
+        "fpl_id": 923
+    },
+    {
+        "player": "Martin Zubimendi",
+        "from": "Real Sociedad",
+        "to": "Man City",
+        "fee": "€60m",
+        "window": "Winter 2025",
+        "fpl_id": 924
+    },
+    {
+        "player": "Leroy Sané",
+        "from": "Bayern Munich",
+        "to": "Arsenal",
+        "fee": "€40m",
+        "window": "Winter 2025",
+        "fpl_id": 925
+    },
+    {
+        "player": "Marc Guéhi",
+        "from": "Crystal Palace",
+        "to": "Newcastle",
+        "fee": "€65m",
+        "window": "Winter 2025",
+        "fpl_id": 218
+    },
+    {
+        "player": "Federico Chiesa",
+        "from": "Juventus",
+        "to": "Liverpool",
+        "fee": "£10m",
+        "window": "Summer 2024",
+        "fpl_id": 673
+    },
+    {
+        "player": "Scott McTominay",
+        "from": "Man Utd",
+        "to": "Napoli",
+        "fee": "€30m",
+        "window": "Summer 2024",
+        "performance": "Instant fan-favorite, scoring crucial goals in Serie A."
+    },
+    {
+        "player": "Conor Gallagher",
+        "from": "Chelsea",
+        "to": "Atletico Madrid",
+        "fee": "€42m",
+        "window": "Summer 2024",
+        "performance": "Engine in midfield, adapting well to Simeone's system."
+    }
+]

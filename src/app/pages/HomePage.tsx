@@ -8,6 +8,8 @@ import { useClubPreference } from "../hooks/useClubPreference";
 import { Search, X, Filter } from "lucide-react";
 import { FixturesWidget } from "../components/FixturesWidget";
 import { NewsTicker } from "../components/NewsTicker";
+import { TransferTicker } from "../components/TransferTicker";
+import { FPLAnalyzer } from "../components/FPLAnalyzer";
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
@@ -143,11 +145,21 @@ export function HomePage() {
         onSkip={handleSkip}
       />
 
+      {/* Full-width Transfer Ticker at the top */}
+      <TransferTicker />
+
       <main className="max-w-[1100px] mx-auto px-6 py-8">
-        {/* Fixtures Widget + News Ticker */}
-        <section className="mb-8 grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
-          <FixturesWidget />
-          <NewsTicker />
+        {/* Top Widgets Grid: Fixtures, FPL, News */}
+        <section className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-[#1E293B]">
+            <FixturesWidget />
+          </div>
+          <div className="lg:col-span-1 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
+            <FPLAnalyzer />
+          </div>
+          <div className="col-span-1 md:col-span-2 lg:col-span-1 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
+            <NewsTicker />
+          </div>
         </section>
 
         {/* Search + Filter Section */}
