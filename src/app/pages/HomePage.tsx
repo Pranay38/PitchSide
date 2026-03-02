@@ -7,6 +7,7 @@ import { getAllPosts } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { Search, X, Filter } from "lucide-react";
 import { FixturesWidget } from "../components/FixturesWidget";
+import { NewsTicker } from "../components/NewsTicker";
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
@@ -143,9 +144,10 @@ export function HomePage() {
       />
 
       <main className="max-w-[1100px] mx-auto px-6 py-8">
-        {/* Fixtures Widget - shown at top */}
-        <section className="mb-8">
+        {/* Fixtures Widget + News Ticker */}
+        <section className="mb-8 grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
           <FixturesWidget />
+          <NewsTicker />
         </section>
 
         {/* Search + Filter Section */}
