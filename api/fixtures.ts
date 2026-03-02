@@ -22,12 +22,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        // Get today's date and date 3 days from now
+        // Get dates: 3 days in the past (results) to 3 days ahead (fixtures)
         const today = new Date();
+        const pastDate = new Date(today);
+        pastDate.setDate(pastDate.getDate() - 3);
         const futureDate = new Date(today);
         futureDate.setDate(futureDate.getDate() + 3);
 
-        const dateFrom = today.toISOString().split("T")[0];
+        const dateFrom = pastDate.toISOString().split("T")[0];
         const dateTo = futureDate.toISOString().split("T")[0];
 
         // Fetch matches from football-data.org
