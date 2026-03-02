@@ -111,13 +111,22 @@ function analyzeSentiment(texts: string[]): SentimentResult {
 }
 
 /* ── Reddit fetch helpers ── */
+const REDDIT_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json",
+    "Accept-Language": "en-US,en;q=0.9",
+};
+
 async function fetchRedditHotPosts(limit = 15): Promise<RedditPost[]> {
     try {
-        const res = await fetch(`https://www.reddit.com/r/soccer/hot.json?limit=${limit}`, {
-            headers: { "User-Agent": "FootballBlogBot/1.0" },
-            signal: AbortSignal.timeout(6000),
+        const res = await fetch(`https://www.reddit.com/r/soccer/hot.json?limit=${limit}&raw_json=1`, {
+            headers: REDDIT_HEADERS,
+            signal: AbortSignal.timeout(8000),
         });
-        if (!res.ok) return [];
+        if (!res.ok) {
+            console.error(`Reddit hot posts: ${res.status} ${res.statusText}`);
+            return [];
+        }
         const data = await res.json();
         return (data.data?.children || [])
             .map((c: any) => c.data)
@@ -140,10 +149,13 @@ async function fetchRedditHotPosts(limit = 15): Promise<RedditPost[]> {
 async function fetchPostComments(postId: string, limit = 25): Promise<RedditComment[]> {
     try {
         const res = await fetch(
-            `https://www.reddit.com/r/soccer/comments/${postId}.json?sort=top&limit=${limit}`,
-            { headers: { "User-Agent": "FootballBlogBot/1.0" }, signal: AbortSignal.timeout(6000) }
+            `https://www.reddit.com/r/soccer/comments/${postId}.json?sort=top&limit=${limit}&raw_json=1`,
+            { headers: REDDIT_HEADERS, signal: AbortSignal.timeout(8000) }
         );
-        if (!res.ok) return [];
+        if (!res.ok) {
+            console.error(`Reddit comments: ${res.status} ${res.statusText}`);
+            return [];
+        }
         const data = await res.json();
 
         // Second element in array is the comments listing
