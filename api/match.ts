@@ -63,7 +63,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
         const leagueId = LEAGUE_MAP[competition] || 39;
-        const season = new Date(matchDate).getFullYear();
+        // Football seasons span two years (e.g. 2025-26 season = 2025)
+        // If the match date is Jan-July, the season started the previous year
+        const matchDateObj = new Date(matchDate);
+        const month = matchDateObj.getMonth(); // 0 = Jan, 6 = July
+        const year = matchDateObj.getFullYear();
+        const season = month < 7 ? year - 1 : year;
 
         // Step 1: Find the fixture by date and league
         const fixturesData = await apiFootballFetch(
