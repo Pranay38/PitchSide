@@ -13,13 +13,13 @@ export function FixturesWidget() {
                 </h3>
             </div>
 
-            {/* Iframe — loads standalone widget page */}
+            {/* Iframe — standalone widget page */}
             <iframe
                 src={`/widgets.html?key=${API_KEY}`}
                 title="Scores & Fixtures"
                 className="w-full border-0"
-                style={{ minHeight: "550px", height: "550px" }}
-                sandbox="allow-scripts allow-same-origin allow-popups"
+                style={{ minHeight: "600px", height: "600px" }}
+                allow="scripts"
             />
         </div>
     );
