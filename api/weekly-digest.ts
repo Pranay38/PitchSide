@@ -52,29 +52,23 @@ interface DigestData {
     generatedAt: string;
 }
 
-// Get the date range for the past week (Monday to Sunday)
+// Get the date range for the past 7 days (rolling window to always capture weekends)
 function getWeekRange(): { from: string; to: string; label: string } {
     const now = new Date();
-    const dayOfWeek = now.getUTCDay(); // 0=Sun, 1=Mon...
+    const to = new Date(now);
+    to.setUTCHours(23, 59, 59, 0);
 
-    // Find last Monday
-    const daysBack = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    const monday = new Date(now);
-    monday.setUTCDate(now.getUTCDate() - daysBack);
-    monday.setUTCHours(0, 0, 0, 0);
-
-    // Find next Sunday (or today if Sunday)
-    const sunday = new Date(monday);
-    sunday.setUTCDate(monday.getUTCDate() + 6);
-    sunday.setUTCHours(23, 59, 59, 0);
+    const from = new Date(now);
+    from.setUTCDate(now.getUTCDate() - 7);
+    from.setUTCHours(0, 0, 0, 0);
 
     const fmt = (d: Date) => d.toISOString().split("T")[0];
     const fmtLabel = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 
     return {
-        from: fmt(monday),
-        to: fmt(sunday),
-        label: `${fmtLabel(monday)} – ${fmtLabel(sunday)}`,
+        from: fmt(from),
+        to: fmt(to),
+        label: `${fmtLabel(from)} – ${fmtLabel(to)}`,
     };
 }
 
