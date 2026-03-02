@@ -108,7 +108,7 @@ function MatchStatsPanel({ match, competitionCode, onClose }: { match: Match; co
             setLoading(true); setError("");
             try {
                 const matchDate = new Date(match.utcDate).toISOString().split("T")[0];
-                const params = new URLSearchParams({ home: match.homeTeam.name, away: match.awayTeam.name, date: matchDate, competition: competitionCode });
+                const params = new URLSearchParams({ id: String(match.id), home: match.homeTeam.name, away: match.awayTeam.name, date: matchDate, competition: competitionCode });
                 const res = await fetch(`/api/match?${params}`);
                 if (res.ok) setDetail(await res.json());
                 else { const e = await res.json().catch(() => ({})); setError(e.error || "Stats unavailable"); }
