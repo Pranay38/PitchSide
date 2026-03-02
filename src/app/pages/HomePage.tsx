@@ -9,7 +9,7 @@ import { Search, X, Filter } from "lucide-react";
 import { FixturesWidget } from "../components/FixturesWidget";
 import { NewsTicker } from "../components/NewsTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
-import { SocialFeed } from "../components/SocialFeed";
+import { FanPulse } from "../components/FanPulse";
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
@@ -159,9 +159,9 @@ export function HomePage() {
           </div>
         </section>
 
-        {/* Social Media Feeds */}
+        {/* Fan Pulse — Reactions, X/Twitter, Sentiment */}
         <section className="mb-8">
-          <SocialFeed />
+          <FanPulse />
         </section>
 
         {/* Search + Filter Section */}
