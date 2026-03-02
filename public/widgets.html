@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scores & Fixtures</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: transparent;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 6px;
+            padding: 10px 12px;
+            overflow-x: auto;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .tab-btn.active {
+            background: #16A34A;
+            color: #fff;
+            box-shadow: 0 1px 3px rgba(22, 163, 74, 0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #e2e8f0;
+        }
+
+        .mode-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .mode-btn {
+            padding: 5px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            color: #64748b;
+        }
+
+        .mode-btn.active {
+            background: #fff;
+            color: #0f172a;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        #widget-container {
+            min-height: 350px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Competition Tabs -->
+    <div class="tabs" id="league-tabs"></div>
+
+    <!-- Mode Tabs -->
+    <div class="mode-tabs">
+        <button class="mode-btn active" data-mode="games" onclick="switchMode('games')">Fixtures</button>
+        <button class="mode-btn" data-mode="standings" onclick="switchMode('standings')">Table</button>
+    </div>
+
+    <!-- Widget -->
+    <div id="widget-container"></div>
+
+    <script>
+        const API_KEY = new URLSearchParams(window.location.search).get('key') || '';
+        const LEAGUES = [
+            { code: '39', name: 'Premier League' },
+            { code: '2', name: 'Champions League' },
+            { code: '140', name: 'La Liga' },
+            { code: '78', name: 'Bundesliga' },
+            { code: '135', name: 'Serie A' },
+        ];
+
+        let currentLeague = '39';
+        let currentMode = 'games';
+
+        // Build league tabs
+        const tabsContainer = document.getElementById('league-tabs');
+        LEAGUES.forEach(league => {
+            const btn = document.createElement('button');
+            btn.className = 'tab-btn' + (league.code === currentLeague ? ' active' : '');
+            btn.textContent = league.name;
+            btn.onclick = () => switchLeague(league.code);
+            btn.dataset.league = league.code;
+            tabsContainer.appendChild(btn);
+        });
+
+        function switchLeague(code) {
+            currentLeague = code;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.league === code);
+            });
+            renderWidget();
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            renderWidget();
+        }
+
+        function renderWidget() {
+            const container = document.getElementById('widget-container');
+
+            // Remove old scripts & widgets
+            container.innerHTML = '';
+            document.querySelectorAll('script[src*="widgets.api-sports.io"]').forEach(s => s.remove());
+
+            // Widget element
+            const widget = document.createElement('api-sports-widget');
+            widget.setAttribute('data-type', currentMode);
+            widget.setAttribute('data-league', currentLeague);
+            widget.setAttribute('data-season', '2024');
+            widget.setAttribute('data-show-toolbar', 'true');
+            widget.setAttribute('data-show-errors', 'false');
+            widget.setAttribute('data-show-logos', 'true');
+            widget.setAttribute('data-theme', 'grey');
+            widget.setAttribute('data-color', '#16A34A');
+            widget.setAttribute('data-modal-game', 'true');
+            widget.setAttribute('data-modal-standings', 'true');
+            widget.setAttribute('data-modal-team', 'true');
+            widget.setAttribute('data-modal-player', 'true');
+
+            // Config element
+            const config = document.createElement('api-sports-widget');
+            config.setAttribute('data-type', 'config');
+            config.setAttribute('data-key', API_KEY);
+            config.setAttribute('data-sport', 'football');
+            config.setAttribute('data-refresh', currentMode === 'games' ? '60' : '300');
+            config.setAttribute('data-show-logos', 'true');
+            config.setAttribute('data-favorite', 'true');
+
+            container.appendChild(widget);
+            container.appendChild(config);
+
+            // Load widget script
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = 'https://widgets.api-sports.io/3.1.0/widgets.js';
+            container.appendChild(script);
+        }
+
+        // Initial render
+        renderWidget();
+    </script>
+</body>
+
+</html>
