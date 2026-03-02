@@ -6,6 +6,7 @@ import { ClubSelectionModal } from "../components/ClubSelectionModal";
 import { getAllPosts } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { Search, X, Filter } from "lucide-react";
+import { FixturesWidget } from "../components/FixturesWidget";
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
@@ -74,11 +75,17 @@ export function HomePage() {
     return blogPosts.filter((p) => p.thisWeek && p.id !== featuredPost?.id).slice(0, 21);
   }, [blogPosts, featuredPost, searchQuery, activeTag]);
 
-  // Remaining posts for grid (excluding featured and this week)
+  // Must Read / Editor's Picks (only show when not searching or filtering)
+  const mustReadPosts = useMemo(() => {
+    if (searchQuery || activeTag) return [];
+    return blogPosts.filter((p) => p.mustRead && p.id !== featuredPost?.id && !thisWeekPosts.some(tw => tw.id === p.id)).slice(0, 6);
+  }, [blogPosts, featuredPost, thisWeekPosts, searchQuery, activeTag]);
+
+  // Remaining posts for grid (excluding featured, this week, and must read)
   const remainingPosts = useMemo(() => {
-    const excludeIds = new Set([featuredPost?.id, ...thisWeekPosts.map(p => p.id)]);
+    const excludeIds = new Set([featuredPost?.id, ...thisWeekPosts.map(p => p.id), ...mustReadPosts.map(p => p.id)]);
     return filteredPosts.filter((p) => p.id && !excludeIds.has(p.id));
-  }, [filteredPosts, featuredPost, thisWeekPosts]);
+  }, [filteredPosts, featuredPost, thisWeekPosts, mustReadPosts]);
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -136,6 +143,11 @@ export function HomePage() {
       />
 
       <main className="max-w-[1100px] mx-auto px-6 py-8">
+        {/* Fixtures Widget - shown at top */}
+        <section className="mb-8">
+          <FixturesWidget />
+        </section>
+
         {/* Search + Filter Section */}
         <div className="mb-8 space-y-4">
           {/* Search Bar */}
@@ -224,6 +236,20 @@ export function HomePage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {thisWeekPosts.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Must Read / Editor's Picks */}
+        {mustReadPosts.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-bold text-[#0F172A] dark:text-white mb-6 flex items-center gap-2">
+              <span className="text-2xl">📌</span> Must Read
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mustReadPosts.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
             </div>

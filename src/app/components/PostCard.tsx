@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import type { BlogPost } from "../data/posts";
-import { Clock } from "lucide-react";
+import { getClubByName } from "../data/clubs";
+import { Clock, Star } from "lucide-react";
 
 interface PostCardProps {
   post: BlogPost;
@@ -8,6 +9,8 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, featured = false }: PostCardProps) {
+  const clubData = getClubByName(post.club);
+
   if (featured) {
     return (
       <Link
@@ -25,8 +28,16 @@ export function PostCard({ post, featured = false }: PostCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
         {/* Content */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+          {/* Must Read Badge */}
+          {post.mustRead && (
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-amber-900 bg-amber-400 rounded-full mb-3">
+              <Star className="w-3 h-3 fill-amber-900" />
+              Must Read
+            </div>
+          )}
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="inline-block px-3 py-1 text-xs font-semibold text-white bg-[#16A34A] rounded-full">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white bg-[#16A34A] rounded-full">
+              {clubData?.logo && <img src={clubData.logo} alt="" className="w-4 h-4 object-contain" />}
               {post.club}
             </span>
             {post.tags
@@ -73,8 +84,16 @@ export function PostCard({ post, featured = false }: PostCardProps) {
         />
       </div>
       <div className="p-5">
+        {/* Must Read Badge */}
+        {post.mustRead && (
+          <div className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold text-amber-900 bg-amber-400 rounded-full mb-2">
+            <Star className="w-3 h-3 fill-amber-900" />
+            Must Read
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className="inline-block px-2.5 py-0.5 text-xs font-semibold text-white bg-[#16A34A] rounded-full">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold text-white bg-[#16A34A] rounded-full">
+            {clubData?.logo && <img src={clubData.logo} alt="" className="w-3.5 h-3.5 object-contain" />}
             {post.club}
           </span>
           {post.tags

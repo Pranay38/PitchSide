@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { MessageCircle, Send, User } from "lucide-react";
 
 interface Comment {
@@ -6,20 +6,6 @@ interface Comment {
     name: string;
     text: string;
     timestamp: number;
-}
-
-function getComments(postId: string): Comment[] {
-    try {
-        return JSON.parse(localStorage.getItem(`pitchside_comments_${postId}`) || "[]");
-    } catch {
-        return [];
-    }
-}
-
-function saveComment(postId: string, comment: Comment) {
-    const comments = getComments(postId);
-    comments.push(comment);
-    localStorage.setItem(`pitchside_comments_${postId}`, JSON.stringify(comments));
 }
 
 function timeAgo(timestamp: number): string {
@@ -30,7 +16,24 @@ function timeAgo(timestamp: number): string {
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h ago`;
     const days = Math.floor(hours / 24);
-    return `${days}d ago`;
+    if (days < 30) return `${days}d ago`;
+    const months = Math.floor(days / 30);
+    return `${months}mo ago`;
+}
+
+// localStorage fallback
+function getLocalComments(postId: string): Comment[] {
+    try {
+        return JSON.parse(localStorage.getItem(`pitchside_comments_${postId}`) || "[]");
+    } catch {
+        return [];
+    }
+}
+
+function saveLocalComment(postId: string, comment: Comment) {
+    const comments = getLocalComments(postId);
+    comments.push(comment);
+    localStorage.setItem(`pitchside_comments_${postId}`, JSON.stringify(comments));
 }
 
 export function CommentSection({ postId }: { postId: string }) {
@@ -38,29 +41,74 @@ export function CommentSection({ postId }: { postId: string }) {
         try { return localStorage.getItem("pitchside_commenter_name") || ""; } catch { return ""; }
     });
     const [text, setText] = useState("");
-    const [comments, setComments] = useState<Comment[]>(() => getComments(postId));
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [submitting, setSubmitting] = useState(false);
+    const [useApi, setUseApi] = useState(true);
 
-    const sortedComments = useMemo(
-        () => [...comments].sort((a, b) => b.timestamp - a.timestamp),
-        [comments]
-    );
+    const fetchComments = useCallback(async () => {
+        if (!useApi) {
+            setComments(getLocalComments(postId));
+            return;
+        }
+        try {
+            const res = await fetch(`/api/comments?postId=${encodeURIComponent(postId)}`);
+            if (res.ok) {
+                const data = await res.json();
+                setComments(data);
+            } else {
+                throw new Error("API unavailable");
+            }
+        } catch {
+            setUseApi(false);
+            setComments(getLocalComments(postId));
+        }
+    }, [postId, useApi]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        fetchComments();
+    }, [fetchComments]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name.trim() || !text.trim()) return;
+        if (!name.trim() || !text.trim() || submitting) return;
 
+        setSubmitting(true);
+        try {
+            localStorage.setItem("pitchside_commenter_name", name.trim());
+        } catch { }
+
+        if (useApi) {
+            try {
+                const res = await fetch("/api/comments", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ postId, name: name.trim(), text: text.trim() }),
+                });
+                if (res.ok) {
+                    setText("");
+                    await fetchComments();
+                    setSubmitting(false);
+                    return;
+                }
+            } catch {
+                // Fall through to localStorage
+            }
+        }
+
+        // localStorage fallback
         const comment: Comment = {
             id: Date.now().toString(),
             name: name.trim(),
             text: text.trim(),
             timestamp: Date.now(),
         };
-
-        saveComment(postId, comment);
-        setComments(getComments(postId));
+        saveLocalComment(postId, comment);
+        setComments(getLocalComments(postId));
         setText("");
-        try { localStorage.setItem("pitchside_commenter_name", name.trim()); } catch { }
+        setSubmitting(false);
     };
+
+    const sortedComments = [...comments].sort((a, b) => b.timestamp - a.timestamp);
 
     return (
         <div>
@@ -95,11 +143,11 @@ export function CommentSection({ postId }: { postId: string }) {
                     />
                     <button
                         type="submit"
-                        disabled={!name.trim() || !text.trim()}
+                        disabled={!name.trim() || !text.trim() || submitting}
                         className="self-end px-4 py-2 bg-[#16A34A] text-white rounded-lg hover:bg-[#15803d] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 text-sm font-medium"
                     >
                         <Send className="w-3.5 h-3.5" />
-                        Post
+                        {submitting ? "..." : "Post"}
                     </button>
                 </div>
             </form>
