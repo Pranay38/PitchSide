@@ -26,6 +26,17 @@ async function isApiAvailable(): Promise<boolean> {
   }
 }
 
+async function getApiErrorMessage(res: Response, fallback: string): Promise<string> {
+  try {
+    const data = await res.json() as { error?: unknown; message?: unknown };
+    if (typeof data.error === "string" && data.error.trim()) return data.error;
+    if (typeof data.message === "string" && data.message.trim()) return data.message;
+  } catch {
+    // Ignore JSON parse issues and use fallback message.
+  }
+  return fallback;
+}
+
 /**
  * Get all posts. Tries API first, falls back to localStorage.
  */
@@ -81,20 +92,21 @@ function savePostsLocal(posts: BlogPost[]): void {
 export async function addPostAsync(
   post: Omit<BlogPost, "id">
 ): Promise<BlogPost[]> {
-  try {
-    const res = await fetch(`${API_BASE}/posts`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(post),
-    });
-    if (res.ok) {
-      return getAllPostsAsync();
-    }
-  } catch {
-    // fall through
+  if (!(await isApiAvailable())) {
+    return addPostLocal(post);
   }
-  // localStorage fallback
-  return addPostLocal(post);
+
+  const res = await fetch(`${API_BASE}/posts`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(post),
+  });
+
+  if (!res.ok) {
+    throw new Error(await getApiErrorMessage(res, "Failed to publish post"));
+  }
+
+  return getAllPostsAsync();
 }
 
 export function addPost(post: Omit<BlogPost, "id">): BlogPost[] {
@@ -116,19 +128,21 @@ export async function updatePostAsync(
   id: string,
   updates: Partial<BlogPost>
 ): Promise<BlogPost[]> {
-  try {
-    const res = await fetch(`${API_BASE}/posts`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, ...updates }),
-    });
-    if (res.ok) {
-      return getAllPostsAsync();
-    }
-  } catch {
-    // fall through
+  if (!(await isApiAvailable())) {
+    return updatePostLocal(id, updates);
   }
-  return updatePostLocal(id, updates);
+
+  const res = await fetch(`${API_BASE}/posts`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, ...updates }),
+  });
+
+  if (!res.ok) {
+    throw new Error(await getApiErrorMessage(res, "Failed to update post"));
+  }
+
+  return getAllPostsAsync();
 }
 
 export function updatePost(id: string, updates: Partial<BlogPost>): BlogPost[] {
@@ -146,17 +160,19 @@ function updatePostLocal(id: string, updates: Partial<BlogPost>): BlogPost[] {
  * Delete a post. Sends to API, falls back to localStorage.
  */
 export async function deletePostAsync(id: string): Promise<BlogPost[]> {
-  try {
-    const res = await fetch(`${API_BASE}/posts?id=${id}`, {
-      method: "DELETE",
-    });
-    if (res.ok) {
-      return getAllPostsAsync();
-    }
-  } catch {
-    // fall through
+  if (!(await isApiAvailable())) {
+    return deletePostLocal(id);
   }
-  return deletePostLocal(id);
+
+  const res = await fetch(`${API_BASE}/posts?id=${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error(await getApiErrorMessage(res, "Failed to delete post"));
+  }
+
+  return getAllPostsAsync();
 }
 
 export function deletePost(id: string): BlogPost[] {

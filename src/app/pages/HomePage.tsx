@@ -3,7 +3,8 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
 import { ClubSelectionModal } from "../components/ClubSelectionModal";
-import { getAllPosts } from "../lib/postStorage";
+import type { BlogPost } from "../data/posts";
+import { getAllPosts, getAllPostsAsync } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { Search, X, Filter, Sparkles, Trophy } from "lucide-react";
 import { NewsTicker } from "../components/NewsTicker";
@@ -21,7 +22,25 @@ export function HomePage() {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   // Read posts from storage
-  const blogPosts = useMemo(() => getAllPosts(), []);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => getAllPosts());
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getAllPostsAsync()
+      .then((posts) => {
+        if (isMounted && posts.length > 0) {
+          setBlogPosts(posts);
+        }
+      })
+      .catch(() => {
+        // Keep local snapshot if API is unavailable.
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Extract all unique tags across posts
   const allTags = useMemo(() => {
@@ -98,16 +117,14 @@ export function HomePage() {
   // This Week in Football (only show when not searching or filtering)
   const thisWeekPosts = useMemo(() => {
     if (searchQuery || activeTag) return [];
-    const excludeIds = new Set(heroPosts.map((p) => p.id));
-    return blogPosts.filter((p) => p.thisWeek && !excludeIds.has(p.id)).slice(0, 21);
-  }, [blogPosts, heroPosts, searchQuery, activeTag]);
+    return blogPosts.filter((p) => p.thisWeek).slice(0, 21);
+  }, [blogPosts, searchQuery, activeTag]);
 
   // Must Read / Editor's Picks (only show when not searching or filtering)
   const mustReadPosts = useMemo(() => {
     if (searchQuery || activeTag) return [];
-    const excludeIds = new Set([...heroPosts.map((p) => p.id), ...thisWeekPosts.map((p) => p.id)]);
-    return blogPosts.filter((p) => p.mustRead && !excludeIds.has(p.id)).slice(0, 4);
-  }, [blogPosts, heroPosts, thisWeekPosts, searchQuery, activeTag]);
+    return blogPosts.filter((p) => p.mustRead).slice(0, 4);
+  }, [blogPosts, searchQuery, activeTag]);
 
   // Remaining posts for grid
   const remainingPosts = useMemo(() => {

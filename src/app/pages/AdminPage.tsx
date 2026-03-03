@@ -96,27 +96,42 @@ export function AdminPage() {
     };
 
     const handleCreatePost = async (postData: Omit<BlogPost, "id">) => {
-        const updated = await addPostAsync(postData);
-        setPosts(updated);
-        setView("list");
-        toast.success("Post published successfully!");
+        try {
+            const updated = await addPostAsync(postData);
+            setPosts(updated);
+            setView("list");
+            toast.success("Post published successfully!");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Failed to publish post.";
+            toast.error(message);
+        }
     };
 
     const handleUpdatePost = async (postData: Omit<BlogPost, "id">) => {
         if (editingPost) {
-            const updated = await updatePostAsync(editingPost.id, postData);
-            setPosts(updated);
-            setEditingPost(null);
-            setView("list");
-            toast.success("Post updated successfully!");
+            try {
+                const updated = await updatePostAsync(editingPost.id, postData);
+                setPosts(updated);
+                setEditingPost(null);
+                setView("list");
+                toast.success("Post updated successfully!");
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Failed to update post.";
+                toast.error(message);
+            }
         }
     };
 
     const handleDeletePost = async (id: string) => {
         if (window.confirm("Are you sure you want to delete this post? This cannot be undone.")) {
-            const updated = await deletePostAsync(id);
-            setPosts(updated);
-            toast.success("Post deleted.");
+            try {
+                const updated = await deletePostAsync(id);
+                setPosts(updated);
+                toast.success("Post deleted.");
+            } catch (error) {
+                const message = error instanceof Error ? error.message : "Failed to delete post.";
+                toast.error(message);
+            }
         }
     };
 
