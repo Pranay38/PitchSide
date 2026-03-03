@@ -96,7 +96,7 @@ export function HomePage() {
   const thisWeekPosts = useMemo(() => {
     if (searchQuery || activeTag) return [];
     const excludeIds = new Set(heroPosts.map((p) => p.id));
-    return blogPosts.filter((p) => p.thisWeek && !excludeIds.has(p.id)).slice(0, 4);
+    return blogPosts.filter((p) => p.thisWeek && !excludeIds.has(p.id)).slice(0, 21);
   }, [blogPosts, heroPosts, searchQuery, activeTag]);
 
   // Must Read / Editor's Picks (only show when not searching or filtering)
