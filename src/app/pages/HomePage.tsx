@@ -70,11 +70,14 @@ export function HomePage() {
     return posts;
   }, [sortedPosts, searchQuery, activeTag]);
 
-  // Main Story: always the latest post (most recent by date)
+  // Main Story: prioritize post flagged as mainStory, otherwise latest by date
   const mainStoryPost = useMemo(() => {
     if (searchQuery || activeTag) return null;
     if (blogPosts.length === 0) return null;
-    // Sort all posts by date descending to find the absolute latest post
+    // First, check if any post is explicitly flagged as main story
+    const flaggedMain = blogPosts.find((p) => p.mainStory);
+    if (flaggedMain) return flaggedMain;
+    // Otherwise, fall back to the latest post by date
     const byDate = [...blogPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return byDate[0] || null;
   }, [blogPosts, searchQuery, activeTag]);
