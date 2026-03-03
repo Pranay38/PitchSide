@@ -17,7 +17,7 @@ export function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
-  const postsPerPage = 6;
+  const postsPerPage = 4;
   const [visibleCount, setVisibleCount] = useState(postsPerPage);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -116,7 +116,7 @@ export function HomePage() {
     return blogPosts.filter((p) => {
       const postDate = new Date(p.date);
       return postDate >= sevenDaysAgo;
-    }).slice(0, 21);
+    }).slice(0, 4);
   }, [blogPosts, searchQuery, activeTag]);
 
   // Must Read / Editor's Picks (only show when not searching or filtering)
