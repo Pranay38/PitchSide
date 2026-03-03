@@ -9,6 +9,7 @@ import { useClubPreference } from "../hooks/useClubPreference";
 import { Search, X, Filter, Sparkles, Trophy } from "lucide-react";
 import { NewsTicker } from "../components/NewsTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
+import { MatchweekHub } from "../components/MatchweekHub";
 
 
 export function HomePage() {
@@ -106,18 +107,7 @@ export function HomePage() {
     return mainStoryPost ? [mainStoryPost] : [];
   }, [mainStoryPost]);
 
-  // This Week in Football (only show when not searching or filtering, past 7 days)
-  const thisWeekPosts = useMemo(() => {
-    if (searchQuery || activeTag) return [];
-
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    return blogPosts.filter((p) => {
-      const postDate = new Date(p.date);
-      return postDate >= sevenDaysAgo;
-    }).slice(0, 21);
-  }, [blogPosts, searchQuery, activeTag]);
+  // Removed thisWeekPosts to reduce post count on homepage
 
   // Must Read / Editor's Picks (only show when not searching or filtering)
   const mustReadPosts = useMemo(() => {
@@ -129,11 +119,10 @@ export function HomePage() {
   const remainingPosts = useMemo(() => {
     const excludeIds = new Set([
       ...heroPosts.map(p => p.id),
-      ...thisWeekPosts.map(p => p.id),
       ...mustReadPosts.map(p => p.id)
     ]);
     return filteredPosts.filter((p) => p.id && !excludeIds.has(p.id));
-  }, [filteredPosts, heroPosts, thisWeekPosts, mustReadPosts]);
+  }, [filteredPosts, heroPosts, mustReadPosts]);
 
   const currentPosts = remainingPosts.slice(0, visibleCount);
   const hasMorePosts = visibleCount < remainingPosts.length;
@@ -298,28 +287,18 @@ export function HomePage() {
           </div>
         )}
 
+        {/* Matchweek Hub (Full Width Above Columns) */}
+        {!(searchQuery || activeTag) && (
+          <section className="animate-float-in mb-8 w-full -mx-4 sm:-mx-6 px-4 sm:px-6">
+            <MatchweekHub />
+          </section>
+        )}
+
         {/* Newspaper 2-Column Layout */}
         <div className="flex flex-col lg:flex-row gap-8">
 
           {/* Main Content Column (Left, 65%) */}
           <div className="w-full lg:w-[65%] flex flex-col gap-10">
-
-            {/* This Week in Football */}
-            {thisWeekPosts.length > 0 && (
-              <section className="animate-float-in">
-                <div className="flex items-center gap-3 pb-3 mb-5">
-                  <div className="w-1.5 h-8 rounded-full gradient-accent" />
-                  <h2 className="text-xl md:text-2xl font-black font-outfit text-[#0F172A] dark:text-white uppercase tracking-tight">
-                    This Week
-                  </h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {thisWeekPosts.map((post) => (
-                    <PostCard key={post.id} post={post} />
-                  ))}
-                </div>
-              </section>
-            )}
 
             {/* Latest Posts List */}
             {currentPosts.length > 0 ? (
