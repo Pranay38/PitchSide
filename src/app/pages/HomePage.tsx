@@ -116,7 +116,7 @@ export function HomePage() {
     return blogPosts.filter((p) => {
       const postDate = new Date(p.date);
       return postDate >= sevenDaysAgo;
-    }).slice(0, 4);
+    }).slice(0, 21);
   }, [blogPosts, searchQuery, activeTag]);
 
   // Must Read / Editor's Picks (only show when not searching or filtering)
