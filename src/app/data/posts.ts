@@ -61,9 +61,10 @@ As the season progresses, we can expect further refinement of these tactical pri
     coverImage: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Arsenal",
     tags: ["Arsenal", "Premier League", "Title Race"],
-    date: "February 24, 2026",
+    date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
     readTime: "7 min read",
     thisWeek: true,
+    mustRead: true,
     content: `Arsenal's transformation over the past few seasons has been one of football's most compelling narratives. From languishing in mid-table obscurity to genuine title contenders, the Gunners have rebuilt with purpose and precision.
 
 ## Squad Depth Makes the Difference
@@ -159,8 +160,9 @@ Chelsea are not just building a team; they're building an asset. The squad's com
     coverImage: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Real Madrid",
     tags: ["Real Madrid", "La Liga", "Champions League"],
-    date: "February 21, 2026",
+    date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
     readTime: "7 min read",
+    mustRead: true,
     content: `Real Madrid have always operated on a different scale. The latest wave of signings represents perhaps their most ambitious squad-building project since the original Galácticos era.
 
 ## Building Around Generational Talent

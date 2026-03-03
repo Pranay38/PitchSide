@@ -101,23 +101,22 @@ export function HomePage() {
     return byDate[0] || null;
   }, [blogPosts, searchQuery, activeTag]);
 
-  // Hero grid posts: 4 posts below the main story
-  const heroGridPosts = useMemo(() => {
-    if (searchQuery || activeTag) return [];
-    const mainId = mainStoryPost?.id;
-    return sortedPosts.filter((p) => p.id !== mainId).slice(0, 4);
-  }, [sortedPosts, mainStoryPost, searchQuery, activeTag]);
-
-  // Combined hero IDs for exclusion
+  // We only exclude the main story from the rest of the feed
   const heroPosts = useMemo(() => {
-    const posts = mainStoryPost ? [mainStoryPost, ...heroGridPosts] : heroGridPosts;
-    return posts;
-  }, [mainStoryPost, heroGridPosts]);
+    return mainStoryPost ? [mainStoryPost] : [];
+  }, [mainStoryPost]);
 
-  // This Week in Football (only show when not searching or filtering)
+  // This Week in Football (only show when not searching or filtering, past 7 days)
   const thisWeekPosts = useMemo(() => {
     if (searchQuery || activeTag) return [];
-    return blogPosts.filter((p) => p.thisWeek).slice(0, 21);
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    return blogPosts.filter((p) => {
+      const postDate = new Date(p.date);
+      return postDate >= sevenDaysAgo;
+    }).slice(0, 21);
   }, [blogPosts, searchQuery, activeTag]);
 
   // Must Read / Editor's Picks (only show when not searching or filtering)
@@ -277,21 +276,15 @@ export function HomePage() {
           </div>
         )}
 
-        {/* Hero Section: Main Story + 2x2 Grid (Only when no filters) */}
+        {/* Hero Section: Main Story Only (when no filters) */}
         {mainStoryPost && (
           <section className="mb-10 animate-float-in">
             {/* Main Story — Full Width Big Card */}
-            <div className="min-h-[320px] md:min-h-[420px] mb-4">
-              <PostCard post={mainStoryPost} featured />
-            </div>
-            {/* 2x2 Grid below */}
-            {heroGridPosts.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {heroGridPosts.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
+            <div className="flex h-[380px] md:h-[480px] mb-4">
+              <div className="w-full">
+                <PostCard post={mainStoryPost} featured />
               </div>
-            )}
+            </div>
           </section>
         )}
 
