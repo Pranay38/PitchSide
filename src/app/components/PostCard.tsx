@@ -15,7 +15,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
     return (
       <Link
         to={`/post/${post.id}`}
-        className="group block relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 h-full"
+        className="group block relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 h-full bg-slate-900"
       >
         <div className="absolute inset-0 overflow-hidden">
           <img
@@ -35,25 +35,23 @@ export function PostCard({ post, featured = false }: PostCardProps) {
               Must Read
             </div>
           )}
-          {!featured && (
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white gradient-accent rounded-full shadow-md">
-                {clubData?.logo && <img src={clubData.logo} alt="" className="w-4 h-4 object-contain" />}
-                {post.club}
-              </span>
-              {post.tags
-                .filter((t) => t !== post.club)
-                .slice(0, 2)
-                .map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-block px-3 py-1 text-xs font-medium text-white/90 bg-white/15 backdrop-blur-md rounded-full border border-white/10"
-                  >
-                    {tag}
-                  </span>
-                ))}
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white gradient-accent rounded-full shadow-md">
+              {clubData?.logo && <img src={clubData.logo} alt="" className="w-4 h-4 object-contain" />}
+              {post.club}
+            </span>
+            {post.tags
+              .filter((t) => t !== post.club)
+              .slice(0, 2)
+              .map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-block px-3 py-1 text-xs font-medium text-white/90 bg-white/15 backdrop-blur-md rounded-full border border-white/10"
+                >
+                  {tag}
+                </span>
+              ))}
+          </div>
           <h2 className="text-2xl md:text-3xl font-extrabold font-outfit text-white mb-2 line-clamp-2 group-hover:text-[#4ade80] transition-colors duration-300">
             {post.title}
           </h2>

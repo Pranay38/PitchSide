@@ -314,7 +314,7 @@ export function HomePage() {
                 <div className="flex items-center gap-3 pb-3 mb-5">
                   <div className="w-1.5 h-8 rounded-full gradient-accent" />
                   <h2 className="text-xl md:text-2xl font-black font-outfit text-[#0F172A] dark:text-white uppercase tracking-tight">
-                    {activeTag ? `Latest in ${activeTag}` : "Latest News"}
+                    {activeTag ? `Latest in ${activeTag}` : "Latest Articles"}
                   </h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
