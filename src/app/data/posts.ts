@@ -10,6 +10,7 @@ export interface BlogPost {
   readTime: string;
   thisWeek?: boolean;
   mustRead?: boolean;
+  mainStory?: boolean;
 }
 
 export const blogPosts: BlogPost[] = [
@@ -22,6 +23,7 @@ export const blogPosts: BlogPost[] = [
     tags: ["Manchester United", "Tactics", "Premier League"],
     date: "February 25, 2026",
     readTime: "6 min read",
+    thisWeek: true,
     content: `The transformation of Manchester United's tactical approach has been nothing short of remarkable. Under new management, the team has shifted from a reactive 4-2-3-1 formation to a more progressive 4-3-3 system that emphasizes ball retention and high pressing.
 
 ## The Key Changes
@@ -61,6 +63,7 @@ As the season progresses, we can expect further refinement of these tactical pri
     tags: ["Arsenal", "Premier League", "Title Race"],
     date: "February 24, 2026",
     readTime: "7 min read",
+    thisWeek: true,
     content: `Arsenal's transformation over the past few seasons has been one of football's most compelling narratives. From languishing in mid-table obscurity to genuine title contenders, the Gunners have rebuilt with purpose and precision.
 
 ## Squad Depth Makes the Difference
@@ -92,6 +95,7 @@ With 12 games remaining, Arsenal sit two points clear at the top. The fixture li
     tags: ["Liverpool", "Transfers", "Premier League"],
     date: "February 23, 2026",
     readTime: "8 min read",
+    thisWeek: true,
     content: `Liverpool's decision to completely rebuild their midfield was bold, expensive, and ultimately transformative. The old guard had served the club magnificently, but the time for change had arrived.
 
 ## Out With the Old
@@ -123,6 +127,7 @@ This has resulted in Liverpool's best attacking output in three seasons, with go
     tags: ["Chelsea", "Youth Development", "Premier League"],
     date: "February 22, 2026",
     readTime: "6 min read",
+    thisWeek: true,
     content: `Chelsea's transfer strategy has divided opinion like few others in recent football history. The club has invested heavily in young talent from across the globe, assembling a squad with an average age among the lowest in the Premier League.
 
 ## The Strategy

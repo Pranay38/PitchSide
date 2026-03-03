@@ -4,7 +4,7 @@ import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName } from
 import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
-import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star } from "lucide-react";
+import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown } from "lucide-react";
 
 /** Categories that are NOT club-specific */
 const GENERAL_CATEGORIES = [
@@ -83,6 +83,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [tags, setTags] = useState<string[]>(post?.tags || []);
     const [thisWeek, setThisWeek] = useState(post?.thisWeek || false);
     const [mustRead, setMustRead] = useState(post?.mustRead || false);
+    const [mainStory, setMainStory] = useState(post?.mainStory || false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Derive the effective "club" field based on category
@@ -218,6 +219,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             readTime: calculateReadTime(plainText),
             thisWeek,
             mustRead,
+            mainStory,
         });
     };
 
@@ -578,6 +580,23 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" className="sr-only peer" checked={mustRead} onChange={(e) => setMustRead(e.target.checked)} />
                                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-amber-400/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500"></div>
+                            </label>
+                        </div>
+
+                        {/* Main Story Option */}
+                        <div className="flex border-t border-gray-100 dark:border-gray-800 pt-6 items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${mainStory ? 'bg-purple-500/10 text-purple-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
+                                    <Crown className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-[#0F172A] dark:text-white mb-0.5">Main Story</p>
+                                    <p className="text-xs text-[#64748B] dark:text-gray-400">Pin as the hero story at the top of the homepage.</p>
+                                </div>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" className="sr-only peer" checked={mainStory} onChange={(e) => setMainStory(e.target.checked)} />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-400/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-500"></div>
                             </label>
                         </div>
                     </div>
