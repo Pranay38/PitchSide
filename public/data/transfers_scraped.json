@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-03-02T14:33:45.918Z",
+  "generatedAt": "2026-03-03T04:56:54.497780+00:00",
   "season": "2025/26",
-  "source": "bootstrap_static_seed",
+  "source": "fallback_static_file",
   "count": 13,
   "transfers": [
     {
@@ -10,7 +10,10 @@
       "to": "Real Madrid",
       "fee": "Free",
       "window": "Summer 2025",
+      "window_type": "summer",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/kylian-mbappe/profil/spieler/342229",
+      "fpl_id": null,
       "performance": "Dominating La Liga. 15+ goals across all competitions."
     },
     {
@@ -19,7 +22,10 @@
       "to": "Atletico Madrid",
       "fee": "€75m",
       "window": "Summer 2025",
+      "window_type": "summer",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/julian-alvarez/profil/spieler/576024",
+      "fpl_id": null,
       "performance": "Leading the line for Simeone. Crucial playmaker."
     },
     {
@@ -28,8 +34,11 @@
       "to": "Man Utd",
       "fee": "€62m",
       "window": "Summer 2025",
+      "window_type": "summer",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/leny-yoro/profil/spieler/922247",
-      "fpl_id": 651
+      "fpl_id": 651,
+      "performance": null
     },
     {
       "player": "Riccardo Calafiori",
@@ -37,8 +46,11 @@
       "to": "Arsenal",
       "fee": "€45m",
       "window": "Summer 2025",
+      "window_type": "summer",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/riccardo-calafiori/profil/spieler/502821",
-      "fpl_id": 622
+      "fpl_id": 622,
+      "performance": null
     },
     {
       "player": "Michael Olise",
@@ -46,7 +58,10 @@
       "to": "Bayern Munich",
       "fee": "€53m",
       "window": "Summer 2025",
+      "window_type": "summer",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/michael-olise/profil/spieler/566723",
+      "fpl_id": null,
       "performance": "Lighting up the Bundesliga with pinpoint crossing."
     },
     {
@@ -55,8 +70,11 @@
       "to": "Man Utd",
       "fee": "€42m",
       "window": "Summer 2025",
+      "window_type": "summer",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/joshua-zirkzee/profil/spieler/435648",
-      "fpl_id": 634
+      "fpl_id": 634,
+      "performance": null
     },
     {
       "player": "Dominic Solanke",
@@ -64,8 +82,11 @@
       "to": "Tottenham",
       "fee": "£65m",
       "window": "Summer 2025",
+      "window_type": "summer",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/dominic-solanke/profil/spieler/258889",
-      "fpl_id": 85
+      "fpl_id": 85,
+      "performance": null
     },
     {
       "player": "Viktor Gyökeres",
@@ -73,8 +94,11 @@
       "to": "Man Utd",
       "fee": "€80m",
       "window": "Winter 2026",
+      "window_type": "winter",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/viktor-gyokeres/profil/spieler/325443",
-      "fpl_id": 923
+      "fpl_id": 923,
+      "performance": null
     },
     {
       "player": "Martin Zubimendi",
@@ -82,8 +106,11 @@
       "to": "Man City",
       "fee": "€60m",
       "window": "Winter 2026",
+      "window_type": "winter",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/martin-zubimendi/profil/spieler/613306",
-      "fpl_id": 924
+      "fpl_id": 924,
+      "performance": null
     },
     {
       "player": "Leroy Sané",
@@ -91,8 +118,11 @@
       "to": "Arsenal",
       "fee": "€40m",
       "window": "Winter 2026",
+      "window_type": "winter",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/leroy-sane/profil/spieler/192565",
-      "fpl_id": 925
+      "fpl_id": 925,
+      "performance": null
     },
     {
       "player": "Marc Guéhi",
@@ -100,8 +130,11 @@
       "to": "Newcastle",
       "fee": "€65m",
       "window": "Winter 2026",
+      "window_type": "winter",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/marc-guehi/profil/spieler/392757",
-      "fpl_id": 218
+      "fpl_id": 218,
+      "performance": null
     },
     {
       "player": "Scott McTominay",
@@ -109,7 +142,10 @@
       "to": "Napoli",
       "fee": "€30m",
       "window": "Summer 2025",
+      "window_type": "summer",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/scott-mctominay/profil/spieler/314385",
+      "fpl_id": null,
       "performance": "Instant fan-favorite, scoring crucial goals in Serie A."
     },
     {
@@ -118,7 +154,10 @@
       "to": "Atletico Madrid",
       "fee": "€42m",
       "window": "Summer 2025",
+      "window_type": "summer",
+      "season": "2025/26",
       "tm_url": "https://www.transfermarkt.com/conor-gallagher/profil/spieler/433182",
+      "fpl_id": null,
       "performance": "Engine in midfield, adapting well to Simeone's system."
     }
   ]
