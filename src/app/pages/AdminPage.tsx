@@ -15,7 +15,13 @@ import {
     exportPostsAsJSON,
     importPostsFromJSON,
 } from "../lib/postStorage";
-import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send } from "lucide-react";
+import {
+    getSiteSettings,
+    getSiteSettingsAsync,
+    updateSiteSettingsAsync,
+    type SiteSettings,
+} from "../lib/siteSettingsStorage";
+import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower } from "lucide-react";
 import { toast } from "sonner";
 
 type View = "list" | "create" | "edit";
@@ -29,6 +35,8 @@ export function AdminPage() {
     const importFileRef = useRef<HTMLInputElement>(null);
     const [subscriberCount, setSubscriberCount] = useState(0);
     const [notifyingPostId, setNotifyingPostId] = useState<string | null>(null);
+    const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => getSiteSettings());
+    const [savingSiteSettings, setSavingSiteSettings] = useState(false);
 
     const fetchSubscriberCount = useCallback(async () => {
         try {
@@ -83,6 +91,11 @@ export function AdminPage() {
         if (isAuthed) {
             refreshPosts();
             fetchSubscriberCount();
+            getSiteSettingsAsync()
+                .then((settings) => setSiteSettings(settings))
+                .catch(() => {
+                    // Keep local snapshot if API is unavailable.
+                });
         }
     }, [isAuthed, refreshPosts, fetchSubscriberCount]);
 
@@ -138,6 +151,24 @@ export function AdminPage() {
     const handleEditPost = (post: BlogPost) => {
         setEditingPost(post);
         setView("edit");
+    };
+
+    const handleSaveSocialWall = async () => {
+        setSavingSiteSettings(true);
+        try {
+            const updated = await updateSiteSettingsAsync({
+                socialWallEnabled: siteSettings.socialWallEnabled,
+                socialWallTitle: siteSettings.socialWallTitle.trim() || "Social Wall",
+                socialWallEmbedCode: siteSettings.socialWallEmbedCode,
+            });
+            setSiteSettings(updated);
+            toast.success("Social Wall updated.");
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Failed to update Social Wall.";
+            toast.error(message);
+        } finally {
+            setSavingSiteSettings(false);
+        }
     };
 
     const handleExport = () => {
@@ -269,6 +300,98 @@ export function AdminPage() {
                         </button>
                     </div>
                 </div>
+
+                {/* Social Wall Settings */}
+                <section className="mb-8 bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+                    <div className="flex items-start justify-between gap-4 mb-5">
+                        <div>
+                            <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                                <RadioTower className="w-5 h-5 text-[#16A34A]" />
+                                Social Wall
+                            </h2>
+                            <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
+                                Paste Curator.io or Tagembed code to show a live social feed in your homepage sidebar.
+                            </p>
+                        </div>
+
+                        <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                            <span className="text-sm font-medium text-[#0F172A] dark:text-white">Enabled</span>
+                            <input
+                                type="checkbox"
+                                checked={siteSettings.socialWallEnabled}
+                                onChange={(e) =>
+                                    setSiteSettings((prev) => ({
+                                        ...prev,
+                                        socialWallEnabled: e.target.checked,
+                                    }))
+                                }
+                                className="h-4 w-4 accent-[#16A34A]"
+                            />
+                        </label>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">
+                                Section Title
+                            </label>
+                            <input
+                                type="text"
+                                value={siteSettings.socialWallTitle}
+                                onChange={(e) =>
+                                    setSiteSettings((prev) => ({
+                                        ...prev,
+                                        socialWallTitle: e.target.value,
+                                    }))
+                                }
+                                placeholder="Social Wall"
+                                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20 focus:border-[#16A34A]"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">
+                                Embed Snippet
+                            </label>
+                            <textarea
+                                value={siteSettings.socialWallEmbedCode}
+                                onChange={(e) =>
+                                    setSiteSettings((prev) => ({
+                                        ...prev,
+                                        socialWallEmbedCode: e.target.value,
+                                    }))
+                                }
+                                rows={8}
+                                placeholder="<div class='tagembed-widget' ...></div><script src='...'></script>"
+                                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-3 text-xs font-mono text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20 focus:border-[#16A34A]"
+                            />
+                            <p className="mt-2 text-xs text-[#94A3B8]">
+                                Save once after pasting. The homepage updates from this setting.
+                            </p>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={handleSaveSocialWall}
+                                disabled={savingSiteSettings}
+                                className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all disabled:opacity-60"
+                            >
+                                {savingSiteSettings ? "Saving..." : "Save Social Wall"}
+                            </button>
+                            <button
+                                onClick={() =>
+                                    setSiteSettings((prev) => ({
+                                        ...prev,
+                                        socialWallEmbedCode: "",
+                                    }))
+                                }
+                                className="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-[#64748B] dark:text-gray-400 rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+                            >
+                                Clear Snippet
+                            </button>
+                        </div>
+                    </div>
+                </section>
 
                 {/* Posts List */}
                 {posts.length === 0 ? (

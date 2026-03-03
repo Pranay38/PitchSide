@@ -65,15 +65,15 @@ export function Footer() {
               From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions for the beautiful game.
             </p>
             <div className="flex items-center gap-3">
-              <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer"
+              <a href="https://x.com/TouchlineDribbl" target="_blank" rel="noopener noreferrer"
                 className="p-2.5 rounded-xl bg-white/5 hover:bg-[#1DA1F2]/20 hover:text-[#1DA1F2] hover:shadow-lg hover:shadow-[#1DA1F2]/10 transition-all duration-300">
                 <Twitter className="w-4 h-4" />
               </a>
-              <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer"
+              <a href="https://www.instagram.com/thetouchlinedribble/" target="_blank" rel="noopener noreferrer"
                 className="p-2.5 rounded-xl bg-white/5 hover:bg-[#E4405F]/20 hover:text-[#E4405F] hover:shadow-lg hover:shadow-[#E4405F]/10 transition-all duration-300">
                 <Instagram className="w-4 h-4" />
               </a>
-              <a href="mailto:hello@pitchside.com"
+              <a href="mailto:thetouchlinedribble@gmail.com"
                 className="p-2.5 rounded-xl bg-white/5 hover:bg-[#16A34A]/20 hover:text-[#16A34A] hover:shadow-lg hover:shadow-[#16A34A]/10 transition-all duration-300">
                 <Mail className="w-4 h-4" />
               </a>
@@ -86,7 +86,7 @@ export function Footer() {
             <ul className="space-y-2.5">
               <li><Link to="/" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Home</Link></li>
               <li><Link to="/about" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">About</Link></li>
-              <li><a href="mailto:hello@pitchside.com" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Contact</a></li>
+              <li><a href="mailto:thetouchlinedribble@gmail.com" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Contact</a></li>
             </ul>
 
             <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-3 mt-6">Categories</h3>

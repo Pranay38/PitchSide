@@ -30,7 +30,6 @@ export function NewsTicker() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [expanded, setExpanded] = useState(true);
-    const [visibleCount, setVisibleCount] = useState(8);
     const [failedImages, setFailedImages] = useState<Record<string, true>>({});
     const tickerRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +38,7 @@ export function NewsTicker() {
         setError("");
         try {
             // Include cache buster
-            const res = await fetch(`/api/news?t=${Date.now()}`);
+            const res = await fetch(`/api/news?limit=60&t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 setNews(data.news || []);
@@ -58,9 +57,6 @@ export function NewsTicker() {
         const interval = setInterval(fetchNews, 5 * 60 * 1000);
         return () => clearInterval(interval);
     }, [fetchNews]);
-
-    const showMore = () => setVisibleCount(v => Math.min(v + 8, news.length));
-    const visibleNews = news.slice(0, visibleCount);
 
     return (
         <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
@@ -92,7 +88,7 @@ export function NewsTicker() {
 
             {/* News List */}
             {expanded && (
-                <div ref={tickerRef} className="max-h-[600px] overflow-y-auto scrollbar-hide">
+                <div ref={tickerRef} className="max-h-[760px] overflow-y-auto scrollbar-hide">
                     {loading && news.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12">
                             <RefreshCw className="w-5 h-5 animate-spin text-amber-500 mb-2" />
@@ -106,7 +102,7 @@ export function NewsTicker() {
                     ) : (
                         <>
                             <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                                {visibleNews.map((item, i) => (
+                                {news.map((item, i) => (
                                     <a
                                         key={`${item.source}-${i}`}
                                         href={item.link}
@@ -146,18 +142,11 @@ export function NewsTicker() {
                                     </a>
                                 ))}
                             </div>
-                            {visibleCount < news.length && (
-                                <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-800">
-                                    <button
-                                        onClick={showMore}
-                                        className="w-full text-center text-[11px] font-semibold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 py-1.5 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
-                                    >
-                                        Show more ({news.length - visibleCount} remaining)
-                                    </button>
-                                </div>
-                            )}
                             {/* Source attribution */}
                             <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#0F172A]/30">
+                                <p className="text-[9px] text-[#94A3B8] text-center">
+                                    Scroll to see more • 
+                                </p>
                                 <p className="text-[9px] text-[#94A3B8] text-center">
                                     News from BBC Sport · The Guardian · ESPN · Sky Sports
                                 </p>

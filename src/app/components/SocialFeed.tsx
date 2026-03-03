@@ -19,15 +19,13 @@ interface SocialItem {
     sourceIcon: string;
 }
 
-const FEEDS: FeedSource[] = [
-    { id: "premier-league", name: "Premier League", handle: "@premierleague", icon: "🏴", profileUrl: "https://x.com/premierleague" },
-    { id: "champions-league", name: "Champions League", handle: "@ChampionsLeague", icon: "🏆", profileUrl: "https://x.com/ChampionsLeague" },
-    { id: "la-liga", name: "La Liga", handle: "@LaLigaEN", icon: "🇪🇸", profileUrl: "https://x.com/LaLigaEN" },
-    { id: "serie-a", name: "Serie A", handle: "@SerieA_EN", icon: "🇮🇹", profileUrl: "https://x.com/SerieA_EN" },
-    { id: "bundesliga", name: "Bundesliga", handle: "@Bundesliga_EN", icon: "🇩🇪", profileUrl: "https://x.com/Bundesliga_EN" },
-    { id: "fabrizio-romano", name: "Fabrizio Romano", handle: "@FabrizioRomano", icon: "🔔", profileUrl: "https://x.com/FabrizioRomano" },
-    { id: "r-soccer", name: "r/soccer", handle: "Reddit", icon: "🟠", profileUrl: "https://www.reddit.com/r/soccer" },
-];
+const FEED: FeedSource = {
+    id: "r-soccer",
+    name: "Fan Feed",
+    handle: "Feed",
+    icon: "⚽",
+    profileUrl: "https://www.reddit.com/r/soccer",
+};
 
 function timeAgo(dateStr: string): string {
     const now = Date.now();
@@ -44,21 +42,18 @@ function timeAgo(dateStr: string): string {
 }
 
 export function SocialFeed() {
-    const [selectedFeed, setSelectedFeed] = useState(0);
     const [expanded, setExpanded] = useState(true);
     const [items, setItems] = useState<SocialItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [lastUpdated, setLastUpdated] = useState("");
 
-    const feed = FEEDS[selectedFeed];
-
     const fetchFeed = useCallback(async () => {
         setLoading(true);
         setError("");
 
         try {
-            const response = await fetch(`/api/news?source=${encodeURIComponent(feed.id)}&t=${Date.now()}`);
+            const response = await fetch(`/api/news?source=${encodeURIComponent(FEED.id)}&t=${Date.now()}`);
             if (!response.ok) {
                 throw new Error("Could not load feed.");
             }
@@ -70,7 +65,7 @@ export function SocialFeed() {
         } finally {
             setLoading(false);
         }
-    }, [feed.id]);
+    }, []);
 
     useEffect(() => {
         if (!expanded) return;
@@ -90,7 +85,7 @@ export function SocialFeed() {
                 <div className="flex items-center justify-between">
                     <h3 className="text-base font-black text-[#0F172A] dark:text-white tracking-tight flex items-center gap-2">
                         <span className="text-xl">📱</span>
-                        Social Media Feeds
+                        Fan Feed
                         <span className="ml-2 text-[10px] font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded-full uppercase tracking-wider">
                             Live
                         </span>
@@ -113,39 +108,23 @@ export function SocialFeed() {
                 </div>
                 {!expanded && (
                     <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] mt-1">
-                        {feed.icon} Following {feed.name}
+                        {FEED.icon} Live fan updates
                     </p>
                 )}
             </div>
 
             {expanded && (
                 <>
-                    <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-800 flex gap-1.5 flex-wrap">
-                        {FEEDS.map((source, idx) => (
-                            <button
-                                key={source.id}
-                                onClick={() => setSelectedFeed(idx)}
-                                className={`text-[10px] font-bold px-2.5 py-1.5 rounded-full transition-all ${
-                                    selectedFeed === idx
-                                        ? "bg-sky-500 text-white shadow-sm"
-                                        : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-[#94A3B8] hover:bg-gray-200 dark:hover:bg-gray-700"
-                                }`}
-                            >
-                                {source.icon} {source.name}
-                            </button>
-                        ))}
-                    </div>
-
                     <div className="max-h-[560px] overflow-y-auto">
                         {loading && items.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-20">
                                 <RefreshCw className="w-6 h-6 animate-spin text-sky-500 mb-2" />
-                                <span className="text-xs text-[#94A3B8] font-medium">Loading {feed.name}...</span>
+                                <span className="text-xs text-[#94A3B8] font-medium">Loading {FEED.name}...</span>
                             </div>
                         ) : error && items.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-20 text-center px-6">
                                 <p className="text-sm font-semibold text-red-500">{error}</p>
-                                <p className="text-xs text-[#94A3B8] mt-2">This widget now uses API data directly (no blocked X/Reddit embeds).</p>
+                                <p className="text-xs text-[#94A3B8] mt-2">This widget pulls the latest fan updates in real time.</p>
                             </div>
                         ) : (
                             <div className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -166,9 +145,6 @@ export function SocialFeed() {
                                                     <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] mt-1 line-clamp-2">{item.summary}</p>
                                                 )}
                                                 <div className="flex items-center gap-2 mt-2">
-                                                    <span className="text-[10px] font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/30 px-1.5 py-0.5 rounded">
-                                                        {item.sourceIcon} {item.source}
-                                                    </span>
                                                     <span className="text-[10px] text-[#94A3B8]">{timeAgo(item.pubDate)}</span>
                                                 </div>
                                             </div>
@@ -182,15 +158,15 @@ export function SocialFeed() {
 
                     <div className="bg-gray-50/80 dark:bg-[#0B1120]/80 p-3 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
                         <p className="text-[9px] text-[#94A3B8]">
-                            Feed source: X timelines + Reddit hot {lastUpdated ? `• Updated ${lastUpdated}` : ""}
+                            {lastUpdated ? `Updated ${lastUpdated}` : ""}
                         </p>
                         <a
-                            href={feed.profileUrl}
+                            href={FEED.profileUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-[10px] font-bold text-sky-500 hover:text-sky-400 transition-colors"
                         >
-                            Open {feed.handle} ↗
+                            Open {FEED.handle} ↗
                         </a>
                     </div>
                 </>

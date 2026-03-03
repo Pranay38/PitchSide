@@ -64,15 +64,15 @@ export function AboutPage() {
                                 Every article is written with the goal of making you see the game differently.
                             </p>
                             <div className="flex items-center justify-center sm:justify-start gap-3">
-                                <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer"
+                                <a href="https://x.com/TouchlineDribbl" target="_blank" rel="noopener noreferrer"
                                     className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] text-[#64748B] dark:text-gray-400 transition-all">
                                     <Twitter className="w-4 h-4" />
                                 </a>
-                                <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer"
+                                <a href="https://www.instagram.com/thetouchlinedribble/" target="_blank" rel="noopener noreferrer"
                                     className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-[#E4405F]/10 hover:text-[#E4405F] text-[#64748B] dark:text-gray-400 transition-all">
                                     <Instagram className="w-4 h-4" />
                                 </a>
-                                <a href="mailto:hello@pitchside.com"
+                                <a href="mailto:thetouchlinedribble@gmail.com"
                                     className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-[#16A34A]/10 hover:text-[#16A34A] text-[#64748B] dark:text-gray-400 transition-all">
                                     <Mail className="w-4 h-4" />
                                 </a>

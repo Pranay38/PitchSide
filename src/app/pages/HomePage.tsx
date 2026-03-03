@@ -9,12 +9,16 @@ import { useClubPreference } from "../hooks/useClubPreference";
 import { Search, X, Filter, Sparkles, Trophy } from "lucide-react";
 import { NewsTicker } from "../components/NewsTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
+import { SocialWall } from "../components/SocialWall";
+import { SocialFeed } from "../components/SocialFeed";
+import { getSiteSettings, getSiteSettingsAsync } from "../lib/siteSettingsStorage";
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
   const [showModal, setShowModal] = useState(!isOnboarded);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [siteSettings, setSiteSettings] = useState(() => getSiteSettings());
 
   const postsPerPage = 4;
   const [visibleCount, setVisibleCount] = useState(postsPerPage);
@@ -31,6 +35,22 @@ export function HomePage() {
         if (isMounted && posts.length > 0) {
           setBlogPosts(posts);
         }
+      })
+      .catch(() => {
+        // Keep local snapshot if API is unavailable.
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getSiteSettingsAsync()
+      .then((settings) => {
+        if (isMounted) setSiteSettings(settings);
       })
       .catch(() => {
         // Keep local snapshot if API is unavailable.
@@ -404,6 +424,19 @@ export function HomePage() {
               <div className="animate-float-in">
                 <NewsTicker />
               </div>
+
+              {/* Reddit Social Feed */}
+              <div className="animate-float-in">
+                <SocialFeed />
+              </div>
+
+              {/* Social Wall */}
+              {siteSettings.socialWallEnabled && (
+                <SocialWall
+                  title={siteSettings.socialWallTitle}
+                  embedCode={siteSettings.socialWallEmbedCode}
+                />
+              )}
 
               {/* FPL Analyzer */}
               <div className="animate-float-in">
