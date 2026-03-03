@@ -1,6 +1,22 @@
 import { Activity } from "lucide-react";
+import { useEffect } from "react";
 
 export function MatchweekHub() {
+    // Inject the external script manually since this is a Vite SPA
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = "https://widgets.scoreaxis.com/api/football/live-match/6852aee51f076d68cf080792?widgetId=7l48mmacrsk3&lang=en&lineupsBlock=1&eventsBlock=1&statsBlock=1&links=1&font=heebo&fontSize=14&rowDensity=100&widgetWidth=auto&widgetHeight=auto&bodyColor=%230f172a&textColor=%23e2e8f0&linkColor=%2334d399&borderColor=%231e293b&tabColor=%23020617";
+        script.async = true;
+        document.body.appendChild(script);
+
+        return () => {
+            // Document cleanup if widget is unmounted
+            if (document.body.contains(script)) {
+                document.body.removeChild(script);
+            }
+        };
+    }, []);
+
     return (
         <div className="w-full bg-slate-950 border-y border-slate-800/80 shadow-inner overflow-hidden">
             <div className="max-w-[1280px] mx-auto">
@@ -17,35 +33,29 @@ export function MatchweekHub() {
                 </div>
 
                 {/* ScoreAxis Embed Container */}
-                {/* Min-height ensures the layout doesn't jump while the iframe loads */}
-                <div className="w-full min-h-[120px] sm:min-h-[150px] relative overflow-hidden bg-slate-900/20 px-4 py-2 sm:px-6">
-
-                    {/* USER: Paste your ScoreAxis iframe or Script embed code here */}
-                    {/* Example standard iframe implementation: 
-          <iframe 
-            src="YOUR_SCOREAXIS_WIDGET_URL" 
-            width="100%" 
-            height="100%" 
-            style={{ border: "none", minHeight: "120px", display: "block" }}
-            title="ScoreAxis Live Match Widget"
-            loading="lazy"
-          />
-          */}
-
-                    {/* Example next/script approach if ScoreAxis provides a JS snippet:
-          import Script from 'next/script';
-          ...
-          <div id="scoreaxis-widget-container"></div>
-          <Script 
-            src="https://www.scoreaxis.com/widget/js/some-script.js" 
-            strategy="lazyOnload" 
-          />
-          */}
-
-                    <div className="flex items-center justify-center h-full min-h-[120px] border border-dashed border-slate-700/50 rounded-lg text-slate-500 text-sm font-mono">
-                        &#x3C;!-- ScoreAxis Widget Placehoder --&#x3E;
+                <div className="w-full min-h-[120px] sm:min-h-[150px] relative overflow-hidden bg-slate-900/20 px-4 py-4 sm:px-6">
+                    <div
+                        id="widget-7l48mmacrsk3"
+                        className="scoreaxis-widget"
+                        style={{
+                            width: "auto",
+                            height: "auto",
+                            fontSize: "14px",
+                            backgroundColor: "#0f172a",
+                            color: "#e2e8f0",
+                            border: "1px solid",
+                            borderColor: "#1e293b",
+                            overflow: "auto"
+                        }}
+                    >
+                        {/* The script will inject the iframe here */}
+                        <div
+                            className="widget-main-link"
+                            style={{ padding: "6px 12px", fontWeight: 500 }}
+                        >
+                            Live data by <a href="https://www.scoreaxis.com/" style={{ color: "inherit" }}>Scoreaxis</a>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
