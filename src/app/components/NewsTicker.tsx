@@ -92,7 +92,7 @@ export function NewsTicker() {
 
             {/* News List */}
             {expanded && (
-                <div ref={tickerRef} className="max-h-[600px] overflow-y-auto">
+                <div ref={tickerRef} className="max-h-[600px] overflow-y-auto scrollbar-hide">
                     {loading && news.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12">
                             <RefreshCw className="w-5 h-5 animate-spin text-amber-500 mb-2" />

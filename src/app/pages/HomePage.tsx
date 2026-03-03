@@ -9,8 +9,6 @@ import { useClubPreference } from "../hooks/useClubPreference";
 import { Search, X, Filter, Sparkles, Trophy } from "lucide-react";
 import { NewsTicker } from "../components/NewsTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
-import { MatchweekHub } from "../components/MatchweekHub";
-
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
@@ -107,8 +105,18 @@ export function HomePage() {
     return mainStoryPost ? [mainStoryPost] : [];
   }, [mainStoryPost]);
 
-  // Removed thisWeekPosts to reduce post count on homepage
+  // This Week in Football (only show when not searching or filtering, past 7 days)
+  const thisWeekPosts = useMemo(() => {
+    if (searchQuery || activeTag) return [];
 
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    return blogPosts.filter((p) => {
+      const postDate = new Date(p.date);
+      return postDate >= sevenDaysAgo;
+    }).slice(0, 21);
+  }, [blogPosts, searchQuery, activeTag]);
   // Must Read / Editor's Picks (only show when not searching or filtering)
   const mustReadPosts = useMemo(() => {
     if (searchQuery || activeTag) return [];
@@ -119,10 +127,11 @@ export function HomePage() {
   const remainingPosts = useMemo(() => {
     const excludeIds = new Set([
       ...heroPosts.map(p => p.id),
+      ...thisWeekPosts.map(p => p.id),
       ...mustReadPosts.map(p => p.id)
     ]);
     return filteredPosts.filter((p) => p.id && !excludeIds.has(p.id));
-  }, [filteredPosts, heroPosts, mustReadPosts]);
+  }, [filteredPosts, heroPosts, thisWeekPosts, mustReadPosts]);
 
   const currentPosts = remainingPosts.slice(0, visibleCount);
   const hasMorePosts = visibleCount < remainingPosts.length;
@@ -287,10 +296,31 @@ export function HomePage() {
           </div>
         )}
 
-        {/* Matchweek Hub (Full Width Above Columns) */}
-        {!(searchQuery || activeTag) && (
-          <section className="animate-float-in mb-8 w-full -mx-4 sm:-mx-6 px-4 sm:px-6">
-            <MatchweekHub />
+        {/* This Week in Football */}
+        {thisWeekPosts.length > 0 && !(searchQuery || activeTag) && (
+          <section className="animate-float-in mb-10 overflow-hidden">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-6 rounded-full gradient-accent" />
+                <h2 className="text-xl md:text-2xl font-black font-outfit text-[#0F172A] dark:text-white uppercase tracking-tight">
+                  This Week
+                </h2>
+              </div>
+              <div className="hidden sm:flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#94A3B8]">Swipe / Scroll</span>
+                <div className="w-8 h-px bg-gray-300 dark:bg-gray-700"></div>
+                <div className="w-2 h-2 rounded-full border border-gray-400 dark:border-gray-600 animate-ping"></div>
+              </div>
+            </div>
+
+            {/* Horizontal Scrolling Area */}
+            <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-6 pt-2 hide-scroll-bar -mx-4 px-4 sm:mx-0 sm:px-0">
+              {thisWeekPosts.map((post) => (
+                <div key={post.id} className="snap-start flex-shrink-0 w-[280px] sm:w-[320px] md:w-[360px]">
+                  <PostCard post={post} />
+                </div>
+              ))}
+            </div>
           </section>
         )}
 

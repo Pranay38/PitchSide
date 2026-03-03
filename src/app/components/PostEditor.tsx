@@ -84,6 +84,9 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [thisWeek, setThisWeek] = useState(post?.thisWeek || false);
     const [mustRead, setMustRead] = useState(post?.mustRead || false);
     const [mainStory, setMainStory] = useState(post?.mainStory || false);
+    const [mediaUrl, setMediaUrl] = useState(post?.mediaUrl || "");
+    const [poll, setPoll] = useState(post?.poll || { question: "", options: [{ text: "", votes: 0 }, { text: "", votes: 0 }] });
+    const [usePoll, setUsePoll] = useState(!!post?.poll);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Derive the effective "club" field based on category
@@ -220,6 +223,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             thisWeek,
             mustRead,
             mainStory,
+            mediaUrl: mediaUrl.trim() || undefined,
+            poll: usePoll && poll.question.trim() ? poll : undefined,
         });
     };
 
@@ -548,9 +553,102 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 ))}
                             </div>
                         )}
+                    </div>
+
+                    {/* Media / YouTube Embed */}
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
+                            <Link className="w-4 h-4 text-[#16A34A]" />
+                            Media / Embed Link (YouTube, Spotify)
+                        </label>
+                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
+                            Paste a YouTube or Spotify URL here to automatically embed a playable widget at the bottom of your post.
+                        </p>
+                        <input
+                            type="url"
+                            value={mediaUrl}
+                            onChange={(e) => setMediaUrl(e.target.value)}
+                            placeholder="https://www.youtube.com/watch?v=..."
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                        />
+                    </div>
+
+                    {/* Poll Section */}
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                        <div className="flex items-center justify-between mb-4">
+                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
+                                <FileText className="w-4 h-4 text-[#16A34A]" />
+                                Interactive Poll
+                            </label>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" className="sr-only peer" checked={usePoll} onChange={(e) => setUsePoll(e.target.checked)} />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#16A34A]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#16A34A]"></div>
+                            </label>
+                        </div>
+
+                        {usePoll && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                                <div>
+                                    <input
+                                        type="text"
+                                        value={poll.question}
+                                        onChange={(e) => setPoll({ ...poll, question: e.target.value })}
+                                        placeholder="Poll Question (e.g. Who will win the title?)"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm mb-3 font-semibold"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-xs font-medium text-[#64748B] dark:text-gray-400">Poll Options</p>
+                                    {poll.options.map((opt, idx) => (
+                                        <div key={idx} className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={opt.text}
+                                                onChange={(e) => {
+                                                    const newOpts = [...poll.options];
+                                                    newOpts[idx].text = e.target.value;
+                                                    setPoll({ ...poll, options: newOpts });
+                                                }}
+                                                placeholder={`Option ${idx + 1}`}
+                                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                                            />
+                                            {poll.options.length > 2 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const newOpts = poll.options.filter((_, i) => i !== idx);
+                                                        setPoll({ ...poll, options: newOpts });
+                                                    }}
+                                                    className="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                    {poll.options.length < 5 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setPoll({ ...poll, options: [...poll.options, { text: "", votes: 0 }] })}
+                                            className="text-xs font-semibold text-[#16A34A] hover:text-[#15803d] transition-colors mt-2"
+                                        >
+                                            + Add Option
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Featured Layout Options */}
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
+                            <Star className="w-4 h-4 text-[#16A34A]" />
+                            Featured Layout
+                        </label>
 
                         {/* This Week Options */}
-                        <div className="mt-6 flex border-t border-gray-100 dark:border-gray-800 pt-6 items-center justify-between">
+                        <div className="mt-4 flex border-t border-gray-100 dark:border-gray-800 pt-6 items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${thisWeek ? 'bg-orange-500/10 text-orange-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
                                     <Flame className="w-5 h-5" />
@@ -579,7 +677,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" className="sr-only peer" checked={mustRead} onChange={(e) => setMustRead(e.target.checked)} />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-amber-400/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500"></div>
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-amber-400/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500" />
                             </label>
                         </div>
 
@@ -633,7 +731,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

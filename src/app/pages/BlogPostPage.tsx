@@ -8,6 +8,7 @@ import { getAllPosts } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { ReadingProgress } from "../components/ReadingProgress";
 import { CommentSection } from "../components/CommentSection";
+import { PollWidget } from "../components/PollWidget";
 import { toast } from "sonner";
 
 export function BlogPostPage() {
@@ -152,6 +153,44 @@ export function BlogPostPage() {
                 return <p key={index}>{paragraph}</p>;
               })}
             </div>
+          )}
+
+          {/* Media Embed */}
+          {post.mediaUrl && (
+            <div className="mt-12 w-full mx-auto overflow-hidden rounded-2xl flex items-center justify-center p-0 sm:p-2 bg-transparent">
+              {post.mediaUrl.includes('spotify.com') ? (
+                <iframe
+                  style={{ borderRadius: '12px', border: 'none' }}
+                  src={post.mediaUrl.replace('open.spotify.com', 'open.spotify.com/embed')}
+                  width="100%"
+                  height="152"
+                  allowFullScreen={false}
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                />
+              ) : post.mediaUrl.includes('youtube.com') || post.mediaUrl.includes('youtu.be') ? (
+                <div className="relative w-full pb-[56.25%] h-0 rounded-xl overflow-hidden shadow-md">
+                  <iframe
+                    className="absolute top-0 left-0 w-full h-full border-none"
+                    src={post.mediaUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')}
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <a href={post.mediaUrl} target="_blank" rel="noopener noreferrer" className="text-[#16A34A] hover:underline flex items-center gap-2 py-4">
+                  <Share2 className="w-5 h-5" />
+                  Watch Media Link
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* Poll Section */}
+          {post.poll && (
+            <PollWidget postId={post.id} poll={post.poll} />
           )}
 
           {/* Divider */}

@@ -11,6 +11,11 @@ export interface BlogPost {
   thisWeek?: boolean;
   mustRead?: boolean;
   mainStory?: boolean;
+  mediaUrl?: string;
+  poll?: {
+    question: string;
+    options: { text: string; votes: number }[];
+  };
 }
 
 export const blogPosts: BlogPost[] = [
