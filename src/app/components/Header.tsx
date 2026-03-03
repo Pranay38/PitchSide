@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { useTheme } from "../hooks/useTheme";
 import { ThemeToggle } from "./ThemeToggle";
 import { getClubByName } from "../data/clubs";
-import { Heart, Menu, X } from "lucide-react";
+import { Heart, House, Menu, X } from "lucide-react";
 
 interface HeaderProps {
   onChangeClub?: () => void;
@@ -43,9 +43,10 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
               <Link
                 key={link.to}
                 to={link.to}
+                aria-label={link.label}
                 className="relative text-sm font-semibold text-[#475569] dark:text-gray-300 hover:text-[#16A34A] dark:hover:text-[#4ade80] transition-colors duration-200 py-1 group"
               >
-                {link.label}
+                {link.to === "/" ? <House className="w-4 h-4" /> : link.label}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#16A34A] to-[#4ade80] group-hover:w-full transition-all duration-300 rounded-full" />
               </Link>
             ))}
@@ -95,7 +96,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
         {/* Mobile menu dropdown */}
         {mobileOpen && (
           <div className="sm:hidden glass border-t border-white/10 dark:border-gray-800/50 px-6 py-4 space-y-3 animate-float-in">
-            <Link to="/" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Home</Link>
+            <Link to="/" onClick={() => setMobileOpen(false)} aria-label="Home" className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"><House className="w-4 h-4" /></Link>
             <Link to="/about" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">About</Link>
 
             {favoriteClub && (
