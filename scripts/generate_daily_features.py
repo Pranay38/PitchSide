@@ -114,17 +114,63 @@ def scrape_rumors_and_sentiment():
         "sentimentScore": score # 0 = Hate it, 100 = Love it
     }
 
-def generate_manager_pressure_index():
-    """Generates a dynamic Manager Pressure Index (mocked logic based on date for consistency)."""
-    # In a fully robust version, this would scrape recent match results or news sentiment for every manager.
-    # To ensure it runs reliably via Actions and produces interesting output daily, 
-    # we combine realistic names with a daily rotating pressure score.
+def get_active_pl_managers():
+    """Scrapes the list of current Premier League managers from Wikipedia."""
+    url = "https://en.wikipedia.org/wiki/List_of_current_Premier_League_and_English_Football_League_managers"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    managers = []
     
-    managers = [
-        "Erik ten Hag (MUN)", "Mauricio Pochettino (CHE)", "Eddie Howe (NEW)", 
-        "Vincent Kompany (BUR)", "Chris Wilder (SHU)", "Rob Edwards (LUT)",
-        "Nuno Espírito Santo (NFO)", "Marco Silva (FUL)", "Thomas Frank (BRE)"
-    ]
+    try:
+        res = requests.get(url, headers=headers, timeout=10)
+        res.raise_for_status()
+        soup = BeautifulSoup(res.text, 'html.parser')
+        
+        # Find the Premier League table (usually the first sortable table)
+        pl_heading = soup.find(id="Premier_League")
+        if pl_heading:
+            table = pl_heading.find_next("table", class_="wikitable")
+            if table:
+                rows = table.find_all("tr")[1:] # Skip header
+                for row in rows:
+                    cols = row.find_all(["td", "th"])
+                    if len(cols) >= 3:
+                        # Manager name is usually in the first column
+                        manager_name = cols[0].get_text(strip=True)
+                        # Clean up references like [1]
+                        manager_name = re.sub(r'\[\d+\]', '', manager_name)
+                        
+                        # Club is usually the third column
+                        club_name = cols[2].get_text(strip=True)
+                        
+                        # Create a short code for the club (e.g., Manchester United -> MUN)
+                        club_words = club_name.split()
+                        if len(club_words) > 1:
+                            short_code = (club_words[0][:1] + club_words[1][:2]).upper()
+                        else:
+                            short_code = club_name[:3].upper()
+                            
+                        managers.append(f"{manager_name} ({short_code})")
+    except Exception as e:
+        print(f"Error scraping managers: {e}")
+        
+    # Fallback to realistic current managers if scraping fails entirely
+    if not managers:
+        managers = [
+            "Mikel Arteta (ARS)", "Unai Emery (AST)", "Andoni Iraola (BOU)", 
+            "Thomas Frank (BRE)", "Fabian Hürzeler (BHA)", "Enzo Maresca (CHE)", 
+            "Oliver Glasner (CRY)", "Sean Dyche (EVE)", "Marco Silva (FUL)", 
+            "Kieran McKenna (IPS)", "Steve Cooper (LEI)", "Arne Slot (LIV)", 
+            "Pep Guardiola (MCI)", "Rúben Amorim (MUN)", "Eddie Howe (NEW)",
+            "Nuno Espírito Santo (NFO)", "Russell Martin (SOU)", "Ange Postecoglou (TOT)", 
+            "Julen Lopetegui (WHU)", "Gary O'Neil (WOL)"
+        ]
+        
+    return managers
+
+def generate_manager_pressure_index():
+    """Generates a dynamic Manager Pressure Index using live manager lists."""
+    
+    managers = get_active_pl_managers()
     
     # Use today's date to seed a random generator so the index changes daily but is stable within the day
     today_str = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -132,7 +178,7 @@ def generate_manager_pressure_index():
     
     # Select 3-5 managers under pressure today
     num_under_pressure = random.randint(3, 5)
-    selected = random.sample(managers, num_under_pressure)
+    selected = random.sample(managers, min(num_under_pressure, len(managers)))
     
     results = []
     for manager in selected:
