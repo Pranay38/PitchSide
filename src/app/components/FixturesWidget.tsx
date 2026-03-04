@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router";
 import { Trophy, Calendar, Loader2, ChevronLeft, ChevronRight, TableProperties, Swords, Target } from "lucide-react";
 
 /* ── Types ── */
@@ -71,10 +72,12 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 /* ── Match Row ── */
-function MatchRow({ match }: { match: Match }) {
+function MatchRow({ match, competition }: { match: Match; competition: string }) {
     const hasScore = ["FINISHED", "IN_PLAY", "PAUSED"].includes(match.status);
+    const matchDate = match.utcDate ? match.utcDate.split("T")[0] : "";
+    const matchUrl = `/match?id=${match.id}&home=${encodeURIComponent(match.homeTeam.name)}&away=${encodeURIComponent(match.awayTeam.name)}&date=${matchDate}&competition=${competition}`;
     return (
-        <div className="px-4 py-3">
+        <Link to={matchUrl} className="block px-4 py-3 hover:bg-[#16A34A]/5 dark:hover:bg-[#16A34A]/10 transition-colors cursor-pointer">
             <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[10px] text-[#94A3B8] font-medium">{formatMatchTime(match.utcDate)}</span>
                 <StatusBadge status={match.status} />
@@ -95,7 +98,7 @@ function MatchRow({ match }: { match: Match }) {
                 </div>
                 <span className={`text-[13px] font-bold min-w-[20px] text-right ${hasScore ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8]"}`}>{match.score.away ?? "-"}</span>
             </div>
-        </div>
+        </Link>
     );
 }
 
@@ -204,7 +207,7 @@ export function FixturesWidget() {
                         <div className="text-center py-12"><Calendar className="w-8 h-8 text-[#94A3B8] mx-auto mb-2" /><p className="text-sm text-[#64748B]">No matches found</p><p className="text-xs text-[#94A3B8] mt-1">Try a different date range</p></div>
                     ) : (
                         <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                            {matches.map(m => <MatchRow key={m.id} match={m} />)}
+                            {matches.map(m => <MatchRow key={m.id} match={m} competition={activeComp} />)}
                         </div>
                     )
                 ) : tab === "table" ? (
@@ -277,7 +280,7 @@ export function FixturesWidget() {
                                         <h4 className="text-[10px] font-bold text-[#16A34A] uppercase tracking-widest flex items-center gap-2"><Swords className="w-3.5 h-3.5" />{STAGE_LABELS[stage] || stage.replace(/_/g, " ")}</h4>
                                     </div>
                                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
-                                        {knockoutsByStage[stage].map(m => <MatchRow key={m.id} match={m} />)}
+                                        {knockoutsByStage[stage].map(m => <MatchRow key={m.id} match={m} competition={activeComp} />)}
                                     </div>
                                 </div>
                             ))}

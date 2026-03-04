@@ -38,6 +38,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             {/* Nav links with underline sweep */}
             {[
               { to: "/", label: "Home" },
+              { to: "/match", label: "Matches" },
               { to: "/about", label: "About" },
             ].map((link) => (
               <Link
@@ -97,6 +98,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
         {mobileOpen && (
           <div className="sm:hidden glass border-t border-white/10 dark:border-gray-800/50 px-6 py-4 space-y-3 animate-float-in">
             <Link to="/" onClick={() => setMobileOpen(false)} aria-label="Home" className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"><House className="w-4 h-4" /></Link>
+            <Link to="/match" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Matches</Link>
             <Link to="/about" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">About</Link>
 
             {favoriteClub && (

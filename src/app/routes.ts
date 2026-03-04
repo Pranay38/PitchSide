@@ -3,6 +3,7 @@ import { HomePage } from "./pages/HomePage";
 import { BlogPostPage } from "./pages/BlogPostPage";
 import { AdminPage } from "./pages/AdminPage";
 import { AboutPage } from "./pages/AboutPage";
+import { MatchPage } from "./pages/MatchPage";
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
   {
     path: "/about",
     Component: AboutPage,
+  },
+  {
+    path: "/match",
+    Component: MatchPage,
   },
   {
     path: "/pitchside-manage-x7k9",
