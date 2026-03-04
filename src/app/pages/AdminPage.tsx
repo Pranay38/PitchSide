@@ -23,6 +23,7 @@ import {
 } from "../lib/siteSettingsStorage";
 import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout } from "lucide-react";
 import { toast } from "sonner";
+import { DebateEditor } from "../components/DebateEditor";
 
 type View = "list" | "create" | "edit";
 type Tab = "posts" | "collections" | "debates" | "settings";
@@ -32,6 +33,7 @@ export function AdminPage() {
     const [isAuthed, setIsAuthed] = useState(isAdminAuthenticated());
     const [view, setView] = useState<View>("list");
     const [activeTab, setActiveTab] = useState<Tab>("posts");
+    const [showDebateEditor, setShowDebateEditor] = useState(false);
 
     const [posts, setPosts] = useState<BlogPost[]>(() => getAllPosts());
     const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -101,6 +103,11 @@ export function AdminPage() {
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Failed to publish post.");
         }
+    };
+
+    const handleEditPost = (post: BlogPost) => {
+        setEditingPost(post);
+        setView("edit");
     };
 
     const handleUpdatePost = async (postData: Omit<BlogPost, "id">) => {
@@ -187,19 +194,16 @@ export function AdminPage() {
     };
 
     // Debate Handlers
-    const handleCreateDebate = async () => {
-        const title = window.prompt("Debate Title (e.g. Is Salah the best PL player ever?):");
-        if (!title) return;
-        const description = window.prompt("Description:");
-        const category = window.prompt("Category (e.g. PL, Tactics):", "General");
+    const handleSaveDebate = async (data: { title: string; description: string; category: string; coverImage: string }) => {
         try {
             const res = await fetch("/api/debates", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "create", title, description, category })
+                body: JSON.stringify({ action: "create", ...data })
             });
             if (res.ok) {
                 toast.success("Debate created!");
+                setShowDebateEditor(false);
                 fetchDebates();
             } else {
                 toast.error("Failed to create debate");
@@ -432,10 +436,14 @@ export function AdminPage() {
                                 <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">Debate Corner</h1>
                                 <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">{debates.length} hot takes</p>
                             </div>
-                            <button onClick={handleCreateDebate} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
+                            <button onClick={() => setShowDebateEditor(true)} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
                                 <Plus className="w-4 h-4" />New Debate
                             </button>
                         </div>
+
+                        {showDebateEditor && (
+                            <DebateEditor onSave={handleSaveDebate} onCancel={() => setShowDebateEditor(false)} />
+                        )}
                         <div className="space-y-3">
                             {debates.length === 0 && <p className="text-gray-500">No debates created yet.</p>}
                             {debates.map((deb) => (
