@@ -39,7 +39,6 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             {[
               { to: "/", label: "Home" },
               { to: "/tactics", label: "Tactics" },
-              { to: "/daily-fix", label: "Daily Fix" },
               { to: "/collections", label: "Lists" },
               { to: "/debates", label: "Debates" },
               { to: "/about", label: "About" },
@@ -102,7 +101,6 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           <div className="sm:hidden glass border-t border-white/10 dark:border-gray-800/50 px-6 py-4 space-y-3 animate-float-in">
             <Link to="/" onClick={() => setMobileOpen(false)} aria-label="Home" className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"><House className="w-4 h-4" /></Link>
             <Link to="/tactics" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Tactics</Link>
-            <Link to="/daily-fix" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Daily Fix</Link>
             <Link to="/collections" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Lists</Link>
             <Link to="/debates" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Debates</Link>
             <Link to="/about" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">About</Link>

@@ -12,6 +12,17 @@ import { FPLAnalyzer } from "../components/FPLAnalyzer";
 import { SocialWall } from "../components/SocialWall";
 import { SocialFeed } from "../components/SocialFeed";
 import { getSiteSettings, getSiteSettingsAsync } from "../lib/siteSettingsStorage";
+import { ManagerPressureWidget, ManagerPressure } from "../components/ManagerPressureWidget";
+import { OnThisDayWidget, OnThisDayEvent } from "../components/OnThisDayWidget";
+import { RumorMillWidget, RumorMill } from "../components/RumorMillWidget";
+import { RefreshCw, Zap } from "lucide-react";
+
+interface DailyFeaturesData {
+  lastUpdated: string;
+  onThisDay: OnThisDayEvent;
+  rumorMill: RumorMill;
+  managerPressure: ManagerPressure[];
+}
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
@@ -19,6 +30,7 @@ export function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [siteSettings, setSiteSettings] = useState(() => getSiteSettings());
+  const [dailyFeatures, setDailyFeatures] = useState<DailyFeaturesData | null>(null);
 
   const postsPerPage = 4;
   const [visibleCount, setVisibleCount] = useState(postsPerPage);
@@ -54,6 +66,25 @@ export function HomePage() {
       })
       .catch(() => {
         // Keep local snapshot if API is unavailable.
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetch("/data/daily_features.json")
+      .then((res) => {
+        if (!res.ok) throw new Error("Data not found");
+        return res.json();
+      })
+      .then((jsonData) => {
+        if (isMounted) setDailyFeatures(jsonData);
+      })
+      .catch((err) => {
+        console.error("Error fetching daily features:", err);
       });
 
     return () => {
@@ -335,6 +366,39 @@ export function HomePage() {
                   <PostCard post={post} />
                 </div>
               ))}
+            </div>
+          </section>
+        )}
+
+        {/* The Daily Fix Section */}
+        {dailyFeatures && !(searchQuery || activeTag) && (
+          <section className="mb-14 animate-float-in">
+            <div className="flex items-center justify-between pb-4 mb-6 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-6 rounded-full bg-amber-500" />
+                <h2 className="text-xl md:text-2xl font-black font-outfit text-[#0F172A] dark:text-white uppercase tracking-tight flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-amber-500 fill-amber-500" />
+                  The Daily Fix
+                </h2>
+              </div>
+              <div className="flex items-center gap-2 text-[#94A3B8]">
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Updated {new Date(dailyFeatures.lastUpdated).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="h-full">
+                <OnThisDayWidget data={dailyFeatures.onThisDay} />
+              </div>
+              <div className="h-full">
+                <RumorMillWidget data={dailyFeatures.rumorMill} />
+              </div>
+              <div className="h-full">
+                <ManagerPressureWidget data={dailyFeatures.managerPressure} />
+              </div>
             </div>
           </section>
         )}
