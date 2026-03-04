@@ -1,32 +1,32 @@
 {
-  "lastUpdated": "2026-03-04T21:06:06.695066",
+  "lastUpdated": "2026-03-04T21:29:16.544031",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Inter & Juve want Alisson - Tuesday's gossip",
-    "sentimentScore": 44
+    "text": "Chelsea could rival Newcastle for Nunez - Monday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (CRY)",
+      "name": "Daniel Farke (LEE)",
       "pressureScore": 95
     },
     {
-      "name": "Eddie Howe (NEW)",
+      "name": "Nuno Esp\u00edrito Santo (WHU)",
       "pressureScore": 79
     },
     {
-      "name": "Thomas Frank (BRE)",
+      "name": "Eddie Howe (NEW)",
       "pressureScore": 75
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
+      "name": "Unai Emery (AVL)",
       "pressureScore": 66
     },
     {
-      "name": "Ange Postecoglou (TOT)",
+      "name": "Michael Carrick (MUN)",
       "pressureScore": 60
     }
   ]

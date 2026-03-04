@@ -125,31 +125,31 @@ def get_active_pl_managers():
         res.raise_for_status()
         soup = BeautifulSoup(res.text, 'html.parser')
         
-        # Find the Premier League table (usually the first sortable table)
-        pl_heading = soup.find(id="Premier_League")
-        if pl_heading:
-            table = pl_heading.find_next("table", class_="wikitable")
-            if table:
-                rows = table.find_all("tr")[1:] # Skip header
-                for row in rows:
-                    cols = row.find_all(["td", "th"])
-                    if len(cols) >= 3:
-                        # Manager name is usually in the first column
-                        manager_name = cols[0].get_text(strip=True)
-                        # Clean up references like [1]
-                        manager_name = re.sub(r'\[\d+\]', '', manager_name)
+        tables = soup.find_all("table", class_="wikitable")
+        if tables:
+            rows = tables[0].find_all("tr")[1:] # Skip header
+            for row in rows:
+                cols = row.find_all(["td", "th"])
+                if len(cols) >= 5 and "Premier League" in cols[4].get_text():
+                    # Manager name is usually in the first column
+                    manager_name = cols[0].get_text(strip=True)
+                    # Clean up references like [1]
+                    manager_name = re.sub(r'\[\d+\]', '', manager_name)
+                    
+                    # Club is usually the fourth column (index 3)
+                    club_name = cols[3].get_text(strip=True)
+                    
+                    # Create a better short code for the club
+                    club_map = {
+                        "Manchester City": "MCI", "Arsenal": "ARS", "Manchester United": "MUN",
+                        "Newcastle United": "NEW", "Aston Villa": "AVL", "West Ham United": "WHU",
+                        "Tottenham Hotspur": "TOT", "Nottingham Forest": "NFO", "Crystal Palace": "CRY",
+                        "Brighton & Hove Albion": "BHA", "Wolverhampton Wanderers": "WOL",
+                        "Leeds United": "LEE"
+                    }
+                    short_code = club_map.get(club_name, club_name[:3].upper())
                         
-                        # Club is usually the third column
-                        club_name = cols[2].get_text(strip=True)
-                        
-                        # Create a short code for the club (e.g., Manchester United -> MUN)
-                        club_words = club_name.split()
-                        if len(club_words) > 1:
-                            short_code = (club_words[0][:1] + club_words[1][:2]).upper()
-                        else:
-                            short_code = club_name[:3].upper()
-                            
-                        managers.append(f"{manager_name} ({short_code})")
+                    managers.append(f"{manager_name} ({short_code})")
     except Exception as e:
         print(f"Error scraping managers: {e}")
         
