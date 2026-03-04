@@ -85,6 +85,7 @@ export function Footer() {
             <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-4">Explore</h3>
             <ul className="space-y-2.5">
               <li><Link to="/" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Home</Link></li>
+              <li><Link to="/daily-fix" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">The Daily Fix</Link></li>
               <li><Link to="/about" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">About</Link></li>
               <li><a href="mailto:thetouchlinedribble@gmail.com" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Contact</a></li>
             </ul>

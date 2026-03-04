@@ -6,6 +6,7 @@ import { AboutPage } from "./pages/AboutPage";
 import { TacticalBoardPage } from "./pages/TacticalBoardPage";
 import { CollectionsPage } from "./pages/CollectionsPage";
 import { DebateCornerPage } from "./pages/DebateCornerPage";
+import { DailyFixPage } from "./pages/DailyFixPage";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
   {
     path: "/debates",
     Component: DebateCornerPage,
+  },
+  {
+    path: "/daily-fix",
+    Component: DailyFixPage,
   },
   {
     path: "/pitchside-manage-x7k9",

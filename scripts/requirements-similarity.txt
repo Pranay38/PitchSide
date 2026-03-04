@@ -1,6 +1,0 @@
-pandas
-scikit-learn
-lxml
-html5lib
-seleniumbase
-numpy

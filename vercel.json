@@ -21,6 +21,10 @@
             "destination": "/api/sys?route=debates"
         },
         {
+            "source": "/api/tactics",
+            "destination": "/api/sys?route=tactics"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/$1"
         },

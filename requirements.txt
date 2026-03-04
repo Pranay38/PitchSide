@@ -1,0 +1,6 @@
+# Python dependencies for scouting data pipeline
+pandas>=2.0
+beautifulsoup4>=4.12
+lxml>=4.9
+requests>=2.31
+seleniumbase>=4.25
