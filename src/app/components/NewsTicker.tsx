@@ -37,8 +37,8 @@ export function NewsTicker() {
         setLoading(true);
         setError("");
         try {
-            // Include cache buster
-            const res = await fetch(`/api/news?limit=60&t=${Date.now()}`);
+            // Include cache buster, fetch top 12 news items instead of 60 to prevent overwhelming feed
+            const res = await fetch(`/api/news?limit=12&t=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 setNews(data.news || []);
@@ -88,7 +88,7 @@ export function NewsTicker() {
 
             {/* News List */}
             {expanded && (
-                <div ref={tickerRef} className="max-h-[760px] overflow-y-auto scrollbar-hide">
+                <div ref={tickerRef} className="max-h-[400px] overflow-y-auto scrollbar-hide">
                     {loading && news.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-12">
                             <RefreshCw className="w-5 h-5 animate-spin text-amber-500 mb-2" />
@@ -145,7 +145,7 @@ export function NewsTicker() {
                             {/* Source attribution */}
                             <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#0F172A]/30">
                                 <p className="text-[9px] text-[#94A3B8] text-center">
-                                    Scroll to see more • 
+                                    Latest Top 12 Stories • Updated every 5 mins
                                 </p>
                                 <p className="text-[9px] text-[#94A3B8] text-center">
                                     News from BBC Sport · The Guardian · ESPN · Sky Sports
