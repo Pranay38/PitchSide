@@ -40,6 +40,8 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
               { to: "/", label: "Home" },
               { to: "/match", label: "Matches" },
               { to: "/tactics", label: "Tactics" },
+              { to: "/collections", label: "Lists" },
+              { to: "/debates", label: "Debates" },
               { to: "/about", label: "About" },
             ].map((link) => (
               <Link
@@ -101,6 +103,8 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             <Link to="/" onClick={() => setMobileOpen(false)} aria-label="Home" className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"><House className="w-4 h-4" /></Link>
             <Link to="/match" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Matches</Link>
             <Link to="/tactics" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Tactics</Link>
+            <Link to="/collections" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Lists</Link>
+            <Link to="/debates" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Debates</Link>
             <Link to="/about" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">About</Link>
 
             {favoriteClub && (
