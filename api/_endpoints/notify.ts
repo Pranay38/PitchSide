@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "./_db.js";
-import { sendEmail, isMailerConfigured } from "./_mailer.js";
+import { connectToDatabase } from "../_db.js";
+import { sendEmail, isMailerConfigured } from "../_mailer.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     // CORS headers

@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { ObjectId } from "mongodb";
-import { connectToDatabase } from "./_db.js";
+import { connectToDatabase } from "../_db.js";
 
 const COLLECTION = "debates";
 

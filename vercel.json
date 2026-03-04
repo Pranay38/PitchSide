@@ -1,6 +1,26 @@
 {
     "rewrites": [
         {
+            "source": "/api/settings",
+            "destination": "/api/sys?route=settings"
+        },
+        {
+            "source": "/api/subscribers",
+            "destination": "/api/sys?route=subscribers"
+        },
+        {
+            "source": "/api/notify",
+            "destination": "/api/sys?route=notify"
+        },
+        {
+            "source": "/api/collections",
+            "destination": "/api/sys?route=collections"
+        },
+        {
+            "source": "/api/debates",
+            "destination": "/api/sys?route=debates"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/$1"
         },
