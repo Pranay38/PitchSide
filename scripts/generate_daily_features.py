@@ -95,8 +95,8 @@ def scrape_rumors_and_sentiment():
                 rumors.append(text)
                 
         if rumors:
-            # Pick the top rumor or a random one from top 3
-            rumor_text = random.choice(rumors[:3])
+            # Strictly pick the newest (top) rumor to avoid grabbing old gossip
+            rumor_text = rumors[0]
             
     except Exception as e:
         print(f"Error scraping BBC Gossip: {e}")
