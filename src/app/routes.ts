@@ -3,7 +3,6 @@ import { HomePage } from "./pages/HomePage";
 import { BlogPostPage } from "./pages/BlogPostPage";
 import { AdminPage } from "./pages/AdminPage";
 import { AboutPage } from "./pages/AboutPage";
-import { MatchPage } from "./pages/MatchPage";
 import { TacticalBoardPage } from "./pages/TacticalBoardPage";
 import { CollectionsPage } from "./pages/CollectionsPage";
 import { DebateCornerPage } from "./pages/DebateCornerPage";
@@ -20,10 +19,6 @@ export const router = createBrowserRouter([
   {
     path: "/about",
     Component: AboutPage,
-  },
-  {
-    path: "/match",
-    Component: MatchPage,
   },
   {
     path: "/tactics",
