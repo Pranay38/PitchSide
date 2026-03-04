@@ -125,17 +125,12 @@ export function HomePage() {
     return mainStoryPost ? [mainStoryPost] : [];
   }, [mainStoryPost]);
 
-  // This Week in Football (only show when not searching or filtering, past 7 days)
+  // This Week in Football (only show when not searching or filtering)
   const thisWeekPosts = useMemo(() => {
     if (searchQuery || activeTag) return [];
 
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    return blogPosts.filter((p) => {
-      const postDate = new Date(p.date);
-      return postDate >= sevenDaysAgo;
-    }).slice(0, 21);
+    // Prioritize explicitly marked 'thisWeek' posts, otherwise recent
+    return blogPosts.filter((p) => p.thisWeek).slice(0, 21);
   }, [blogPosts, searchQuery, activeTag]);
   // Must Read / Editor's Picks (only show when not searching or filtering)
   const mustReadPosts = useMemo(() => {
