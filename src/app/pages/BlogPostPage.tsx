@@ -233,8 +233,8 @@ export function BlogPostPage() {
           )}
 
           {/* SofaScore Widget */}
-          {post.sofascoreUrl && (
-            <SofaScoreWidget url={post.sofascoreUrl} />
+          {(post.sofascoreWidget || post.sofascoreUrl) && (
+            <SofaScoreWidget widgetConfig={post.sofascoreWidget} url={post.sofascoreUrl} />
           )}
 
           {/* Poll Section */}

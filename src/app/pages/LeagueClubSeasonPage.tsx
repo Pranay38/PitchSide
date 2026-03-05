@@ -7,6 +7,8 @@ import { PostCard } from "../components/PostCard";
 import { getAllPosts } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { ArrowLeft, Trophy, Target, Users, Loader2, AlertCircle } from "lucide-react";
+import { SofaScoreWidget } from "../components/SofaScoreWidget";
+import { TOURNAMENTS, findTeamId } from "../data/sofascoreData";
 
 /** Available leagues for internal linking */
 const LEAGUES = [
@@ -197,6 +199,28 @@ export function LeagueClubSeasonPage() {
                             </div>
                         </div>
 
+                        {/* SofaScore Widget Integration */}
+                        <div className="mb-10">
+                            {data.club ? (
+                                // Team Widget for Club Pages
+                                TOURNAMENTS[data.leagueName] && findTeamId(data.club.name) ? (
+                                    <SofaScoreWidget widgetConfig={{
+                                        type: "team",
+                                        id: findTeamId(data.club.name)
+                                    }} />
+                                ) : null
+                            ) : (
+                                // Standings Widget for League Pages
+                                TOURNAMENTS[data.leagueName] ? (
+                                    <SofaScoreWidget widgetConfig={{
+                                        type: "standings",
+                                        tournamentId: TOURNAMENTS[data.leagueName].tournamentId,
+                                        seasonId: TOURNAMENTS[data.leagueName].seasonId
+                                    }} />
+                                ) : null
+                            )}
+                        </div>
+
                         {/* Club Stats Card (if club view) */}
                         {data.club && (
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -245,8 +269,8 @@ export function LeagueClubSeasonPage() {
                                                 <tr
                                                     key={row.position}
                                                     className={`border-b border-gray-100 dark:border-gray-800 transition-colors ${row.isTarget
-                                                            ? "bg-[#16A34A]/5 dark:bg-[#16A34A]/10 font-bold"
-                                                            : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                                                        ? "bg-[#16A34A]/5 dark:bg-[#16A34A]/10 font-bold"
+                                                        : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
                                                         }`}
                                                 >
                                                     <td className="px-4 py-3 text-[#0F172A] dark:text-white font-bold">{row.position}</td>
@@ -350,8 +374,8 @@ export function LeagueClubSeasonPage() {
                                         key={l.slug}
                                         to={`/${l.slug}`}
                                         className={`px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${l.slug === league
-                                                ? "gradient-accent text-white shadow-md"
-                                                : "glass-card text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
+                                            ? "gradient-accent text-white shadow-md"
+                                            : "glass-card text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
                                             }`}
                                     >
                                         {l.name}
@@ -371,8 +395,8 @@ export function LeagueClubSeasonPage() {
                                                 key={row.team}
                                                 to={`/${league}/${row.team.toLowerCase().replace(/\s+/g, "-")}`}
                                                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${row.isTarget
-                                                        ? "bg-[#16A34A] text-white"
-                                                        : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
+                                                    ? "bg-[#16A34A] text-white"
+                                                    : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
                                                     }`}
                                             >
                                                 {row.team}

@@ -12,7 +12,8 @@ export interface BlogPost {
   mustRead?: boolean;
   mainStory?: boolean;
   mediaUrl?: string;
-  sofascoreUrl?: string;
+  sofascoreUrl?: string; // Legacy support
+  sofascoreWidget?: any; // Structured WidgetConfig
   playerName?: string;
   poll?: {
     question: string;
