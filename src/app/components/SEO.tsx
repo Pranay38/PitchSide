@@ -16,14 +16,14 @@ function buildOgImageUrl(title: string, club?: string, date?: string): string {
     const params = new URLSearchParams({ title });
     if (club) params.set("club", club);
     if (date) params.set("date", date);
-    return `https://pitchside.vercel.app/api/og?${params.toString()}`;
+    return `https://pitchside-orcin.vercel.app/api/og?${params.toString()}`;
 }
 
 export function SEO({
     title = "The Touchline Dribble | Football Analysis & News",
     description = "A modern football blog featuring data-driven tactical analysis, rumors, manager pressure indices, and the latest news for die-hard fans.",
     image,
-    url = "https://pitchside.vercel.app",
+    url = "https://pitchside-orcin.vercel.app",
     type = "website",
     schema,
     club,
