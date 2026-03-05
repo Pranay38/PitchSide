@@ -12,6 +12,8 @@ export interface BlogPost {
   mustRead?: boolean;
   mainStory?: boolean;
   mediaUrl?: string;
+  sofascoreUrl?: string;
+  playerName?: string;
   poll?: {
     question: string;
     options: { text: string; votes: number }[];

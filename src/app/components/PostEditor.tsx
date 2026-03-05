@@ -4,7 +4,7 @@ import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName } from
 import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
-import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown } from "lucide-react";
+import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User } from "lucide-react";
 
 /** Categories that are NOT club-specific */
 const GENERAL_CATEGORIES = [
@@ -85,6 +85,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [mustRead, setMustRead] = useState(post?.mustRead || false);
     const [mainStory, setMainStory] = useState(post?.mainStory || false);
     const [mediaUrl, setMediaUrl] = useState(post?.mediaUrl || "");
+    const [sofascoreUrl, setSofascoreUrl] = useState(post?.sofascoreUrl || "");
+    const [playerName, setPlayerName] = useState(post?.playerName || "");
     const [poll, setPoll] = useState(post?.poll || { question: "", options: [{ text: "", votes: 0 }, { text: "", votes: 0 }] });
     const [usePoll, setUsePoll] = useState(!!post?.poll);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -224,6 +226,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             mustRead,
             mainStory,
             mediaUrl: mediaUrl.trim() || undefined,
+            sofascoreUrl: sofascoreUrl.trim() || undefined,
+            playerName: playerName.trim() || undefined,
             poll: usePoll && poll.question.trim() ? poll : undefined,
         });
     };
@@ -572,6 +576,50 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
                         />
                     </div>
+
+                    {/* SofaScore Widget */}
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
+                            <Activity className="w-4 h-4 text-[#F85D4E]" />
+                            SofaScore Widget
+                        </label>
+                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
+                            Paste a SofaScore match URL to embed a live match widget in your post.
+                        </p>
+                        <input
+                            type="url"
+                            value={sofascoreUrl}
+                            onChange={(e) => setSofascoreUrl(e.target.value)}
+                            placeholder="https://www.sofascore.com/arsenal-manchester-united/tsbs"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#F85D4E]/50 focus:border-[#F85D4E] transition-all text-sm"
+                        />
+                        {sofascoreUrl && (
+                            <div className="mt-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F85D4E]/5 border border-[#F85D4E]/20">
+                                <Activity className="w-3.5 h-3.5 text-[#F85D4E]" />
+                                <span className="text-xs text-[#F85D4E] font-medium">Widget will render on the live post page</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Player Name (for Player Profile category) */}
+                    {(category === "Player Profile" || tags.includes("Player Profile")) && (
+                        <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
+                                <User className="w-4 h-4 text-[#16A34A]" />
+                                Player Name
+                            </label>
+                            <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
+                                Enter the player's full name. This will allow readers to filter by player on the homepage.
+                            </p>
+                            <input
+                                type="text"
+                                value={playerName}
+                                onChange={(e) => setPlayerName(e.target.value)}
+                                placeholder="e.g. Erling Haaland"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                            />
+                        </div>
+                    )}
 
                     {/* Poll Section */}
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">

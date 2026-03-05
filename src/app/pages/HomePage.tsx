@@ -7,7 +7,7 @@ import { ClubSelectionModal } from "../components/ClubSelectionModal";
 import type { BlogPost } from "../data/posts";
 import { getAllPosts, getAllPostsAsync } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
-import { Search, X, Filter, Sparkles, Trophy } from "lucide-react";
+import { Search, X, Filter, Sparkles, Trophy, ChevronDown, Shield, User } from "lucide-react";
 import { NewsTicker } from "../components/NewsTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
 import { SocialWall } from "../components/SocialWall";
@@ -30,6 +30,10 @@ export function HomePage() {
   const [showModal, setShowModal] = useState(!isOnboarded);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [activeClub, setActiveClub] = useState<string | null>(null);
+  const [activePlayer, setActivePlayer] = useState<string | null>(null);
+  const [showClubDropdown, setShowClubDropdown] = useState(false);
+  const [showPlayerDropdown, setShowPlayerDropdown] = useState(false);
   const [siteSettings, setSiteSettings] = useState(() => getSiteSettings());
   const [dailyFeatures, setDailyFeatures] = useState<DailyFeaturesData | null>(null);
 
@@ -100,6 +104,20 @@ export function HomePage() {
     return Array.from(tagSet).sort();
   }, [blogPosts]);
 
+  // Extract unique clubs
+  const allClubs = useMemo(() => {
+    const clubSet = new Set<string>();
+    blogPosts.forEach((p) => { if (p.club) clubSet.add(p.club); });
+    return Array.from(clubSet).sort();
+  }, [blogPosts]);
+
+  // Extract unique player names
+  const allPlayers = useMemo(() => {
+    const playerSet = new Set<string>();
+    blogPosts.forEach((p) => { if (p.playerName) playerSet.add(p.playerName); });
+    return Array.from(playerSet).sort();
+  }, [blogPosts]);
+
   // Smart sorting: prioritize club posts instead of filtering
   const sortedPosts = useMemo(() => {
     let posts = [...blogPosts];
@@ -137,8 +155,18 @@ export function HomePage() {
       posts = posts.filter((p) => p.tags.includes(activeTag));
     }
 
+    // Filter by active club
+    if (activeClub) {
+      posts = posts.filter((p) => p.club === activeClub);
+    }
+
+    // Filter by active player
+    if (activePlayer) {
+      posts = posts.filter((p) => p.playerName === activePlayer);
+    }
+
     return posts;
-  }, [sortedPosts, searchQuery, activeTag]);
+  }, [sortedPosts, searchQuery, activeTag, activeClub, activePlayer]);
 
   // Main Story: prioritize post flagged as mainStory, otherwise latest by date
   const mainStoryPost = useMemo(() => {
@@ -208,7 +236,7 @@ export function HomePage() {
 
   useEffect(() => {
     setVisibleCount(postsPerPage);
-  }, [searchQuery, activeTag, favoriteClub]);
+  }, [searchQuery, activeTag, activeClub, activePlayer, favoriteClub]);
 
   useEffect(() => {
     const node = loadMoreRef.current;
@@ -302,6 +330,85 @@ export function HomePage() {
                 {tag}
               </button>
             ))}
+          </div>
+
+          {/* Club & Player Dropdown Filters */}
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Clubs Dropdown */}
+            {allClubs.length > 0 && (
+              <div className="relative">
+                <button
+                  onClick={() => { setShowClubDropdown(!showClubDropdown); setShowPlayerDropdown(false); }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border ${activeClub
+                      ? "gradient-accent text-white border-transparent shadow-md shadow-[#16A34A]/20"
+                      : "glass-card border-gray-200/50 dark:border-gray-700/50 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
+                    }`}
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  {activeClub || "Clubs"}
+                  <ChevronDown className={`w-3 h-3 transition-transform ${showClubDropdown ? "rotate-180" : ""}`} />
+                </button>
+                {showClubDropdown && (
+                  <div className="absolute top-10 left-0 z-50 w-56 max-h-64 overflow-y-auto bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl py-1 animate-float-in">
+                    <button
+                      onClick={() => { setActiveClub(null); setShowClubDropdown(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${!activeClub ? "text-[#16A34A] bg-[#16A34A]/5" : "text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        }`}
+                    >
+                      All Clubs
+                    </button>
+                    {allClubs.map((club) => (
+                      <button
+                        key={club}
+                        onClick={() => { setActiveClub(club); setShowClubDropdown(false); }}
+                        className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${activeClub === club ? "text-[#16A34A] bg-[#16A34A]/5" : "text-[#0F172A] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          }`}
+                      >
+                        {club}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Players Dropdown */}
+            {allPlayers.length > 0 && (
+              <div className="relative">
+                <button
+                  onClick={() => { setShowPlayerDropdown(!showPlayerDropdown); setShowClubDropdown(false); }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 border ${activePlayer
+                      ? "gradient-accent text-white border-transparent shadow-md shadow-[#16A34A]/20"
+                      : "glass-card border-gray-200/50 dark:border-gray-700/50 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
+                    }`}
+                >
+                  <User className="w-3.5 h-3.5" />
+                  {activePlayer || "Players"}
+                  <ChevronDown className={`w-3 h-3 transition-transform ${showPlayerDropdown ? "rotate-180" : ""}`} />
+                </button>
+                {showPlayerDropdown && (
+                  <div className="absolute top-10 left-0 z-50 w-56 max-h-64 overflow-y-auto bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl py-1 animate-float-in">
+                    <button
+                      onClick={() => { setActivePlayer(null); setShowPlayerDropdown(false); }}
+                      className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${!activePlayer ? "text-[#16A34A] bg-[#16A34A]/5" : "text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        }`}
+                    >
+                      All Players
+                    </button>
+                    {allPlayers.map((player) => (
+                      <button
+                        key={player}
+                        onClick={() => { setActivePlayer(player); setShowPlayerDropdown(false); }}
+                        className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${activePlayer === player ? "text-[#16A34A] bg-[#16A34A]/5" : "text-[#0F172A] dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          }`}
+                      >
+                        {player}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

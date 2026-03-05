@@ -11,6 +11,7 @@ import { useClubPreference } from "../hooks/useClubPreference";
 import { ReadingProgress } from "../components/ReadingProgress";
 import { CommentSection } from "../components/CommentSection";
 import { PollWidget } from "../components/PollWidget";
+import { SofaScoreWidget } from "../components/SofaScoreWidget";
 import { toast } from "sonner";
 
 export function BlogPostPage() {
@@ -227,6 +228,11 @@ export function BlogPostPage() {
                 </a>
               )}
             </div>
+          )}
+
+          {/* SofaScore Widget */}
+          {post.sofascoreUrl && (
+            <SofaScoreWidget url={post.sofascoreUrl} />
           )}
 
           {/* Poll Section */}
