@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from "react";
-import { CLUB_COLORS } from "../lib/clubColors";
 
 const CLUB_KEY = "pitchside_favorite_club";
 const ONBOARDED_KEY = "pitchside_onboarded";
@@ -21,17 +20,6 @@ export function useClubPreference() {
         }
     });
 
-    const applyTheme = (club: string | null) => {
-        const colors = club ? (CLUB_COLORS[club] || CLUB_COLORS["default"]) : CLUB_COLORS["default"];
-        document.documentElement.style.setProperty("--theme-primary", colors.primary);
-        document.documentElement.style.setProperty("--theme-light", colors.light);
-    };
-
-    // Apply initially
-    useEffect(() => {
-        applyTheme(favoriteClub);
-    }, []);
-
     // Listen for storage changes (e.g., user clears cache in another tab)
     useEffect(() => {
         const handleStorage = () => {
@@ -39,7 +27,6 @@ export function useClubPreference() {
             const onboarded = localStorage.getItem(ONBOARDED_KEY) === "true";
             setFavoriteClubState(club);
             setIsOnboardedState(onboarded);
-            applyTheme(club);
         };
         window.addEventListener("storage", handleStorage);
         return () => window.removeEventListener("storage", handleStorage);
@@ -54,7 +41,6 @@ export function useClubPreference() {
         }
         setFavoriteClubState(club);
         setIsOnboardedState(true);
-        applyTheme(club);
     }, []);
 
     const skipOnboarding = useCallback(() => {
@@ -75,7 +61,6 @@ export function useClubPreference() {
         }
         setFavoriteClubState(null);
         setIsOnboardedState(false);
-        applyTheme(null);
     }, []);
 
     return {

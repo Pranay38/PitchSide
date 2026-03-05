@@ -20,13 +20,13 @@ export function RumorMillWidget({ data }: RumorMillWidgetProps) {
     };
 
     const getSentimentColor = (score: number) => {
-        if (score > 60) return "text-accent-theme";
+        if (score > 60) return "text-green-500";
         if (score < 40) return "text-red-500";
         return "text-yellow-500";
     };
 
     const getGradientColor = (score: number) => {
-        if (score > 60) return "from-accent-theme to-accent-light";
+        if (score > 60) return "from-green-500 to-green-400";
         if (score < 40) return "from-red-500 to-rose-400";
         return "from-yellow-500 to-amber-400";
     };
@@ -67,7 +67,7 @@ export function RumorMillWidget({ data }: RumorMillWidgetProps) {
                                 style={{ width: `${data.sentimentScore}%` }}
                             />
                         </div>
-                        <span className="text-xs text-accent-theme font-medium">Love</span>
+                        <span className="text-xs text-green-500 font-medium">Love</span>
                     </div>
                 </div>
             </div>

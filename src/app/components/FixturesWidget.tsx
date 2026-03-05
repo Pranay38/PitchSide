@@ -77,7 +77,7 @@ function MatchRow({ match, competition }: { match: Match; competition: string })
     const matchDate = match.utcDate ? match.utcDate.split("T")[0] : "";
     const matchUrl = `/match?id=${match.id}&home=${encodeURIComponent(match.homeTeam.name)}&away=${encodeURIComponent(match.awayTeam.name)}&date=${matchDate}&competition=${competition}`;
     return (
-        <Link to={matchUrl} className="block px-4 py-3 hover:bg-accent-theme/5 dark:hover:bg-accent-theme/10 transition-colors cursor-pointer">
+        <Link to={matchUrl} className="block px-4 py-3 hover:bg-[#16A34A]/5 dark:hover:bg-[#16A34A]/10 transition-colors cursor-pointer">
             <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[10px] text-[#94A3B8] font-medium">{formatMatchTime(match.utcDate)}</span>
                 <StatusBadge status={match.status} />
@@ -163,10 +163,10 @@ export function FixturesWidget() {
     return (
         <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
             {/* Header */}
-            <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-accent-theme/5 to-transparent dark:from-accent-theme/10">
+            <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-[#16A34A]/5 to-transparent dark:from-[#16A34A]/10">
                 <div className="flex items-center justify-between">
                     <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                        <Trophy className="w-5 h-5 text-accent-theme" />
+                        <Trophy className="w-5 h-5 text-[#16A34A]" />
                         Scores & Fixtures
                     </h3>
                     <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
@@ -181,7 +181,7 @@ export function FixturesWidget() {
             {/* Competition pills */}
             <div className="flex overflow-x-auto px-3 py-2 gap-1.5 border-b border-gray-100 dark:border-gray-800">
                 {COMPETITIONS.map(c => (
-                    <button key={c.code} onClick={() => switchComp(c.code)} className={`flex-shrink-0 px-3 py-1.5 text-[11px] font-semibold rounded-full transition-all ${activeComp === c.code ? "bg-accent-theme text-white shadow-md shadow-accent-theme/20" : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"}`}>
+                    <button key={c.code} onClick={() => switchComp(c.code)} className={`flex-shrink-0 px-3 py-1.5 text-[11px] font-semibold rounded-full transition-all ${activeComp === c.code ? "bg-[#16A34A] text-white shadow-md shadow-[#16A34A]/20" : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"}`}>
                         {c.emoji} {c.name}
                     </button>
                 ))}
@@ -190,16 +190,16 @@ export function FixturesWidget() {
             {/* Date Navigation (fixtures only) */}
             {tab === "fixtures" && (
                 <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#0F172A]/30">
-                    <button onClick={goPrev} className="flex items-center gap-0.5 text-[11px] font-semibold text-[#64748B] hover:text-accent-theme transition-colors"><ChevronLeft className="w-4 h-4" />Previous</button>
+                    <button onClick={goPrev} className="flex items-center gap-0.5 text-[11px] font-semibold text-[#64748B] hover:text-[#16A34A] transition-colors"><ChevronLeft className="w-4 h-4" />Previous</button>
                     <span className="text-[11px] font-bold text-[#0F172A] dark:text-white px-3 py-1 bg-white dark:bg-[#1E293B] rounded-full shadow-sm border border-gray-100 dark:border-gray-700">{getViewLabel()}</span>
-                    <button onClick={goNext} className="flex items-center gap-0.5 text-[11px] font-semibold text-[#64748B] hover:text-accent-theme transition-colors">Next<ChevronRight className="w-4 h-4" /></button>
+                    <button onClick={goNext} className="flex items-center gap-0.5 text-[11px] font-semibold text-[#64748B] hover:text-[#16A34A] transition-colors">Next<ChevronRight className="w-4 h-4" /></button>
                 </div>
             )}
 
             {/* Content */}
             <div className="max-h-[550px] overflow-y-auto">
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-accent-theme mb-2" /><span className="text-xs text-[#94A3B8]">Loading...</span></div>
+                    <div className="flex flex-col items-center justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#16A34A] mb-2" /><span className="text-xs text-[#94A3B8]">Loading...</span></div>
                 ) : error ? (
                     <div className="text-center py-12 px-4"><Calendar className="w-8 h-8 text-[#94A3B8] mx-auto mb-2" /><p className="text-sm text-[#64748B]">{error}</p></div>
                 ) : tab === "fixtures" ? (
@@ -236,7 +236,7 @@ export function FixturesWidget() {
                                         <td className="py-2 px-1 text-center text-[#64748B]">{e.won}</td>
                                         <td className="py-2 px-1 text-center text-[#64748B]">{e.draw}</td>
                                         <td className="py-2 px-1 text-center text-[#64748B]">{e.lost}</td>
-                                        <td className="py-2 px-1 text-center hidden sm:table-cell"><span className={e.gd > 0 ? "text-accent-theme font-semibold" : e.gd < 0 ? "text-red-500 font-semibold" : "text-[#64748B]"}>{e.gd > 0 ? `+${e.gd}` : e.gd}</span></td>
+                                        <td className="py-2 px-1 text-center hidden sm:table-cell"><span className={e.gd > 0 ? "text-[#16A34A] font-semibold" : e.gd < 0 ? "text-red-500 font-semibold" : "text-[#64748B]"}>{e.gd > 0 ? `+${e.gd}` : e.gd}</span></td>
                                         <td className="py-2 px-3 text-center font-bold text-[#0F172A] dark:text-white">{e.points}</td>
                                     </tr>
                                 ))}
@@ -251,7 +251,7 @@ export function FixturesWidget() {
                             {scorers.map(entry => (
                                 <div key={`${entry.rank}-${entry.player}`} className="px-4 py-3 flex items-center justify-between gap-3 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <span className="w-7 h-7 rounded-full bg-accent-theme/10 text-accent-theme text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+                                        <span className="w-7 h-7 rounded-full bg-[#16A34A]/10 text-[#16A34A] text-[11px] font-bold flex items-center justify-center flex-shrink-0">
                                             {entry.rank}
                                         </span>
                                         <div className="min-w-0">
@@ -276,8 +276,8 @@ export function FixturesWidget() {
                         <div className="divide-y divide-gray-200 dark:divide-gray-700">
                             {orderedStages.map(stage => (
                                 <div key={stage}>
-                                    <div className="px-4 py-2.5 bg-gradient-to-r from-accent-theme/5 to-transparent dark:from-accent-theme/10 sticky top-0 z-10">
-                                        <h4 className="text-[10px] font-bold text-accent-theme uppercase tracking-widest flex items-center gap-2"><Swords className="w-3.5 h-3.5" />{STAGE_LABELS[stage] || stage.replace(/_/g, " ")}</h4>
+                                    <div className="px-4 py-2.5 bg-gradient-to-r from-[#16A34A]/5 to-transparent dark:from-[#16A34A]/10 sticky top-0 z-10">
+                                        <h4 className="text-[10px] font-bold text-[#16A34A] uppercase tracking-widest flex items-center gap-2"><Swords className="w-3.5 h-3.5" />{STAGE_LABELS[stage] || stage.replace(/_/g, " ")}</h4>
                                     </div>
                                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
                                         {knockoutsByStage[stage].map(m => <MatchRow key={m.id} match={m} competition={activeComp} />)}

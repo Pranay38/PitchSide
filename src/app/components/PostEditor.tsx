@@ -242,7 +242,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="px-5 py-1.5 bg-accent-theme text-white rounded-lg font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-accent-theme/25"
+                        className="px-5 py-1.5 bg-[#16A34A] text-white rounded-lg font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
                     >
                         {post ? "Update Post" : "Publish Post"}
                     </button>
@@ -254,7 +254,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     {/* Cover Image */}
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                         <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <Image className="w-4 h-4 text-accent-theme" />
+                            <Image className="w-4 h-4 text-[#16A34A]" />
                             Cover Image
                         </label>
 
@@ -264,8 +264,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 type="button"
                                 onClick={() => setImageMode("upload")}
                                 className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${imageMode === "upload"
-                                    ? "bg-accent-theme text-white border-accent-theme shadow-md shadow-accent-theme/20"
-                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-accent-theme"
+                                    ? "bg-[#16A34A] text-white border-[#16A34A] shadow-md shadow-[#16A34A]/20"
+                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-[#16A34A]"
                                     }`}
                             >
                                 <Upload className="w-4 h-4" />
@@ -275,8 +275,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 type="button"
                                 onClick={() => setImageMode("url")}
                                 className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${imageMode === "url"
-                                    ? "bg-accent-theme text-white border-accent-theme shadow-md shadow-accent-theme/20"
-                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-accent-theme"
+                                    ? "bg-[#16A34A] text-white border-[#16A34A] shadow-md shadow-[#16A34A]/20"
+                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-[#16A34A]"
                                     }`}
                             >
                                 <Link className="w-4 h-4" />
@@ -303,13 +303,13 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                     onDragLeave={() => setDragOver(false)}
                                     onDrop={handleDrop}
                                     className={`relative flex flex-col items-center justify-center gap-3 p-8 rounded-xl border-2 border-dashed cursor-pointer transition-all ${dragOver
-                                        ? "border-accent-theme bg-accent-theme/5"
-                                        : "border-gray-300 dark:border-gray-600 hover:border-accent-theme hover:bg-gray-50 dark:hover:bg-[#0F172A]"
+                                        ? "border-[#16A34A] bg-[#16A34A]/5"
+                                        : "border-gray-300 dark:border-gray-600 hover:border-[#16A34A] hover:bg-gray-50 dark:hover:bg-[#0F172A]"
                                         }`}
                                 >
                                     {uploading ? (
-                                        <div className="flex items-center gap-2 text-accent-theme">
-                                            <div className="w-5 h-5 border-2 border-accent-theme border-t-transparent rounded-full animate-spin" />
+                                        <div className="flex items-center gap-2 text-[#16A34A]">
+                                            <div className="w-5 h-5 border-2 border-[#16A34A] border-t-transparent rounded-full animate-spin" />
                                             <span className="text-sm font-medium">Processing...</span>
                                         </div>
                                     ) : (
@@ -337,11 +337,11 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                     value={coverImage.startsWith("data:") ? "" : coverImage}
                                     onChange={(e) => setCoverImage(e.target.value)}
                                     placeholder="https://images.unsplash.com/..."
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
                                 />
                                 <p className="text-xs text-[#94A3B8] dark:text-gray-500 mt-2">
                                     Tip: Use{" "}
-                                    <a href="https://unsplash.com" target="_blank" rel="noopener" className="text-accent-theme hover:underline">
+                                    <a href="https://unsplash.com" target="_blank" rel="noopener" className="text-[#16A34A] hover:underline">
                                         Unsplash
                                     </a>{" "}
                                     for free high-quality images
@@ -375,7 +375,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     {/* Title & Excerpt */}
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                         <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <FileText className="w-4 h-4 text-accent-theme" />
+                            <FileText className="w-4 h-4 text-[#16A34A]" />
                             Title & Summary
                         </label>
                         <input
@@ -386,7 +386,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 setErrors({ ...errors, title: "" });
                             }}
                             placeholder="Your article title..."
-                            className={`w-full px-4 py-3 rounded-xl border ${errors.title ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-lg font-semibold mb-3`}
+                            className={`w-full px-4 py-3 rounded-xl border ${errors.title ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-lg font-semibold mb-3`}
                         />
                         {errors.title && <p className="text-red-500 text-xs mb-2">{errors.title}</p>}
 
@@ -398,7 +398,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             }}
                             placeholder="Brief summary of the article (shown on cards)..."
                             rows={2}
-                            className={`w-full px-4 py-3 rounded-xl border ${errors.excerpt ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm resize-none`}
+                            className={`w-full px-4 py-3 rounded-xl border ${errors.excerpt ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm resize-none`}
                         />
                         {errors.excerpt && <p className="text-red-500 text-xs">{errors.excerpt}</p>}
                     </div>
@@ -406,7 +406,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     {/* Category & Club */}
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                         <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <Tag className="w-4 h-4 text-accent-theme" />
+                            <Tag className="w-4 h-4 text-[#16A34A]" />
                             Category & Tags
                         </label>
 
@@ -416,8 +416,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 type="button"
                                 onClick={() => setCategory("club")}
                                 className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${category === "club"
-                                    ? "bg-accent-theme text-white border-accent-theme shadow-md shadow-accent-theme/20"
-                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-accent-theme"
+                                    ? "bg-[#16A34A] text-white border-[#16A34A] shadow-md shadow-[#16A34A]/20"
+                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-[#16A34A]"
                                     }`}
                             >
                                 ⚽ Club-Specific
@@ -426,8 +426,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 type="button"
                                 onClick={() => setCategory("General")}
                                 className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${category !== "club"
-                                    ? "bg-accent-theme text-white border-accent-theme shadow-md shadow-accent-theme/20"
-                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-accent-theme"
+                                    ? "bg-[#16A34A] text-white border-[#16A34A] shadow-md shadow-[#16A34A]/20"
+                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-[#16A34A]"
                                     }`}
                             >
                                 📋 General Topic
@@ -452,10 +452,10 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                         onChange={(e) => handleClubSearch(e.target.value)}
                                         onFocus={() => { if (clubSearch || club) handleClubSearch(clubSearch || club); }}
                                         placeholder="Search any club in the world..."
-                                        className={`w-full ${club && getClubByName(club)?.logo ? 'pl-[4.5rem]' : 'pl-10'} pr-4 py-3 rounded-xl border ${errors.club ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm`}
+                                        className={`w-full ${club && getClubByName(club)?.logo ? 'pl-[4.5rem]' : 'pl-10'} pr-4 py-3 rounded-xl border ${errors.club ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm`}
                                     />
                                     {searchingClubs && (
-                                        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-accent-theme animate-spin" />
+                                        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#16A34A] animate-spin" />
                                     )}
                                 </div>
 
@@ -500,7 +500,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             <select
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm mb-3"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm mb-3"
                             >
                                 {GENERAL_CATEGORIES.map((cat) => (
                                     <option key={cat} value={cat}>
@@ -520,7 +520,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 onChange={(e) => setTagInput(e.target.value)}
                                 onKeyDown={handleKeyDown}
                                 placeholder="Add a custom tag (e.g., Premier League, UCL)..."
-                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm"
+                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
                             />
                             <button
                                 type="button"
@@ -537,7 +537,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                     <span
                                         key={tag}
                                         className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full ${tag === effectiveClub
-                                            ? "bg-accent-theme text-white"
+                                            ? "bg-[#16A34A] text-white"
                                             : "bg-gray-100 dark:bg-gray-700 text-[#64748B] dark:text-gray-400"
                                             }`}
                                     >
@@ -558,7 +558,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     {/* Media / YouTube Embed */}
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                         <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <Link className="w-4 h-4 text-accent-theme" />
+                            <Link className="w-4 h-4 text-[#16A34A]" />
                             Media / Embed Link (YouTube, Spotify)
                         </label>
                         <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
@@ -569,7 +569,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             value={mediaUrl}
                             onChange={(e) => setMediaUrl(e.target.value)}
                             placeholder="https://www.youtube.com/watch?v=..."
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
                         />
                     </div>
 
@@ -577,12 +577,12 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                         <div className="flex items-center justify-between mb-4">
                             <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
-                                <FileText className="w-4 h-4 text-accent-theme" />
+                                <FileText className="w-4 h-4 text-[#16A34A]" />
                                 Interactive Poll
                             </label>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" className="sr-only peer" checked={usePoll} onChange={(e) => setUsePoll(e.target.checked)} />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-theme/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-accent-theme"></div>
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#16A34A]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#16A34A]"></div>
                             </label>
                         </div>
 
@@ -594,7 +594,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                         value={poll.question}
                                         onChange={(e) => setPoll({ ...poll, question: e.target.value })}
                                         placeholder="Poll Question (e.g. Who will win the title?)"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm mb-3 font-semibold"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm mb-3 font-semibold"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -610,7 +610,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                                     setPoll({ ...poll, options: newOpts });
                                                 }}
                                                 placeholder={`Option ${idx + 1}`}
-                                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm"
+                                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
                                             />
                                             {poll.options.length > 2 && (
                                                 <button
@@ -630,7 +630,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                         <button
                                             type="button"
                                             onClick={() => setPoll({ ...poll, options: [...poll.options, { text: "", votes: 0 }] })}
-                                            className="text-xs font-semibold text-accent-theme hover:text-[#15803d] transition-colors mt-2"
+                                            className="text-xs font-semibold text-[#16A34A] hover:text-[#15803d] transition-colors mt-2"
                                         >
                                             + Add Option
                                         </button>
@@ -643,7 +643,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     {/* Featured Layout Options */}
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                         <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
-                            <Star className="w-4 h-4 text-accent-theme" />
+                            <Star className="w-4 h-4 text-[#16A34A]" />
                             Featured Layout
                         </label>
 
@@ -660,7 +660,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" className="sr-only peer" checked={thisWeek} onChange={(e) => setThisWeek(e.target.checked)} />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-theme/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-accent-theme"></div>
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#16A34A]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#16A34A]"></div>
                             </label>
                         </div>
 
@@ -703,7 +703,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                         <div className="flex items-center justify-between mb-3">
                             <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
-                                <FileText className="w-4 h-4 text-accent-theme" />
+                                <FileText className="w-4 h-4 text-[#16A34A]" />
                                 Content
                             </label>
                             <span className="text-xs text-[#94A3B8] dark:text-gray-500">
@@ -725,7 +725,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                         </button>
                         <button
                             type="submit"
-                            className="px-8 py-2.5 bg-accent-theme text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-accent-theme/25"
+                            className="px-8 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
                         >
                             {post ? "Update Post" : "Publish Post"}
                         </button>

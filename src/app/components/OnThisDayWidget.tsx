@@ -18,7 +18,7 @@ export function OnThisDayWidget({ data }: OnThisDayWidgetProps) {
     return (
         <div className="glass-card rounded-2xl p-5 relative overflow-hidden group hover:glow-green transition-all duration-300">
             <div className="flex items-center gap-2 mb-4">
-                <History className="w-5 h-5 text-accent-theme" />
+                <History className="w-5 h-5 text-[#16A34A]" />
                 <h3 className="text-base uppercase tracking-wider font-black font-outfit text-[#0F172A] dark:text-white">
                     On This Day
                 </h3>
@@ -27,7 +27,7 @@ export function OnThisDayWidget({ data }: OnThisDayWidgetProps) {
             <div className="flex items-start gap-3 bg-white/50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700/50">
                 <div className="flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg p-2 min-w-[60px] border border-gray-200 dark:border-gray-700">
                     <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">{format(today, "MMM")}</span>
-                    <span className="text-xl font-black text-accent-theme leading-none my-1">{format(today, "dd")}</span>
+                    <span className="text-xl font-black text-[#16A34A] leading-none my-1">{format(today, "dd")}</span>
                     <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{data.year}</span>
                 </div>
 

@@ -83,7 +83,7 @@ export function ManagerPressureWidget({ data }: ManagerPressureWidgetProps) {
                         onClick={() => setShareOpen(!shareOpen)}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold transition-colors"
                     >
-                        {shared ? <Check className="w-3.5 h-3.5 text-accent-light" /> : <Share2 className="w-3.5 h-3.5 text-gray-300" />}
+                        {shared ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Share2 className="w-3.5 h-3.5 text-gray-300" />}
                         {shared ? "Copied" : "Share"}
                     </button>
 

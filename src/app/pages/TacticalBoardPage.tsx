@@ -138,12 +138,12 @@ const FORMATIONS: Record<string, { name: string; positions: { x: number; y: numb
 const TEAM_COLORS = [
     { name: "Red", home: "#EF4444", away: "#3B82F6" },
     { name: "Blue", home: "#3B82F6", away: "#EF4444" },
-    { name: "Green", home: "var(--theme-light)", away: "#F97316" },
+    { name: "Green", home: "#22C55E", away: "#F97316" },
     { name: "Yellow", home: "#EAB308", away: "#8B5CF6" },
     { name: "White", home: "#E2E8F0", away: "#0F172A" },
 ];
 
-const ARROW_COLORS = ["#EF4444", "#3B82F6", "var(--theme-light)", "#EAB308", "#E2E8F0"];
+const ARROW_COLORS = ["#EF4444", "#3B82F6", "#22C55E", "#EAB308", "#E2E8F0"];
 
 /* ─── Pitch SVG Component ─── */
 function PitchMarkings() {
@@ -685,13 +685,13 @@ export function TacticalBoardPage() {
                             </linearGradient>
                             {/* Grass stripes */}
                             <pattern id="grass" width="100" height="10" patternUnits="userSpaceOnUse">
-                                <rect width="100" height="5" fill="var(--theme-primary)" opacity="0.15" />
+                                <rect width="100" height="5" fill="#16a34a" opacity="0.15" />
                                 <rect y="5" width="100" height="5" fill="#15803d" opacity="0.15" />
                             </pattern>
                             {/* Arrow marker */}
                             <marker id="arrowhead-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#EF4444" /></marker>
                             <marker id="arrowhead-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#3B82F6" /></marker>
-                            <marker id="arrowhead-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="var(--theme-light)" /></marker>
+                            <marker id="arrowhead-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22C55E" /></marker>
                             <marker id="arrowhead-yellow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#EAB308" /></marker>
                             <marker id="arrowhead-white" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#E2E8F0" /></marker>
                         </defs>
@@ -706,7 +706,7 @@ export function TacticalBoardPage() {
                         {arrows.map((a, i) => {
                             const colorMap: Record<string, string> = {
                                 "#EF4444": "arrowhead-red", "#3B82F6": "arrowhead-blue",
-                                "var(--theme-light)": "arrowhead-green", "#EAB308": "arrowhead-yellow", "#E2E8F0": "arrowhead-white",
+                                "#22C55E": "arrowhead-green", "#EAB308": "arrowhead-yellow", "#E2E8F0": "arrowhead-white",
                             };
                             return (
                                 <g key={`arrow-${i}`}>

@@ -120,8 +120,8 @@ export function CommentSection({ postId }: { postId: string }) {
             {/* Comment Form */}
             <form onSubmit={handleSubmit} className="mb-8 bg-gray-50 dark:bg-[#0F172A] rounded-xl p-4 border border-gray-100 dark:border-gray-800">
                 <div className="flex gap-3 mb-3">
-                    <div className="w-9 h-9 rounded-full bg-accent-theme/10 flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4 text-accent-theme" />
+                    <div className="w-9 h-9 rounded-full bg-[#16A34A]/10 flex items-center justify-center flex-shrink-0">
+                        <User className="w-4 h-4 text-[#16A34A]" />
                     </div>
                     <input
                         type="text"
@@ -129,7 +129,7 @@ export function CommentSection({ postId }: { postId: string }) {
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your name"
                         required
-                        className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme placeholder-[#94A3B8] transition-all"
+                        className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] placeholder-[#94A3B8] transition-all"
                     />
                 </div>
                 <div className="flex gap-2">
@@ -139,12 +139,12 @@ export function CommentSection({ postId }: { postId: string }) {
                         placeholder="Share your thoughts..."
                         required
                         rows={2}
-                        className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme placeholder-[#94A3B8] resize-none transition-all"
+                        className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] placeholder-[#94A3B8] resize-none transition-all"
                     />
                     <button
                         type="submit"
                         disabled={!name.trim() || !text.trim() || submitting}
-                        className="self-end px-4 py-2 bg-accent-theme text-white rounded-lg hover:bg-[#15803d] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 text-sm font-medium"
+                        className="self-end px-4 py-2 bg-[#16A34A] text-white rounded-lg hover:bg-[#15803d] disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 text-sm font-medium"
                     >
                         <Send className="w-3.5 h-3.5" />
                         {submitting ? "..." : "Post"}
@@ -157,8 +157,8 @@ export function CommentSection({ postId }: { postId: string }) {
                 <div className="space-y-4">
                     {sortedComments.map((comment) => (
                         <div key={comment.id} className="flex gap-3">
-                            <div className="w-9 h-9 rounded-full bg-accent-theme/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <span className="text-sm font-bold text-accent-theme">
+                            <div className="w-9 h-9 rounded-full bg-[#16A34A]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <span className="text-sm font-bold text-[#16A34A]">
                                     {comment.name[0].toUpperCase()}
                                 </span>
                             </div>

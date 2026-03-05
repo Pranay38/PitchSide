@@ -55,7 +55,7 @@ export function PollWidget({ postId, poll }: PollWidgetProps) {
         <div className="my-8 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden animate-fade-in">
             <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
                 <h3 className="text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-accent-theme" />
+                    <BarChart3 className="w-4 h-4 text-[#16A34A]" />
                     Fan Poll
                 </h3>
                 <span className="text-xs font-medium text-[#94A3B8] bg-gray-200 dark:bg-gray-700/50 px-2 py-1 rounded-md">
@@ -82,31 +82,31 @@ export function PollWidget({ postId, poll }: PollWidgetProps) {
                                 {!hasVoted ? (
                                     <button
                                         onClick={() => handleVote(idx)}
-                                        className="w-full text-left px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-800 hover:border-accent-theme hover:bg-accent-theme/5 dark:hover:bg-accent-theme/10 transition-all group flex items-center justify-between"
+                                        className="w-full text-left px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-800 hover:border-[#16A34A] hover:bg-[#16A34A]/5 dark:hover:bg-[#16A34A]/10 transition-all group flex items-center justify-between"
                                     >
-                                        <span className="text-sm font-medium text-[#0F172A] dark:text-gray-200 group-hover:text-accent-theme transition-colors">
+                                        <span className="text-sm font-medium text-[#0F172A] dark:text-gray-200 group-hover:text-[#16A34A] transition-colors">
                                             {option.text}
                                         </span>
-                                        <div className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-accent-theme transition-colors" />
+                                        <div className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-[#16A34A] transition-colors" />
                                     </button>
                                 ) : (
                                     /* Results View */
-                                    <div className={`relative overflow-hidden w-full px-4 py-3 rounded-xl border-2 transition-all ${isSelected ? 'border-accent-theme bg-accent-theme/5' : 'border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#0F172A]/30'}`}>
+                                    <div className={`relative overflow-hidden w-full px-4 py-3 rounded-xl border-2 transition-all ${isSelected ? 'border-[#16A34A] bg-[#16A34A]/5' : 'border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#0F172A]/30'}`}>
 
                                         {/* Progress Bar Background */}
                                         <div
-                                            className={`absolute inset-0 opacity-10 transition-all duration-1000 ease-out ${isSelected ? 'bg-accent-theme' : 'bg-gray-400 dark:bg-gray-500'}`}
+                                            className={`absolute inset-0 opacity-10 transition-all duration-1000 ease-out ${isSelected ? 'bg-[#16A34A]' : 'bg-gray-400 dark:bg-gray-500'}`}
                                             style={{ width: `${percentage}%` }}
                                         />
 
                                         <div className="relative flex items-center justify-between z-10">
                                             <div className="flex items-center gap-2">
-                                                <span className={`text-sm font-semibold ${isSelected ? 'text-accent-theme' : 'text-[#0F172A] dark:text-gray-300'}`}>
+                                                <span className={`text-sm font-semibold ${isSelected ? 'text-[#16A34A]' : 'text-[#0F172A] dark:text-gray-300'}`}>
                                                     {option.text}
                                                 </span>
-                                                {isSelected && <CheckCircle2 className="w-4 h-4 text-accent-theme" />}
+                                                {isSelected && <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />}
                                             </div>
-                                            <span className={`text-sm font-bold ${isSelected ? 'text-accent-theme' : 'text-[#64748B] dark:text-gray-400'}`}>
+                                            <span className={`text-sm font-bold ${isSelected ? 'text-[#16A34A]' : 'text-[#64748B] dark:text-gray-400'}`}>
                                                 {percentage}%
                                             </span>
                                         </div>

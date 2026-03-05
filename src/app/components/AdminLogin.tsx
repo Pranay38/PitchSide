@@ -27,7 +27,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
                 <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-xl p-8 transition-colors duration-300">
                     {/* Logo */}
                     <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-theme to-[#15803d] mb-4 shadow-lg shadow-accent-theme/20">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#16A34A] to-[#15803d] mb-4 shadow-lg shadow-[#16A34A]/20">
                             <Lock className="w-7 h-7 text-white" />
                         </div>
                         <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">
@@ -52,7 +52,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
                                         setError("");
                                     }}
                                     placeholder="Enter admin password"
-                                    className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm"
+                                    className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
                                     autoFocus
                                 />
                                 <button
@@ -70,14 +70,14 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
 
                         <button
                             type="submit"
-                            className="w-full py-3 bg-accent-theme text-white rounded-xl font-medium hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-accent-theme/25 text-sm"
+                            className="w-full py-3 bg-[#16A34A] text-white rounded-xl font-medium hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25 text-sm"
                         >
                             Sign In
                         </button>
                     </form>
 
                     <p className="text-xs text-center text-[#94A3B8] dark:text-gray-500 mt-6">
-                        Default password: <code className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-accent-theme">pitchside2026</code>
+                        Default password: <code className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-[#16A34A]">pitchside2026</code>
                     </p>
                 </div>
             </div>
