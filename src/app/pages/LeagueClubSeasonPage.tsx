@@ -7,8 +7,6 @@ import { PostCard } from "../components/PostCard";
 import { getAllPosts } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { ArrowLeft, Trophy, Target, Users, Loader2, AlertCircle } from "lucide-react";
-import { SofaScoreWidget } from "../components/SofaScoreWidget";
-import { TOURNAMENTS, findTeamId } from "../data/sofascoreData";
 
 /** Available leagues for internal linking */
 const LEAGUES = [
@@ -197,28 +195,6 @@ export function LeagueClubSeasonPage() {
                                     {data.leagueName} · {data.season} Season
                                 </p>
                             </div>
-                        </div>
-
-                        {/* SofaScore Widget Integration */}
-                        <div className="mb-10">
-                            {data.club ? (
-                                // Team Widget for Club Pages
-                                TOURNAMENTS[data.leagueName] && findTeamId(data.club.name) ? (
-                                    <SofaScoreWidget widgetConfig={{
-                                        type: "team",
-                                        id: findTeamId(data.club.name)
-                                    }} />
-                                ) : null
-                            ) : (
-                                // Standings Widget for League Pages
-                                TOURNAMENTS[data.leagueName] ? (
-                                    <SofaScoreWidget widgetConfig={{
-                                        type: "standings",
-                                        tournamentId: TOURNAMENTS[data.leagueName].tournamentId,
-                                        seasonId: TOURNAMENTS[data.leagueName].seasonId
-                                    }} />
-                                ) : null
-                            )}
                         </div>
 
                         {/* Club Stats Card (if club view) */}

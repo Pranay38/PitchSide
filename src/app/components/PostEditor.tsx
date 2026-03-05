@@ -4,17 +4,6 @@ import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName } from
 import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
-import { SofaScoreWidget } from "./SofaScoreWidget";
-import {
-    getAllClubNamesForWidgets,
-    getAllPlayerNames,
-    getAllTournamentNames,
-    findTeamId,
-    findPlayerId,
-    TOURNAMENTS,
-    type SofaScoreWidgetType,
-    type WidgetConfig
-} from "../data/sofascoreData";
 import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users } from "lucide-react";
 
 /** Categories that are NOT club-specific */
@@ -96,8 +85,6 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [mustRead, setMustRead] = useState(post?.mustRead || false);
     const [mainStory, setMainStory] = useState(post?.mainStory || false);
     const [mediaUrl, setMediaUrl] = useState(post?.mediaUrl || "");
-    const [sofascoreUrl, setSofascoreUrl] = useState(post?.sofascoreUrl || "");
-    const [sofascoreWidget, setSofascoreWidget] = useState<any>(post?.sofascoreWidget || null);
     const [playerName, setPlayerName] = useState(post?.playerName || "");
     const [poll, setPoll] = useState(post?.poll || { question: "", options: [{ text: "", votes: 0 }, { text: "", votes: 0 }] });
     const [usePoll, setUsePoll] = useState(!!post?.poll);
@@ -238,8 +225,6 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             mustRead,
             mainStory,
             mediaUrl: mediaUrl.trim() || undefined,
-            sofascoreUrl: sofascoreUrl.trim() || undefined,
-            sofascoreWidget: sofascoreWidget || undefined,
             playerName: playerName.trim() || undefined,
             poll: usePoll && poll.question.trim() ? poll : undefined,
         });
@@ -590,124 +575,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                         />
                     </div>
 
-                    {/* SofaScore Widget Builder */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <Activity className="w-4 h-4 text-[#F85D4E]" />
-                            SofaScore Widget Integration
-                        </label>
-                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
-                            Embed live, auto-updating stats widgets right into your article. Free and officially supported.
-                        </p>
 
-                        <div className="space-y-4">
-                            {/* Type Selector */}
-                            <select
-                                value={sofascoreWidget?.type || ""}
-                                onChange={(e) => {
-                                    const type = e.target.value as SofaScoreWidgetType;
-                                    if (!type) setSofascoreWidget(null);
-                                    else setSofascoreWidget({ type });
-                                    setSofascoreUrl(""); // Clear legacy url
-                                }}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F85D4E]/50 focus:border-[#F85D4E] transition-all text-sm"
-                            >
-                                <option value="">No Widget</option>
-                                <option value="match">Live Match / Scoreboard</option>
-                                <option value="team">Team Overview (Form & Next Match)</option>
-                                <option value="player">Player Stats & Heatmap</option>
-                                <option value="standings">League Standings</option>
-                            </select>
-
-                            {/* Configuration based on type */}
-                            {sofascoreWidget?.type === "match" && (
-                                <input
-                                    type="url"
-                                    value={sofascoreWidget?.eventUrl || ""}
-                                    onChange={(e) => setSofascoreWidget({ ...sofascoreWidget, eventUrl: e.target.value })}
-                                    placeholder="Paste SofaScore match URL (e.g., sofascore.com/arsenal-chelsea/...)"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#F85D4E]/50 focus:border-[#F85D4E] transition-all text-sm"
-                                />
-                            )}
-
-                            {sofascoreWidget?.type === "team" && (
-                                <div className="space-y-2">
-                                    <select
-                                        value={sofascoreWidget?.id || ""}
-                                        onChange={(e) => {
-                                            const id = e.target.value ? parseInt(e.target.value) : undefined;
-                                            setSofascoreWidget({ ...sofascoreWidget, id });
-                                        }}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F85D4E]/50 transition-all text-sm"
-                                    >
-                                        <option value="">Select a Club...</option>
-                                        {getAllClubNamesForWidgets().map(club => (
-                                            <option key={club} value={findTeamId(club)}>{club}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-
-                            {sofascoreWidget?.type === "player" && (
-                                <div className="space-y-2">
-                                    <select
-                                        value={sofascoreWidget?.id || ""}
-                                        onChange={(e) => {
-                                            const id = e.target.value ? parseInt(e.target.value) : undefined;
-                                            setSofascoreWidget({ ...sofascoreWidget, id });
-                                        }}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F85D4E]/50 transition-all text-sm"
-                                    >
-                                        <option value="">Select a popular player...</option>
-                                        {getAllPlayerNames().map(p => (
-                                            <option key={p} value={findPlayerId(p)}>{p}</option>
-                                        ))}
-                                    </select>
-                                    <p className="text-xs text-gray-500">Only top players pre-mapped. For others, use Match URL embed.</p>
-                                </div>
-                            )}
-
-                            {sofascoreWidget?.type === "standings" && (
-                                <div className="space-y-2">
-                                    <select
-                                        value={sofascoreWidget?.tournamentId || ""}
-                                        onChange={(e) => {
-                                            const tName = e.target.value;
-                                            if (!tName) {
-                                                setSofascoreWidget({ type: "standings" });
-                                                return;
-                                            }
-                                            const tInfo = TOURNAMENTS[tName];
-                                            setSofascoreWidget({
-                                                type: "standings",
-                                                tournamentId: tInfo.tournamentId,
-                                                seasonId: tInfo.seasonId
-                                            });
-                                        }}
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F85D4E]/50 transition-all text-sm"
-                                    >
-                                        <option value="">Select a League...</option>
-                                        {getAllTournamentNames().map(t => (
-                                            <option key={t} value={t}>{t}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-
-                            {/* Live Preview */}
-                            {sofascoreWidget?.type && (sofascoreWidget.id || sofascoreWidget.eventUrl || sofascoreWidget.tournamentId) && (
-                                <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
-                                    <p className="text-xs font-medium text-gray-500 mb-3 flex items-center gap-1.5 uppercase tracking-wider">
-                                        <Activity className="w-3.5 h-3.5" />
-                                        Widget Preview
-                                    </p>
-                                    <div className="scale-95 origin-top relative z-0 pointer-events-none opacity-90">
-                                        <SofaScoreWidget widgetConfig={sofascoreWidget} />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
 
                     {/* Player Name (for Player Profile category) */}
                     {(category === "Player Profile" || tags.includes("Player Profile")) && (
