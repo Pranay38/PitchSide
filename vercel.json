@@ -26,11 +26,11 @@
         },
         {
             "source": "/api/club-season",
-            "destination": "/api/club-season"
+            "destination": "/api/sys?route=club-season"
         },
         {
             "source": "/api/og",
-            "destination": "/api/og"
+            "destination": "/api/sys?route=og"
         },
         {
             "source": "/api/(.*)",

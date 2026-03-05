@@ -5,6 +5,8 @@ import notifyHandler from "../server/endpoints/notify.js";
 import settingsHandler from "../server/endpoints/settings.js";
 import subscribersHandler from "../server/endpoints/subscribers.js";
 import tacticsHandler from "../server/endpoints/tactics.js";
+import ogHandler from "../server/endpoints/og.js";
+import clubSeasonHandler from "../server/endpoints/club-season.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const route = req.query.route as string;
@@ -22,6 +24,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return subscribersHandler(req, res);
         case "tactics":
             return tacticsHandler(req, res);
+        case "og":
+            return ogHandler(req, res);
+        case "club-season":
+            return clubSeasonHandler(req, res);
         default:
             return res.status(404).json({ error: "Route not found" });
     }
