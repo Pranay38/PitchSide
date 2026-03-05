@@ -38,7 +38,7 @@ export function DebateEditor({ onSave, onCancel }: DebateEditorProps) {
             <div className="bg-white dark:bg-[#1E293B] w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden animate-in slide-in-from-bottom-4">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-[#0F172A]/50">
                     <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-[#16A34A]" />
+                        <FileText className="w-5 h-5 text-accent-theme" />
                         Create New Debate
                     </h2>
                     <button onClick={onCancel} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
@@ -56,7 +56,7 @@ export function DebateEditor({ onSave, onCancel }: DebateEditorProps) {
                             value={title}
                             onChange={(e) => { setTitle(e.target.value); setErrors({ ...errors, title: "" }); }}
                             placeholder="e.g. Is Salah the best PL player ever?"
-                            className={`w-full px-4 py-3 rounded-xl border ${errors.title ? "border-red-400" : "border-gray-200 dark:border-gray-700"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 transition-all font-medium`}
+                            className={`w-full px-4 py-3 rounded-xl border ${errors.title ? "border-red-400" : "border-gray-200 dark:border-gray-700"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-theme/50 transition-all font-medium`}
                         />
                         {errors.title && <p className="text-red-500 text-xs mt-1.5">{errors.title}</p>}
                     </div>
@@ -69,7 +69,7 @@ export function DebateEditor({ onSave, onCancel }: DebateEditorProps) {
                             onChange={(e) => { setDescription(e.target.value); setErrors({ ...errors, description: "" }); }}
                             placeholder="Provide some background information setting up the debate..."
                             rows={3}
-                            className={`w-full px-4 py-3 rounded-xl border ${errors.description ? "border-red-400" : "border-gray-200 dark:border-gray-700"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 transition-all text-sm resize-none`}
+                            className={`w-full px-4 py-3 rounded-xl border ${errors.description ? "border-red-400" : "border-gray-200 dark:border-gray-700"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-theme/50 transition-all text-sm resize-none`}
                         />
                         {errors.description && <p className="text-red-500 text-xs mt-1.5">{errors.description}</p>}
                     </div>
@@ -78,28 +78,28 @@ export function DebateEditor({ onSave, onCancel }: DebateEditorProps) {
                         {/* Category */}
                         <div>
                             <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-gray-300 mb-2">
-                                <Tag className="w-4 h-4 text-[#16A34A]" /> Category
+                                <Tag className="w-4 h-4 text-accent-theme" /> Category
                             </label>
                             <input
                                 type="text"
                                 value={category}
                                 onChange={(e) => setCategory(e.target.value)}
                                 placeholder="e.g. Premier League"
-                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 transition-all text-sm"
+                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-theme/50 transition-all text-sm"
                             />
                         </div>
 
                         {/* Image URL */}
                         <div>
                             <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-gray-300 mb-2">
-                                <Link className="w-4 h-4 text-[#16A34A]" /> Image URL
+                                <Link className="w-4 h-4 text-accent-theme" /> Image URL
                             </label>
                             <input
                                 type="url"
                                 value={coverImage}
                                 onChange={(e) => setCoverImage(e.target.value)}
                                 placeholder="Optional Unsplash URL..."
-                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 transition-all text-sm"
+                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-theme/50 transition-all text-sm"
                             />
                         </div>
                     </div>
@@ -114,7 +114,7 @@ export function DebateEditor({ onSave, onCancel }: DebateEditorProps) {
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all hover:shadow-lg hover:shadow-[#16A34A]/25"
+                            className="px-6 py-2.5 bg-accent-theme text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all hover:shadow-lg hover:shadow-accent-theme/25"
                         >
                             Create Debate
                         </button>

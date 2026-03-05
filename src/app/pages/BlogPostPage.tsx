@@ -32,7 +32,7 @@ export function BlogPostPage() {
           </h1>
           <button
             onClick={() => navigate("/")}
-            className="text-[#16A34A] hover:underline font-medium"
+            className="text-accent-theme hover:underline font-medium"
           >
             Return to homepage
           </button>
@@ -109,7 +109,7 @@ export function BlogPostPage() {
               <span
                 key={tag}
                 className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full ${tag === post.club
-                  ? "text-white bg-[#16A34A]"
+                  ? "text-white bg-accent-theme"
                   : "text-[#64748B] dark:text-gray-400 bg-gray-100 dark:bg-gray-800"
                   }`}
               >
@@ -180,7 +180,7 @@ export function BlogPostPage() {
                   />
                 </div>
               ) : (
-                <a href={post.mediaUrl} target="_blank" rel="noopener noreferrer" className="text-[#16A34A] hover:underline flex items-center gap-2 py-4">
+                <a href={post.mediaUrl} target="_blank" rel="noopener noreferrer" className="text-accent-theme hover:underline flex items-center gap-2 py-4">
                   <Share2 className="w-5 h-5" />
                   Watch Media Link
                 </a>
@@ -240,7 +240,7 @@ export function BlogPostPage() {
             {previousPost ? (
               <button
                 onClick={() => navigate(`/post/${previousPost.id}`)}
-                className="flex items-center gap-2 text-[#16A34A] hover:underline group"
+                className="flex items-center gap-2 text-accent-theme hover:underline group"
               >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                 <span className="font-medium text-sm">Previous Post</span>
@@ -252,7 +252,7 @@ export function BlogPostPage() {
             {nextPost ? (
               <button
                 onClick={() => navigate(`/post/${nextPost.id}`)}
-                className="flex items-center gap-2 text-[#16A34A] hover:underline sm:ml-auto group"
+                className="flex items-center gap-2 text-accent-theme hover:underline sm:ml-auto group"
               >
                 <span className="font-medium text-sm">Next Post</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

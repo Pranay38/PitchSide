@@ -48,7 +48,7 @@ export function TransferTicker() {
     return (
         <div className="w-full bg-[#0F172A] border-y border-gray-800 text-white overflow-hidden flex items-center h-10 select-none">
             {/* Left Badge */}
-            <div className="bg-[#16A34A] h-full flex items-center justify-center px-4 font-black tracking-widest text-[11px] uppercase z-10 shrink-0 shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
+            <div className="bg-accent-theme h-full flex items-center justify-center px-4 font-black tracking-widest text-[11px] uppercase z-10 shrink-0 shadow-[4px_0_12px_rgba(0,0,0,0.5)]">
                 <span className="flex items-center gap-1.5">
                     <ArrowRightLeft className="w-3.5 h-3.5" />
                     Transfers
@@ -85,7 +85,7 @@ export function TransferTicker() {
                                     <span className="text-gray-300 text-xs hover:text-white hover:underline transition-colors">{item.text}</span>
                                 </a>
                             )}
-                            <span className="ml-8 text-[#16A34A]/50">♦</span>
+                            <span className="ml-8 text-accent-theme/50">♦</span>
                         </div>
                     ))}
                 </div>

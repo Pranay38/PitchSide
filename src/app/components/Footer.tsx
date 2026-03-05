@@ -57,7 +57,7 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-2.5 mb-5">
               <img src="/logo.png" alt="The Touchline Dribble" className="w-9 h-9 object-contain rounded-lg" />
-              <span className="text-xl font-extrabold font-outfit bg-gradient-to-r from-[#16A34A] via-[#22c55e] to-[#4ade80] bg-clip-text text-transparent">
+              <span className="text-xl font-extrabold font-outfit bg-gradient-to-r from-accent-theme via-accent-light to-accent-light bg-clip-text text-transparent">
                 The Touchline Dribble
               </span>
             </div>
@@ -74,7 +74,7 @@ export function Footer() {
                 <Instagram className="w-4 h-4" />
               </a>
               <a href="mailto:thetouchlinedribble@gmail.com"
-                className="p-2.5 rounded-xl bg-white/5 hover:bg-[#16A34A]/20 hover:text-[#16A34A] hover:shadow-lg hover:shadow-[#16A34A]/10 transition-all duration-300">
+                className="p-2.5 rounded-xl bg-white/5 hover:bg-accent-theme/20 hover:text-accent-theme hover:shadow-lg hover:shadow-accent-theme/10 transition-all duration-300">
                 <Mail className="w-4 h-4" />
               </a>
             </div>
@@ -84,16 +84,16 @@ export function Footer() {
           <div>
             <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-4">Explore</h3>
             <ul className="space-y-2.5">
-              <li><Link to="/" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Home</Link></li>
-              <li><Link to="/daily-fix" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">The Daily Fix</Link></li>
-              <li><Link to="/about" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">About</Link></li>
-              <li><a href="mailto:thetouchlinedribble@gmail.com" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Contact</a></li>
+              <li><Link to="/" className="text-sm text-gray-400 hover:text-accent-light transition-colors duration-200">Home</Link></li>
+              <li><Link to="/daily-fix" className="text-sm text-gray-400 hover:text-accent-light transition-colors duration-200">The Daily Fix</Link></li>
+              <li><Link to="/about" className="text-sm text-gray-400 hover:text-accent-light transition-colors duration-200">About</Link></li>
+              <li><a href="mailto:thetouchlinedribble@gmail.com" className="text-sm text-gray-400 hover:text-accent-light transition-colors duration-200">Contact</a></li>
             </ul>
 
             <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-3 mt-6">Categories</h3>
             <div className="flex flex-wrap gap-1.5">
               {["Tactics", "Premier League", "La Liga", "Champions League", "Transfer News"].map((cat) => (
-                <span key={cat} className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-gray-400 hover:bg-[#16A34A]/20 hover:text-[#4ade80] transition-all duration-200 cursor-pointer border border-white/5 hover:border-[#16A34A]/30">
+                <span key={cat} className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-gray-400 hover:bg-accent-theme/20 hover:text-accent-light transition-all duration-200 cursor-pointer border border-white/5 hover:border-accent-theme/30">
                   {cat}
                 </span>
               ))}
@@ -112,11 +112,11 @@ export function Footer() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="flex-1 w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all duration-300 backdrop-blur-sm"
+                className="flex-1 w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all duration-300 backdrop-blur-sm"
               />
               <button
                 type="submit"
-                className="w-full sm:w-auto px-5 py-2.5 gradient-accent text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#16A34A]/25 transition-all duration-300 flex-shrink-0"
+                className="w-full sm:w-auto px-5 py-2.5 gradient-accent text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-accent-theme/25 transition-all duration-300 flex-shrink-0"
               >
                 Subscribe
               </button>

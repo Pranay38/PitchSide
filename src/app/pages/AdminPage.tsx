@@ -283,11 +283,11 @@ export function AdminPage() {
                 <div className="max-w-[1100px] mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Link to="/" className="flex items-center gap-2">
-                            <span className="text-xl font-bold bg-gradient-to-r from-[#16A34A] to-[#22c55e] bg-clip-text text-transparent">
+                            <span className="text-xl font-bold bg-gradient-to-r from-accent-theme to-accent-light bg-clip-text text-transparent">
                                 The Touchline Dribble
                             </span>
                         </Link>
-                        <span className="px-2 py-0.5 text-xs font-medium bg-[#16A34A]/10 text-[#16A34A] rounded-full">Admin</span>
+                        <span className="px-2 py-0.5 text-xs font-medium bg-accent-theme/10 text-accent-theme rounded-full">Admin</span>
                     </div>
                     <div className="flex items-center gap-3">
                         <Link to="/" className="flex items-center gap-1.5 text-sm text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors">
@@ -310,25 +310,25 @@ export function AdminPage() {
                 <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 dark:border-gray-800 mb-8 pb-4">
                     <button
                         onClick={() => setActiveTab("posts")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "posts" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "posts" ? "bg-accent-theme text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Layout className="w-4 h-4" /> Posts
                     </button>
                     <button
                         onClick={() => setActiveTab("collections")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "collections" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "collections" ? "bg-accent-theme text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Library className="w-4 h-4" /> Collections
                     </button>
                     <button
                         onClick={() => setActiveTab("debates")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "debates" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "debates" ? "bg-accent-theme text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Flame className="w-4 h-4" /> Debates
                     </button>
                     <button
                         onClick={() => setActiveTab("settings")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "settings" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "settings" ? "bg-accent-theme text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <RadioTower className="w-4 h-4" /> Settings & Newsletter
                     </button>
@@ -349,7 +349,7 @@ export function AdminPage() {
                                 <button onClick={() => importFileRef.current?.click()} className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-[#64748B] dark:text-gray-400 rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
                                     <Upload className="w-4 h-4" /><span className="hidden sm:inline">Import</span>
                                 </button>
-                                <button onClick={() => setView("create")} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25">
+                                <button onClick={() => setView("create")} className="flex items-center gap-2 px-5 py-2.5 bg-accent-theme text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-accent-theme/25">
                                     <Plus className="w-4 h-4" />New Post
                                 </button>
                             </div>
@@ -360,7 +360,7 @@ export function AdminPage() {
                                 <div className="text-5xl mb-4">📝</div>
                                 <h2 className="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">No posts yet</h2>
                                 <p className="text-sm text-[#64748B] dark:text-gray-400 mb-6">Create your first blog post to get started.</p>
-                                <button onClick={() => setView("create")} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all">
+                                <button onClick={() => setView("create")} className="flex items-center gap-2 px-5 py-2.5 bg-accent-theme text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all">
                                     <Plus className="w-4 h-4" />Write Your First Post
                                 </button>
                             </div>
@@ -376,12 +376,12 @@ export function AdminPage() {
                                         <div className="flex-1 min-w-0">
                                             <h3 className="font-semibold text-[#0F172A] dark:text-white text-sm truncate">{post.title}</h3>
                                             <div className="flex items-center gap-2 mt-1 text-xs text-[#94A3B8] dark:text-gray-500">
-                                                <span className="px-2 py-0.5 bg-[#16A34A]/10 text-[#16A34A] rounded-full font-medium">{post.club}</span>
+                                                <span className="px-2 py-0.5 bg-accent-theme/10 text-accent-theme rounded-full font-medium">{post.club}</span>
                                                 <span>{post.date}</span><span>•</span><span>{post.readTime}</span>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-1 flex-shrink-0">
-                                            <button onClick={() => notifySubscribers(post)} disabled={notifyingPostId === post.id} className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors" title="Notify Subscribers">
+                                            <button onClick={() => notifySubscribers(post)} disabled={notifyingPostId === post.id} className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-accent-theme transition-colors" title="Notify Subscribers">
                                                 <Send className={`w-4 h-4 \${notifyingPostId === post.id ? 'animate-pulse' : ''}`} />
                                             </button>
                                             <button onClick={() => navigate(`/post/\${post.id}`)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
@@ -403,7 +403,7 @@ export function AdminPage() {
                                 <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">Collections</h1>
                                 <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">{collections.length} Reading Lists</p>
                             </div>
-                            <button onClick={handleCreateCollection} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
+                            <button onClick={handleCreateCollection} className="flex items-center gap-2 px-5 py-2.5 bg-accent-theme text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
                                 <Plus className="w-4 h-4" />New Collection
                             </button>
                         </div>
@@ -436,7 +436,7 @@ export function AdminPage() {
                                 <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">Debate Corner</h1>
                                 <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">{debates.length} hot takes</p>
                             </div>
-                            <button onClick={() => setShowDebateEditor(true)} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
+                            <button onClick={() => setShowDebateEditor(true)} className="flex items-center gap-2 px-5 py-2.5 bg-accent-theme text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
                                 <Plus className="w-4 h-4" />New Debate
                             </button>
                         </div>
@@ -471,12 +471,12 @@ export function AdminPage() {
                         <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6 flex items-start justify-between">
                             <div>
                                 <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2 mb-2">
-                                    <Mail className="w-5 h-5 text-[#16A34A]" /> Newsletter & Digest
+                                    <Mail className="w-5 h-5 text-accent-theme" /> Newsletter & Digest
                                 </h2>
                                 <p className="text-sm text-[#64748B] dark:text-gray-400 mb-4 max-w-lg">
-                                    You have <strong className="text-[#16A34A]">{subscriberCount} subscribers</strong>. The weekly digest triggers automatically via Vercel Cron. You can also send the digest right now to test it.
+                                    You have <strong className="text-accent-theme">{subscriberCount} subscribers</strong>. The weekly digest triggers automatically via Vercel Cron. You can also send the digest right now to test it.
                                 </p>
-                                <button onClick={handleSendDigest} disabled={sendingDigest} className="px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all disabled:opacity-50 flex gap-2 items-center">
+                                <button onClick={handleSendDigest} disabled={sendingDigest} className="px-5 py-2.5 bg-accent-theme text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all disabled:opacity-50 flex gap-2 items-center">
                                     <Send className="w-4 h-4" /> {sendingDigest ? "Sending..." : "Send Digest Manually"}
                                 </button>
                             </div>
@@ -487,7 +487,7 @@ export function AdminPage() {
                             <div className="flex items-start justify-between gap-4 mb-5">
                                 <div>
                                     <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                                        <RadioTower className="w-5 h-5 text-[#16A34A]" /> Social Wall
+                                        <RadioTower className="w-5 h-5 text-accent-theme" /> Social Wall
                                     </h2>
                                     <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
                                         Paste Curator.io or Tagembed code to show a live social feed in your homepage sidebar.
@@ -495,20 +495,20 @@ export function AdminPage() {
                                 </div>
                                 <label className="inline-flex items-center gap-2 cursor-pointer select-none">
                                     <span className="text-sm font-medium text-[#0F172A] dark:text-white">Enabled</span>
-                                    <input type="checkbox" checked={siteSettings.socialWallEnabled} onChange={(e) => setSiteSettings(prev => ({ ...prev, socialWallEnabled: e.target.checked }))} className="h-4 w-4 accent-[#16A34A]" />
+                                    <input type="checkbox" checked={siteSettings.socialWallEnabled} onChange={(e) => setSiteSettings(prev => ({ ...prev, socialWallEnabled: e.target.checked }))} className="h-4 w-4 accent-accent-theme" />
                                 </label>
                             </div>
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Section Title</label>
-                                    <input type="text" value={siteSettings.socialWallTitle} onChange={(e) => setSiteSettings((prev) => ({ ...prev, socialWallTitle: e.target.value }))} placeholder="Social Wall" className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]" />
+                                    <input type="text" value={siteSettings.socialWallTitle} onChange={(e) => setSiteSettings((prev) => ({ ...prev, socialWallTitle: e.target.value }))} placeholder="Social Wall" className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-theme" />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Embed Snippet</label>
-                                    <textarea value={siteSettings.socialWallEmbedCode} onChange={(e) => setSiteSettings((prev) => ({ ...prev, socialWallEmbedCode: e.target.value }))} rows={4} placeholder="<div class='tagembed-widget' ...></div><script src='...'></script>" className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-3 text-xs font-mono text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]" />
+                                    <textarea value={siteSettings.socialWallEmbedCode} onChange={(e) => setSiteSettings((prev) => ({ ...prev, socialWallEmbedCode: e.target.value }))} rows={4} placeholder="<div class='tagembed-widget' ...></div><script src='...'></script>" className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-3 text-xs font-mono text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-theme" />
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <button onClick={handleSaveSocialWall} disabled={savingSiteSettings} className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
+                                    <button onClick={handleSaveSocialWall} disabled={savingSiteSettings} className="px-4 py-2.5 bg-accent-theme text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
                                         {savingSiteSettings ? "Saving..." : "Save Social Wall"}
                                     </button>
                                 </div>

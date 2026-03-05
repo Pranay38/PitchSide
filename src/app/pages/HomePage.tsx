@@ -258,7 +258,7 @@ export function HomePage() {
         <div className="mb-8 space-y-4 animate-float-in">
           {/* Search Bar - Glass style */}
           <div className="relative max-w-xl mx-auto md:mx-0 glass-card rounded-2xl group focus-within:glow-green transition-all duration-300">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] group-focus-within:text-[#16A34A] transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] group-focus-within:text-accent-theme transition-colors" />
             <input
               type="text"
               value={searchQuery}
@@ -282,8 +282,8 @@ export function HomePage() {
             <button
               onClick={() => { setActiveTag(null); }}
               className={`flex-shrink-0 px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-300 ${!activeTag
-                ? "gradient-accent text-white shadow-md shadow-[#16A34A]/20"
-                : "glass-card text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
+                ? "gradient-accent text-white shadow-md shadow-accent-theme/20"
+                : "glass-card text-[#64748B] dark:text-gray-400 hover:text-accent-theme dark:hover:text-accent-light"
                 }`}
             >
               All
@@ -293,8 +293,8 @@ export function HomePage() {
                 key={tag}
                 onClick={() => handleTagClick(tag)}
                 className={`flex-shrink-0 px-4 py-1.5 text-xs font-bold rounded-full transition-all duration-300 whitespace-nowrap ${activeTag === tag
-                  ? "gradient-accent text-white shadow-md shadow-[#16A34A]/20"
-                  : "glass-card text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
+                  ? "gradient-accent text-white shadow-md shadow-accent-theme/20"
+                  : "glass-card text-[#64748B] dark:text-gray-400 hover:text-accent-theme dark:hover:text-accent-light"
                   }`}
               >
                 {tag}
@@ -309,11 +309,11 @@ export function HomePage() {
             <span>
               {filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"} found
               {searchQuery && <> for "<span className="font-semibold text-[#0F172A] dark:text-white">{searchQuery}</span>"</>}
-              {activeTag && <> in <span className="font-semibold text-[#16A34A]">{activeTag}</span></>}
+              {activeTag && <> in <span className="font-semibold text-accent-theme">{activeTag}</span></>}
             </span>
             <button
               onClick={() => { setSearchQuery(""); setActiveTag(null); }}
-              className="text-xs text-[#16A34A] hover:underline font-bold ml-auto"
+              className="text-xs text-accent-theme hover:underline font-bold ml-auto"
             >
               Clear filters
             </button>
@@ -334,10 +334,10 @@ export function HomePage() {
 
         {/* Club Personalization Note */}
         {favoriteClub && !searchQuery && !activeTag && (
-          <div className="flex items-center justify-between gap-2 mb-8 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#16A34A]/10 via-[#22c55e]/5 to-transparent border border-[#16A34A]/15 glow-green animate-float-in">
+          <div className="flex items-center justify-between gap-2 mb-8 px-5 py-3 rounded-2xl bg-gradient-to-r from-accent-theme/10 via-accent-light/5 to-transparent border border-accent-theme/15 glow-green animate-float-in">
             <div className="flex items-center gap-2.5">
-              <Trophy className="w-5 h-5 text-[#16A34A]" />
-              <span className="text-sm text-[#16A34A] font-bold font-outfit">Your Feed is tuned for {favoriteClub}</span>
+              <Trophy className="w-5 h-5 text-accent-theme" />
+              <span className="text-sm text-accent-theme font-bold font-outfit">Your Feed is tuned for {favoriteClub}</span>
             </div>
           </div>
         )}
@@ -440,7 +440,7 @@ export function HomePage() {
                 </p>
                 <button
                   onClick={() => { setSearchQuery(""); setActiveTag(null); }}
-                  className="px-6 py-2.5 gradient-accent text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#16A34A]/25 transition-all duration-300"
+                  className="px-6 py-2.5 gradient-accent text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-accent-theme/25 transition-all duration-300"
                 >
                   Clear Filters
                 </button>

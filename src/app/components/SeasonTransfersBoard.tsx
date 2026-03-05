@@ -107,7 +107,7 @@ function TransferWindowColumn({
                                 {typeof item.stats.minutes === "number" && <StatChip label={`${item.stats.minutes} mins`} />}
                             </div>
 
-                            <p className={`text-[11px] mt-2 ${item.stats.available ? "text-[#16A34A] dark:text-[#4ADE80]" : "text-[#64748B] dark:text-[#94A3B8]"}`}>
+                            <p className={`text-[11px] mt-2 ${item.stats.available ? "text-accent-theme dark:text-accent-light" : "text-[#64748B] dark:text-[#94A3B8]"}`}>
                                 {item.stats.summary}
                             </p>
                         </a>
@@ -149,11 +149,11 @@ export function SeasonTransfersBoard() {
 
     return (
         <section className="rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm bg-white dark:bg-[#1E293B]">
-            <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-[#16A34A]/10 to-transparent">
+            <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-accent-theme/10 to-transparent">
                 <div className="flex items-center justify-between">
                     <div>
                         <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                            <ArrowRightLeft className="w-5 h-5 text-[#16A34A]" />
+                            <ArrowRightLeft className="w-5 h-5 text-accent-theme" />
                             Current Season Transfers
                         </h3>
                         <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] mt-1">

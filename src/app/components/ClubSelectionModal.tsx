@@ -46,7 +46,7 @@ export function ClubSelectionModal({ isOpen, onSelectClub, onSkip }: ClubSelecti
 
                 {/* Header */}
                 <div className="text-center pt-8 pb-4 px-6 flex-shrink-0">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#16A34A]/10 mb-4">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent-theme/10 mb-4">
                         <span className="text-3xl">⚽</span>
                     </div>
                     <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white">
@@ -66,7 +66,7 @@ export function ClubSelectionModal({ isOpen, onSelectClub, onSkip }: ClubSelecti
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search for a club..."
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-theme/50 focus:border-accent-theme transition-all text-sm"
                             autoFocus
                         />
                     </div>
@@ -77,15 +77,15 @@ export function ClubSelectionModal({ isOpen, onSelectClub, onSkip }: ClubSelecti
                     {/* Show Everything option */}
                     <button
                         onClick={onSkip}
-                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-[#16A34A]/10 hover:bg-[#16A34A]/20 transition-colors mb-4 text-left"
+                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl bg-accent-theme/10 hover:bg-accent-theme/20 transition-colors mb-4 text-left"
                     >
-                        <div className="w-8 h-8 rounded-full bg-[#16A34A]/20 flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-accent-theme/20 flex items-center justify-center flex-shrink-0">
                             <span className="text-lg">🌍</span>
                         </div>
-                        <span className="text-sm font-semibold text-[#16A34A]">
+                        <span className="text-sm font-semibold text-accent-theme">
                             Show Everything
                         </span>
-                        <span className="ml-auto text-[#16A34A]">›</span>
+                        <span className="ml-auto text-accent-theme">›</span>
                     </button>
 
                     {Object.entries(filteredGroups).map(([league, leagueClubs]) => (
@@ -112,10 +112,10 @@ export function ClubSelectionModal({ isOpen, onSelectClub, onSkip }: ClubSelecti
                                                 }}
                                             />
                                         </div>
-                                        <span className="text-sm font-medium text-[#0F172A] dark:text-white group-hover:text-[#16A34A] transition-colors">
+                                        <span className="text-sm font-medium text-[#0F172A] dark:text-white group-hover:text-accent-theme transition-colors">
                                             {club.name}
                                         </span>
-                                        <span className="ml-auto text-gray-300 dark:text-gray-600 group-hover:text-[#16A34A] transition-colors">
+                                        <span className="ml-auto text-gray-300 dark:text-gray-600 group-hover:text-accent-theme transition-colors">
                                             ›
                                         </span>
                                     </button>
@@ -135,7 +135,7 @@ export function ClubSelectionModal({ isOpen, onSelectClub, onSkip }: ClubSelecti
                 <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex-shrink-0">
                     <button
                         onClick={onSkip}
-                        className="w-full text-center text-sm text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors font-medium"
+                        className="w-full text-center text-sm text-[#64748B] dark:text-gray-400 hover:text-accent-theme transition-colors font-medium"
                     >
                         Skip — show me everything
                     </button>

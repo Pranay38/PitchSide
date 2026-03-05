@@ -15,7 +15,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
     return (
       <Link
         to={`/post/${post.id}`}
-        className="group block relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 h-full bg-slate-900"
+        className="group block relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-accent-theme/10 transition-all duration-500 h-full bg-slate-900"
       >
         <div className="absolute inset-0 overflow-hidden">
           <img
@@ -52,7 +52,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
                 </span>
               ))}
           </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold font-outfit text-white mb-2 line-clamp-2 group-hover:text-[#4ade80] transition-colors duration-300">
+          <h2 className="text-2xl md:text-3xl font-extrabold font-outfit text-white mb-2 line-clamp-2 group-hover:text-accent-light transition-colors duration-300">
             {post.title}
           </h2>
           <p className="text-sm text-white/70 mb-3 line-clamp-2 max-w-2xl">
@@ -74,10 +74,10 @@ export function PostCard({ post, featured = false }: PostCardProps) {
   return (
     <Link
       to={`/post/${post.id}`}
-      className="group block glass-card rounded-2xl hover:shadow-xl hover:shadow-[#16A34A]/5 dark:hover:shadow-[#16A34A]/10 transition-all duration-400 hover:-translate-y-1.5 overflow-hidden"
+      className="group block glass-card rounded-2xl hover:shadow-xl hover:shadow-accent-theme/5 dark:hover:shadow-accent-theme/10 transition-all duration-400 hover:-translate-y-1.5 overflow-hidden"
     >
       {/* Gradient accent line at top */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-[#16A34A] via-[#22c55e] to-[#4ade80] opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="h-0.5 w-full bg-gradient-to-r from-accent-theme via-accent-light to-accent-light opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
       <div className="aspect-video overflow-hidden relative">
         <img
           src={post.coverImage}
@@ -112,7 +112,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
               </span>
             ))}
         </div>
-        <h3 className="font-bold font-outfit text-[#0F172A] dark:text-white mb-2 line-clamp-2 group-hover:text-[#16A34A] transition-colors duration-200">
+        <h3 className="font-bold font-outfit text-[#0F172A] dark:text-white mb-2 line-clamp-2 group-hover:text-accent-theme transition-colors duration-200">
           {post.title}
         </h3>
         <p className="text-sm text-[#64748B] dark:text-gray-400 mb-3 line-clamp-2">

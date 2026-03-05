@@ -37,9 +37,9 @@ export function SocialWall({ title, embedCode }: SocialWallProps) {
     <section className="bg-white dark:bg-[#0F172A] rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden animate-float-in">
       <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent">
         <h3 className="text-base font-black text-[#0F172A] dark:text-white tracking-tight flex items-center gap-2">
-          <RadioTower className="w-4 h-4 text-[#16A34A]" />
+          <RadioTower className="w-4 h-4 text-accent-theme" />
           {title || "Social Wall"}
-          <span className="ml-1 text-[10px] font-bold bg-[#16A34A]/10 text-[#16A34A] px-2 py-0.5 rounded-full uppercase tracking-wider">
+          <span className="ml-1 text-[10px] font-bold bg-accent-theme/10 text-accent-theme px-2 py-0.5 rounded-full uppercase tracking-wider">
             Live
           </span>
         </h3>

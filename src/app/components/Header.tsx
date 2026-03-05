@@ -26,9 +26,9 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           <Link to="/" className="group flex items-center gap-2.5">
             <div className="relative">
               <img src="/logo.png" alt="The Touchline Dribble" className="w-9 h-9 object-contain rounded-lg group-hover:scale-110 transition-transform duration-300" />
-              <div className="absolute inset-0 rounded-lg bg-[#16A34A]/0 group-hover:bg-[#16A34A]/10 transition-colors duration-300" />
+              <div className="absolute inset-0 rounded-lg bg-accent-theme/0 group-hover:bg-accent-theme/10 transition-colors duration-300" />
             </div>
-            <span className="text-xl font-extrabold font-outfit bg-gradient-to-r from-[#16A34A] via-[#22c55e] to-[#4ade80] bg-clip-text text-transparent group-hover:from-[#4ade80] group-hover:to-[#16A34A] transition-all duration-500">
+            <span className="text-xl font-extrabold font-outfit bg-gradient-to-r from-accent-theme via-accent-light to-accent-light bg-clip-text text-transparent group-hover:from-accent-light group-hover:to-accent-theme transition-all duration-500">
               The Touchline Dribble
             </span>
           </Link>
@@ -47,10 +47,10 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                 key={link.to}
                 to={link.to}
                 aria-label={link.label}
-                className="relative text-sm font-semibold text-[#475569] dark:text-gray-300 hover:text-[#16A34A] dark:hover:text-[#4ade80] transition-colors duration-200 py-1 group"
+                className="relative text-sm font-semibold text-[#475569] dark:text-gray-300 hover:text-accent-theme dark:hover:text-accent-light transition-colors duration-200 py-1 group"
               >
                 {link.to === "/" ? <House className="w-4 h-4" /> : link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#16A34A] to-[#4ade80] group-hover:w-full transition-all duration-300 rounded-full" />
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-accent-theme to-accent-light group-hover:w-full transition-all duration-300 rounded-full" />
               </Link>
             ))}
 
@@ -60,9 +60,9 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                 {club?.logo ? (
                   <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />
                 ) : (
-                  <Heart className="w-4 h-4 text-[#16A34A]" />
+                  <Heart className="w-4 h-4 text-accent-theme" />
                 )}
-                <span className="text-sm font-semibold text-[#16A34A]">
+                <span className="text-sm font-semibold text-accent-theme">
                   {favoriteClub}
                 </span>
               </div>
@@ -72,7 +72,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             {onChangeClub && (
               <button
                 onClick={onChangeClub}
-                className="text-sm text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors font-medium"
+                className="text-sm text-[#64748B] dark:text-gray-400 hover:text-accent-theme transition-colors font-medium"
               >
                 Change
               </button>
@@ -99,23 +99,23 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
         {/* Mobile menu dropdown */}
         {mobileOpen && (
           <div className="sm:hidden glass border-t border-white/10 dark:border-gray-800/50 px-6 py-4 space-y-3 animate-float-in">
-            <Link to="/" onClick={() => setMobileOpen(false)} aria-label="Home" className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"><House className="w-4 h-4" /></Link>
-            <Link to="/tactics" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Tactics</Link>
-            <Link to="/collections" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Lists</Link>
-            <Link to="/debates" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Debates</Link>
-            <Link to="/about" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">About</Link>
+            <Link to="/" onClick={() => setMobileOpen(false)} aria-label="Home" className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-accent-theme transition-colors py-2"><House className="w-4 h-4" /></Link>
+            <Link to="/tactics" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-accent-theme transition-colors py-2">Tactics</Link>
+            <Link to="/collections" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-accent-theme transition-colors py-2">Lists</Link>
+            <Link to="/debates" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-accent-theme transition-colors py-2">Debates</Link>
+            <Link to="/about" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-accent-theme transition-colors py-2">About</Link>
 
             {favoriteClub && (
               <div className="flex items-center gap-2 py-2">
                 {club?.logo && <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />}
-                <span className="text-sm font-semibold text-[#16A34A]">{favoriteClub}</span>
+                <span className="text-sm font-semibold text-accent-theme">{favoriteClub}</span>
               </div>
             )}
 
             {onChangeClub && (
               <button
                 onClick={() => { onChangeClub(); setMobileOpen(false); }}
-                className="block w-full text-left text-sm text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors font-medium py-2"
+                className="block w-full text-left text-sm text-[#64748B] dark:text-gray-400 hover:text-accent-theme transition-colors font-medium py-2"
               >
                 {favoriteClub ? "Change Club" : "Select Club"}
               </button>

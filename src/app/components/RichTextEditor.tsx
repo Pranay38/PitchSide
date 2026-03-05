@@ -78,7 +78,7 @@ function ToolbarButton({
             onClick={onClick}
             title={title}
             className={`p-1.5 rounded-md transition-colors ${isActive
-                ? "bg-[#16A34A] text-white"
+                ? "bg-accent-theme text-white"
                 : "text-[#64748B] dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#0F172A] dark:hover:text-white"
                 }`}
         >
@@ -106,7 +106,7 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
             Link.configure({
                 openOnClick: false,
                 HTMLAttributes: {
-                    class: "text-[#16A34A] underline cursor-pointer",
+                    class: "text-accent-theme underline cursor-pointer",
                 },
             }),
             Image.configure({
@@ -127,8 +127,8 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
                     "prose prose-sm max-w-none min-h-[400px] px-4 py-3 focus:outline-none text-[#0F172A] dark:text-gray-200 " +
                     "prose-headings:text-[#0F172A] dark:prose-headings:text-white " +
                     "prose-strong:text-[#0F172A] dark:prose-strong:text-white " +
-                    "prose-blockquote:border-l-4 prose-blockquote:border-[#16A34A] prose-blockquote:text-[#64748B] dark:prose-blockquote:text-gray-400 " +
-                    "prose-a:text-[#16A34A] " +
+                    "prose-blockquote:border-l-4 prose-blockquote:border-accent-theme prose-blockquote:text-[#64748B] dark:prose-blockquote:text-gray-400 " +
+                    "prose-a:text-accent-theme " +
                     "prose-img:rounded-lg prose-img:max-w-full prose-img:mx-auto",
             },
         },
@@ -175,7 +175,7 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
     };
 
     return (
-        <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] overflow-hidden transition-all focus-within:ring-2 focus-within:ring-[#16A34A]/50 focus-within:border-[#16A34A]">
+        <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] overflow-hidden transition-all focus-within:ring-2 focus-within:ring-accent-theme/50 focus-within:border-accent-theme">
             {/* Hidden file input for image upload */}
             <input
                 ref={imageInputRef}
