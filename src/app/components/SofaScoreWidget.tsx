@@ -8,10 +8,32 @@ interface SofaScoreWidgetProps {
 }
 
 /**
+ * Extracts a numeric SofaScore ID from various URL formats.
+ * e.g., ".../rgbsLgb#id:11352601" -> "11352601"
+ * e.g., ".../event/11352601" -> "11352601"
+ */
+function extractSofaScoreId(url: string | undefined): string {
+    if (!url) return "";
+
+    // 1. Try to find #id:{number} (standard for modern SofaScore match pages)
+    const hashMatch = url.match(/#id:(\d+)/);
+    if (hashMatch) return hashMatch[1];
+
+    // 2. Try to find a numeric string immediately following a slash
+    const slashMatch = url.match(/\/(\d+)(?:[#?]|$)/);
+    if (slashMatch) return slashMatch[1];
+
+    // 3. Fallback (might be an alphanumeric slug, which will 404, but it's a best effort)
+    return url.split('/').pop()?.split(/[#?]/)[0] || "";
+}
+
+/**
  * Renders a SofaScore embed widget.
  * Based on the exact working robust snippet provided by the user.
  */
 export function SofaScoreWidget({ url, widgetConfig }: SofaScoreWidgetProps) {
+    const base = "https://widgets.sofascore.com/embed";
+
     // 1. Handle Legacy URLs (Pre-widgetConfig)
     if (!widgetConfig && url) {
         // Simple heuristic for height
@@ -24,11 +46,10 @@ export function SofaScoreWidget({ url, widgetConfig }: SofaScoreWidgetProps) {
             match: 500, standings: 640, player: 420, team: 400,
         };
 
-        // If it's not a widget URL, we won't try to embed it into a widget directly via iframe, just return null or a link.
-        // But assuming most legacy URLs are widget urls:
-        const embedUrl = url.includes("widgets.sofascore.com")
+        const isWidgetEmbed = url.includes("widgets.sofascore.com");
+        const embedUrl = isWidgetEmbed
             ? url
-            : `https://widgets.sofascore.com/embed/event/${url.split('/').pop()}`; // Best guess fallback
+            : `${base}/event/${extractSofaScoreId(url)}`; // Extract real ID
 
         return (
             <iframe
@@ -46,14 +67,14 @@ export function SofaScoreWidget({ url, widgetConfig }: SofaScoreWidgetProps) {
     if (!widgetConfig) return null;
 
     // 2. Structured Widget Config (User's Snippet Implementation)
-    const base = "https://widgets.sofascore.com/embed";
     const { type, id, seasonId, eventUrl } = widgetConfig;
 
     // Resolve exactly which ID to use
     let finalId: string | number | undefined = id;
     if (type === "match" && eventUrl) {
-        const match = eventUrl.match(/\/(\d+)$/);
-        if (match) finalId = match[1];
+        // Use our robust extractor for eventUrls from the builder
+        const extractedId = extractSofaScoreId(eventUrl);
+        if (extractedId) finalId = extractedId;
     }
     const tId = widgetConfig.tournamentId || id;
 
@@ -81,7 +102,7 @@ export function SofaScoreWidget({ url, widgetConfig }: SofaScoreWidgetProps) {
         <iframe
             src={`${urls[type]}?${params.toString()}`}
             width="100%"
-            height={defaultHeights[type] || 500}
+            height={defaultHeights[type]?.toString() || "500"}
             frameBorder="0"
             scrolling="no"
             loading="lazy"
