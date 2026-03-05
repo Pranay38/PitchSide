@@ -5,6 +5,8 @@ import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import { useRef } from "react";
+import type { BlogPost } from "../data/posts";
+import { InternalLinkSuggestion } from "./InternalLinkSuggestion";
 import {
     Bold,
     Italic,
@@ -30,6 +32,7 @@ interface RichTextEditorProps {
     content: string;
     onChange: (html: string) => void;
     placeholder?: string;
+    existingPosts?: BlogPost[];
 }
 
 /** Compress and convert an image file to a base64 data URL */
@@ -91,7 +94,7 @@ function ToolbarDivider() {
     return <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />;
 }
 
-export function RichTextEditor({ content, onChange, placeholder }: RichTextEditorProps) {
+export function RichTextEditor({ content, onChange, placeholder, existingPosts = [] }: RichTextEditorProps) {
     const imageInputRef = useRef<HTMLInputElement>(null);
 
     const editor = useEditor({
@@ -321,6 +324,11 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
 
             {/* Editor */}
             <EditorContent editor={editor} />
+
+            {/* Internal Link Suggestions */}
+            {existingPosts.length > 0 && (
+                <InternalLinkSuggestion editor={editor} posts={existingPosts} />
+            )}
         </div>
     );
 }

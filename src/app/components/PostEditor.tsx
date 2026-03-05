@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import type { BlogPost } from "../data/posts";
 import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName } from "../data/clubs";
 import type { SearchResult } from "../data/clubs";
-import { calculateReadTime, formatDate } from "../lib/postStorage";
+import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
 import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User } from "lucide-react";
 
@@ -759,7 +759,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             </span>
                         </div>
                         {errors.content && <p className="text-red-500 text-xs mb-2">{errors.content}</p>}
-                        <RichTextEditor content={content} onChange={setContent} />
+                        <RichTextEditor content={content} onChange={setContent} existingPosts={getAllPosts()} />
                     </div>
 
                     {/* Submit */}

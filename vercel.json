@@ -25,6 +25,14 @@
             "destination": "/api/sys?route=tactics"
         },
         {
+            "source": "/api/club-season",
+            "destination": "/api/club-season"
+        },
+        {
+            "source": "/api/og",
+            "destination": "/api/og"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/$1"
         },

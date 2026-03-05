@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -7,7 +7,7 @@ import { ClubSelectionModal } from "../components/ClubSelectionModal";
 import type { BlogPost } from "../data/posts";
 import { getAllPosts, getAllPostsAsync } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
-import { Search, X, Filter, Sparkles, Trophy, ChevronDown, Shield, User } from "lucide-react";
+import { Search, X, Filter, Sparkles, Trophy, ChevronDown, Shield, User, ArrowUp } from "lucide-react";
 import { NewsTicker } from "../components/NewsTicker";
 import { FPLAnalyzer } from "../components/FPLAnalyzer";
 import { SocialWall } from "../components/SocialWall";
@@ -38,8 +38,14 @@ export function HomePage() {
   const [dailyFeatures, setDailyFeatures] = useState<DailyFeaturesData | null>(null);
 
   const postsPerPage = 4;
-  const [visibleCount, setVisibleCount] = useState(postsPerPage);
+  const [visibleCount, setVisibleCount] = useState(() => {
+    // Restore from URL ?page= param
+    const params = new URLSearchParams(window.location.search);
+    const page = parseInt(params.get("page") || "1", 10);
+    return Math.max(postsPerPage, page * postsPerPage);
+  });
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Read posts from storage
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => getAllPosts());
@@ -256,6 +262,34 @@ export function HomePage() {
     return () => observer.disconnect();
   }, [hasMorePosts, remainingPosts.length, postsPerPage]);
 
+  // Update URL with current page number when visibleCount changes
+  useEffect(() => {
+    const currentPage = Math.ceil(visibleCount / postsPerPage);
+    const params = new URLSearchParams(window.location.search);
+    if (currentPage > 1) {
+      params.set("page", String(currentPage));
+    } else {
+      params.delete("page");
+    }
+    const newUrl = params.toString()
+      ? `${window.location.pathname}?${params.toString()}`
+      : window.location.pathname;
+    window.history.replaceState(null, "", newUrl);
+  }, [visibleCount, postsPerPage]);
+
+  // Show/hide "Back to top" button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 1200);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
 
   if (blogPosts.length === 0) {
     return (
@@ -325,8 +359,8 @@ export function HomePage() {
                 <button
                   onClick={() => { setShowClubDropdown(!showClubDropdown); setShowPlayerDropdown(false); }}
                   className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${activeClub
-                      ? "gradient-accent text-white shadow-md shadow-[#16A34A]/20"
-                      : "glass-card text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
+                    ? "gradient-accent text-white shadow-md shadow-[#16A34A]/20"
+                    : "glass-card text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
                     }`}
                 >
                   <Shield className="w-3 h-3" />
@@ -363,8 +397,8 @@ export function HomePage() {
                 <button
                   onClick={() => { setShowPlayerDropdown(!showPlayerDropdown); setShowClubDropdown(false); }}
                   className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${activePlayer
-                      ? "gradient-accent text-white shadow-md shadow-[#16A34A]/20"
-                      : "glass-card text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
+                    ? "gradient-accent text-white shadow-md shadow-[#16A34A]/20"
+                    : "glass-card text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
                     }`}
                 >
                   <User className="w-3 h-3" />
@@ -616,6 +650,17 @@ export function HomePage() {
           </aside>
         </div>
       </main>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-[#16A34A] text-white shadow-lg shadow-[#16A34A]/30 flex items-center justify-center hover:bg-[#15803d] transition-all duration-300 hover:shadow-xl hover:shadow-[#16A34A]/40 animate-float-in"
+          title="Back to top"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
 
       <Footer />
     </div>

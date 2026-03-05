@@ -1,0 +1,23 @@
+{
+    "name": "The Touchline Dribble",
+    "short_name": "Touchline Dribble",
+    "description": "From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0B1120",
+    "theme_color": "#16A34A",
+    "orientation": "portrait-primary",
+    "categories": [
+        "sports",
+        "news",
+        "entertainment"
+    ],
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

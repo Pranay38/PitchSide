@@ -119,6 +119,8 @@ export function BlogPostPage() {
         image={post.coverImage}
         type="article"
         schema={schemaMarkup}
+        club={post.club}
+        date={post.date}
       />
       <ReadingProgress />
       <Header favoriteClub={favoriteClub} />
