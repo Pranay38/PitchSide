@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, ArrowRight, Share2, Clock, Tag } from "lucide-react";
 import { SEO } from "../components/SEO";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
@@ -86,6 +87,29 @@ export function BlogPostPage() {
     }
   };
 
+  const schemaMarkup = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": post.title,
+    "image": [
+      post.coverImage
+    ],
+    "datePublished": new Date(post.date).toISOString(),
+    "author": [{
+      "@type": "Person",
+      "name": "Pranay Agrawal",
+      "url": "https://x.com/TouchlineDribbl"
+    }],
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Touchline Dribble",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://pitchside.vercel.app/logo.png"
+      }
+    }
+  });
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
       <SEO
@@ -93,11 +117,13 @@ export function BlogPostPage() {
         description={post.excerpt}
         image={post.coverImage}
         type="article"
+        schema={schemaMarkup}
       />
       <ReadingProgress />
       <Header favoriteClub={favoriteClub} />
 
       <main>
+
         {/* Cover Image */}
         <div className="w-full h-[400px] md:h-[500px] overflow-hidden relative">
           <img
@@ -110,6 +136,14 @@ export function BlogPostPage() {
 
         {/* Article Content */}
         <article className="max-w-[720px] mx-auto px-6 py-12">
+          {/* Breadcrumbs */}
+          <Breadcrumbs
+            items={[
+              { label: post.tags[0] || post.club, href: "/" },
+              { label: post.title }
+            ]}
+          />
+
           {/* Tags */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
             {post.tags.map((tag) => (

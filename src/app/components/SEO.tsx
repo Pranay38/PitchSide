@@ -5,7 +5,8 @@ interface SEOProps {
     description?: string;
     image?: string;
     url?: string;
-    type?: "website" | "article";
+    type?: string;
+    schema?: string;
 }
 
 export function SEO({
@@ -13,7 +14,8 @@ export function SEO({
     description = "A modern football blog featuring data-driven tactical analysis, rumors, manager pressure indices, and the latest news for die-hard fans.",
     image = "/og-image.jpg", // A default fallback image
     url = "https://pitchside.vercel.app",
-    type = "website"
+    type = "website",
+    schema,
 }: SEOProps) {
 
     // Ensure title suffix is present unless it's already the default
@@ -38,9 +40,16 @@ export function SEO({
             {/* Twitter */}
             <meta property="twitter:card" content="summary_large_image" />
             <meta property="twitter:url" content={url} />
-            <meta property="twitter:title" content={formattedTitle} />
-            <meta property="twitter:description" content={description} />
-            <meta property="twitter:image" content={image} />
+            <meta name="twitter:title" content={title} />
+            <meta name="twitter:description" content={description} />
+            <meta name="twitter:image" content={image} />
+
+            {/* Schema / JSON-LD structured data */}
+            {schema && (
+                <script type="application/ld+json">
+                    {schema}
+                </script>
+            )}
         </Helmet>
     );
 }
