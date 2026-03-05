@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-03-04T21:32:11.417020",
+  "lastUpdated": "2026-03-05T05:44:20.519013",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barcelona step up Van de Ven interest - Wednesday's gossip",
-    "sentimentScore": 65
+    "text": "Real Madrid calm Rodri interest - Thursday's gossip",
+    "sentimentScore": 77
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 95
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 94
     },
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 79
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 75
+      "name": "Scott Parker (BUR)",
+      "pressureScore": 73
     },
     {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 66
-    },
-    {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 60
+      "pressureScore": 68
     }
   ]
 }
