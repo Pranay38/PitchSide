@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, ArrowRight, Share2, Clock, Tag } from "lucide-react";
+import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
@@ -87,6 +88,12 @@ export function BlogPostPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+      <SEO
+        title={post.title}
+        description={post.excerpt}
+        image={post.coverImage}
+        type="article"
+      />
       <ReadingProgress />
       <Header favoriteClub={favoriteClub} />
 

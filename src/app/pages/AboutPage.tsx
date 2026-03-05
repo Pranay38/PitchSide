@@ -3,12 +3,14 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { Twitter, Instagram, Mail, PenLine, BarChart3, Zap } from "lucide-react";
 import { useClubPreference } from "../hooks/useClubPreference";
+import { SEO } from "../components/SEO";
 
 export function AboutPage() {
     const { favoriteClub } = useClubPreference();
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+            <SEO title="About Us" description="About the founder and writer of The Touchline Dribble." url="https://pitchside.vercel.app/about" />
             <Header favoriteClub={favoriteClub} />
 
             <main className="max-w-[720px] mx-auto px-6 py-12">

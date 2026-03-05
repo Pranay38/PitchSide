@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
@@ -244,6 +245,7 @@ export function HomePage() {
 
   return (
     <div className="min-h-[100vh] flex flex-col bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+      <SEO />
       <Header onChangeClub={handleChangeClub} favoriteClub={favoriteClub} />
 
       <ClubSelectionModal
