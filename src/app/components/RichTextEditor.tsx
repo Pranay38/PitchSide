@@ -165,16 +165,8 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
         if (imageInputRef.current) imageInputRef.current.value = "";
     };
 
-    const handleAddImage = () => {
-        // Show a choice: upload or URL
-        const choice = window.confirm(
-            "Click OK to upload from device, or Cancel to paste a URL"
-        );
-        if (choice) {
-            imageInputRef.current?.click();
-        } else {
-            addImageByUrl();
-        }
+    const triggerImageUpload = () => {
+        imageInputRef.current?.click();
     };
 
     return (
@@ -292,8 +284,14 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                 <ToolbarButton onClick={addLink} isActive={editor.isActive("link")} title="Add Link">
                     <LinkIcon className="w-4 h-4" />
                 </ToolbarButton>
-                <ToolbarButton onClick={handleAddImage} isActive={editor.isActive("image")} title="Add Image">
+                <ToolbarButton onClick={triggerImageUpload} title="Upload Image from Device">
                     <ImagePlus className="w-4 h-4" />
+                </ToolbarButton>
+                <ToolbarButton onClick={addImageByUrl} title="Add Image from URL">
+                    <div className="relative">
+                        <ImagePlus className="w-4 h-4 opacity-50" />
+                        <LinkIcon className="w-3 h-3 absolute bottom-0 right-[-4px]" />
+                    </div>
                 </ToolbarButton>
 
                 <ToolbarDivider />
