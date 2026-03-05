@@ -12,16 +12,15 @@ export interface TournamentInfo {
 }
 
 export const TOURNAMENTS: Record<string, TournamentInfo> = {
-    // Verified 25/26 Season IDs for the V2 Widget API
-    "Premier League": { tournamentId: 1, seasonId: 76986, name: "Premier League" },
-    "La Liga": { tournamentId: 8, seasonId: 77051, name: "La Liga" },
-    "Bundesliga": { tournamentId: 35, seasonId: 77053, name: "Bundesliga" },
-    "Serie A": { tournamentId: 23, seasonId: 77055, name: "Serie A" },
-    "Ligue 1": { tournamentId: 34, seasonId: 77061, name: "Ligue 1" },
-    "Champions League": { tournamentId: 7, seasonId: 77059, name: "Champions League" },
-    "Europa League": { tournamentId: 679, seasonId: 77060, name: "Europa League" },
-    "FA Cup": { tournamentId: 29, seasonId: 77114, name: "FA Cup" },
-    "Carabao Cup": { tournamentId: 21, seasonId: 77109, name: "Carabao Cup" },
+    "Premier League": { tournamentId: 17, seasonId: 61627, name: "Premier League" },
+    "La Liga": { tournamentId: 8, seasonId: 61643, name: "La Liga" },
+    "Bundesliga": { tournamentId: 35, seasonId: 61651, name: "Bundesliga" },
+    "Serie A": { tournamentId: 23, seasonId: 61647, name: "Serie A" },
+    "Ligue 1": { tournamentId: 34, seasonId: 61736, name: "Ligue 1" },
+    "Champions League": { tournamentId: 7, seasonId: 61644, name: "Champions League" },
+    "Europa League": { tournamentId: 679, seasonId: 61645, name: "Europa League" },
+    "FA Cup": { tournamentId: 29, seasonId: 61781, name: "FA Cup" },
+    "Carabao Cup": { tournamentId: 21, seasonId: 61753, name: "Carabao Cup" },
 };
 
 // ── Team IDs (Premier League 2024-25) ─────────────────────────────
@@ -141,7 +140,7 @@ export interface WidgetConfig {
 
 // ── Widget URL Builder ──────────────────────────────────────────────
 const WIDGET_BASE = "https://widgets.sofascore.com/embed";
-const DEFAULT_PARAMS = "widgetTheme=dark&color=16A34A";
+const DEFAULT_PARAMS = "widgetTheme=dark&color=16A34A&timezone=Asia/Kolkata&culture=en-US";
 
 export function buildWidgetEmbedUrl(config: WidgetConfig): string {
     switch (config.type) {
@@ -150,16 +149,16 @@ export function buildWidgetEmbedUrl(config: WidgetConfig): string {
                 // Extract event ID from a SofaScore match URL
                 const match = config.eventUrl.match(/\/(\d+)$/);
                 const eventId = match ? match[1] : config.id;
-                return `${WIDGET_BASE}/match/${eventId}?${DEFAULT_PARAMS}`;
+                return `${WIDGET_BASE}/event/${eventId}?${DEFAULT_PARAMS}`;
             }
-            return config.id ? `${WIDGET_BASE}/match/${config.id}?${DEFAULT_PARAMS}` : "";
+            return config.id ? `${WIDGET_BASE}/event/${config.id}?${DEFAULT_PARAMS}` : "";
 
         case "standings":
             const tId = config.tournamentId || config.id;
             const sId = config.seasonId;
             if (!tId || !sId) return "";
-            // New V2 API format
-            return `${WIDGET_BASE}/tournament/${tId}/season/${sId}/standings?${DEFAULT_PARAMS}`;
+            // Original V1 API format
+            return `${WIDGET_BASE}/unique-tournament/${tId}/season/${sId}/standings/table?${DEFAULT_PARAMS}`;
 
         case "team":
             return config.id ? `${WIDGET_BASE}/team/${config.id}?${DEFAULT_PARAMS}` : "";
