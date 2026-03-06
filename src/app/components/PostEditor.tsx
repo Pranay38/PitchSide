@@ -4,7 +4,7 @@ import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName } from
 import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
-import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus } from "lucide-react";
 import { PollWidget } from "./PollWidget";
 
 /** Categories that are NOT club-specific */
@@ -160,6 +160,21 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         } else {
             setSearchingClubs(false);
         }
+    };
+
+    const handleAddCustomClub = () => {
+        if (!clubSearch.trim()) return;
+
+        const logoUrl = window.prompt(`Optional: Enter a URL for the logo of "${clubSearch}"`);
+
+        const newClub = {
+            name: clubSearch.trim(),
+            league: "Custom Teams", // Generic bucket for user-added teams
+            logo: logoUrl?.trim() || ""
+        };
+
+        addCustomClub(newClub);
+        selectClub(newClub);
     };
 
     const selectClub = (result: SearchResult) => {
@@ -545,14 +560,14 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 </div>
 
                                 {/* Dropdown results */}
-                                {showClubDropdown && clubResults.length > 0 && (
-                                    <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-600 shadow-xl max-h-60 overflow-y-auto">
+                                {(showClubDropdown && (clubResults.length > 0 || clubSearch.length > 1)) && (
+                                    <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-600 shadow-xl max-h-72 overflow-y-auto">
                                         {clubResults.map((result) => (
                                             <button
                                                 key={result.name}
                                                 type="button"
                                                 onClick={() => selectClub(result)}
-                                                className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-sm"
+                                                className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-sm border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                                             >
                                                 <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
                                                     {result.logo ? (
@@ -575,6 +590,23 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                                 </div>
                                             </button>
                                         ))}
+
+                                        {/* Add Custom Club Button */}
+                                        {clubSearch.length > 1 && !clubResults.some(c => c.name.toLowerCase() === clubSearch.toLowerCase()) && (
+                                            <button
+                                                type="button"
+                                                onClick={handleAddCustomClub}
+                                                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors text-sm border-t border-gray-100 dark:border-gray-700/50"
+                                            >
+                                                <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                                                    <Plus className="w-4 h-4 text-green-600 dark:text-green-500" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-medium text-green-600 dark:text-green-400 truncate">Add "{clubSearch}" as a new team</p>
+                                                    <p className="text-xs text-green-500/70 truncate">Save this custom team for future posts</p>
+                                                </div>
+                                            </button>
+                                        )}
                                     </div>
                                 )}
                             </div>
