@@ -106,6 +106,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
     const [embedCreditText, setEmbedCreditText] = useState("");
     const [embedCreditUrl, setEmbedCreditUrl] = useState("");
     const [detectedPlatform, setDetectedPlatform] = useState<SocialPlatform>("image");
+    const [savedSelection, setSavedSelection] = useState<number | null>(null);
 
     const handleEmbedUrlChange = (url: string) => {
         setEmbedSrc(url);
@@ -309,7 +310,10 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                         <LinkIcon className="w-3 h-3 absolute bottom-0 right-[-4px]" />
                     </div>
                 </ToolbarButton>
-                <ToolbarButton onClick={() => setShowEmbedModal(true)} title="Embed Social Post / Image">
+                <ToolbarButton onClick={() => {
+                    setSavedSelection(editor.state.selection.from);
+                    setShowEmbedModal(true);
+                }} title="Embed Social Post / Image">
                     <Share2 className="w-4 h-4" />
                 </ToolbarButton>
 
@@ -379,9 +383,9 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                             {embedSrc.trim() && (
                                 <div className="flex items-center gap-2">
                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${detectedPlatform === "twitter" ? "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400" :
-                                            detectedPlatform === "instagram" ? "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400" :
-                                                detectedPlatform === "youtube" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" :
-                                                    "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                        detectedPlatform === "instagram" ? "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400" :
+                                            detectedPlatform === "youtube" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" :
+                                                "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                                         }`}>
                                         {detectedPlatform === "twitter" && "𝕏 Twitter"}
                                         {detectedPlatform === "instagram" && "📷 Instagram"}
@@ -428,7 +432,11 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                                 type="button"
                                 onClick={() => {
                                     if (embedSrc.trim()) {
-                                        editor.chain().focus().setSocialEmbed({
+                                        let chain = editor.chain().focus();
+                                        if (savedSelection !== null) {
+                                            chain = chain.setTextSelection(savedSelection);
+                                        }
+                                        chain.setSocialEmbed({
                                             url: embedSrc.trim(),
                                             platform: detectedPlatform,
                                             creditText: embedCreditText.trim(),
@@ -438,6 +446,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                                         setEmbedCreditText("");
                                         setEmbedCreditUrl("");
                                         setDetectedPlatform("image");
+                                        setSavedSelection(null);
                                         setShowEmbedModal(false);
                                     }
                                 }}
