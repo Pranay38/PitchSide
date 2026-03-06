@@ -291,8 +291,19 @@ export function AdminPage() {
     };
 
     if (!isAuthed) return <AdminLogin onLogin={handleLogin} />;
-    if (view === "create") return <PostEditor onSave={handleCreatePost} onCancel={() => setView("list")} />;
-    if (view === "edit" && editingPost) return <PostEditor post={editingPost} onSave={handleUpdatePost} onCancel={() => { setEditingPost(null); setView("list"); }} />;
+
+    if (view === "create" || view === "edit") {
+        return (
+            <PostEditor
+                post={view === "edit" && editingPost ? editingPost : undefined}
+                onSave={view === "edit" && editingPost ? handleUpdatePost : handleCreatePost}
+                onCancel={() => {
+                    setEditingPost(null);
+                    setView("list");
+                }}
+            />
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
