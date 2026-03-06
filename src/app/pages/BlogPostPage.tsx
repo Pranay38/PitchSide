@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, ArrowRight, Share2, Clock, Tag } from "lucide-react";
 import { SEO } from "../components/SEO";
@@ -47,6 +47,40 @@ export function BlogPostPage() {
     currentIndex > 0 ? blogPosts[currentIndex - 1] : null;
   const nextPost =
     currentIndex < blogPosts.length - 1 ? blogPosts[currentIndex + 1] : null;
+
+  // Hydrate social embeds (Twitter, Instagram) after content renders
+  useEffect(() => {
+    if (!post?.content) return;
+
+    // Twitter / X embeds
+    if (post.content.includes("twitter-tweet")) {
+      const existing = document.getElementById("twitter-wjs");
+      if (existing) {
+        // Script already loaded — just re-render
+        (window as any).twttr?.widgets?.load();
+      } else {
+        const script = document.createElement("script");
+        script.id = "twitter-wjs";
+        script.src = "https://platform.twitter.com/widgets.js";
+        script.async = true;
+        document.body.appendChild(script);
+      }
+    }
+
+    // Instagram embeds
+    if (post.content.includes("instagram-media")) {
+      const existing = document.getElementById("instagram-embed-js");
+      if (existing) {
+        (window as any).instgrm?.Embeds?.process();
+      } else {
+        const script = document.createElement("script");
+        script.id = "instagram-embed-js";
+        script.src = "https://www.instagram.com/embed.js";
+        script.async = true;
+        document.body.appendChild(script);
+      }
+    }
+  }, [post?.content]);
 
   // Related posts: same club or overlapping tags, excluding current
   const relatedPosts = blogPosts
