@@ -6,7 +6,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
-import { getAllPosts } from "../lib/postStorage";
+import { getPublishedPosts } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { ReadingProgress } from "../components/ReadingProgress";
 import { CommentSection } from "../components/CommentSection";
@@ -19,7 +19,7 @@ export function BlogPostPage() {
   const { favoriteClub } = useClubPreference();
 
   // Read posts from storage
-  const blogPosts = useMemo(() => getAllPosts(), []);
+  const blogPosts = useMemo(() => getPublishedPosts(), []);
 
   const currentIndex = blogPosts.findIndex((post) => post.id === id);
   const post = blogPosts[currentIndex];

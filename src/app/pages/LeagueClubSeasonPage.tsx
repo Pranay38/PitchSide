@@ -4,7 +4,7 @@ import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
-import { getAllPosts } from "../lib/postStorage";
+import { getPublishedPosts } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { ArrowLeft, Trophy, Target, Users, Loader2, AlertCircle } from "lucide-react";
 
@@ -76,7 +76,7 @@ export function LeagueClubSeasonPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const blogPosts = useMemo(() => getAllPosts(), []);
+    const blogPosts = useMemo(() => getPublishedPosts(), []);
 
     // Find related blog posts for this club
     const relatedPosts = useMemo(() => {

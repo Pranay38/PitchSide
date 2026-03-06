@@ -98,10 +98,20 @@ export function AdminPage() {
         try {
             const updated = await addPostAsync(postData);
             setPosts(updated);
-            setView("list");
-            toast.success("Post published successfully!");
+
+            if (postData.isDraft) {
+                // It was an auto-save, stay in the editor but switch to edit mode
+                // The newly created post is the first one in the returned array from addPostAsync
+                const newPost = updated[0];
+                setEditingPost(newPost);
+                setView("edit");
+            } else {
+                // Explicit publish click
+                setView("list");
+                toast.success("Post published successfully!");
+            }
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Failed to publish post.");
+            toast.error(error instanceof Error ? error.message : "Failed to save post.");
         }
     };
 
@@ -115,9 +125,17 @@ export function AdminPage() {
             try {
                 const updated = await updatePostAsync(editingPost.id, postData);
                 setPosts(updated);
-                setEditingPost(null);
-                setView("list");
-                toast.success("Post updated successfully!");
+
+                if (postData.isDraft) {
+                    // It was an auto-save, just update the currently editing post quietly
+                    const updatedPost = updated.find(p => p.id === editingPost.id);
+                    if (updatedPost) setEditingPost(updatedPost);
+                } else {
+                    // Explicit publish or update
+                    setEditingPost(null);
+                    setView("list");
+                    toast.success("Post updated successfully!");
+                }
             } catch (error) {
                 toast.error(error instanceof Error ? error.message : "Failed to update post.");
             }
@@ -374,15 +392,20 @@ export function AdminPage() {
                                             </div>
                                         )}
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-semibold text-[#0F172A] dark:text-white text-sm truncate">{post.title}</h3>
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-semibold text-[#0F172A] dark:text-white text-sm truncate">{post.title}</h3>
+                                                {post.isDraft && (
+                                                    <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider rounded">Draft</span>
+                                                )}
+                                            </div>
                                             <div className="flex items-center gap-2 mt-1 text-xs text-[#94A3B8] dark:text-gray-500">
                                                 <span className="px-2 py-0.5 bg-[#16A34A]/10 text-[#16A34A] rounded-full font-medium">{post.club}</span>
                                                 <span>{post.date}</span><span>•</span><span>{post.readTime}</span>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-1 flex-shrink-0">
-                                            <button onClick={() => notifySubscribers(post)} disabled={notifyingPostId === post.id} className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors" title="Notify Subscribers">
-                                                <Send className={`w-4 h-4 \${notifyingPostId === post.id ? 'animate-pulse' : ''}`} />
+                                            <button onClick={() => notifySubscribers(post)} disabled={notifyingPostId === post.id || post.isDraft} className={`p-2 rounded-lg ${post.isDraft ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors'}`} title="Notify Subscribers">
+                                                <Send className={`w-4 h-4 ${notifyingPostId === post.id ? 'animate-pulse' : ''}`} />
                                             </button>
                                             <button onClick={() => navigate(`/post/\${post.id}`)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
                                             <button onClick={() => handleEditPost(post)} className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-[#64748B] dark:text-gray-400 hover:text-blue-600 transition-colors" title="Edit"><Edit3 className="w-4 h-4" /></button>

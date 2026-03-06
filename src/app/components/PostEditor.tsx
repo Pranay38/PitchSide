@@ -4,7 +4,7 @@ import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName } from
 import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
-import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock } from "lucide-react";
+import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2 } from "lucide-react";
 import { PollWidget } from "./PollWidget";
 
 /** Categories that are NOT club-specific */
@@ -91,6 +91,11 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [usePoll, setUsePoll] = useState(!!post?.poll);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
+
+    // Auto-save state
+    const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+    const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Derive the effective "club" field based on category
     const effectiveClub = category === "club" ? club : category;
@@ -206,14 +211,12 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         return Object.keys(errs).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!validate()) return;
-
+    const handleStandardSave = (isAutoSave: boolean) => {
         const plainText = content.replace(/<[^>]*>/g, " ").trim();
+        const finalTitle = title.trim() || "Untitled Draft";
 
         onSave({
-            title: title.trim(),
+            title: finalTitle,
             excerpt: excerpt.trim(),
             content: content,
             coverImage:
@@ -228,8 +231,47 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             mainStory,
             mediaUrl: mediaUrl.trim() || undefined,
             playerName: playerName.trim() || undefined,
+            isDraft: isAutoSave, // If auto-save, it's a draft. Click 'Publish' makes it false.
             poll: usePoll && poll.question.trim() ? poll : undefined,
         });
+
+        if (isAutoSave) {
+            setSaveStatus("saved");
+            setLastSaved(new Date());
+            setTimeout(() => setSaveStatus("idle"), 3000);
+        }
+    };
+
+    // Auto-save effect
+    useEffect(() => {
+        // Don't auto-save immediately on mount or if completely empty
+        if (!title.trim() && !content.trim()) return;
+
+        setSaveStatus("idle");
+
+        if (autoSaveTimerRef.current) {
+            clearTimeout(autoSaveTimerRef.current);
+        }
+
+        autoSaveTimerRef.current = setTimeout(() => {
+            setSaveStatus("saving");
+            handleStandardSave(true);
+        }, 3000); // 3 seconds debounce
+
+        return () => {
+            if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+        };
+    }, [
+        title, excerpt, content, coverImage, club, category, tags,
+        thisWeek, mustRead, mainStory, mediaUrl, playerName, usePoll, poll
+    ]);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!validate()) return;
+
+        if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+        handleStandardSave(false);
     };
 
     return (
@@ -238,12 +280,41 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             <div className="sticky top-0 z-50 bg-white/80 dark:bg-[#0F172A]/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-800/50">
                 <div className="max-w-[900px] mx-auto px-6 py-3 flex items-center justify-between">
                     <button
+                        type="button"
                         onClick={onCancel}
                         className="flex items-center gap-2 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4" />
                         Back
                     </button>
+
+                    {/* Auto-save indicator */}
+                    <div className="flex items-center justify-center flex-1 mx-4">
+                        {saveStatus === "saving" && (
+                            <span className="flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-md">
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                Saving draft...
+                            </span>
+                        )
+                        }
+                        {
+                            saveStatus === "saved" && (
+                                <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
+                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    Draft saved to cloud
+                                </span>
+                            )
+                        }
+                        {
+                            saveStatus === "error" && (
+                                <span className="flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-500 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-md">
+                                    <CloudOff className="w-3.5 h-3.5" />
+                                    Disconnected
+                                </span>
+                            )
+                        }
+                    </div >
+
                     <div className="flex items-center gap-3">
                         <button
                             type="button"
@@ -260,8 +331,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             {post ? "Update Post" : "Publish Post"}
                         </button>
                     </div>
-                </div>
-            </div>
+                </div >
+            </div >
 
             <div className="max-w-[900px] mx-auto px-6 py-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -770,161 +841,163 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             </div>
 
             {/* ── Preview Overlay ── */}
-            {showPreview && (
-                <div className="fixed inset-0 z-[100] bg-[#F8FAFC] dark:bg-[#0B1120] overflow-y-auto transition-colors duration-300">
-                    {/* Preview Top Bar */}
-                    <div className="sticky top-0 z-50 bg-white/80 dark:bg-[#0F172A]/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-800/50">
-                        <div className="max-w-[900px] mx-auto px-6 py-3 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
+            {
+                showPreview && (
+                    <div className="fixed inset-0 z-[100] bg-[#F8FAFC] dark:bg-[#0B1120] overflow-y-auto transition-colors duration-300">
+                        {/* Preview Top Bar */}
+                        <div className="sticky top-0 z-50 bg-white/80 dark:bg-[#0F172A]/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-800/50">
+                            <div className="max-w-[900px] mx-auto px-6 py-3 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => setShowPreview(false)}
+                                        className="flex items-center gap-2 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                        Back to Editor
+                                    </button>
+                                    <span className="px-2.5 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold rounded-full">
+                                        Preview Mode
+                                    </span>
+                                </div>
                                 <button
-                                    onClick={() => setShowPreview(false)}
-                                    className="flex items-center gap-2 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
+                                    onClick={handleSubmit}
+                                    className="px-5 py-1.5 bg-[#16A34A] text-white rounded-lg font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
                                 >
-                                    <ArrowLeft className="w-4 h-4" />
-                                    Back to Editor
+                                    {post ? "Update Post" : "Publish Post"}
                                 </button>
-                                <span className="px-2.5 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold rounded-full">
-                                    Preview Mode
-                                </span>
                             </div>
-                            <button
-                                onClick={handleSubmit}
-                                className="px-5 py-1.5 bg-[#16A34A] text-white rounded-lg font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
-                            >
-                                {post ? "Update Post" : "Publish Post"}
-                            </button>
                         </div>
-                    </div>
 
-                    {/* Cover Image */}
-                    {coverImage && (
-                        <div className="w-full h-[400px] md:h-[500px] overflow-hidden relative">
-                            <img
-                                src={coverImage}
-                                alt={title}
-                                className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                        </div>
-                    )}
+                        {/* Cover Image */}
+                        {coverImage && (
+                            <div className="w-full h-[400px] md:h-[500px] overflow-hidden relative">
+                                <img
+                                    src={coverImage}
+                                    alt={title}
+                                    className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                            </div>
+                        )}
 
-                    {/* Article Content */}
-                    <article className="max-w-[720px] mx-auto px-6 py-12">
-                        {/* Tags */}
-                        {tags.length > 0 && (
-                            <div className="flex flex-wrap items-center gap-2 mb-4">
-                                {tags.map((tag) => (
-                                    <span
-                                        key={tag}
-                                        className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full ${tag === effectiveClub
+                        {/* Article Content */}
+                        <article className="max-w-[720px] mx-auto px-6 py-12">
+                            {/* Tags */}
+                            {tags.length > 0 && (
+                                <div className="flex flex-wrap items-center gap-2 mb-4">
+                                    {tags.map((tag) => (
+                                        <span
+                                            key={tag}
+                                            className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full ${tag === effectiveClub
                                                 ? "text-white bg-[#16A34A]"
                                                 : "text-[#64748B] dark:text-gray-400 bg-gray-100 dark:bg-gray-800"
-                                            }`}
-                                    >
-                                        <Tag className="w-3 h-3" />
-                                        {tag}
-                                    </span>
-                                ))}
+                                                }`}
+                                        >
+                                            <Tag className="w-3 h-3" />
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Title and Meta */}
+                            <h1 className="text-3xl md:text-4xl font-bold text-[#0F172A] dark:text-white mb-4 leading-tight">
+                                {title || "Untitled Post"}
+                            </h1>
+
+                            <div className="flex flex-wrap items-center gap-3 mb-8 text-sm text-[#64748B] dark:text-gray-400">
+                                <span>{post?.date || formatDate()}</span>
+                                <span>•</span>
+                                <span className="flex items-center gap-1">
+                                    <Clock className="w-4 h-4" />
+                                    {calculateReadTime(content.replace(/<[^>]*>/g, " "))}
+                                </span>
                             </div>
-                        )}
 
-                        {/* Title and Meta */}
-                        <h1 className="text-3xl md:text-4xl font-bold text-[#0F172A] dark:text-white mb-4 leading-tight">
-                            {title || "Untitled Post"}
-                        </h1>
+                            {/* Excerpt */}
+                            {excerpt && (
+                                <p className="text-lg text-[#64748B] dark:text-gray-400 mb-8 italic border-l-4 border-[#16A34A] pl-4">
+                                    {excerpt}
+                                </p>
+                            )}
 
-                        <div className="flex flex-wrap items-center gap-3 mb-8 text-sm text-[#64748B] dark:text-gray-400">
-                            <span>{post?.date || formatDate()}</span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                {calculateReadTime(content.replace(/<[^>]*>/g, " "))}
-                            </span>
-                        </div>
+                            {/* Article Body */}
+                            {content.trim().startsWith("<") ? (
+                                <div
+                                    className="pitchside-article-content"
+                                    dangerouslySetInnerHTML={{ __html: content }}
+                                />
+                            ) : (
+                                <div className="pitchside-article-content">
+                                    {content.split("\n\n").map((paragraph, index) => {
+                                        if (paragraph.startsWith("## "))
+                                            return <h2 key={index}>{paragraph.replace("## ", "")}</h2>;
+                                        if (paragraph.startsWith("### "))
+                                            return <h3 key={index}>{paragraph.replace("### ", "")}</h3>;
+                                        if (paragraph.startsWith("> "))
+                                            return <blockquote key={index}>{paragraph.replace("> ", "").replace(/"/g, "")}</blockquote>;
+                                        return <p key={index}>{paragraph}</p>;
+                                    })}
+                                </div>
+                            )}
 
-                        {/* Excerpt */}
-                        {excerpt && (
-                            <p className="text-lg text-[#64748B] dark:text-gray-400 mb-8 italic border-l-4 border-[#16A34A] pl-4">
-                                {excerpt}
-                            </p>
-                        )}
-
-                        {/* Article Body */}
-                        {content.trim().startsWith("<") ? (
-                            <div
-                                className="pitchside-article-content"
-                                dangerouslySetInnerHTML={{ __html: content }}
-                            />
-                        ) : (
-                            <div className="pitchside-article-content">
-                                {content.split("\n\n").map((paragraph, index) => {
-                                    if (paragraph.startsWith("## "))
-                                        return <h2 key={index}>{paragraph.replace("## ", "")}</h2>;
-                                    if (paragraph.startsWith("### "))
-                                        return <h3 key={index}>{paragraph.replace("### ", "")}</h3>;
-                                    if (paragraph.startsWith("> "))
-                                        return <blockquote key={index}>{paragraph.replace("> ", "").replace(/"/g, "")}</blockquote>;
-                                    return <p key={index}>{paragraph}</p>;
-                                })}
-                            </div>
-                        )}
-
-                        {/* Media Embed */}
-                        {mediaUrl && (
-                            <div className="mt-12 w-full mx-auto overflow-hidden rounded-2xl flex items-center justify-center p-0 sm:p-2 bg-transparent">
-                                {mediaUrl.includes('spotify.com') ? (
-                                    <iframe
-                                        style={{ borderRadius: '12px', border: 'none' }}
-                                        src={mediaUrl.replace('open.spotify.com', 'open.spotify.com/embed')}
-                                        width="100%"
-                                        height="152"
-                                        allowFullScreen={false}
-                                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                                        loading="lazy"
-                                    />
-                                ) : mediaUrl.includes('youtube.com') || mediaUrl.includes('youtu.be') ? (
-                                    <div className="relative w-full pb-[56.25%] h-0 rounded-xl overflow-hidden shadow-md">
+                            {/* Media Embed */}
+                            {mediaUrl && (
+                                <div className="mt-12 w-full mx-auto overflow-hidden rounded-2xl flex items-center justify-center p-0 sm:p-2 bg-transparent">
+                                    {mediaUrl.includes('spotify.com') ? (
                                         <iframe
-                                            className="absolute top-0 left-0 w-full h-full border-none"
-                                            src={mediaUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')}
-                                            title="YouTube video player"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                            referrerPolicy="strict-origin-when-cross-origin"
-                                            allowFullScreen
+                                            style={{ borderRadius: '12px', border: 'none' }}
+                                            src={mediaUrl.replace('open.spotify.com', 'open.spotify.com/embed')}
+                                            width="100%"
+                                            height="152"
+                                            allowFullScreen={false}
+                                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                            loading="lazy"
                                         />
-                                    </div>
-                                ) : (
-                                    <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="text-[#16A34A] hover:underline flex items-center gap-2 py-4">
-                                        Watch Media Link
-                                    </a>
-                                )}
-                            </div>
-                        )}
+                                    ) : mediaUrl.includes('youtube.com') || mediaUrl.includes('youtu.be') ? (
+                                        <div className="relative w-full pb-[56.25%] h-0 rounded-xl overflow-hidden shadow-md">
+                                            <iframe
+                                                className="absolute top-0 left-0 w-full h-full border-none"
+                                                src={mediaUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')}
+                                                title="YouTube video player"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                referrerPolicy="strict-origin-when-cross-origin"
+                                                allowFullScreen
+                                            />
+                                        </div>
+                                    ) : (
+                                        <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="text-[#16A34A] hover:underline flex items-center gap-2 py-4">
+                                            Watch Media Link
+                                        </a>
+                                    )}
+                                </div>
+                            )}
 
-                        {/* Poll Preview */}
-                        {usePoll && poll.question.trim() && (
-                            <div className="mt-8">
-                                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-6 shadow-sm border border-gray-200/50 dark:border-gray-800/50">
-                                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white mb-4 flex items-center gap-2">
-                                        📊 {poll.question}
-                                    </h3>
-                                    <div className="space-y-3">
-                                        {poll.options.filter(o => o.text.trim()).map((opt, idx) => (
-                                            <button
-                                                key={idx}
-                                                type="button"
-                                                className="w-full text-left px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-sm font-medium text-[#0F172A] dark:text-white hover:border-[#16A34A] hover:bg-[#16A34A]/5 transition-all cursor-pointer"
-                                            >
-                                                {opt.text}
-                                            </button>
-                                        ))}
+                            {/* Poll Preview */}
+                            {usePoll && poll.question.trim() && (
+                                <div className="mt-8">
+                                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-6 shadow-sm border border-gray-200/50 dark:border-gray-800/50">
+                                        <h3 className="text-lg font-bold text-[#0F172A] dark:text-white mb-4 flex items-center gap-2">
+                                            📊 {poll.question}
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {poll.options.filter(o => o.text.trim()).map((opt, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    type="button"
+                                                    className="w-full text-left px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-sm font-medium text-[#0F172A] dark:text-white hover:border-[#16A34A] hover:bg-[#16A34A]/5 transition-all cursor-pointer"
+                                                >
+                                                    {opt.text}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-                    </article>
-                </div>
-            )}
-        </div>
+                            )}
+                        </article>
+                    </div>
+                )
+            }
+        </div >
     );
 }

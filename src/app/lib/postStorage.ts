@@ -64,6 +64,21 @@ export function getAllPosts(): BlogPost[] {
   return getAllPostsLocal();
 }
 
+/**
+ * Sync version. Only returns posts that are NOT marked as drafts.
+ */
+export function getPublishedPosts(): BlogPost[] {
+  return getAllPostsLocal().filter(p => !p.isDraft);
+}
+
+/**
+ * Async version. Only returns posts that are NOT marked as drafts.
+ */
+export async function getPublishedPostsAsync(): Promise<BlogPost[]> {
+  const posts = await getAllPostsAsync();
+  return posts.filter(p => !p.isDraft);
+}
+
 function getAllPostsLocal(): BlogPost[] {
   try {
     const stored = localStorage.getItem(POSTS_KEY);

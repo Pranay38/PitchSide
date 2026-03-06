@@ -15,6 +15,7 @@ export interface BlogPost {
   sofascoreUrl?: string; // Legacy support
   sofascoreWidget?: any; // Structured WidgetConfig
   playerName?: string;
+  isDraft?: boolean;
   poll?: {
     question: string;
     options: { text: string; votes: number }[];

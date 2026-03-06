@@ -5,7 +5,7 @@ import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
 import { ClubSelectionModal } from "../components/ClubSelectionModal";
 import type { BlogPost } from "../data/posts";
-import { getAllPosts, getAllPostsAsync } from "../lib/postStorage";
+import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { Search, X, Filter, Sparkles, Trophy, ChevronDown, Shield, User, ArrowUp } from "lucide-react";
 import { NewsTicker } from "../components/NewsTicker";
@@ -46,12 +46,12 @@ export function HomePage() {
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Read posts from storage
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => getAllPosts());
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => getPublishedPosts());
 
   useEffect(() => {
     let isMounted = true;
 
-    getAllPostsAsync()
+    getPublishedPostsAsync()
       .then((posts) => {
         if (isMounted && posts.length > 0) {
           setBlogPosts(posts);
