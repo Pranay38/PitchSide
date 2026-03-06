@@ -205,6 +205,57 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         return () => document.removeEventListener("mousedown", handler);
     }, []);
 
+    // Hydrate social embeds in preview mode
+    useEffect(() => {
+        if (!showPreview || !content) return;
+
+        const timer = setTimeout(() => {
+            // Twitter / X embeds
+            if (content.includes("twitter-tweet")) {
+                const existing = document.getElementById("twitter-wjs");
+                if (existing) {
+                    if ((window as any).twttr?.widgets?.load) {
+                        (window as any).twttr.widgets.load();
+                    }
+                } else {
+                    const script = document.createElement("script");
+                    script.id = "twitter-wjs";
+                    script.src = "https://platform.twitter.com/widgets.js";
+                    script.async = true;
+                    script.onload = () => {
+                        if ((window as any).twttr?.widgets?.load) {
+                            (window as any).twttr.widgets.load();
+                        }
+                    };
+                    document.body.appendChild(script);
+                }
+            }
+
+            // Instagram embeds
+            if (content.includes("instagram-media")) {
+                const existing = document.getElementById("instagram-embed-js");
+                if (existing) {
+                    if ((window as any).instgrm?.Embeds?.process) {
+                        (window as any).instgrm.Embeds.process();
+                    }
+                } else {
+                    const script = document.createElement("script");
+                    script.id = "instagram-embed-js";
+                    script.src = "https://www.instagram.com/embed.js";
+                    script.async = true;
+                    script.onload = () => {
+                        if ((window as any).instgrm?.Embeds?.process) {
+                            (window as any).instgrm.Embeds.process();
+                        }
+                    };
+                    document.body.appendChild(script);
+                }
+            }
+        }, 150);
+
+        return () => clearTimeout(timer);
+    }, [showPreview, content]);
+
     const handleFileUpload = async (file: File) => {
         if (!file.type.startsWith("image/")) return;
         setUploading(true);

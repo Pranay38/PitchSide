@@ -52,34 +52,52 @@ export function BlogPostPage() {
   useEffect(() => {
     if (!post?.content) return;
 
-    // Twitter / X embeds
-    if (post.content.includes("twitter-tweet")) {
-      const existing = document.getElementById("twitter-wjs");
-      if (existing) {
-        // Script already loaded — just re-render
-        (window as any).twttr?.widgets?.load();
-      } else {
-        const script = document.createElement("script");
-        script.id = "twitter-wjs";
-        script.src = "https://platform.twitter.com/widgets.js";
-        script.async = true;
-        document.body.appendChild(script);
+    const timer = setTimeout(() => {
+      // Twitter / X embeds
+      if (post.content.includes("twitter-tweet")) {
+        const existing = document.getElementById("twitter-wjs");
+        if (existing) {
+          // Script already loaded — just re-render
+          if ((window as any).twttr?.widgets?.load) {
+            (window as any).twttr.widgets.load();
+          }
+        } else {
+          const script = document.createElement("script");
+          script.id = "twitter-wjs";
+          script.src = "https://platform.twitter.com/widgets.js";
+          script.async = true;
+          script.onload = () => {
+            if ((window as any).twttr?.widgets?.load) {
+              (window as any).twttr.widgets.load();
+            }
+          };
+          document.body.appendChild(script);
+        }
       }
-    }
 
-    // Instagram embeds
-    if (post.content.includes("instagram-media")) {
-      const existing = document.getElementById("instagram-embed-js");
-      if (existing) {
-        (window as any).instgrm?.Embeds?.process();
-      } else {
-        const script = document.createElement("script");
-        script.id = "instagram-embed-js";
-        script.src = "https://www.instagram.com/embed.js";
-        script.async = true;
-        document.body.appendChild(script);
+      // Instagram embeds
+      if (post.content.includes("instagram-media")) {
+        const existing = document.getElementById("instagram-embed-js");
+        if (existing) {
+          if ((window as any).instgrm?.Embeds?.process) {
+            (window as any).instgrm.Embeds.process();
+          }
+        } else {
+          const script = document.createElement("script");
+          script.id = "instagram-embed-js";
+          script.src = "https://www.instagram.com/embed.js";
+          script.async = true;
+          script.onload = () => {
+            if ((window as any).instgrm?.Embeds?.process) {
+              (window as any).instgrm.Embeds.process();
+            }
+          };
+          document.body.appendChild(script);
+        }
       }
-    }
+    }, 150);
+
+    return () => clearTimeout(timer);
   }, [post?.content]);
 
   // Related posts: same club or overlapping tags, excluding current
