@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-03-05T05:44:20.519013",
+  "lastUpdated": "2026-03-06T05:41:58.446180",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid calm Rodri interest - Thursday's gossip",
-    "sentimentScore": 77
+    "text": "Man City close in on Anderson - Friday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 94
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 78
     },
     {
-      "name": "Scott Parker (BUR)",
-      "pressureScore": 73
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 76
+    },
+    {
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 72
     },
     {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 68
+      "pressureScore": 64
     }
   ]
 }
