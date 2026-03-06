@@ -4,7 +4,8 @@ import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
-import { useRef } from "react";
+import { EmbeddedImage } from "./extensions/EmbeddedImageExtension";
+import { useRef, useState } from "react";
 import type { BlogPost } from "../data/posts";
 import { InternalLinkSuggestion } from "./InternalLinkSuggestion";
 import {
@@ -26,6 +27,8 @@ import {
     Undo2,
     Redo2,
     ImagePlus,
+    Camera,
+    X,
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -96,6 +99,10 @@ function ToolbarDivider() {
 
 export function RichTextEditor({ content, onChange, placeholder, existingPosts = [] }: RichTextEditorProps) {
     const imageInputRef = useRef<HTMLInputElement>(null);
+    const [showEmbedModal, setShowEmbedModal] = useState(false);
+    const [embedSrc, setEmbedSrc] = useState("");
+    const [embedCreditText, setEmbedCreditText] = useState("");
+    const [embedCreditUrl, setEmbedCreditUrl] = useState("");
 
     const editor = useEditor({
         extensions: [
@@ -119,6 +126,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                     class: "rounded-lg max-w-full h-auto mx-auto my-4",
                 },
             }),
+            EmbeddedImage,
         ],
         content: content || "",
         onUpdate: ({ editor }) => {
@@ -293,6 +301,9 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                         <LinkIcon className="w-3 h-3 absolute bottom-0 right-[-4px]" />
                     </div>
                 </ToolbarButton>
+                <ToolbarButton onClick={() => setShowEmbedModal(true)} title="Embed Image with Credit">
+                    <Camera className="w-4 h-4" />
+                </ToolbarButton>
 
                 <ToolbarDivider />
 
@@ -326,6 +337,84 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
             {/* Internal Link Suggestions */}
             {existingPosts.length > 0 && (
                 <InternalLinkSuggestion editor={editor} posts={existingPosts} />
+            )}
+
+            {/* Embed Image Modal */}
+            {showEmbedModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
+                            <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                                <Camera className="w-5 h-5 text-[#16A34A]" />
+                                Embed Image with Credit
+                            </h3>
+                            <button
+                                onClick={() => setShowEmbedModal(false)}
+                                className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] transition-colors"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="p-5 space-y-4">
+                            <div>
+                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1.5">Image URL *</label>
+                                <input
+                                    value={embedSrc}
+                                    onChange={(e) => setEmbedSrc(e.target.value)}
+                                    placeholder="https://pbs.twimg.com/media/..."
+                                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1.5">Credit Text</label>
+                                <input
+                                    value={embedCreditText}
+                                    onChange={(e) => setEmbedCreditText(e.target.value)}
+                                    placeholder="Source: Twitter / @FabrizioRomano"
+                                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1.5">Credit Link</label>
+                                <input
+                                    value={embedCreditUrl}
+                                    onChange={(e) => setEmbedCreditUrl(e.target.value)}
+                                    placeholder="https://twitter.com/FabrizioRomano/status/..."
+                                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A]/50">
+                            <button
+                                type="button"
+                                onClick={() => setShowEmbedModal(false)}
+                                className="px-4 py-2 text-sm font-medium text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    if (embedSrc.trim()) {
+                                        editor.chain().focus().setEmbeddedImage({
+                                            src: embedSrc.trim(),
+                                            creditText: embedCreditText.trim(),
+                                            creditUrl: embedCreditUrl.trim(),
+                                        }).run();
+                                        setEmbedSrc("");
+                                        setEmbedCreditText("");
+                                        setEmbedCreditUrl("");
+                                        setShowEmbedModal(false);
+                                    }
+                                }}
+                                disabled={!embedSrc.trim()}
+                                className="px-5 py-2 bg-[#16A34A] text-white rounded-xl text-sm font-semibold hover:bg-[#15803d] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-[#16A34A]/25"
+                            >
+                                Insert
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
