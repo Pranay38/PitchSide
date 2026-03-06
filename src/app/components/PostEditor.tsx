@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import type { BlogPost } from "../data/posts";
-import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName } from "../data/clubs";
+import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName, deleteCustomClub, isCustomClub } from "../data/clubs";
 import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
-import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus } from "lucide-react";
+import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { PollWidget } from "./PollWidget";
 
 /** Categories that are NOT club-specific */
@@ -92,6 +92,10 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
 
+    // Custom Team Modal State
+    const [showCustomTeamModal, setShowCustomTeamModal] = useState(false);
+    const [customTeamLogoInput, setCustomTeamLogoInput] = useState("");
+
     // Auto-save state
     const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -164,17 +168,22 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
 
     const handleAddCustomClub = () => {
         if (!clubSearch.trim()) return;
+        setCustomTeamLogoInput("");
+        setShowCustomTeamModal(true);
+    };
 
-        const logoUrl = window.prompt(`Optional: Enter a URL for the logo of "${clubSearch}"`);
+    const confirmCustomTeamAdd = () => {
+        if (!clubSearch.trim()) return;
 
         const newClub = {
             name: clubSearch.trim(),
             league: "Custom Teams", // Generic bucket for user-added teams
-            logo: logoUrl?.trim() || ""
+            logo: customTeamLogoInput.trim() || ""
         };
 
         addCustomClub(newClub);
         selectClub(newClub);
+        setShowCustomTeamModal(false);
     };
 
     const selectClub = (result: SearchResult) => {
@@ -563,32 +572,54 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 {(showClubDropdown && (clubResults.length > 0 || clubSearch.length > 1)) && (
                                     <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-600 shadow-xl max-h-72 overflow-y-auto">
                                         {clubResults.map((result) => (
-                                            <button
+                                            <div
                                                 key={result.name}
-                                                type="button"
-                                                onClick={() => selectClub(result)}
-                                                className="w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors text-sm border-b border-gray-100 dark:border-gray-700/50 last:border-0"
+                                                className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700/50 last:border-0 group text-sm"
                                             >
-                                                <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                    {result.logo ? (
-                                                        <img
-                                                            src={result.logo}
-                                                            alt=""
-                                                            className="w-5 h-5 object-contain"
-                                                            onError={(e) => {
-                                                                e.currentTarget.style.display = "none";
-                                                                e.currentTarget.parentElement!.textContent = result.name[0];
-                                                            }}
-                                                        />
-                                                    ) : (
-                                                        <span className="text-xs font-bold text-[#64748B]">{result.name[0]}</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-medium text-[#0F172A] dark:text-white truncate">{result.name}</p>
-                                                    <p className="text-xs text-[#94A3B8] dark:text-gray-500 truncate">{result.league}</p>
-                                                </div>
-                                            </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => selectClub(result)}
+                                                    className="w-full flex items-center gap-3 text-left flex-1"
+                                                >
+                                                    <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                        {result.logo ? (
+                                                            <img
+                                                                src={result.logo}
+                                                                alt=""
+                                                                className="w-5 h-5 object-contain"
+                                                                onError={(e) => {
+                                                                    e.currentTarget.style.display = "none";
+                                                                    e.currentTarget.parentElement!.textContent = result.name[0];
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <span className="text-xs font-bold text-[#64748B]">{result.name[0]}</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0 pr-2">
+                                                        <p className="font-medium text-[#0F172A] dark:text-white truncate">{result.name}</p>
+                                                        <p className="text-xs text-[#94A3B8] dark:text-gray-500 truncate">{result.league}</p>
+                                                    </div>
+                                                </button>
+                                                {isCustomClub(result.name) && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            deleteCustomClub(result.name);
+                                                            handleClubSearch(clubSearch || "");
+                                                            if (club === result.name) {
+                                                                setClub("");
+                                                                setCategory("General");
+                                                            }
+                                                        }}
+                                                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                                        title="Delete custom team"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                            </div>
                                         ))}
 
                                         {/* Add Custom Club Button */}
@@ -871,6 +902,45 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     </div>
                 </form>
             </div>
+
+            {/* ── Custom Team Logo Modal ── */}
+            {showCustomTeamModal && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
+                    <div className="bg-white dark:bg-[#1E293B] w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in slide-in-from-bottom-4">
+                        <div className="p-6">
+                            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white mb-2">New Team Options</h3>
+                            <p className="text-sm text-[#64748B] dark:text-gray-400 mb-6 font-medium">Adding <span className="font-bold text-[#16A34A]">{clubSearch}</span></p>
+
+                            <label className="block text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
+                                Logo URL <span className="text-xs text-[#94A3B8] font-normal">(Optional)</span>
+                            </label>
+                            <input
+                                type="url"
+                                value={customTeamLogoInput}
+                                onChange={(e) => setCustomTeamLogoInput(e.target.value)}
+                                placeholder="https://example.com/logo.png"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm mb-6"
+                                autoFocus
+                            />
+
+                            <div className="flex gap-3 justify-end">
+                                <button
+                                    onClick={() => setShowCustomTeamModal(false)}
+                                    className="px-5 py-2.5 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmCustomTeamAdd}
+                                    className="px-6 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
+                                >
+                                    Save & Select
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* ── Preview Overlay ── */}
             {

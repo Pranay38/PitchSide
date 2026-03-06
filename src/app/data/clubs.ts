@@ -86,6 +86,23 @@ export function addCustomClub(club: Club): void {
 }
 
 /**
+ * Remove a custom club from the persistent list.
+ */
+export function deleteCustomClub(name: string): void {
+  const custom = getCustomClubs();
+  const filtered = custom.filter((c) => c.name.toLowerCase() !== name.toLowerCase());
+  saveCustomClubs(filtered);
+}
+
+/**
+ * Check if a club is a custom club.
+ */
+export function isCustomClub(name: string): boolean {
+  const defaultNames = new Set(DEFAULT_CLUBS.map((c) => c.name.toLowerCase()));
+  return !defaultNames.has(name.toLowerCase());
+}
+
+/**
  * Get all club names as a flat array (defaults + custom).
  */
 export function getAllClubNames(): string[] {
