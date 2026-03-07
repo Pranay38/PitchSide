@@ -21,7 +21,7 @@ import {
     updateSiteSettingsAsync,
     type SiteSettings,
 } from "../lib/siteSettingsStorage";
-import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter } from "lucide-react";
+import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { DebateEditor } from "../components/DebateEditor";
 
@@ -34,6 +34,7 @@ export function AdminPage() {
     const [view, setView] = useState<View>("list");
     const [activeTab, setActiveTab] = useState<Tab>("posts");
     const [showDebateEditor, setShowDebateEditor] = useState(false);
+    const [expandedDebateId, setExpandedDebateId] = useState<string | null>(null);
     
     // Post Filters and Sorting
     const [postFilter, setPostFilter] = useState<"all" | "published" | "drafts">("all");
@@ -241,6 +242,17 @@ export function AdminPage() {
                 toast.success("Debate deleted");
                 fetchDebates();
             } else toast.error("Failed to delete debate");
+        } catch { toast.error("Network error"); }
+    };
+
+    const handleDeleteArgument = async (debateId: string, argumentId: string) => {
+        if (!window.confirm("Delete this comment?")) return;
+        try {
+            const res = await fetch(`/api/debates?id=${debateId}&argumentId=${argumentId}`, { method: "DELETE" });
+            if (res.ok) {
+                toast.success("Comment deleted");
+                fetchDebates();
+            } else toast.error("Failed to delete comment");
         } catch { toast.error("Network error"); }
     };
 
@@ -536,17 +548,61 @@ export function AdminPage() {
                         <div className="space-y-3">
                             {debates.length === 0 && <p className="text-gray-500">No debates created yet.</p>}
                             {debates.map((deb) => (
-                                <div key={deb.id} className="p-5 flex items-center justify-between bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-gray-800">
-                                    <div>
-                                        <h3 className="font-semibold text-[#0F172A] dark:text-white">{deb.title}</h3>
-                                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-                                            <span className="text-emerald-500 font-medium">{deb.agreeVotes} Agree</span>
-                                            <span className="text-red-500 font-medium">{deb.disagreeVotes} Disagree</span>
-                                            <span>•</span>
-                                            <span>{deb.totalArguments} Arguments</span>
+                                <div key={deb.id} className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left transition-all">
+                                    <div className="p-5 flex items-center justify-between">
+                                        <div>
+                                            <h3 className="font-semibold text-[#0F172A] dark:text-white">{deb.title}</h3>
+                                            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                                                <span className="text-emerald-500 font-medium">{deb.agreeVotes} Agree</span>
+                                                <span className="text-red-500 font-medium">{deb.disagreeVotes} Disagree</span>
+                                                <span>•</span>
+                                                <span>{deb.totalArguments} Arguments</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => setExpandedDebateId(expandedDebateId === deb.id ? null : deb.id)} 
+                                                className={`p-2 rounded-lg transition-colors \${expandedDebateId === deb.id ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"}`}
+                                                title="View Comments"
+                                            >
+                                                <MessageSquare className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={() => handleDeleteDebate(deb.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
                                         </div>
                                     </div>
-                                    <button onClick={() => handleDeleteDebate(deb.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                    
+                                    {/* Expanded Comments View */}
+                                    {expandedDebateId === deb.id && deb.arguments && deb.arguments.length > 0 && (
+                                        <div className="bg-gray-50 dark:bg-[#0F172A] p-4 border-t border-gray-100 dark:border-gray-800 max-h-[300px] overflow-y-auto">
+                                            <div className="space-y-3">
+                                                {deb.arguments.map((arg: any) => (
+                                                    <div key={arg.id} className="flex items-start justify-between gap-4 p-3 bg-white dark:bg-[#1E293B] rounded-lg border border-gray-200 dark:border-gray-700">
+                                                        <div>
+                                                            <div className="flex items-center gap-2 mb-1">
+                                                                <span className="font-semibold text-sm text-[#0F172A] dark:text-gray-200">{arg.author}</span>
+                                                                <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded \${arg.side === "agree" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" : "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400"}`}>
+                                                                    {arg.side}
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-sm text-gray-600 dark:text-gray-400">{arg.text}</p>
+                                                        </div>
+                                                        <button 
+                                                            onClick={() => handleDeleteArgument(deb.id, arg.id)}
+                                                            className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded-lg transition-colors flex-shrink-0"
+                                                            title="Delete Comment"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {expandedDebateId === deb.id && (!deb.arguments || deb.arguments.length === 0) && (
+                                        <div className="bg-gray-50 dark:bg-[#0F172A] p-4 border-t border-gray-100 dark:border-gray-800 text-center text-sm text-gray-500">
+                                            No comments on this debate yet.
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>

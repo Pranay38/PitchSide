@@ -110,11 +110,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(201).json({ ...doc, id: String(result.insertedId) });
         }
 
-        // ─── DELETE: Delete a debate (admin) ───
+        // ─── DELETE: Delete a debate or argument (admin) ───
         if (req.method === "DELETE") {
             const id = req.query.id as string;
+            const argumentId = req.query.argumentId as string;
+
             if (!id) return res.status(400).json({ error: "Missing debate id" });
             const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
+
+            if (argumentId) {
+                // Delete a specific argument
+                const result = await collection.updateOne(filter, { $pull: { arguments: { id: argumentId } } as any });
+                if (result.matchedCount === 0) return res.status(404).json({ error: "Debate not found" });
+                return res.status(200).json({ success: true });
+            }
+
+            // Delete the entire debate
             const result = await collection.deleteOne(filter);
             if (result.deletedCount === 0) return res.status(404).json({ error: "Debate not found" });
             return res.status(200).json({ success: true });
