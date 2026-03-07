@@ -401,6 +401,7 @@ export function AdminPage() {
                                     <Plus className="w-4 h-4" />New Post
                                 </button>
                             </div>
+                        </div>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                             <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
                                 <button
