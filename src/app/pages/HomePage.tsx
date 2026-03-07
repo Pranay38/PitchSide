@@ -168,22 +168,28 @@ export function HomePage() {
     return posts;
   }, [sortedPosts, searchQuery, activeTab]);
 
-  // Main Story: prioritize post flagged as mainStory, otherwise latest by date
-  const mainStoryPost = useMemo(() => {
-    if (searchQuery) return null;
-    if (blogPosts.length === 0) return null;
-    // First, check if any post is explicitly flagged as main story
-    const flaggedMain = blogPosts.find((p) => p.mainStory);
-    if (flaggedMain) return flaggedMain;
-    // Otherwise, fall back to the latest post by date
+  // Main Story: prioritize posts flagged as mainStory, otherwise latest by date
+  const mainStoryPosts = useMemo(() => {
+    if (searchQuery) return [];
+    if (blogPosts.length === 0) return [];
+    
+    // Check if any posts are explicitly flagged as main story
+    const flaggedMain = blogPosts.filter((p) => p.mainStory);
+    
+    // Sort flagged posts by date (newest first)
+    if (flaggedMain.length > 0) {
+      return flaggedMain.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }
+    
+    // Otherwise, fall back to the single latest post by date
     const byDate = [...blogPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    return byDate[0] || null;
+    return byDate.length > 0 ? [byDate[0]] : [];
   }, [blogPosts, searchQuery]);
 
-  // We only exclude the main story from the rest of the feed
+  // We exclude the main stories from the rest of the feed
   const heroPosts = useMemo(() => {
-    return mainStoryPost ? [mainStoryPost] : [];
-  }, [mainStoryPost]);
+    return mainStoryPosts;
+  }, [mainStoryPosts]);
 
   // This Week in Football (only show when not searching)
   const thisWeekPosts = useMemo(() => {
@@ -367,15 +373,17 @@ export function HomePage() {
           </div>
         )}
 
-        {/* Hero Section: Main Story Only (when no filters) */}
+        {/* Hero Section: Main Stories Only (when no filters) */}
         {
-          mainStoryPost && !searchQuery && (
-            <section className="mb-10 animate-float-in">
-              {/* Main Story — Full Width Big Card */}
-              <div className="flex h-[380px] md:h-[480px] mb-4">
-                <div className="w-full">
-                  <PostCard post={mainStoryPost} featured />
-                </div>
+          mainStoryPosts.length > 0 && !searchQuery && (
+            <section className="mb-10 animate-float-in overflow-hidden">
+              {/* Main Stories — Horizontal Scroll */}
+              <div className="flex overflow-x-auto snap-x snap-mandatory hide-scroll-bar gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+                {mainStoryPosts.map((post) => (
+                   <div key={post.id} className="snap-center sm:snap-start flex-shrink-0 w-[95%] sm:w-[85%] md:w-[75%] lg:w-[65%] h-[380px] md:h-[480px]">
+                     <PostCard post={post} featured />
+                   </div>
+                ))}
               </div>
             </section>
           )
