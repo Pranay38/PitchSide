@@ -117,7 +117,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
         if (srcMatch && srcMatch[1]) {
             extractedUrl = srcMatch[1];
         }
-        
+
         const heightMatch = val.match(/height=["']?(\d+)/i);
         if (heightMatch && heightMatch[1]) {
             extractedHeight = heightMatch[1];
