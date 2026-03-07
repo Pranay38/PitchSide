@@ -21,7 +21,7 @@ import {
     updateSiteSettingsAsync,
     type SiteSettings,
 } from "../lib/siteSettingsStorage";
-import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout } from "lucide-react";
+import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter } from "lucide-react";
 import { toast } from "sonner";
 import { DebateEditor } from "../components/DebateEditor";
 
@@ -34,6 +34,10 @@ export function AdminPage() {
     const [view, setView] = useState<View>("list");
     const [activeTab, setActiveTab] = useState<Tab>("posts");
     const [showDebateEditor, setShowDebateEditor] = useState(false);
+    
+    // Post Filters and Sorting
+    const [postFilter, setPostFilter] = useState<"all" | "published" | "drafts">("all");
+    const [postSort, setPostSort] = useState<"newest" | "oldest" | "a-z" | "z-a">("newest");
 
     const [posts, setPosts] = useState<BlogPost[]>(() => getAllPosts());
     const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
@@ -290,6 +294,21 @@ export function AdminPage() {
         if (importFileRef.current) importFileRef.current.value = "";
     };
 
+    // Derived filtered and sorted posts
+    const displayedPosts = [...posts]
+        .filter(post => {
+            if (postFilter === "published") return !post.isDraft;
+            if (postFilter === "drafts") return post.isDraft;
+            return true; // "all"
+        })
+        .sort((a, b) => {
+            if (postSort === "newest") return new Date(b.date).getTime() - new Date(a.date).getTime();
+            if (postSort === "oldest") return new Date(a.date).getTime() - new Date(b.date).getTime();
+            if (postSort === "a-z") return a.title.localeCompare(b.title);
+            if (postSort === "z-a") return b.title.localeCompare(a.title);
+            return 0;
+        });
+
     if (!isAuthed) return <AdminLogin onLogin={handleLogin} />;
 
     if (view === "create" || view === "edit") {
@@ -382,9 +401,44 @@ export function AdminPage() {
                                     <Plus className="w-4 h-4" />New Post
                                 </button>
                             </div>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
+                                <button
+                                    onClick={() => setPostFilter("all")}
+                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all \${postFilter === "all" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
+                                >
+                                    All ({posts.length})
+                                </button>
+                                <button
+                                    onClick={() => setPostFilter("published")}
+                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all \${postFilter === "published" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
+                                >
+                                    Published ({posts.filter(p => !p.isDraft).length})
+                                </button>
+                                <button
+                                    onClick={() => setPostFilter("drafts")}
+                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all \${postFilter === "drafts" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
+                                >
+                                    Drafts ({posts.filter(p => p.isDraft).length})
+                                </button>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                                <Filter className="w-4 h-4 text-gray-400" />
+                                <select 
+                                    value={postSort}
+                                    onChange={(e) => setPostSort(e.target.value as any)}
+                                    className="bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-[#16A34A] focus:border-[#16A34A] block w-full p-2.5 outline-none cursor-pointer pr-8"
+                                >
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                    <option value="a-z">Title (A-Z)</option>
+                                    <option value="z-a">Title (Z-A)</option>
+                                </select>
+                            </div>
                         </div>
 
-                        {posts.length === 0 ? (
+                        {displayedPosts.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800">
                                 <div className="text-5xl mb-4">📝</div>
                                 <h2 className="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">No posts yet</h2>
@@ -395,7 +449,7 @@ export function AdminPage() {
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {posts.map((post) => (
+                                {displayedPosts.map((post) => (
                                     <div key={post.id} className="flex items-center gap-4 p-4 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-all group">
                                         {post.coverImage && (
                                             <div className="hidden sm:block w-20 h-14 rounded-lg overflow-hidden flex-shrink-0">
