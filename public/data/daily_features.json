@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-03-06T05:41:58.446180",
+  "lastUpdated": "2026-03-07T05:35:11.534482",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man City close in on Anderson - Friday's gossip",
+    "text": "Spurs could turn to De Zerbi - Saturday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 78
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 76
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 86
     },
     {
       "name": "Keith Andrews (BRE)",
-      "pressureScore": 72
+      "pressureScore": 83
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 64
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 82
+    },
+    {
+      "name": "Scott Parker (BUR)",
+      "pressureScore": 71
     }
   ]
 }
