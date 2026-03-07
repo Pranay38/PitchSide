@@ -31,6 +31,7 @@ import {
     Camera,
     X,
     Share2,
+    BarChart2,
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -107,6 +108,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
     const [embedCreditUrl, setEmbedCreditUrl] = useState("");
     const [embedHeight, setEmbedHeight] = useState("");
     const [detectedPlatform, setDetectedPlatform] = useState<SocialPlatform>("image");
+    const [isSofascoreModal, setIsSofascoreModal] = useState(false);
     const [savedSelection, setSavedSelection] = useState<number | null>(null);
 
     const handleEmbedUrlChange = (val: string) => {
@@ -327,9 +329,18 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                 </ToolbarButton>
                 <ToolbarButton onClick={() => {
                     setSavedSelection(editor.state.selection.from);
+                    setIsSofascoreModal(false);
                     setShowEmbedModal(true);
                 }} title="Embed Social Post / Image">
                     <Share2 className="w-4 h-4" />
+                </ToolbarButton>
+                <ToolbarButton onClick={() => {
+                    setSavedSelection(editor.state.selection.from);
+                    setIsSofascoreModal(true);
+                    setDetectedPlatform("sofascore");
+                    setShowEmbedModal(true);
+                }} title="Embed Sofascore Widget">
+                    <BarChart2 className="w-4 h-4" />
                 </ToolbarButton>
 
                 <ToolbarDivider />
@@ -372,11 +383,20 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-gray-200 dark:border-gray-700">
                         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
                             <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                                <Share2 className="w-5 h-5 text-[#16A34A]" />
-                                Embed Post or Image
+                                {isSofascoreModal ? (
+                                    <>
+                                        <BarChart2 className="w-5 h-5 text-[#16A34A]" />
+                                        Embed Sofascore Widget
+                                    </>
+                                ) : (
+                                    <>
+                                        <Share2 className="w-5 h-5 text-[#16A34A]" />
+                                        Embed Post or Image
+                                    </>
+                                )}
                             </h3>
                             <button
-                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); }}
+                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); setIsSofascoreModal(false); }}
                                 className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] transition-colors"
                             >
                                 <X className="w-4 h-4" />
@@ -384,11 +404,13 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                         </div>
                         <div className="p-5 space-y-4">
                             <div>
-                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1.5">Paste URL *</label>
+                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1.5">
+                                    {isSofascoreModal ? "Paste Sofascore Iframe HTML *" : "Paste URL *"}
+                                </label>
                                 <input
                                     value={embedSrc}
                                     onChange={(e) => handleEmbedUrlChange(e.target.value)}
-                                    placeholder="Paste a tweet, Instagram, YouTube, or image URL"
+                                    placeholder={isSofascoreModal ? "<iframe src='...' ></iframe>" : "Paste a tweet, Instagram, YouTube, or image URL"}
                                     className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all"
                                     autoFocus
                                 />
@@ -400,11 +422,13 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${detectedPlatform === "twitter" ? "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400" :
                                         detectedPlatform === "instagram" ? "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400" :
                                             detectedPlatform === "youtube" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" :
-                                                "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                                                detectedPlatform === "sofascore" ? "bg-green-100 text-[#16A34A] dark:bg-green-900/30 dark:text-green-400" :
+                                                    "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                                         }`}>
                                         {detectedPlatform === "twitter" && "𝕏 Twitter"}
                                         {detectedPlatform === "instagram" && "📷 Instagram"}
                                         {detectedPlatform === "youtube" && "▶ YouTube"}
+                                        {detectedPlatform === "sofascore" && "📊 Sofascore"}
                                         {detectedPlatform === "image" && "🖼 Image"}
                                     </span>
                                     <span className="text-xs text-[#94A3B8]">Auto-detected</span>
@@ -438,7 +462,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                         <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A]/50">
                             <button
                                 type="button"
-                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); }}
+                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); setIsSofascoreModal(false); }}
                                 className="px-4 py-2 text-sm font-medium text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors"
                             >
                                 Cancel
@@ -465,6 +489,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                                         setDetectedPlatform("image");
                                         setSavedSelection(null);
                                         setShowEmbedModal(false);
+                                        setIsSofascoreModal(false);
                                     }
                                 }}
                                 disabled={!embedSrc.trim()}
