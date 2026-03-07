@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from "@tiptap/core";
 
-export type SocialPlatform = "twitter" | "instagram" | "youtube" | "image";
+export type SocialPlatform = "twitter" | "instagram" | "youtube" | "image" | "sofascore";
 
 /** Detect platform from a URL string */
 export function detectPlatform(url: string): SocialPlatform {
@@ -14,6 +14,7 @@ export function detectPlatform(url: string): SocialPlatform {
         u.includes("youtube.com/shorts")
     )
         return "youtube";
+    if (u.includes("sofascore.com/")) return "sofascore";
     return "image";
 }
 
@@ -43,6 +44,7 @@ declare module "@tiptap/core" {
                 platform?: SocialPlatform;
                 creditText?: string;
                 creditUrl?: string;
+                embedHeight?: string;
             }) => ReturnType;
         };
     }
@@ -60,6 +62,7 @@ export const SocialEmbed = Node.create({
             platform: { default: "image" },
             creditText: { default: "" },
             creditUrl: { default: "" },
+            embedHeight: { default: "" },
         };
     },
 
@@ -71,10 +74,13 @@ export const SocialEmbed = Node.create({
         const { url, platform, creditText, creditUrl } = HTMLAttributes;
         const p = (platform || detectPlatform(url || "")) as SocialPlatform;
 
+        const isThirdPartyEmbed = p === "twitter" || p === "instagram";
         const wrapperAttrs = mergeAttributes({
             "data-social-embed": p,
             "data-url": url,
-            style: "margin: 1.5rem 0; border-radius: 12px; overflow: hidden; border: 1px solid rgba(100,116,139,0.2); background: #f8fafc;",
+            style: isThirdPartyEmbed 
+                ? "margin: 1.5rem 0; display: flex; justify-content: center; width: 100%;" 
+                : "margin: 1.5rem 0; border-radius: 12px; overflow: hidden; border: 1px solid rgba(100,116,139,0.2); background: #f8fafc;",
         });
 
         // --- Twitter ---
@@ -137,6 +143,27 @@ export const SocialEmbed = Node.create({
                         allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
                         allowfullscreen: "true",
                         style: "border: none; border-radius: 12px;",
+                    },
+                ],
+            ];
+        }
+
+        // --- Sofascore ---
+        if (p === "sofascore") {
+            const height = HTMLAttributes.embedHeight || "800";
+            return [
+                "div",
+                wrapperAttrs,
+                [
+                    "iframe",
+                    {
+                        src: url,
+                        width: "100%",
+                        height: height,
+                        frameborder: "0",
+                        scrolling: "no",
+                        sandbox: "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
+                        style: "border: none; border-radius: 12px; background: white; min-height: 400px;",
                     },
                 ],
             ];

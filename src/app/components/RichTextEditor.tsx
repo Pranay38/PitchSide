@@ -105,12 +105,27 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
     const [embedSrc, setEmbedSrc] = useState("");
     const [embedCreditText, setEmbedCreditText] = useState("");
     const [embedCreditUrl, setEmbedCreditUrl] = useState("");
+    const [embedHeight, setEmbedHeight] = useState("");
     const [detectedPlatform, setDetectedPlatform] = useState<SocialPlatform>("image");
     const [savedSelection, setSavedSelection] = useState<number | null>(null);
 
-    const handleEmbedUrlChange = (url: string) => {
-        setEmbedSrc(url);
-        setDetectedPlatform(detectPlatform(url));
+    const handleEmbedUrlChange = (val: string) => {
+        let extractedUrl = val;
+        let extractedHeight = "";
+        // Extract src if the user pasted an <iframe> or <script> embed code snippet
+        const srcMatch = val.match(/src=["'](.*?)["']/i);
+        if (srcMatch && srcMatch[1]) {
+            extractedUrl = srcMatch[1];
+        }
+        
+        const heightMatch = val.match(/height=["']?(\d+)/i);
+        if (heightMatch && heightMatch[1]) {
+            extractedHeight = heightMatch[1];
+        }
+
+        setEmbedSrc(extractedUrl);
+        setEmbedHeight(extractedHeight);
+        setDetectedPlatform(detectPlatform(extractedUrl));
     };
 
     const editor = useEditor({
@@ -361,7 +376,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                                 Embed Post or Image
                             </h3>
                             <button
-                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); }}
+                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); }}
                                 className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] transition-colors"
                             >
                                 <X className="w-4 h-4" />
@@ -423,7 +438,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                         <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A]/50">
                             <button
                                 type="button"
-                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); }}
+                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); }}
                                 className="px-4 py-2 text-sm font-medium text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors"
                             >
                                 Cancel
@@ -441,8 +456,10 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                                             platform: detectedPlatform,
                                             creditText: embedCreditText.trim(),
                                             creditUrl: embedCreditUrl.trim(),
+                                            embedHeight: embedHeight,
                                         }).run();
                                         setEmbedSrc("");
+                                        setEmbedHeight("");
                                         setEmbedCreditText("");
                                         setEmbedCreditUrl("");
                                         setDetectedPlatform("image");
