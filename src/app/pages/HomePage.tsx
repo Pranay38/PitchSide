@@ -34,6 +34,7 @@ export function HomePage() {
   const [showPlayerDropdown, setShowPlayerDropdown] = useState(false);
   const [siteSettings, setSiteSettings] = useState(() => getSiteSettings());
   const [dailyFeatures, setDailyFeatures] = useState<DailyFeaturesData | null>(null);
+  const [activeHeroIndex, setActiveHeroIndex] = useState(0);
 
   const postsPerPage = 4;
   const [visibleCount, setVisibleCount] = useState(() => {
@@ -185,6 +186,15 @@ export function HomePage() {
     const byDate = [...blogPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return byDate.length > 0 ? [byDate[0]] : [];
   }, [blogPosts, searchQuery]);
+
+  // Handle auto-advancing hero carousel
+  useEffect(() => {
+    if (mainStoryPosts.length <= 1) return;
+    const timer = setInterval(() => {
+      setActiveHeroIndex((prev) => (prev + 1) % mainStoryPosts.length);
+    }, 5000); // Change story every 5 seconds
+    return () => clearInterval(timer);
+  }, [mainStoryPosts.length]);
 
   // We exclude the main stories from the rest of the feed
   const heroPosts = useMemo(() => {
@@ -376,15 +386,36 @@ export function HomePage() {
         {/* Hero Section: Main Stories Only (when no filters) */}
         {
           mainStoryPosts.length > 0 && !searchQuery && (
-            <section className="mb-10 animate-float-in overflow-hidden">
-              {/* Main Stories — Horizontal Scroll */}
-              <div className="flex overflow-x-auto snap-x snap-mandatory hide-scroll-bar gap-4 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
-                {mainStoryPosts.map((post) => (
-                   <div key={post.id} className="snap-center sm:snap-start flex-shrink-0 w-[95%] sm:w-[85%] md:w-[75%] lg:w-[65%] h-[380px] md:h-[480px]">
+            <section className="mb-10 animate-float-in overflow-hidden relative group">
+              {/* Active Main Story — Fade transition */}
+              <div className="relative h-[380px] md:h-[480px] w-full mb-4">
+                {mainStoryPosts.map((post, index) => (
+                   <div 
+                     key={post.id} 
+                     className={`absolute inset-0 transition-opacity duration-1000 ${index === activeHeroIndex ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"}`}
+                   >
                      <PostCard post={post} featured />
                    </div>
                 ))}
               </div>
+              
+              {/* Navigation Dots (Only if there are multiple) */}
+              {mainStoryPosts.length > 1 && (
+                <div className="absolute bottom-10 left-0 right-0 z-20 flex justify-center gap-2">
+                  {mainStoryPosts.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setActiveHeroIndex(index)}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        index === activeHeroIndex 
+                        ? "w-8 bg-[#16A34A] opacity-100 shadow-[0_0_8px_rgba(22,163,74,0.8)]" 
+                        : "w-2 bg-white/50 hover:bg-white border border-white/20 opacity-70"
+                      }`}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </section>
           )
         }
