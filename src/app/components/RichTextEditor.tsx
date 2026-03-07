@@ -32,6 +32,7 @@ import {
     X,
     Share2,
     BarChart2,
+    MessageCircle, // using as a generic tweet icon since lucide might not have X logo natively
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -107,9 +108,10 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
     const [embedCreditText, setEmbedCreditText] = useState("");
     const [embedCreditUrl, setEmbedCreditUrl] = useState("");
     const [embedHeight, setEmbedHeight] = useState("");
-    const [detectedPlatform, setDetectedPlatform] = useState<SocialPlatform>("image");
+    const [detectedPlatform, setDetectedPlatform] = useState<SocialPlatform>("twitter"); // default to twitter now
     const [isSofascoreModal, setIsSofascoreModal] = useState(false);
     const [isImageUploadModal, setIsImageUploadModal] = useState(false);
+    const [isTweetModal, setIsTweetModal] = useState(false);
     const [savedSelection, setSavedSelection] = useState<number | null>(null);
 
     const handleEmbedUrlChange = (val: string) => {
@@ -197,6 +199,8 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
             setEmbedSrc(dataUrl);
             setDetectedPlatform("image");
             setIsImageUploadModal(true);
+            setIsTweetModal(false);
+            setIsSofascoreModal(false);
             setShowEmbedModal(true);
         } catch {
             console.error("Failed to process image");
@@ -335,13 +339,18 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                 <ToolbarButton onClick={() => {
                     setSavedSelection(editor.state.selection.from);
                     setIsSofascoreModal(false);
+                    setIsImageUploadModal(false);
+                    setIsTweetModal(true);
+                    setDetectedPlatform("twitter");
                     setShowEmbedModal(true);
-                }} title="Embed Social Post / Image">
-                    <Share2 className="w-4 h-4" />
+                }} title="Embed X / Twitter Post">
+                    <MessageCircle className="w-4 h-4" />
                 </ToolbarButton>
                 <ToolbarButton onClick={() => {
                     setSavedSelection(editor.state.selection.from);
                     setIsSofascoreModal(true);
+                    setIsTweetModal(false);
+                    setIsImageUploadModal(false);
                     setDetectedPlatform("sofascore");
                     setShowEmbedModal(true);
                 }} title="Embed Sofascore Widget">
@@ -398,6 +407,11 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                                         <ImagePlus className="w-5 h-5 text-[#16A34A]" />
                                         Upload Image with Credits
                                     </>
+                                ) : isTweetModal ? (
+                                    <>
+                                        <MessageCircle className="w-5 h-5 text-[#16A34A]" />
+                                        Embed X / Twitter Post
+                                    </>
                                 ) : (
                                     <>
                                         <Share2 className="w-5 h-5 text-[#16A34A]" />
@@ -406,7 +420,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                                 )}
                             </h3>
                             <button
-                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); setIsSofascoreModal(false); setIsImageUploadModal(false); }}
+                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("twitter"); setIsSofascoreModal(false); setIsImageUploadModal(false); setIsTweetModal(false); }}
                                 className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] transition-colors"
                             >
                                 <X className="w-4 h-4" />
@@ -415,14 +429,14 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                         <div className="p-5 space-y-4">
                             <div>
                                 <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1.5">
-                                    {isSofascoreModal ? "Paste Sofascore Iframe HTML *" : isImageUploadModal ? "Image Data URL (Uploaded) *" : "Paste URL *"}
+                                    {isSofascoreModal ? "Paste Sofascore Iframe HTML *" : isImageUploadModal ? "Image Data URL (Uploaded) *" : isTweetModal ? "Paste Tweet URL *" : "Paste URL *"}
                                 </label>
                                 <input
                                     value={isImageUploadModal ? "Local file uploaded successfully. Add credits below." : embedSrc}
                                     onChange={(e) => {
                                         if (!isImageUploadModal) handleEmbedUrlChange(e.target.value);
                                     }}
-                                    placeholder={isSofascoreModal ? "<iframe src='...' ></iframe>" : "Paste a tweet, Instagram, YouTube, or image URL"}
+                                    placeholder={isSofascoreModal ? "<iframe src='...' ></iframe>" : isTweetModal ? "https://x.com/username/status/123..." : "Paste a tweet, Instagram, YouTube, or image URL"}
                                     disabled={isImageUploadModal}
                                     className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     autoFocus={!isImageUploadModal}
@@ -475,7 +489,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                         <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A]/50">
                             <button
                                 type="button"
-                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("image"); setIsSofascoreModal(false); setIsImageUploadModal(false); }}
+                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("twitter"); setIsSofascoreModal(false); setIsImageUploadModal(false); setIsTweetModal(false); }}
                                 className="px-4 py-2 text-sm font-medium text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors"
                             >
                                 Cancel
@@ -499,11 +513,12 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                                         setEmbedHeight("");
                                         setEmbedCreditText("");
                                         setEmbedCreditUrl("");
-                                        setDetectedPlatform("image");
+                                        setDetectedPlatform("twitter");
                                         setSavedSelection(null);
                                         setShowEmbedModal(false);
                                         setIsSofascoreModal(false);
                                         setIsImageUploadModal(false);
+                                        setIsTweetModal(false);
                                     }
                                 }}
                                 disabled={!embedSrc.trim()}

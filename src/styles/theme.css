@@ -363,7 +363,7 @@
     line-height: 1.7;
   }
 
-  .pitchside-article-content blockquote {
+  .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
     border-left: 4px solid #16A34A;
     padding-left: 1.5rem;
     margin: 1.5rem 0;
@@ -371,7 +371,7 @@
     color: #64748B;
   }
 
-  .dark .pitchside-article-content blockquote {
+  .dark .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
     color: #94A3B8;
   }
 
@@ -436,7 +436,7 @@
   }
 
   /* TipTap editor: blockquote styling */
-  .tiptap blockquote {
+  .tiptap blockquote:not(.twitter-tweet):not(.instagram-media) {
     border-left: 4px solid #16A34A;
     padding-left: 1rem;
     margin: 1rem 0;
@@ -444,7 +444,7 @@
     font-style: italic;
   }
 
-  .dark .tiptap blockquote {
+  .dark .tiptap blockquote:not(.twitter-tweet):not(.instagram-media) {
     color: #94A3B8;
   }
 
