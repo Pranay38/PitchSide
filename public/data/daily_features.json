@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-03-07T05:35:11.534482",
+  "lastUpdated": "2026-03-08T05:40:10.742426",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs could turn to De Zerbi - Saturday's gossip",
-    "sentimentScore": 41
+    "text": "Manchester United target Tavernier - Sunday's gossip",
+    "sentimentScore": 63
   },
   "managerPressure": [
     {
-      "name": "Pep Guardiola (MCI)",
-      "pressureScore": 86
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 99
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 83
-    },
-    {
-      "name": "Marco Silva (FUL)",
+      "name": "Mikel Arteta (ARS)",
       "pressureScore": 82
     },
     {
-      "name": "Scott Parker (BUR)",
-      "pressureScore": 71
+      "name": "Nuno Esp\u00edrito Santo (WHU)",
+      "pressureScore": 82
+    },
+    {
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 74
     }
   ]
 }
