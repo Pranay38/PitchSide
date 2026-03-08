@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { applyCors, checkRateLimit, requireAuth } from "../utils/security.js";
 import { connectToDatabase } from "../_db.js";
 
 const COLLECTION = "settings";
@@ -32,9 +33,8 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, PUT, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  applyCors(req, res);
+    if (!checkRateLimit(req, res)) return;
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
@@ -51,6 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === "PUT") {
+            if (!requireAuth(req, res)) return;
       const incoming = (req.body || {}) as Partial<SiteSettings>;
       const current = await collection.findOne({ _id: SETTINGS_ID });
 

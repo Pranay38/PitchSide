@@ -7,11 +7,14 @@ import subscribersHandler from "../server/endpoints/subscribers.js";
 import tacticsHandler from "../server/endpoints/tactics.js";
 import ogHandler from "../server/endpoints/og.js";
 import clubSeasonHandler from "../server/endpoints/club-season.js";
+import authHandler from "../server/endpoints/auth.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const route = req.query.route as string;
 
     switch (route) {
+        case "auth":
+            return authHandler(req, res);
         case "collections":
             return collectionsHandler(req, res);
         case "debates":

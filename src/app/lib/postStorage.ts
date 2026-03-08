@@ -4,11 +4,20 @@ import { blogPosts as defaultPosts } from "../data/posts";
 const POSTS_KEY = "pitchside_posts";
 const ADMIN_KEY = "pitchside_admin_auth";
 
-// Admin password (change via Vercel Environment Variables)
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "pitchside2026";
+// Admin password fallback for serverless auth if needed, but client should just type the password
+const DEFAULT_PASSWORD = "pitchside2026";
 
 // API base URL — in production (Vercel) this is the same domain
 const API_BASE = "/api";
+
+// Helper to get JWT token
+function getAuthToken(): string | null {
+  try {
+    return localStorage.getItem(ADMIN_KEY);
+  } catch {
+    return null;
+  }
+}
 
 // ──────────────────────────────────────────
 // POSTS: API-first with localStorage fallback
@@ -113,7 +122,10 @@ export async function addPostAsync(
 
   const res = await fetch(`${API_BASE}/posts`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getAuthToken()}`
+    },
     body: JSON.stringify(post),
   });
 
@@ -149,7 +161,10 @@ export async function updatePostAsync(
 
   const res = await fetch(`${API_BASE}/posts`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${getAuthToken()}`
+    },
     body: JSON.stringify({ id, ...updates }),
   });
 
@@ -181,6 +196,9 @@ export async function deletePostAsync(id: string): Promise<BlogPost[]> {
 
   const res = await fetch(`${API_BASE}/posts?id=${encodeURIComponent(id)}`, {
     method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${getAuthToken()}`
+    }
   });
 
   if (!res.ok) {
@@ -272,21 +290,27 @@ export async function initializePosts(): Promise<void> {
 // ──────────────────────────────────────────
 
 export function isAdminAuthenticated(): boolean {
-  try {
-    return localStorage.getItem(ADMIN_KEY) === "true";
-  } catch {
-    return false;
-  }
+  return !!getAuthToken();
 }
 
-export function adminLogin(password: string): boolean {
-  if (password === ADMIN_PASSWORD) {
-    try {
-      localStorage.setItem(ADMIN_KEY, "true");
-    } catch {
-      // ignore
+// Updated to async to hit backend Auth API
+export async function adminLogin(password: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE}/auth`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password })
+    });
+
+    if (res.ok) {
+      const { token } = await res.json();
+      if (token) {
+        localStorage.setItem(ADMIN_KEY, token);
+        return true;
+      }
     }
-    return true;
+  } catch {
+    // network error
   }
   return false;
 }

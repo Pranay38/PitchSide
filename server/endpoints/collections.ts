@@ -1,13 +1,13 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { applyCors, checkRateLimit, requireAuth } from "../utils/security.js";
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../_db.js";
 
 const COLLECTION = "collections";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    applyCors(req, res);
+    if (!checkRateLimit(req, res)) return;
 
     if (req.method === "OPTIONS") return res.status(200).end();
 
@@ -58,6 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── POST: Create a new collection ───
         if (req.method === "POST") {
+            if (!requireAuth(req, res)) return;
             const { title, description, emoji, postIds } = req.body;
             if (!title) return res.status(400).json({ error: "Title is required" });
 
@@ -75,6 +76,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── PUT: Update a collection ───
         if (req.method === "PUT") {
+            if (!requireAuth(req, res)) return;
             const { id, ...updates } = req.body;
             if (!id) return res.status(400).json({ error: "Missing collection id" });
 
@@ -87,6 +89,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── DELETE: Delete a collection ───
         if (req.method === "DELETE") {
+            if (!requireAuth(req, res)) return;
             const id = req.query.id as string;
             if (!id) return res.status(400).json({ error: "Missing collection id" });
 

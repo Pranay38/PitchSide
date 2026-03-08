@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/api/auth",
+            "destination": "/api/sys?route=auth"
+        },
+        {
             "source": "/api/settings",
             "destination": "/api/sys?route=settings"
         },

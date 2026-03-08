@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { applyCors, checkRateLimit, requireAuth } from "../server/utils/security.js";
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "./_db.js";
 
@@ -27,9 +28,8 @@ async function promoteLatestPostToMainStory(collection: any): Promise<string | n
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     // CORS headers
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    applyCors(req, res);
+    if (!checkRateLimit(req, res)) return;
 
     if (req.method === "OPTIONS") {
         return res.status(200).end();
@@ -62,6 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── POST: Create a new post ───
         if (req.method === "POST") {
+            if (!requireAuth(req, res)) return;
             const postData = req.body;
             const id = Date.now().toString();
             const newPost = { ...postData, id, _id: id as any };
@@ -72,6 +73,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── PUT: Update a post ───
         if (req.method === "PUT") {
+            if (!requireAuth(req, res)) return;
             const { id, ...updates } = req.body;
             if (!id) return res.status(400).json({ error: "Missing post id" });
 
@@ -96,6 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── DELETE: Delete a post ───
         if (req.method === "DELETE") {
+            if (!requireAuth(req, res)) return;
             const id = req.query.id as string;
             if (!id) return res.status(400).json({ error: "Missing post id" });
 

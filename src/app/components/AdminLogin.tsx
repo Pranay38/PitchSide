@@ -10,15 +10,18 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (adminLogin(password)) {
+        setIsLoading(true);
+        if (await adminLogin(password)) {
             onLogin();
         } else {
             setError("Incorrect password");
             setPassword("");
         }
+        setIsLoading(false);
     };
 
     return (
