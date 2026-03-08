@@ -299,7 +299,7 @@ export function AdminPage() {
         try {
             const imported = await importPostsFromJSON(file);
             setPosts(imported);
-            toast.success(`Imported \${imported.length} posts successfully!`);
+            toast.success(`Imported ${imported.length} posts successfully!`);
         } catch {
             toast.error("Failed to import valid posts.json");
         }
@@ -370,25 +370,25 @@ export function AdminPage() {
                 <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 dark:border-gray-800 mb-8 pb-4">
                     <button
                         onClick={() => setActiveTab("posts")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "posts" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "posts" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Layout className="w-4 h-4" /> Posts
                     </button>
                     <button
                         onClick={() => setActiveTab("collections")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "collections" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "collections" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Library className="w-4 h-4" /> Collections
                     </button>
                     <button
                         onClick={() => setActiveTab("debates")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "debates" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "debates" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Flame className="w-4 h-4" /> Debates
                     </button>
                     <button
                         onClick={() => setActiveTab("settings")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors \${activeTab === "settings" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "settings" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <RadioTower className="w-4 h-4" /> Settings & Newsletter
                     </button>
@@ -418,19 +418,19 @@ export function AdminPage() {
                             <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
                                 <button
                                     onClick={() => setPostFilter("all")}
-                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all \${postFilter === "all" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
+                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all ${postFilter === "all" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
                                 >
                                     All ({posts.length})
                                 </button>
                                 <button
                                     onClick={() => setPostFilter("published")}
-                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all \${postFilter === "published" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
+                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all ${postFilter === "published" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
                                 >
                                     Published ({posts.filter(p => !p.isDraft).length})
                                 </button>
                                 <button
                                     onClick={() => setPostFilter("drafts")}
-                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all \${postFilter === "drafts" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
+                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all ${postFilter === "drafts" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
                                 >
                                     Drafts ({posts.filter(p => p.isDraft).length})
                                 </button>
@@ -485,7 +485,7 @@ export function AdminPage() {
                                             <button onClick={() => notifySubscribers(post)} disabled={notifyingPostId === post.id || post.isDraft} className={`p-2 rounded-lg ${post.isDraft ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors'}`} title="Notify Subscribers">
                                                 <Send className={`w-4 h-4 ${notifyingPostId === post.id ? 'animate-pulse' : ''}`} />
                                             </button>
-                                            <button onClick={() => navigate(`/post/\${post.id}`)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
+                                            <button onClick={() => navigate(`/post/${post.id}`)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
                                             <button onClick={() => handleEditPost(post)} className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-[#64748B] dark:text-gray-400 hover:text-blue-600 transition-colors" title="Edit"><Edit3 className="w-4 h-4" /></button>
                                             <button onClick={() => handleDeletePost(post.id)} className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#64748B] dark:text-gray-400 hover:text-red-600 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
                                         </div>
@@ -562,7 +562,7 @@ export function AdminPage() {
                                         <div className="flex gap-2">
                                             <button 
                                                 onClick={() => setExpandedDebateId(expandedDebateId === deb.id ? null : deb.id)} 
-                                                className={`p-2 rounded-lg transition-colors \${expandedDebateId === deb.id ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"}`}
+                                                className={`p-2 rounded-lg transition-colors ${expandedDebateId === deb.id ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"}`}
                                                 title="View Comments"
                                             >
                                                 <MessageSquare className="w-4 h-4" />
@@ -580,7 +580,7 @@ export function AdminPage() {
                                                         <div>
                                                             <div className="flex items-center gap-2 mb-1">
                                                                 <span className="font-semibold text-sm text-[#0F172A] dark:text-gray-200">{arg.author}</span>
-                                                                <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded \${arg.side === "agree" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" : "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400"}`}>
+                                                                <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${arg.side === "agree" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" : "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400"}`}>
                                                                     {arg.side}
                                                                 </span>
                                                             </div>
