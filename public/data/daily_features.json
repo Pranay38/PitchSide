@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-03-08T05:40:10.742426",
+  "lastUpdated": "2026-03-09T05:55:04.581450",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Manchester United target Tavernier - Sunday's gossip",
-    "sentimentScore": 63
+    "text": "Wilson agrees new West Ham deal - Monday's gossip",
+    "sentimentScore": 51
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 99
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 90
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 82
+      "name": "Scott Parker (BUR)",
+      "pressureScore": 89
     },
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 82
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 80
     },
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 74
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 78
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 78
     }
   ]
 }
