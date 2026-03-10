@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-03-09T05:55:04.581450",
+  "lastUpdated": "2026-03-10T05:42:34.537629",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Wilson agrees new West Ham deal - Monday's gossip",
-    "sentimentScore": 51
+    "text": "Juve want Tottenham's Spence - Tuesday's gossip",
+    "sentimentScore": 44
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 90
-    },
-    {
-      "name": "Scott Parker (BUR)",
+      "name": "Michael Carrick (MUN)",
       "pressureScore": 89
     },
     {
-      "name": "Keith Andrews (BRE)",
+      "name": "Liam Rosenior (CHE)",
       "pressureScore": 80
     },
     {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 78
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 78
+      "name": "Igor Tudor (TOT)",
+      "pressureScore": 77
     }
   ]
 }
