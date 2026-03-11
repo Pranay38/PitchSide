@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-03-10T05:42:34.537629",
+  "lastUpdated": "2026-03-11T05:44:58.553285",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Juve want Tottenham's Spence - Tuesday's gossip",
-    "sentimentScore": 44
+    "text": "Arsenal want Brandt on free - Wednesday's gossip",
+    "sentimentScore": 72
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 89
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 97
     },
     {
-      "name": "Liam Rosenior (CHE)",
+      "name": "Scott Parker (BUR)",
+      "pressureScore": 92
+    },
+    {
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 90
+    },
+    {
+      "name": "Arne Slot (LIV)",
       "pressureScore": 80
     },
     {
-      "name": "Igor Tudor (TOT)",
-      "pressureScore": 77
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 60
     }
   ]
 }
