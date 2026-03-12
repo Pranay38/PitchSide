@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-03-11T05:44:58.553285",
+  "lastUpdated": "2026-03-12T05:47:57.690368",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal want Brandt on free - Wednesday's gossip",
-    "sentimentScore": 72
+    "text": "Man Utd eye Forest's Murillo - Thursday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 97
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 96
     },
     {
-      "name": "Scott Parker (BUR)",
+      "name": "Michael Carrick (MUN)",
       "pressureScore": 92
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 90
-    },
-    {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 80
-    },
-    {
       "name": "Mikel Arteta (ARS)",
-      "pressureScore": 60
+      "pressureScore": 76
     }
   ]
 }
