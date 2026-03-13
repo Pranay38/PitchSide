@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-03-12T05:47:57.690368",
+  "lastUpdated": "2026-03-13T05:45:29.125130",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd eye Forest's Murillo - Thursday's gossip",
+    "text": "Man City & Barca hold Haaland talks - Friday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 96
+      "name": "Nuno Esp\u00edrito Santo (WHU)",
+      "pressureScore": 71
     },
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 92
+      "name": "Scott Parker (BUR)",
+      "pressureScore": 70
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 76
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 68
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 64
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 61
     }
   ]
 }
