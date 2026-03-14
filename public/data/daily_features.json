@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-03-13T05:45:29.125130",
+  "lastUpdated": "2026-03-14T05:42:20.654361",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man City & Barca hold Haaland talks - Friday's gossip",
+    "text": "Rashford could return to Man Utd - Saturday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 71
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 98
     },
     {
-      "name": "Scott Parker (BUR)",
-      "pressureScore": 70
-    },
-    {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 68
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 93
     },
     {
       "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 64
+      "pressureScore": 87
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 61
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 80
+    },
+    {
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 69
     }
   ]
 }
