@@ -1,32 +1,32 @@
 {
-  "lastUpdated": "2026-03-14T05:42:20.654361",
+  "lastUpdated": "2026-03-15T06:04:01.089932",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Rashford could return to Man Utd - Saturday's gossip",
+    "text": "Real open to Camavinga offers - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 98
-    },
-    {
-      "name": "Andoni Iraola (BOU)",
+      "name": "Rob Edwards (WOL)",
       "pressureScore": 93
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 87
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 92
     },
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 80
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 78
     },
     {
-      "name": "Keith Andrews (BRE)",
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 71
+    },
+    {
+      "name": "Andoni Iraola (BOU)",
       "pressureScore": 69
     }
   ]
