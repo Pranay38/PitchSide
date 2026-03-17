@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { MongoClient, ObjectId } from "mongodb";
 
 // Note: To match the structure of other endpoints, we'll accept the db middleware 
@@ -34,7 +34,7 @@ export type PollDocument = {
 };
 
 // GET /api/polls - Get all polls (Admin) or just the active one (Public)
-export const getPolls = async (req: Request, res: Response) => {
+export const getPolls = async (req: VercelRequest, res: VercelResponse) => {
     try {
         const client = await connectToDatabase();
         const collection = client.db(dbName).collection<PollDocument>("polls");
@@ -51,7 +51,7 @@ export const getPolls = async (req: Request, res: Response) => {
 
         // Require simple auth check for getting all polls (Admin only)
         const authHeader = req.headers.authorization;
-        const expectedAuth = \`Bearer \${process.env.ADMIN_PASSWORD}\`;
+        const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
         if (authHeader !== expectedAuth) {
              return res.status(401).json({ error: "Unauthorized" });
         }
@@ -65,9 +65,9 @@ export const getPolls = async (req: Request, res: Response) => {
 };
 
 // POST /api/polls - Create a new poll (Admin)
-export const createPoll = async (req: Request, res: Response) => {
+export const createPoll = async (req: VercelRequest, res: VercelResponse) => {
     const authHeader = req.headers.authorization;
-    const expectedAuth = \`Bearer \${process.env.ADMIN_PASSWORD}\`;
+    const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
 
     if (authHeader !== expectedAuth) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -105,16 +105,16 @@ export const createPoll = async (req: Request, res: Response) => {
 };
 
 // PUT /api/polls/:id - Update a poll (Admin)
-export const updatePoll = async (req: Request, res: Response) => {
+export const updatePoll = async (req: VercelRequest, res: VercelResponse) => {
     const authHeader = req.headers.authorization;
-    const expectedAuth = \`Bearer \${process.env.ADMIN_PASSWORD}\`;
+    const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
 
     if (authHeader !== expectedAuth) {
         return res.status(401).json({ error: "Unauthorized" });
     }
 
     try {
-        const { id } = req.params;
+        const { id } = req.query as { id: string };
         const { question, options, isActive } = req.body;
         
         if (!ObjectId.isValid(id)) {
@@ -155,16 +155,16 @@ export const updatePoll = async (req: Request, res: Response) => {
 };
 
 // DELETE /api/polls/:id - Delete a poll (Admin)
-export const deletePoll = async (req: Request, res: Response) => {
+export const deletePoll = async (req: VercelRequest, res: VercelResponse) => {
     const authHeader = req.headers.authorization;
-    const expectedAuth = \`Bearer \${process.env.ADMIN_PASSWORD}\`;
+    const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
 
     if (authHeader !== expectedAuth) {
         return res.status(401).json({ error: "Unauthorized" });
     }
 
     try {
-        const { id } = req.params;
+        const { id } = req.query as { id: string };
         if (!ObjectId.isValid(id)) {
             return res.status(400).json({ error: "Invalid ID" });
         }
@@ -178,7 +178,7 @@ export const deletePoll = async (req: Request, res: Response) => {
              return res.status(404).json({ error: "Poll not found" });
         }
 
-        return res.status(204).send();
+        return res.status(204).send("");
     } catch (error) {
         console.error("Failed to delete poll:", error);
         return res.status(500).json({ error: "Failed to delete poll" });
@@ -186,9 +186,9 @@ export const deletePoll = async (req: Request, res: Response) => {
 };
 
 // POST /api/polls/:id/vote - Cast a vote (Public)
-export const votePoll = async (req: Request, res: Response) => {
+export const votePoll = async (req: VercelRequest, res: VercelResponse) => {
      try {
-        const { id } = req.params;
+        const { id } = req.query as { id: string };
         const { optionId } = req.body;
 
         if (!ObjectId.isValid(id)) {

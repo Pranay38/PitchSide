@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { MongoClient, ObjectId } from "mongodb";
 
 const uri = process.env.MONGODB_URI || "";
@@ -32,7 +32,7 @@ export type MatchRatingDocument = {
 };
 
 // GET /api/match-ratings - Get all sessions (Admin) or just the active one (Public)
-export const getMatchRatings = async (req: Request, res: Response) => {
+export const getMatchRatings = async (req: VercelRequest, res: VercelResponse) => {
     try {
         const client = await connectToDatabase();
         const collection = client.db(dbName).collection<MatchRatingDocument>("matchRatings");
@@ -63,7 +63,7 @@ export const getMatchRatings = async (req: Request, res: Response) => {
 };
 
 // POST /api/match-ratings - Create a new session (Admin)
-export const createMatchRating = async (req: Request, res: Response) => {
+export const createMatchRating = async (req: VercelRequest, res: VercelResponse) => {
     const authHeader = req.headers.authorization;
     const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
 
@@ -108,7 +108,7 @@ export const createMatchRating = async (req: Request, res: Response) => {
 };
 
 // PUT /api/match-ratings/:id - Update a session (Admin)
-export const updateMatchRating = async (req: Request, res: Response) => {
+export const updateMatchRating = async (req: VercelRequest, res: VercelResponse) => {
     const authHeader = req.headers.authorization;
     const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
 
@@ -117,7 +117,7 @@ export const updateMatchRating = async (req: Request, res: Response) => {
     }
 
     try {
-        const { id } = req.params;
+        const { id } = req.query as { id: string };
         const { title, players, isActive } = req.body;
         
         if (!ObjectId.isValid(id)) {
@@ -161,7 +161,7 @@ export const updateMatchRating = async (req: Request, res: Response) => {
 };
 
 // DELETE /api/match-ratings/:id - Delete a session (Admin)
-export const deleteMatchRating = async (req: Request, res: Response) => {
+export const deleteMatchRating = async (req: VercelRequest, res: VercelResponse) => {
     const authHeader = req.headers.authorization;
     const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
 
@@ -170,7 +170,7 @@ export const deleteMatchRating = async (req: Request, res: Response) => {
     }
 
     try {
-        const { id } = req.params;
+        const { id } = req.query as { id: string };
         if (!ObjectId.isValid(id)) {
             return res.status(400).json({ error: "Invalid ID" });
         }
@@ -184,7 +184,7 @@ export const deleteMatchRating = async (req: Request, res: Response) => {
              return res.status(404).json({ error: "Session not found" });
         }
 
-        return res.status(204).send();
+        return res.status(204).send("");
     } catch (error) {
         console.error("Failed to delete match rating:", error);
         return res.status(500).json({ error: "Failed to delete match rating" });
@@ -192,9 +192,9 @@ export const deleteMatchRating = async (req: Request, res: Response) => {
 };
 
 // POST /api/match-ratings/:id/vote - Cast votes (Public)
-export const voteMatchRating = async (req: Request, res: Response) => {
+export const voteMatchRating = async (req: VercelRequest, res: VercelResponse) => {
      try {
-        const { id } = req.params;
+        const { id } = req.query as { id: string };
         const { ratings } = req.body; // Expected format: [ { playerId: "p1", rating: 8 }, ... ]
 
         if (!ObjectId.isValid(id)) {
