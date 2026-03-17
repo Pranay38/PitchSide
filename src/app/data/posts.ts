@@ -20,6 +20,17 @@ export interface BlogPost {
     question: string;
     options: { text: string; votes: number }[];
   };
+  matchRatings?: {
+    playerName: string;
+    editorRating: number;
+  }[];
+  reactions?: {
+    fire: number;
+    mindblown: number;
+    thumbsdown: number;
+    target: number;
+    cold: number;
+  };
 }
 
 export const blogPosts: BlogPost[] = [

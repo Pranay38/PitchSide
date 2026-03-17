@@ -1,17 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-/**
- * Football News Aggregator API
- * Fetches latest football news from multiple RSS feeds (free, no API key needed).
- *
- * Sources:
- * - BBC Sport Football
- * - ESPN FC
- * - The Guardian Football
- * - Sky Sports Football
- * - Goal.com
- */
-
 interface NewsItem {
     title: string;
     link: string;
@@ -20,23 +8,6 @@ interface NewsItem {
     pubDate: string;
     description: string;
     imageUrl: string | null;
-}
-
-interface SocialFeedItem {
-    id: string;
-    title: string;
-    summary: string;
-    link: string;
-    pubDate: string;
-    source: string;
-    sourceIcon: string;
-}
-
-type SocialSourceKey = "r-soccer";
-
-interface SocialSourceConfig {
-    name: string;
-    profileUrl: string;
 }
 
 const RSS_FEEDS = [
@@ -61,17 +32,6 @@ const RSS_FEEDS = [
         sourceIcon: "🔴",
     },
 ];
-
-const SOCIAL_SOURCES: Record<SocialSourceKey, SocialSourceConfig> = {
-    "r-soccer": {
-        name: "r/soccer",
-        profileUrl: "https://www.reddit.com/r/soccer",
-    },
-};
-
-const SOCIAL_SOURCE_ICONS: Record<SocialSourceKey, string> = {
-    "r-soccer": "🟠",
-};
 
 function extractFromXML(xml: string, tag: string): string {
     const match = xml.match(new RegExp(`<${tag}[^>]*>\\s*(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?\\s*</${tag}>`, "s"));
@@ -178,76 +138,12 @@ function dedupeByTitle(items: NewsItem[]): NewsItem[] {
     });
 }
 
-function parseSocialSource(rawSource: string | undefined): SocialSourceKey | null {
-    return rawSource === "r-soccer" ? "r-soccer" : null;
-}
-
 function sortByDateDesc<T extends { pubDate: string }>(items: T[]): T[] {
     return [...items].sort((a, b) => {
         const dateA = new Date(a.pubDate).getTime() || 0;
         const dateB = new Date(b.pubDate).getTime() || 0;
         return dateB - dateA;
     });
-}
-
-function dedupeSocialItems(items: SocialFeedItem[]): SocialFeedItem[] {
-    const seen = new Set<string>();
-    return items.filter((item) => {
-        const key = normalizeTitleKey(item.title);
-        if (!key || seen.has(key)) return false;
-        seen.add(key);
-        return true;
-    });
-}
-
-function extractAtomEntryLink(entryXml: string): string {
-    const alternateLink = entryXml.match(/<link[^>]+rel=["']alternate["'][^>]+href=["']([^"']+)["']/i);
-    if (alternateLink?.[1]) return normalizeUrl(alternateLink[1]) || alternateLink[1];
-
-    const fallbackLink = entryXml.match(/<link[^>]+href=["']([^"']+)["']/i);
-    if (fallbackLink?.[1]) return normalizeUrl(fallbackLink[1]) || fallbackLink[1];
-
-    return "https://www.reddit.com/r/soccer";
-}
-
-async function fetchRedditRssSocialItems(limit = 25): Promise<SocialFeedItem[]> {
-    try {
-        const response = await fetch("https://www.reddit.com/r/soccer/.rss", {
-            headers: { "User-Agent": "FootballBlogBot/1.0" },
-            signal: AbortSignal.timeout(6000),
-        });
-        if (!response.ok) return [];
-
-        const xml = await response.text();
-        const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
-        const items: SocialFeedItem[] = [];
-        let match;
-
-        while ((match = entryRegex.exec(xml)) !== null && items.length < limit) {
-            const entryXml = match[1];
-            const title = stripHtml(extractFromXML(entryXml, "title"));
-            const summary = stripHtml(extractFromXML(entryXml, "content") || extractFromXML(entryXml, "summary")).slice(0, 220);
-            const pubDate = extractFromXML(entryXml, "updated") || extractFromXML(entryXml, "published") || new Date().toISOString();
-            const entryId = extractFromXML(entryXml, "id");
-            const link = extractAtomEntryLink(entryXml);
-
-            if (!title) continue;
-
-            items.push({
-                id: `reddit-${entryId || normalizeTitleKey(`${title}-${pubDate}`)}`,
-                title,
-                summary,
-                link,
-                pubDate,
-                source: "r/soccer",
-                sourceIcon: "🟠",
-            });
-        }
-
-        return items;
-    } catch {
-        return [];
-    }
 }
 
 async function fetchFeed(feed: typeof RSS_FEEDS[0], limit = 8): Promise<NewsItem[]> {
@@ -257,8 +153,8 @@ async function fetchFeed(feed: typeof RSS_FEEDS[0], limit = 8): Promise<NewsItem
             signal: AbortSignal.timeout(5000),
         });
         if (!res.ok) return [];
-        const xml = await res.text();
 
+        const xml = await res.text();
         const items: NewsItem[] = [];
         const itemRegex = /<item>([\s\S]*?)<\/item>/g;
         let match;
@@ -285,9 +181,10 @@ async function fetchFeed(feed: typeof RSS_FEEDS[0], limit = 8): Promise<NewsItem
                 count++;
             }
         }
+
         return items;
-    } catch (e) {
-        console.error(`Failed to fetch ${feed.source}:`, e);
+    } catch (error) {
+        console.error(`Failed to fetch ${feed.source}:`, error);
         return [];
     }
 }
@@ -306,48 +203,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     try {
         const feedLimit = parseLimit(req.query.limit, 25);
-        const socialSource = parseSocialSource(req.query.source as string | undefined);
-        if (socialSource) {
-            const config = SOCIAL_SOURCES[socialSource];
-            const sourceIcon = SOCIAL_SOURCE_ICONS[socialSource] || "📱";
-            let socialItems = dedupeSocialItems(
-                sortByDateDesc(await fetchRedditRssSocialItems(30))
-            ).slice(0, 20);
-
-            if (socialItems.length === 0) {
-                socialItems = [
-                    {
-                        id: "fallback-r-soccer",
-                        title: "r/soccer RSS feed is temporarily unavailable.",
-                        summary: "Open r/soccer directly while the feed reconnects.",
-                        link: config.profileUrl,
-                        pubDate: new Date().toISOString(),
-                        source: config.name,
-                        sourceIcon,
-                    },
-                ];
-            }
-
-            res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=600");
-            return res.status(200).json({
-                source: socialSource,
-                name: config.name,
-                profileUrl: config.profileUrl,
-                count: socialItems.length,
-                lastUpdated: new Date().toISOString(),
-                items: socialItems,
-            });
-        }
-
         const perFeedLimit = Math.ceil((feedLimit * 1.6) / RSS_FEEDS.length);
         const results = await Promise.all(RSS_FEEDS.map((feed) => fetchFeed(feed, perFeedLimit)));
         const allNews = sortByDateDesc(results.flat());
         const unique = dedupeByTitle(allNews);
 
-        const footballKeywords = ["football", "soccer", "premier league", "champions league", "serie a", "la liga", "bundesliga", "ligue 1", "fa cup", "world cup", "euro ", "fifa", "uefa", "madrid", "barcelona", "united", "city", "arsenal", "chelsea", "liverpool", "bayern", "juventus", "psg"];
-        const soccerOnly = unique.filter(item => {
-            const text = (item.title + " " + item.description).toLowerCase();
-            return footballKeywords.some(kw => text.includes(kw)) || item.source !== "BBC Sport";
+        const footballKeywords = [
+            "football",
+            "soccer",
+            "premier league",
+            "champions league",
+            "serie a",
+            "la liga",
+            "bundesliga",
+            "ligue 1",
+            "fa cup",
+            "world cup",
+            "euro ",
+            "fifa",
+            "uefa",
+            "madrid",
+            "barcelona",
+            "united",
+            "city",
+            "arsenal",
+            "chelsea",
+            "liverpool",
+            "bayern",
+            "juventus",
+            "psg",
+        ];
+
+        const soccerOnly = unique.filter((item) => {
+            const text = `${item.title} ${item.description}`.toLowerCase();
+            return footballKeywords.some((kw) => text.includes(kw)) || item.source !== "BBC Sport";
         });
 
         const news = soccerOnly.slice(0, feedLimit);
@@ -358,7 +247,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             lastUpdated: new Date().toISOString(),
             news,
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error("News API Error:", error);
         return res.status(500).json({ error: "Failed to fetch news." });
     }

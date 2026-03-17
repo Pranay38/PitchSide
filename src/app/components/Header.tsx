@@ -3,7 +3,47 @@ import { Link } from "react-router";
 import { useTheme } from "../hooks/useTheme";
 import { ThemeToggle } from "./ThemeToggle";
 import { getClubByName } from "../data/clubs";
-import { Heart, House, Menu, X } from "lucide-react";
+import { Heart, House, Menu, X, LogIn } from "lucide-react";
+import {
+  SignInButton,
+  UserButton,
+  useUser,
+} from "@clerk/clerk-react";
+
+/** Returns true if Clerk is loaded and available */
+function useClerkAvailable(): boolean {
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useUser();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function AuthButton() {
+  const clerkAvailable = useClerkAvailable();
+  if (!clerkAvailable) return null;
+  return <AuthButtonInner />;
+}
+
+function AuthButtonInner() {
+  const { isSignedIn, isLoaded } = useUser();
+  if (!isLoaded) return null;
+
+  if (isSignedIn) {
+    return <UserButton afterSignOutUrl="/" />;
+  }
+
+  return (
+    <SignInButton mode="modal">
+      <button className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#16A34A]/10 hover:bg-[#16A34A]/20 text-[#16A34A] text-sm font-bold transition-colors duration-200">
+        <LogIn className="w-3.5 h-3.5" />
+        Sign In
+      </button>
+    </SignInButton>
+  );
+}
 
 interface HeaderProps {
   onChangeClub?: () => void;
@@ -15,6 +55,18 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const club = favoriteClub ? getClubByName(favoriteClub) : null;
+  const navLinks = [
+    { to: "/", label: "Home" },
+    { to: "/daily-fix", label: "Daily Fix" },
+    { to: "/transfers", label: "Transfers" },
+    { to: "/alerts", label: "Alerts" },
+    { to: "/stories", label: "Stories" },
+
+    { to: "/saved", label: "Saved" },
+    { to: "/tactics", label: "Tactics" },
+    { to: "/collections", label: "Lists" },
+    { to: "/about", label: "About" },
+  ];
 
   return (
     <>
@@ -36,13 +88,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           {/* Desktop Right side */}
           <div className="hidden sm:flex items-center gap-4">
             {/* Nav links with underline sweep */}
-            {[
-              { to: "/", label: "Home" },
-              { to: "/tactics", label: "Tactics" },
-              { to: "/collections", label: "Lists" },
-              { to: "/debates", label: "Debates" },
-              { to: "/about", label: "About" },
-            ].map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
@@ -79,6 +125,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             )}
 
             <ThemeToggle />
+            <AuthButton />
           </div>
 
           {/* Mobile: club badge + hamburger */}
@@ -99,11 +146,17 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
         {/* Mobile menu dropdown */}
         {mobileOpen && (
           <div className="sm:hidden glass border-t border-white/10 dark:border-gray-800/50 px-6 py-4 space-y-3 animate-float-in">
-            <Link to="/" onClick={() => setMobileOpen(false)} aria-label="Home" className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"><House className="w-4 h-4" /></Link>
-            <Link to="/tactics" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Tactics</Link>
-            <Link to="/collections" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Lists</Link>
-            <Link to="/debates" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">Debates</Link>
-            <Link to="/about" onClick={() => setMobileOpen(false)} className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2">About</Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                onClick={() => setMobileOpen(false)}
+                aria-label={link.label}
+                className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"
+              >
+                {link.to === "/" ? <House className="w-4 h-4" /> : link.label}
+              </Link>
+            ))}
 
             {favoriteClub && (
               <div className="flex items-center gap-2 py-2">
@@ -120,6 +173,8 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                 {favoriteClub ? "Change Club" : "Select Club"}
               </button>
             )}
+
+            <AuthButton />
           </div>
         )}
       </header>

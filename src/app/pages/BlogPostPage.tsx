@@ -1,6 +1,6 @@
-import { useMemo, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, ArrowRight, Share2, Clock, Tag } from "lucide-react";
+import { useMemo, useEffect, useRef, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router";
+import { ArrowLeft, ArrowRight, Bookmark, Heart, Share2, Clock, Tag, UserRound } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { Header } from "../components/Header";
@@ -11,18 +11,40 @@ import { useClubPreference } from "../hooks/useClubPreference";
 import { ReadingProgress } from "../components/ReadingProgress";
 import { CommentSection } from "../components/CommentSection";
 import { PollWidget } from "../components/PollWidget";
+import { ReactionUI } from "../components/ReactionUI";
 import { toast } from "sonner";
+import {
+  isClubFollowed,
+  isPlayerFollowed,
+  isPostSaved,
+  toggleFollowedClub,
+  toggleFollowedPlayer,
+  toggleSavedPost,
+} from "../lib/libraryStorage";
+import { topicPath } from "../lib/contentPaths";
+import { scheduleEmbedHydration } from "../lib/embedHydration";
 
 export function BlogPostPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { favoriteClub } = useClubPreference();
+  const [saved, setSaved] = useState(false);
+  const [followingClub, setFollowingClub] = useState(false);
+  const [followingPlayer, setFollowingPlayer] = useState(false);
+  const articleContentRef = useRef<HTMLDivElement | null>(null);
 
   // Read posts from storage
   const blogPosts = useMemo(() => getPublishedPosts(), []);
 
   const currentIndex = blogPosts.findIndex((post) => post.id === id);
   const post = blogPosts[currentIndex];
+
+  useEffect(() => {
+    if (!post) return;
+    setSaved(isPostSaved(post.id));
+    setFollowingClub(isClubFollowed(post.club));
+    setFollowingPlayer(post.playerName ? isPlayerFollowed(post.playerName) : false);
+  }, [post]);
 
   if (!post) {
     return (
@@ -48,65 +70,22 @@ export function BlogPostPage() {
   const nextPost =
     currentIndex < blogPosts.length - 1 ? blogPosts[currentIndex + 1] : null;
 
-  // Hydrate social embeds (Twitter, Instagram) after content renders
   useEffect(() => {
     if (!post?.content) return;
+    return scheduleEmbedHydration(articleContentRef.current);
+  }, [post?.id, post?.content]);
 
-    const timer = setTimeout(() => {
-      // Twitter / X embeds
-      if (post.content.includes("twitter-tweet")) {
-        const existing = document.getElementById("twitter-wjs");
-        if (existing) {
-          // Script already loaded — just re-render
-          if ((window as any).twttr?.widgets?.load) {
-            (window as any).twttr.widgets.load();
-          }
-        } else {
-          const script = document.createElement("script");
-          script.id = "twitter-wjs";
-          script.src = "https://platform.twitter.com/widgets.js";
-          script.async = true;
-          script.onload = () => {
-            if ((window as any).twttr?.widgets?.load) {
-              (window as any).twttr.widgets.load();
-            }
-          };
-          document.body.appendChild(script);
-        }
-      }
-
-      // Instagram embeds
-      if (post.content.includes("instagram-media")) {
-        const existing = document.getElementById("instagram-embed-js");
-        if (existing) {
-          if ((window as any).instgrm?.Embeds?.process) {
-            (window as any).instgrm.Embeds.process();
-          }
-        } else {
-          const script = document.createElement("script");
-          script.id = "instagram-embed-js";
-          script.src = "https://www.instagram.com/embed.js";
-          script.async = true;
-          script.onload = () => {
-            if ((window as any).instgrm?.Embeds?.process) {
-              (window as any).instgrm.Embeds.process();
-            }
-          };
-          document.body.appendChild(script);
-        }
-      }
-    }, 150);
-
-    return () => clearTimeout(timer);
-  }, [post?.content]);
-
-  // Related posts: same club or overlapping tags, excluding current
+  // Related posts: same club or overlapping tags, excluding current, sorted by positive reactions
   const relatedPosts = blogPosts
     .filter(
       (p) =>
         p.id !== post.id &&
         (p.club === post.club || p.tags.some((t) => post.tags.includes(t)))
     )
+    .sort((a, b) => {
+      const getScore = (p: typeof a) => (p.reactions?.fire || 0) * 2 + (p.reactions?.mindblown || 0) * 2 + (p.reactions?.target || 0) * 2 - (p.reactions?.thumbsdown || 0) - (p.reactions?.cold || 0);
+      return getScore(b) - getScore(a);
+    })
     .slice(0, 3);
 
   const handleShare = (platform: string) => {
@@ -193,7 +172,7 @@ export function BlogPostPage() {
           {/* Breadcrumbs */}
           <Breadcrumbs
             items={[
-              { label: post.tags[0] || post.club, href: "/" },
+              { label: post.tags[0] || post.club, href: topicPath(post.tags[0] || post.club) },
               { label: post.title }
             ]}
           />
@@ -201,7 +180,8 @@ export function BlogPostPage() {
           {/* Tags */}
           <div className="flex flex-wrap items-center gap-2 mb-4">
             {post.tags.map((tag) => (
-              <span
+              <Link
+                to={topicPath(tag)}
                 key={tag}
                 className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full ${tag === post.club
                   ? "text-white bg-[#16A34A]"
@@ -210,7 +190,7 @@ export function BlogPostPage() {
               >
                 <Tag className="w-3 h-3" />
                 {tag}
-              </span>
+              </Link>
             ))}
           </div>
 
@@ -228,27 +208,88 @@ export function BlogPostPage() {
             </span>
           </div>
 
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            <button
+              onClick={() => {
+                const nextSaved = toggleSavedPost(post.id);
+                setSaved(nextSaved);
+                toast.success(nextSaved ? "Saved to your library" : "Removed from saved");
+              }}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-bold transition-colors ${saved
+                ? "border-[#16A34A]/30 bg-[#16A34A]/10 text-[#16A34A]"
+                : "border-gray-200 dark:border-gray-800 text-[#475569] dark:text-gray-300 hover:border-[#16A34A]/30 hover:text-[#16A34A]"
+                }`}
+            >
+              <Bookmark className={`w-4 h-4 ${saved ? "fill-[#16A34A]" : ""}`} />
+              {saved ? "Saved" : "Save Article"}
+            </button>
+            <button
+              onClick={() => {
+                const nextFollowing = toggleFollowedClub(post.club);
+                setFollowingClub(nextFollowing);
+                toast.success(nextFollowing ? `Following ${post.club}` : `Unfollowed ${post.club}`);
+              }}
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-bold transition-colors ${followingClub
+                ? "border-[#16A34A]/30 bg-[#16A34A]/10 text-[#16A34A]"
+                : "border-gray-200 dark:border-gray-800 text-[#475569] dark:text-gray-300 hover:border-[#16A34A]/30 hover:text-[#16A34A]"
+                }`}
+            >
+              <Heart className={`w-4 h-4 ${followingClub ? "fill-[#16A34A]" : ""}`} />
+              {followingClub ? `Following ${post.club}` : `Follow ${post.club}`}
+            </button>
+            <Link
+              to="/saved"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[#16A34A] hover:bg-[#16A34A]/5 transition-colors"
+            >
+              Open Saved
+            </Link>
+            {post.playerName && (
+              <button
+                onClick={() => {
+                  const nextFollowing = toggleFollowedPlayer(post.playerName!);
+                  setFollowingPlayer(nextFollowing);
+                  toast.success(nextFollowing ? `Following ${post.playerName}` : `Unfollowed ${post.playerName}`);
+                }}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-bold transition-colors ${followingPlayer
+                  ? "border-[#16A34A]/30 bg-[#16A34A]/10 text-[#16A34A]"
+                  : "border-gray-200 dark:border-gray-800 text-[#475569] dark:text-gray-300 hover:border-[#16A34A]/30 hover:text-[#16A34A]"
+                  }`}
+              >
+                <UserRound className={`w-4 h-4 ${followingPlayer ? "text-[#16A34A]" : ""}`} />
+                {followingPlayer ? `Following ${post.playerName}` : `Follow ${post.playerName}`}
+              </button>
+            )}
+            <Link
+              to="/alerts"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-[#16A34A] hover:bg-[#16A34A]/5 transition-colors"
+            >
+              Alert Center
+            </Link>
+          </div>
+
           {/* Article Body */}
-          {post.content.trim().startsWith("<") ? (
-            /* HTML content from rich text editor */
-            <div
-              className="pitchside-article-content"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-          ) : (
-            /* Legacy plain-text content */
-            <div className="pitchside-article-content">
-              {post.content.split("\n\n").map((paragraph, index) => {
-                if (paragraph.startsWith("## "))
-                  return <h2 key={index}>{paragraph.replace("## ", "")}</h2>;
-                if (paragraph.startsWith("### "))
-                  return <h3 key={index}>{paragraph.replace("### ", "")}</h3>;
-                if (paragraph.startsWith("> "))
-                  return <blockquote key={index}>{paragraph.replace("> ", "").replace(/"/g, "")}</blockquote>;
-                return <p key={index}>{paragraph}</p>;
-              })}
-            </div>
-          )}
+          <div key={post.id} ref={articleContentRef}>
+            {post.content.trim().startsWith("<") ? (
+              /* HTML content from rich text editor */
+              <div
+                className="pitchside-article-content"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
+            ) : (
+              /* Legacy plain-text content */
+              <div className="pitchside-article-content">
+                {post.content.split("\n\n").map((paragraph, index) => {
+                  if (paragraph.startsWith("## "))
+                    return <h2 key={index}>{paragraph.replace("## ", "")}</h2>;
+                  if (paragraph.startsWith("### "))
+                    return <h3 key={index}>{paragraph.replace("### ", "")}</h3>;
+                  if (paragraph.startsWith("> "))
+                    return <blockquote key={index}>{paragraph.replace("> ", "").replace(/"/g, "")}</blockquote>;
+                  return <p key={index}>{paragraph}</p>;
+                })}
+              </div>
+            )}
+          </div>
 
           {/* Media Embed */}
           {post.mediaUrl && (
@@ -283,10 +324,35 @@ export function BlogPostPage() {
             </div>
           )}
 
+          <div className="mt-12 rounded-2xl border border-[#16A34A]/15 bg-gradient-to-r from-[#16A34A]/10 via-white to-white dark:from-[#16A34A]/15 dark:via-[#0F172A] dark:to-[#0F172A] p-6">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-2">
+              Newsletter
+            </p>
+            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white mb-2">
+              Get the week&apos;s best Touchline Dribble reads in one email
+            </h3>
+            <p className="text-sm text-[#64748B] dark:text-gray-400 mb-4">
+              Subscribe in the footer for new analysis, club angles, and the Daily Fix without checking the site every day.
+            </p>
+            <button
+              onClick={() => {
+                document.querySelector("footer")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="px-4 py-2.5 gradient-accent text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#16A34A]/25 transition-all duration-300"
+            >
+              Jump to subscribe
+            </button>
+          </div>
+
           {/* Poll Section */}
           {post.poll && (
-            <PollWidget postId={post.id} poll={post.poll} />
+            <PollWidget pollId={post.id} poll={post.poll} title="Reader Poll" />
           )}
+
+          {/* Interactive Match Ratings */}
+          
+
+          <ReactionUI itemId={post.id} itemType="post" initialReactions={post.reactions} />
 
           {/* Divider */}
           <div className="border-t border-gray-200 dark:border-gray-800 my-12" />

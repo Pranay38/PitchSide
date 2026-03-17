@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { Twitter, Instagram, Mail, Heart } from "lucide-react";
 import { toast } from "sonner";
+import { topicPath } from "../lib/contentPaths";
 
 export function Footer() {
   const [email, setEmail] = useState("");
@@ -86,6 +87,9 @@ export function Footer() {
             <ul className="space-y-2.5">
               <li><Link to="/" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Home</Link></li>
               <li><Link to="/daily-fix" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">The Daily Fix</Link></li>
+
+              <li><Link to="/transfers" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Transfer Reliability</Link></li>
+              <li><Link to="/alerts" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Alerts</Link></li>
               <li><Link to="/about" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">About</Link></li>
               <li><a href="mailto:thetouchlinedribble@gmail.com" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Contact</a></li>
             </ul>
@@ -93,9 +97,13 @@ export function Footer() {
             <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-3 mt-6">Categories</h3>
             <div className="flex flex-wrap gap-1.5">
               {["Tactics", "Premier League", "La Liga", "Champions League", "Transfer News"].map((cat) => (
-                <span key={cat} className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-gray-400 hover:bg-[#16A34A]/20 hover:text-[#4ade80] transition-all duration-200 cursor-pointer border border-white/5 hover:border-[#16A34A]/30">
+                <Link
+                  to={topicPath(cat)}
+                  key={cat}
+                  className="text-xs px-3 py-1.5 rounded-full bg-white/5 text-gray-400 hover:bg-[#16A34A]/20 hover:text-[#4ade80] transition-all duration-200 cursor-pointer border border-white/5 hover:border-[#16A34A]/30"
+                >
                   {cat}
-                </span>
+                </Link>
               ))}
             </div>
           </div>

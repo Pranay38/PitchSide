@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { Link } from "react-router";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -7,34 +8,39 @@ import { ClubSelectionModal } from "../components/ClubSelectionModal";
 import type { BlogPost } from "../data/posts";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import { useClubPreference } from "../hooks/useClubPreference";
-import { Search, X, Filter, Sparkles, Trophy, ChevronDown, Shield, User, ArrowUp } from "lucide-react";
+import { getClubByName } from "../data/clubs";
+import { ClubFixture, getLeagueCodeForClubLeague, getLiveFixturesForClub, getRecentFixturesForClub, getUpcomingFixturesForClub } from "../lib/clubFixtures";
+import { isClubFollowed, toggleFollowedClub } from "../lib/libraryStorage";
+import { Search, X, Filter, Sparkles, Trophy, ChevronDown, Shield, User, ArrowUp, BellRing, ArrowRight, CalendarDays, Newspaper, RadioTower } from "lucide-react";
 import { NewsTicker } from "../components/NewsTicker";
-import { FPLAnalyzer } from "../components/FPLAnalyzer";
-import { SocialWall } from "../components/SocialWall";
-import { SocialFeed } from "../components/SocialFeed";
-import { getSiteSettings, getSiteSettingsAsync } from "../lib/siteSettingsStorage";
+import { PollOfTheWeekPanel } from "../components/PollOfTheWeekPanel";
+import { RunInTracker } from "../components/RunInTracker";
 import { ManagerPressureWidget, ManagerPressure } from "../components/ManagerPressureWidget";
-import { OnThisDayWidget, OnThisDayEvent } from "../components/OnThisDayWidget";
-import { RumorMillWidget, RumorMill } from "../components/RumorMillWidget";
+import { OnThisDayWidget } from "../components/OnThisDayWidget";
+import { MatchRatingWidget } from "../components/MatchRatingWidget";
+import { useCloudSync } from "../hooks/useCloudSync";
 import { RefreshCw, Zap } from "lucide-react";
+import { toast } from "sonner";
 
 interface DailyFeaturesData {
   lastUpdated: string;
-  onThisDay: OnThisDayEvent;
-  rumorMill: RumorMill;
-  managerPressure: ManagerPressure[];
+    managerPressure: ManagerPressure[];
 }
 
 export function HomePage() {
   const { favoriteClub, isOnboarded, setFavoriteClub, skipOnboarding, clearPreference } = useClubPreference();
+  useCloudSync(); // Sync saved posts & follows for signed-in Clerk users
   const [showModal, setShowModal] = useState(!isOnboarded);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"Club" | "Analysis" | "Players">("Club");
+  const [activeTab, setActiveTab] = useState<string>("All");
   const [showClubDropdown, setShowClubDropdown] = useState(false);
   const [showPlayerDropdown, setShowPlayerDropdown] = useState(false);
-  const [siteSettings, setSiteSettings] = useState(() => getSiteSettings());
   const [dailyFeatures, setDailyFeatures] = useState<DailyFeaturesData | null>(null);
   const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+  const [favoriteClubFixtures, setFavoriteClubFixtures] = useState<ClubFixture[]>([]);
+  const [favoriteClubLiveFixtures, setFavoriteClubLiveFixtures] = useState<ClubFixture[]>([]);
+  const [favoriteClubRecentFixtures, setFavoriteClubRecentFixtures] = useState<ClubFixture[]>([]);
+  const favoriteClubData = favoriteClub ? getClubByName(favoriteClub) : null;
 
   const postsPerPage = 4;
   const [visibleCount, setVisibleCount] = useState(() => {
@@ -45,6 +51,9 @@ export function HomePage() {
   });
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [isFollowingFavoriteClub, setIsFollowingFavoriteClub] = useState(() => (
+    favoriteClub ? isClubFollowed(favoriteClub) : false
+  ));
 
   // Read posts from storage
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => getPublishedPosts());
@@ -57,22 +66,6 @@ export function HomePage() {
         if (isMounted && posts.length > 0) {
           setBlogPosts(posts);
         }
-      })
-      .catch(() => {
-        // Keep local snapshot if API is unavailable.
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    getSiteSettingsAsync()
-      .then((settings) => {
-        if (isMounted) setSiteSettings(settings);
       })
       .catch(() => {
         // Keep local snapshot if API is unavailable.
@@ -102,6 +95,39 @@ export function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!favoriteClub || !favoriteClubData) {
+      setFavoriteClubFixtures([]);
+      setFavoriteClubLiveFixtures([]);
+      setFavoriteClubRecentFixtures([]);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    Promise.all([
+      getUpcomingFixturesForClub(favoriteClub, favoriteClubData.league, controller.signal),
+      getLiveFixturesForClub(favoriteClub, favoriteClubData.league, controller.signal),
+      getRecentFixturesForClub(favoriteClub, favoriteClubData.league, controller.signal),
+    ])
+      .then(([upcomingFixtures, liveFixtures, recentFixtures]) => {
+        setFavoriteClubFixtures(upcomingFixtures.slice(0, 3));
+        setFavoriteClubLiveFixtures(liveFixtures.slice(0, 2));
+        setFavoriteClubRecentFixtures(recentFixtures.slice(0, 3));
+      })
+      .catch(() => {
+        setFavoriteClubFixtures([]);
+        setFavoriteClubLiveFixtures([]);
+        setFavoriteClubRecentFixtures([]);
+      });
+
+    return () => controller.abort();
+  }, [favoriteClub, favoriteClubData]);
+
+  useEffect(() => {
+    setIsFollowingFavoriteClub(favoriteClub ? isClubFollowed(favoriteClub) : false);
+  }, [favoriteClub]);
+
   // Extract all unique tags across posts
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -116,6 +142,16 @@ export function HomePage() {
     return Array.from(clubSet).sort();
   }, [blogPosts]);
 
+  // Combine tags for filter pill list
+  const filterTags = useMemo(() => {
+    const tags = new Set<string>();
+    blogPosts.forEach(p => p.tags.forEach(t => tags.add(t)));
+    // We can show top ~10 tags based on frequency
+    const freq = new Map<string, number>();
+    blogPosts.forEach(p => p.tags.forEach(t => freq.set(t, (freq.get(t) || 0) + 1)));
+    return Array.from(tags).sort((a,b) => (freq.get(b) || 0) - (freq.get(a) || 0)).slice(0, 10);
+  }, [blogPosts]);
+
   // Extract unique player names
   const allPlayers = useMemo(() => {
     const playerSet = new Set<string>();
@@ -127,8 +163,8 @@ export function HomePage() {
   const sortedPosts = useMemo(() => {
     let posts = [...blogPosts];
 
-    // If a club is selected and tab is Club, sort so club-related posts appear first
-    if (favoriteClub && activeTab === "Club") {
+    // If a club is selected and tab is "All", sort so club-related posts appear first
+    if (favoriteClub && activeTab === "All") {
       posts.sort((a, b) => {
         const aMatch = a.club === favoriteClub || a.tags.includes(favoriteClub) ? 1 : 0;
         const bMatch = b.club === favoriteClub || b.tags.includes(favoriteClub) ? 1 : 0;
@@ -155,19 +191,28 @@ export function HomePage() {
       );
     }
 
-    // Filter by active tab
-    if (activeTab === "Club") {
-      // Show only post that have a club (i.e. not "General")
-      // And prioritize favoriteClub as already done in sortedPosts
-      posts = posts.filter((p) => p.club && p.club !== "General");
-    } else if (activeTab === "Analysis") {
-      posts = posts.filter((p) => p.tags.includes("Analysis") || p.tags.includes("Tactics") || p.club === "General");
-    } else if (activeTab === "Players") {
-      posts = posts.filter((p) => !!p.playerName || p.tags.includes("Player Profile"));
+    // Filter by active tab (which is now a tag or "All")
+    if (activeTab !== "All") {
+       posts = posts.filter((p) => p.tags.includes(activeTab) || p.club === activeTab);
     }
 
     return posts;
   }, [sortedPosts, searchQuery, activeTab]);
+
+  const favoriteClubPosts = useMemo(() => {
+    if (!favoriteClub) return [];
+
+    return [...blogPosts]
+      .filter((post) => {
+        const normalizedClub = favoriteClub.toLowerCase();
+        return (
+          post.club.toLowerCase() === normalizedClub
+          || post.tags.some((tag) => tag.toLowerCase() === normalizedClub)
+          || post.title.toLowerCase().includes(normalizedClub)
+        );
+      })
+      .sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
+  }, [blogPosts, favoriteClub]);
 
   // Main Story: prioritize posts flagged as mainStory, otherwise latest by date
   const mainStoryPosts = useMemo(() => {
@@ -205,14 +250,24 @@ export function HomePage() {
   const thisWeekPosts = useMemo(() => {
     if (searchQuery) return [];
 
-    // Prioritize explicitly marked 'thisWeek' posts, otherwise recent
-    return blogPosts.filter((p) => p.thisWeek).slice(0, 21);
+    // Prioritize explicitly marked 'thisWeek' posts, otherwise recent, sorted by positive reactions
+    return blogPosts
+      .filter((p) => p.thisWeek)
+      .sort((a, b) => {
+        const getScore = (p: typeof a) => (p.reactions?.fire || 0) * 2 + (p.reactions?.mindblown || 0) * 2 + (p.reactions?.target || 0) * 2 - (p.reactions?.thumbsdown || 0) - (p.reactions?.cold || 0);
+        return getScore(b) - getScore(a);
+      })
+      .slice(0, 21);
   }, [blogPosts, searchQuery]);
   // Must Read / Editor's Picks (only show when not searching)
   const mustReadPosts = useMemo(() => {
     if (searchQuery) return [];
     return blogPosts.filter((p) => p.mustRead).slice(0, 4);
   }, [blogPosts, searchQuery]);
+
+  const latestFavoriteClubPost = favoriteClubPosts[0] || null;
+  const primaryFavoriteClubFixture = favoriteClubLiveFixtures[0] || favoriteClubFixtures[0] || null;
+  const latestFavoriteClubResult = favoriteClubRecentFixtures[0] || null;
 
   // Remaining posts for grid
   const remainingPosts = useMemo(() => {
@@ -242,6 +297,16 @@ export function HomePage() {
     setShowModal(true);
   };
 
+  const handleToggleFavoriteClubAlerts = useCallback(() => {
+    if (!favoriteClub) {
+      setShowModal(true);
+      return;
+    }
+
+    const next = toggleFollowedClub(favoriteClub);
+    setIsFollowingFavoriteClub(next);
+    toast.success(next ? `Following ${favoriteClub} alerts` : `${favoriteClub} alerts removed`);
+  }, [favoriteClub]);
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -297,6 +362,16 @@ export function HomePage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  const formatFixtureDate = useCallback((utcDate: string) => (
+    new Date(utcDate).toLocaleString([], {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  ), []);
+
 
   if (blogPosts.length === 0) {
     return (
@@ -348,21 +423,26 @@ export function HomePage() {
           </div>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Tab Navigation - Dynamic Tags */}
         <div className="flex items-center gap-2 overflow-visible flex-wrap pb-2 border-b border-gray-200 dark:border-gray-800">
-          {(["Club", "Analysis", "Players"] as const).map((tab) => (
+          <button
+              onClick={() => setActiveTab("All")}
+              className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 relative ${activeTab === "All"
+                ? "bg-[#16A34A] text-white"
+                : "bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:border-[#16A34A]/50"
+                }`}
+          >All</button>
+          
+          {filterTags.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 text-sm font-bold transition-all duration-300 relative ${activeTab === tab
-                ? "text-[#16A34A]"
-                : "text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:text-[#4ade80]"
+              className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 relative ${activeTab === tab
+                ? "bg-[#16A34A] text-white"
+                : "bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] dark:hover:border-[#16A34A]/50"
                 }`}
             >
               {tab}
-              {activeTab === tab && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#16A34A] rounded-t-full shadow-[0_-2px_8px_rgba(22,163,74,0.5)]" />
-              )}
             </button>
           ))}
         </div>
@@ -381,6 +461,267 @@ export function HomePage() {
               Clear search
             </button>
           </div>
+        )}
+
+        {!searchQuery && (
+          <section className="mb-10 animate-float-in">
+            <div className="grid grid-cols-1 xl:grid-cols-[1.35fr_0.95fr] gap-6">
+              <div className="relative overflow-hidden rounded-[28px] border border-[#16A34A]/15 bg-[radial-gradient(circle_at_top_left,_rgba(74,222,128,0.24),_transparent_30%),linear-gradient(135deg,_#0f172a_0%,_#111827_45%,_#0b1120_100%)] p-6 md:p-8 text-white shadow-[0_24px_80px_rgba(15,23,42,0.28)]">
+                <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-[#16A34A]/10 blur-3xl" />
+                <div className="relative">
+                  <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#4ade80] mb-3">
+                    Daily Dashboard
+                  </p>
+
+                  {favoriteClub && favoriteClubData ? (
+                    <>
+                      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                        <div className="max-w-2xl">
+                          <div className="flex items-center gap-4 mb-4">
+                            {favoriteClubData.logo && (
+                              <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/10 p-3 backdrop-blur-sm">
+                                <img src={favoriteClubData.logo} alt={favoriteClub} className="w-full h-full object-contain" />
+                              </div>
+                            )}
+                            <div>
+                              <h1 className="text-3xl md:text-5xl font-black font-outfit leading-tight">
+                                {favoriteClub} Today
+                              </h1>
+                              <p className="text-sm md:text-base text-white/70 mt-1">
+                                {favoriteClubData.league} check-in: what matters before you even hit the feed.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                            <div className="rounded-2xl bg-white/8 border border-white/10 px-4 py-4 backdrop-blur-sm">
+                              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55 mb-2">Live Right Now</p>
+                              <p className="text-2xl font-black font-outfit">
+                                {favoriteClubLiveFixtures.length > 0 ? favoriteClubLiveFixtures.length : "0"}
+                              </p>
+                              <p className="text-xs text-white/70 mt-1">
+                                {favoriteClubLiveFixtures.length > 0 ? "match to jump into" : "no live match"}
+                              </p>
+                            </div>
+                            <div className="rounded-2xl bg-white/8 border border-white/10 px-4 py-4 backdrop-blur-sm">
+                              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55 mb-2">Next Fixture</p>
+                              <p className="text-base font-black font-outfit line-clamp-2">
+                                {primaryFavoriteClubFixture ? `${primaryFavoriteClubFixture.homeTeam.name} vs ${primaryFavoriteClubFixture.awayTeam.name}` : "No fixture loaded"}
+                              </p>
+                              <p className="text-xs text-white/70 mt-2">
+                                {primaryFavoriteClubFixture ? formatFixtureDate(primaryFavoriteClubFixture.utcDate) : "Check back later"}
+                              </p>
+                            </div>
+                            <div className="rounded-2xl bg-white/8 border border-white/10 px-4 py-4 backdrop-blur-sm">
+                              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55 mb-2">Club Reads</p>
+                              <p className="text-2xl font-black font-outfit">
+                                {favoriteClubPosts.length}
+                              </p>
+                              <p className="text-xs text-white/70 mt-1">
+                                archived post{favoriteClubPosts.length === 1 ? "" : "s"} for {favoriteClub}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-wrap gap-3">
+                            <button
+                              type="button"
+                              onClick={handleToggleFavoriteClubAlerts}
+                              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/10 border border-white/10 text-sm font-black hover:bg-white/15 transition-colors"
+                            >
+                              <BellRing className="w-4 h-4" />
+                              {isFollowingFavoriteClub ? "Following Alerts" : "Follow Club Alerts"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleChangeClub}
+                              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-transparent border border-white/15 text-sm font-black hover:bg-white/10 transition-colors"
+                            >
+                              Change Club
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="w-full md:max-w-[320px] rounded-[24px] bg-white/8 border border-white/10 p-5 backdrop-blur-sm">
+                          <div className="flex items-center gap-2 mb-3">
+                            <CalendarDays className="w-4 h-4 text-[#4ade80]" />
+                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#4ade80]">
+                              Right Now
+                            </p>
+                          </div>
+                          <h2 className="text-lg font-black font-outfit leading-tight">
+                            {latestFavoriteClubPost ? latestFavoriteClubPost.title : `${favoriteClub} is ready for a sharper daily briefing`}
+                          </h2>
+                          <p className="text-sm text-white/70 mt-3">
+                            {latestFavoriteClubPost
+                              ? latestFavoriteClubPost.excerpt
+                              : "Open the club hub, set alerts, and keep the homepage working like a repeat-use dashboard instead of a one-time read."}
+                          </p>
+                          <div className="mt-5 space-y-3">
+                            <Link
+                              to={latestFavoriteClubPost ? `/post/${latestFavoriteClubPost.id}` : "/daily-fix"}
+                              className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3 text-sm font-bold hover:bg-white/15 transition-colors"
+                            >
+                              <span>{latestFavoriteClubPost ? "Read latest club story" : "Open Daily Fix"}</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </Link>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                      <div className="max-w-2xl">
+                        <h1 className="text-3xl md:text-5xl font-black font-outfit leading-tight">
+                          Build your football dashboard first
+                        </h1>
+                        <p className="text-base text-white/72 mt-4">
+                          The app becomes much stickier once it knows your club. Pick one team and the homepage turns into a repeat-use check-in instead of a generic article list.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6 mb-6">
+                          <div className="rounded-2xl bg-white/8 border border-white/10 px-4 py-4">
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55 mb-2">Daily Fix</p>
+                            <p className="text-base font-black font-outfit">Fast morning scan</p>
+                            <p className="text-xs text-white/70 mt-1">Headlines, rumor pulse, pressure shifts.</p>
+                          </div>
+                          <div className="rounded-2xl bg-white/8 border border-white/10 px-4 py-4">
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55 mb-2">Weekly Poll</p>
+                            <p className="text-base font-black font-outfit">One-click interaction</p>
+                            <p className="text-xs text-white/70 mt-1">A simple reason to come back and vote.</p>
+                          </div>
+                          <div className="rounded-2xl bg-white/8 border border-white/10 px-4 py-4">
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55 mb-2">Transfers</p>
+                            <p className="text-base font-black font-outfit">Always moving</p>
+                            <p className="text-xs text-white/70 mt-1">The easiest repeat-visit behavior to build early.</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-3">
+                          <button
+                            type="button"
+                            onClick={handleChangeClub}
+                            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white text-[#0F172A] text-sm font-black hover:bg-white/90 transition-colors"
+                          >
+                            Choose Your Club
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                          <Link
+                            to="/daily-fix"
+                            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/10 border border-white/10 text-sm font-black hover:bg-white/15 transition-colors"
+                          >
+                            Open Daily Fix
+                          </Link>
+                          <Link
+                            to="/transfers"
+                            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-transparent border border-white/15 text-sm font-black hover:bg-white/10 transition-colors"
+                          >
+                            Open Transfers
+                          </Link>
+                        </div>
+                      </div>
+
+                      <div className="w-full lg:max-w-[320px] rounded-[24px] bg-white/8 border border-white/10 p-5">
+                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#4ade80] mb-3">
+                          Start Here
+                        </p>
+                        <div className="space-y-3 text-sm">
+                          <div className="rounded-2xl bg-white/10 px-4 py-3">
+                            <p className="font-black">1. Pick a club</p>
+                            <p className="text-white/70 mt-1">The app will prioritize fixtures, club reads, and alert actions around it.</p>
+                          </div>
+                          <div className="rounded-2xl bg-white/10 px-4 py-3">
+                            <p className="font-black">2. Use Daily Fix</p>
+                            <p className="text-white/70 mt-1">That becomes the 60-second morning loop.</p>
+                          </div>
+                          <div className="rounded-2xl bg-white/10 px-4 py-3">
+                            <p className="font-black">3. Vote every week</p>
+                            <p className="text-white/70 mt-1">Small interactions matter when you are building early habit.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-1 gap-4">
+                <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <RadioTower className="w-4 h-4 text-[#16A34A]" />
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Daily Habit</p>
+                  </div>
+                  <h3 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white">
+                    {dailyFeatures ? "Fresh Daily Fix is ready" : "Use Daily Fix as your morning scan"}
+                  </h3>
+                  <p className="text-sm text-[#64748B] dark:text-gray-400 mt-2">
+                    {dailyFeatures
+                      ? `Updated ${new Date(dailyFeatures.lastUpdated).toLocaleDateString()} with rumor movement, pressure shifts, and a quick football reset.`
+                      : "Make the homepage a check-in and let Daily Fix handle the fast update loop."}
+                  </p>
+                  <Link to="/daily-fix" className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-[#16A34A] hover:underline">
+                    Open Daily Fix
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+
+                <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Newspaper className="w-4 h-4 text-sky-500" />
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-sky-500">Coverage Pulse</p>
+                  </div>
+                  <h3 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white">
+                    {latestFavoriteClubPost ? latestFavoriteClubPost.title : "Stay on the biggest football stories"}
+                  </h3>
+                  <p className="text-sm text-[#64748B] dark:text-gray-400 mt-2">
+                    {latestFavoriteClubPost
+                      ? latestFavoriteClubPost.excerpt
+                      : "Even before you choose a club, the app should give you a clean reason to check the latest headlines and feature reads."}
+                  </p>
+                  <Link
+                    to={latestFavoriteClubPost ? `/post/${latestFavoriteClubPost.id}` : "/stories"}
+                    className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-sky-600 dark:text-sky-400 hover:underline"
+                  >
+                    {latestFavoriteClubPost ? "Read club coverage" : "Open stories"}
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+
+                <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5 shadow-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Shield className="w-4 h-4 text-amber-500" />
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-500">Return Trigger</p>
+                  </div>
+                  <h3 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white">
+                    {favoriteClub ? (isFollowingFavoriteClub ? `${favoriteClub} alerts are turned on` : `Turn ${favoriteClub} into a followable beat`) : "Set a club and start tracking it"}
+                  </h3>
+                  <p className="text-sm text-[#64748B] dark:text-gray-400 mt-2">
+                    {favoriteClub
+                      ? "Alerts, transfer watch, fixtures, and match hubs become much stronger once the product knows which club should anchor the experience."
+                      : "You do not need readers to have habit loops. You need one personalized reason for a football fan to return tomorrow."}
+                  </p>
+                  {favoriteClub ? (
+                    <button
+                      type="button"
+                      onClick={handleToggleFavoriteClubAlerts}
+                      className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-amber-600 dark:text-amber-400 hover:underline"
+                    >
+                      {isFollowingFavoriteClub ? "Manage alert follow" : "Follow this club"}
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleChangeClub}
+                      className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-amber-600 dark:text-amber-400 hover:underline"
+                    >
+                      Pick your club
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
         )}
 
         {/* Hero Section: Main Stories Only (when no filters) */}
@@ -431,6 +772,167 @@ export function HomePage() {
             </div>
           )
         }
+
+        {favoriteClub && !searchQuery && (
+          <section className="mb-10 animate-float-in">
+            <div className="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-6 rounded-full bg-[#16A34A]" />
+                <h2 className="text-xl md:text-2xl font-black font-outfit text-[#0F172A] dark:text-white uppercase tracking-tight">
+                  Matchboard For {favoriteClub}
+                </h2>
+              </div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#16A34A]">
+                Matchday dashboard
+              </span>
+            </div>
+
+            {(favoriteClubFixtures.length > 0 || favoriteClubLiveFixtures.length > 0 || favoriteClubRecentFixtures.length > 0) ? (
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5">
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-[#0F172A] dark:text-white">
+                      Recent 7 Days
+                    </h3>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+                      Latest results
+                    </span>
+                  </div>
+                  {favoriteClubRecentFixtures.length > 0 ? (
+                    <div className="space-y-3">
+                      {favoriteClubRecentFixtures.map((fixture) => (
+                        <div key={fixture.id} className="block rounded-xl border border-gray-100 dark:border-gray-800 p-4 hover:border-[#16A34A]/30 transition-colors">
+                          <p className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8] mb-2">
+                            {fixture.competition?.name || favoriteClubData?.league}
+                          </p>
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-[#0F172A] dark:text-white truncate">
+                                {fixture.homeTeam.name} vs {fixture.awayTeam.name}
+                              </p>
+                              <p className="text-xs text-[#64748B] dark:text-gray-400 mt-1">
+                                {new Date(fixture.utcDate).toLocaleString([], {
+                                  weekday: "short",
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </p>
+                            </div>
+                            <div className="shrink-0 rounded-xl bg-gray-100 dark:bg-gray-800 px-3 py-2 text-sm font-black text-[#0F172A] dark:text-white">
+                              {fixture.score.home ?? "-"} : {fixture.score.away ?? "-"}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-[#64748B] dark:text-gray-400">
+                      No matches found in the last 7 days for {favoriteClub}.
+                    </p>
+                  )}
+                </div>
+
+                <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5">
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-[#0F172A] dark:text-white">
+                      Live Now
+                    </h3>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+                      Current
+                    </span>
+                  </div>
+                  {favoriteClubLiveFixtures.length > 0 ? (
+                    <div className="space-y-3">
+                      {favoriteClubLiveFixtures.map((fixture) => (
+                        <div key={fixture.id} className="block rounded-xl border border-[#16A34A]/20 bg-[#16A34A]/5 p-4 hover:border-[#16A34A]/40 transition-colors">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className="text-[11px] font-bold uppercase tracking-wider text-[#16A34A] mb-2">
+                                {fixture.status.replace(/_/g, " ")}
+                              </p>
+                              <p className="text-sm font-semibold text-[#0F172A] dark:text-white truncate">
+                                {fixture.homeTeam.name} vs {fixture.awayTeam.name}
+                              </p>
+                            </div>
+                            <div className="shrink-0 rounded-xl bg-white dark:bg-gray-800 px-3 py-2 text-sm font-black text-[#0F172A] dark:text-white">
+                              {fixture.score.home ?? "-"} : {fixture.score.away ?? "-"}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-[#64748B] dark:text-gray-400">
+                      No live fixture for {favoriteClub} right now.
+                    </p>
+                  )}
+                </div>
+
+                <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5">
+                  <div className="flex items-center justify-between gap-3 mb-4">
+                    <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-[#0F172A] dark:text-white">
+                      Up Next
+                    </h3>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+                      Next 21 days
+                    </span>
+                  </div>
+                  {favoriteClubFixtures.length > 0 ? (
+                    <div className="space-y-3">
+                      {favoriteClubFixtures.map((fixture) => (
+                        <div key={fixture.id} className="group block rounded-xl border border-gray-100 dark:border-gray-800 p-4 hover:border-[#16A34A]/30 hover:shadow-lg hover:shadow-[#16A34A]/5 transition-all duration-300">
+                          <p className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8] mb-3">
+                            {fixture.competition?.name || favoriteClubData?.league}
+                          </p>
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-sm font-semibold text-[#0F172A] dark:text-white truncate">
+                                {fixture.homeTeam.name}
+                              </span>
+                              <span className="text-xs text-[#94A3B8]">vs</span>
+                            </div>
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-sm font-semibold text-[#0F172A] dark:text-white truncate">
+                                {fixture.awayTeam.name}
+                              </span>
+                              <span className="text-xs text-[#16A34A] font-bold group-hover:translate-x-0.5 transition-transform">
+                                →
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-xs text-[#64748B] dark:text-gray-400 mt-4">
+                            {new Date(fixture.utcDate).toLocaleString([], {
+                              weekday: "short",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-[#64748B] dark:text-gray-400">
+                      No fixtures found in the next 21 days for {favoriteClub}.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 bg-white/70 dark:bg-[#0F172A]/60 p-5">
+                <p className="text-sm font-medium text-[#0F172A] dark:text-white">
+                  No fixtures found around this week for {favoriteClub}.
+                </p>
+                <p className="text-xs text-[#64748B] dark:text-gray-400 mt-2">
+                  The section stays visible, but there may be no recent, live, or upcoming matches during breaks.
+                </p>
+              </div>
+            )}
+          </section>
+        )}
 
         {/* This Week in Football */}
         {
@@ -484,11 +986,9 @@ export function HomePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="h-full">
-                  <OnThisDayWidget data={dailyFeatures.onThisDay} />
+                  <OnThisDayWidget />
                 </div>
-                <div className="h-full">
-                  <RumorMillWidget data={dailyFeatures.rumorMill} />
-                </div>
+                
                 <div className="h-full">
                   <ManagerPressureWidget data={dailyFeatures.managerPressure} />
                 </div>
@@ -496,6 +996,34 @@ export function HomePage() {
             </section>
           )
         }
+
+        <MatchRatingWidget />
+
+        {/* News Pulse */}
+        {!searchQuery && (
+          <section className="mb-14 animate-float-in">
+            <div className="flex items-center justify-between pb-4 mb-6 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-6 rounded-full bg-[#16A34A]" />
+                <h2 className="text-xl md:text-2xl font-black font-outfit text-[#0F172A] dark:text-white uppercase tracking-tight">
+                  News Pulse
+                </h2>
+              </div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
+                Live headlines
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-6">
+              <div className="animate-float-in">
+                <NewsTicker />
+              </div>
+              <div className="animate-float-in">
+                <PollOfTheWeekPanel />
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Newspaper 2-Column Layout */}
         <div className="flex flex-col lg:flex-row gap-8">
@@ -570,32 +1098,48 @@ export function HomePage() {
               </div>
             )}
 
-            {/* Live Widgets wrapper */}
+            {!searchQuery && (
+              <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5 animate-float-in">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] font-black font-outfit uppercase tracking-[0.18em] text-[#16A34A] mb-1">
+                      Newsletter
+                    </p>
+                    <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
+                      Get the week&apos;s best reads in one email
+                    </h3>
+                    <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
+                      Subscribe below for new analysis and curated football updates.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      document.querySelector("footer")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    className="shrink-0 px-4 py-2.5 border border-[#16A34A]/20 text-[#16A34A] text-sm font-bold rounded-xl hover:bg-[#16A34A]/5 transition-all duration-300"
+                  >
+                    Subscribe
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Utility stack */}
             <div className="sticky top-6 flex flex-col gap-6">
-
-              {/* News Ticker */}
-              <div className="animate-float-in">
-                <NewsTicker />
+              <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-[#0F172A]/70 backdrop-blur-sm p-4 animate-float-in">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1.5 h-5 rounded-full bg-[#16A34A]" />
+                  <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-[#0F172A] dark:text-white">
+                    Matchday Tools
+                  </h3>
+                </div>
+                <div className="space-y-6">
+                  <div className="animate-float-in">
+                    <RunInTracker />
+                  </div>
+                  
+                </div>
               </div>
-
-              {/* Reddit Social Feed */}
-              <div className="animate-float-in">
-                <SocialFeed />
-              </div>
-
-              {/* Social Wall */}
-              {siteSettings.socialWallEnabled && (
-                <SocialWall
-                  title={siteSettings.socialWallTitle}
-                  embedCode={siteSettings.socialWallEmbedCode}
-                />
-              )}
-
-              {/* FPL Analyzer */}
-              <div className="animate-float-in">
-                <FPLAnalyzer />
-              </div>
-
             </div>
           </aside>
         </div>

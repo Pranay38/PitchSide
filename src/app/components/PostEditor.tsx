@@ -6,6 +6,7 @@ import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
 import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { PollWidget } from "./PollWidget";
+import { scheduleEmbedHydration } from "../lib/embedHydration";
 
 /** Categories that are NOT club-specific */
 const GENERAL_CATEGORIES = [
@@ -89,8 +90,11 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [playerName, setPlayerName] = useState(post?.playerName || "");
     const [poll, setPoll] = useState(post?.poll || { question: "", options: [{ text: "", votes: 0 }, { text: "", votes: 0 }] });
     const [usePoll, setUsePoll] = useState(!!post?.poll);
+    const [matchRatings, setMatchRatings] = useState<{playerName: string, editorRating: number}[]>(post?.matchRatings || []);
+    const [useMatchRatings, setUseMatchRatings] = useState(!!post?.matchRatings && post.matchRatings.length > 0);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
+    const previewContentRef = useRef<HTMLDivElement | null>(null);
 
     // Custom Team Modal State
     const [showCustomTeamModal, setShowCustomTeamModal] = useState(false);
@@ -205,55 +209,9 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         return () => document.removeEventListener("mousedown", handler);
     }, []);
 
-    // Hydrate social embeds in preview mode
     useEffect(() => {
         if (!showPreview || !content) return;
-
-        const timer = setTimeout(() => {
-            // Twitter / X embeds
-            if (content.includes("twitter-tweet")) {
-                const existing = document.getElementById("twitter-wjs");
-                if (existing) {
-                    if ((window as any).twttr?.widgets?.load) {
-                        (window as any).twttr.widgets.load();
-                    }
-                } else {
-                    const script = document.createElement("script");
-                    script.id = "twitter-wjs";
-                    script.src = "https://platform.twitter.com/widgets.js";
-                    script.async = true;
-                    script.onload = () => {
-                        if ((window as any).twttr?.widgets?.load) {
-                            (window as any).twttr.widgets.load();
-                        }
-                    };
-                    document.body.appendChild(script);
-                }
-            }
-
-            // Instagram embeds
-            if (content.includes("instagram-media")) {
-                const existing = document.getElementById("instagram-embed-js");
-                if (existing) {
-                    if ((window as any).instgrm?.Embeds?.process) {
-                        (window as any).instgrm.Embeds.process();
-                    }
-                } else {
-                    const script = document.createElement("script");
-                    script.id = "instagram-embed-js";
-                    script.src = "https://www.instagram.com/embed.js";
-                    script.async = true;
-                    script.onload = () => {
-                        if ((window as any).instgrm?.Embeds?.process) {
-                            (window as any).instgrm.Embeds.process();
-                        }
-                    };
-                    document.body.appendChild(script);
-                }
-            }
-        }, 150);
-
-        return () => clearTimeout(timer);
+        return scheduleEmbedHydration(previewContentRef.current);
     }, [showPreview, content]);
 
     const handleFileUpload = async (file: File) => {
@@ -308,6 +266,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             playerName: playerName.trim() || undefined,
             isDraft: isAutoSave, // If auto-save, it's a draft. Click 'Publish' makes it false.
             poll: usePoll && poll.question.trim() ? poll : undefined,
+            matchRatings: useMatchRatings && matchRatings.filter(r => r.playerName.trim()).length > 0 ? matchRatings.filter(r => r.playerName.trim()) : undefined,
         });
 
         if (isAutoSave) {
@@ -861,6 +820,75 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                         )}
                     </div>
 
+                    {/* Interactive Match Ratings Section */}
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                        <div className="flex items-center justify-between mb-4">
+                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
+                                <Star className="w-4 h-4 text-[#16A34A]" />
+                                Interactive Match Ratings
+                            </label>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" className="sr-only peer" checked={useMatchRatings} onChange={(e) => setUseMatchRatings(e.target.checked)} />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#16A34A]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#16A34A]"></div>
+                            </label>
+                        </div>
+
+                        {useMatchRatings && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
+                                <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
+                                    Set your editor ratings out of 10. Fans will be able to submit their own ratings directly on the article!
+                                </p>
+                                <div className="space-y-2">
+                                    {matchRatings.map((rating, idx) => (
+                                        <div key={idx} className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                value={rating.playerName}
+                                                onChange={(e) => {
+                                                    const newRatings = [...matchRatings];
+                                                    newRatings[idx].playerName = e.target.value;
+                                                    setMatchRatings(newRatings);
+                                                }}
+                                                placeholder="Player Name (e.g. Bukayo Saka)"
+                                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                                            />
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                max="10"
+                                                value={rating.editorRating}
+                                                onChange={(e) => {
+                                                    const newRatings = [...matchRatings];
+                                                    newRatings[idx].editorRating = Number(e.target.value);
+                                                    setMatchRatings(newRatings);
+                                                }}
+                                                placeholder="Rating (1-10)"
+                                                className="w-24 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const newRatings = matchRatings.filter((_, i) => i !== idx);
+                                                    setMatchRatings(newRatings);
+                                                }}
+                                                className="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        onClick={() => setMatchRatings([...matchRatings, { playerName: "", editorRating: 7 }])}
+                                        className="flex items-center gap-1.5 text-sm font-medium text-[#16A34A] hover:text-[#15803d]"
+                                    >
+                                        <Plus className="w-4 h-4" /> Add Player Rating
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     {/* Featured Layout Options */}
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                         <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
@@ -1075,24 +1103,26 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             )}
 
                             {/* Article Body */}
-                            {content.trim().startsWith("<") ? (
-                                <div
-                                    className="pitchside-article-content"
-                                    dangerouslySetInnerHTML={{ __html: content }}
-                                />
-                            ) : (
-                                <div className="pitchside-article-content">
-                                    {content.split("\n\n").map((paragraph, index) => {
-                                        if (paragraph.startsWith("## "))
-                                            return <h2 key={index}>{paragraph.replace("## ", "")}</h2>;
-                                        if (paragraph.startsWith("### "))
-                                            return <h3 key={index}>{paragraph.replace("### ", "")}</h3>;
-                                        if (paragraph.startsWith("> "))
-                                            return <blockquote key={index}>{paragraph.replace("> ", "").replace(/"/g, "")}</blockquote>;
-                                        return <p key={index}>{paragraph}</p>;
-                                    })}
-                                </div>
-                            )}
+                            <div ref={previewContentRef}>
+                                {content.trim().startsWith("<") ? (
+                                    <div
+                                        className="pitchside-article-content"
+                                        dangerouslySetInnerHTML={{ __html: content }}
+                                    />
+                                ) : (
+                                    <div className="pitchside-article-content">
+                                        {content.split("\n\n").map((paragraph, index) => {
+                                            if (paragraph.startsWith("## "))
+                                                return <h2 key={index}>{paragraph.replace("## ", "")}</h2>;
+                                            if (paragraph.startsWith("### "))
+                                                return <h3 key={index}>{paragraph.replace("### ", "")}</h3>;
+                                            if (paragraph.startsWith("> "))
+                                                return <blockquote key={index}>{paragraph.replace("> ", "").replace(/"/g, "")}</blockquote>;
+                                            return <p key={index}>{paragraph}</p>;
+                                        })}
+                                    </div>
+                                )}
+                            </div>
 
                             {/* Media Embed */}
                             {mediaUrl && (

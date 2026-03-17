@@ -3,9 +3,9 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 /**
  * Match detail endpoint.
  * Strategy:
- * 1. Always fetch basic match data from football-data.org (goals, bookings, subs available on some tiers)
- * 2. If RAPIDAPI_KEY is set, also try API-Football for rich stats (possession, shots, etc.)
- * 3. Merge and return the best data available
+ * 1. Always fetch basic match data from football-data.org
+ * 2. If RAPIDAPI_KEY is set, try API-Football for fixture metadata and score confirmation
+ * 3. Return a reliable score-first payload without pretending richer timeline data exists
  */
 
 const FOOTBALL_DATA_KEY = process.env.FOOTBALL_DATA_KEY || "";
@@ -56,32 +56,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         extraTime: { home: m.score?.extraTime?.home ?? null, away: m.score?.extraTime?.away ?? null },
                         penalty: { home: m.score?.penalties?.home ?? null, away: m.score?.penalties?.away ?? null },
                     },
-                    // Goals/bookings/subs from football-data.org (may be empty on free tier)
-                    events: [
-                        ...(m.goals || []).map((g: any) => ({
-                            time: g.minute, extraTime: g.injuryTime || null,
-                            team: g.team?.name || "", player: g.scorer?.name || "Unknown",
-                            assist: g.assist?.name || null, type: "Goal",
-                            detail: g.type === "PENALTY" ? "Penalty" : g.type === "OWN" ? "Own Goal" : "Normal Goal",
-                        })),
-                        ...(m.bookings || []).map((b: any) => ({
-                            time: b.minute, extraTime: null,
-                            team: b.team?.name || "", player: b.player?.name || "Unknown",
-                            assist: null, type: "Card",
-                            detail: b.card === "RED_CARD" ? "Red Card" : "Yellow Card",
-                        })),
-                        ...(m.substitutions || []).map((s: any) => ({
-                            time: s.minute, extraTime: null,
-                            team: s.team?.name || "", player: s.playerIn?.name || "",
-                            assist: s.playerOut?.name || null, type: "subst", detail: "Substitution",
-                        })),
-                    ],
-                    statistics: [],
                 };
             }
         }
 
-        // Strategy 2: Try API-Football for richer stats if key available
+        // Strategy 2: Try API-Football for fixture metadata if key available
         if (APIFOOTBALL_KEY && homeTeam && awayTeam && matchDate) {
             try {
                 const leagueId = LEAGUE_MAP[competition] || 39;
@@ -110,39 +89,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     });
 
                     if (afMatch) {
-                        const fixtureId = afMatch.fixture.id;
-                        const [statsData, eventsData] = await Promise.all([
-                            fetch(`${AF_BASE}/fixtures/statistics?fixture=${fixtureId}`, { headers: { "x-apisports-key": APIFOOTBALL_KEY } }).then(r => r.ok ? r.json() : { response: [] }),
-                            fetch(`${AF_BASE}/fixtures/events?fixture=${fixtureId}`, { headers: { "x-apisports-key": APIFOOTBALL_KEY } }).then(r => r.ok ? r.json() : { response: [] }),
-                        ]);
-
-                        const statsResponse = statsData.response || [];
-                        const eventsResponse = eventsData.response || [];
-
-                        const statMap = (stats: any[]) => { const m: Record<string, any> = {}; stats.forEach((s: any) => { m[s.type] = s.value; }); return m; };
-                        const homeS = statMap(statsResponse[0]?.statistics || []);
-                        const awayS = statMap(statsResponse[1]?.statistics || []);
-
-                        const statistics = [
-                            { label: "Possession", home: homeS["Ball Possession"] || "0%", away: awayS["Ball Possession"] || "0%" },
-                            { label: "Total Shots", home: homeS["Total Shots"] ?? 0, away: awayS["Total Shots"] ?? 0 },
-                            { label: "Shots on Target", home: homeS["Shots on Goal"] ?? 0, away: awayS["Shots on Goal"] ?? 0 },
-                            { label: "Corners", home: homeS["Corner Kicks"] ?? 0, away: awayS["Corner Kicks"] ?? 0 },
-                            { label: "Fouls", home: homeS["Fouls"] ?? 0, away: awayS["Fouls"] ?? 0 },
-                            { label: "Offsides", home: homeS["Offsides"] ?? 0, away: awayS["Offsides"] ?? 0 },
-                            { label: "Yellow Cards", home: homeS["Yellow Cards"] ?? 0, away: awayS["Yellow Cards"] ?? 0 },
-                            { label: "Red Cards", home: homeS["Red Cards"] ?? 0, away: awayS["Red Cards"] ?? 0 },
-                            { label: "Passes", home: homeS["Total passes"] ?? 0, away: awayS["Total passes"] ?? 0 },
-                            { label: "Pass Accuracy", home: homeS["Passes %"] || "0%", away: awayS["Passes %"] || "0%" },
-                        ];
-
-                        const events = eventsResponse.map((e: any) => ({
-                            time: e.time?.elapsed || 0, extraTime: e.time?.extra || null,
-                            team: e.team?.name || "", player: e.player?.name || "",
-                            assist: e.assist?.name || null, type: e.type || "", detail: e.detail || "",
-                        }));
-
-                        // Build or enhance result with API-Football data
+                        // Build or enhance result with API-Football fixture data
                         result = {
                             fixture: {
                                 venue: afMatch.fixture?.venue?.name || result?.fixture?.venue || null,
@@ -158,8 +105,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                                 extraTime: { home: afMatch.score?.extratime?.home ?? null, away: afMatch.score?.extratime?.away ?? null },
                                 penalty: { home: afMatch.score?.penalty?.home ?? null, away: afMatch.score?.penalty?.away ?? null },
                             },
-                            statistics,
-                            events,
                         };
                     }
                 }

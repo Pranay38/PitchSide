@@ -1,9 +1,10 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router";
 import type { BlogPost } from "../data/posts";
 import { AdminLogin } from "../components/AdminLogin";
 import { PostEditor } from "../components/PostEditor";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { StoryEditor } from "../components/StoryEditor";
 import {
     isAdminAuthenticated,
     adminLogout,
@@ -21,12 +22,47 @@ import {
     updateSiteSettingsAsync,
     type SiteSettings,
 } from "../lib/siteSettingsStorage";
-import { Plus, Edit3, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, MessageSquare } from "lucide-react";
+import { getAllClubNames } from "../data/clubs";
+import { duplicateStoryFeature, type StoryFeature } from "../data/stories";
+import {
+    calculateClubIntelligenceSummary,
+    createDefaultClubIntelligence,
+    getClubIntelligenceKey,
+    normalizeClubIntelligence,
+    type ClubIntelligence,
+} from "../lib/clubIntelligence";
+import {
+    buildTransferWatchId,
+    formatTransferWatchAmount,
+    normalizeTransferWatchEntry,
+    type TransferFeeMode,
+    type TransferWatchStatus,
+} from "../lib/transferWatch";
+import {
+    addStoryAsync,
+    deleteStoryAsync,
+    getAllStories,
+    getAllStoriesAsync,
+    updateStoryAsync,
+} from "../lib/storyStorage";
+import { createDefaultPollOfWeek, normalizePollOfWeek } from "../lib/pollOfWeek";
+import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, MessageSquare, Repeat2, ScanSearch, Copy, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
-import { DebateEditor } from "../components/DebateEditor";
+import { AdminRunInEditor } from "../components/AdminRunInEditor";
+import type { SupplementalEvent } from "../lib/siteSettingsStorage";
+
+// Import Admin Tabs
+import { AdminStoriesTab } from "../components/admin/AdminStoriesTab";
+import { AdminCollectionsTab } from "../components/admin/AdminCollectionsTab";
+import { AdminDebatesTab } from "../components/admin/AdminDebatesTab";
+import { AdminPollsTab } from "../components/admin/AdminPollsTab";
+import { AdminOnThisDayTab } from "../components/admin/AdminOnThisDayTab";
+import { AdminTransferWatchTab } from "../components/admin/AdminTransferWatchTab";
+import { AdminSettingsTab } from "../components/admin/AdminSettingsTab";
+import { AdminMatchRatingsTab } from "../components/admin/AdminMatchRatingsTab";
 
 type View = "list" | "create" | "edit";
-type Tab = "posts" | "collections" | "debates" | "settings";
+type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "on-this-day" | "settings" | "polls" | "match-ratings";
 
 export function AdminPage() {
     const navigate = useNavigate();
@@ -35,6 +71,14 @@ export function AdminPage() {
     const [activeTab, setActiveTab] = useState<Tab>("posts");
     const [showDebateEditor, setShowDebateEditor] = useState(false);
     const [expandedDebateId, setExpandedDebateId] = useState<string | null>(null);
+    const [serverPolls, setServerPolls] = useState<any[]>([]);
+    const [editingPoll, setEditingPoll] = useState<any>(null);
+    const [savingPoll, setSavingPoll] = useState(false);
+    
+    const [serverMatchRatings, setServerMatchRatings] = useState<any[]>([]);
+    const [editingMatchRating, setEditingMatchRating] = useState<any>(null);
+    const [savingMatchRating, setSavingMatchRating] = useState(false);
+
     
     // Post Filters and Sorting
     const [postFilter, setPostFilter] = useState<"all" | "published" | "drafts">("all");
@@ -50,9 +94,47 @@ export function AdminPage() {
 
     const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => getSiteSettings());
     const [savingSiteSettings, setSavingSiteSettings] = useState(false);
+    const [savingPollOfWeek, setSavingPollOfWeek] = useState(false);
+    const [savingClubIntelligence, setSavingClubIntelligence] = useState(false);
+    const [savingTransferWatch, setSavingTransferWatch] = useState(false);
+    const [stories, setStories] = useState<StoryFeature[]>(() => getAllStories(true));
+    const [showStoryEditor, setShowStoryEditor] = useState(false);
+    const [editingStory, setEditingStory] = useState<StoryFeature | null>(null);
+    const [selectedClubForInsights, setSelectedClubForInsights] = useState("Arsenal");
+    const [transferDraft, setTransferDraft] = useState({
+        player: "",
+        club: "Arsenal",
+        feeMode: "million-usd" as TransferFeeMode,
+        feeMillions: "",
+        status: "rumor" as TransferWatchStatus,
+    });
+    const [transferFilterClub, setTransferFilterClub] = useState("all");
+
+    const [eventDraft, setEventDraft] = useState<Partial<SupplementalEvent>>({
+        dateMMDD: new Date().toISOString().slice(5, 10),
+        year: new Date().getFullYear(),
+        text: "",
+        category: "event",
+        thumbnail: "",
+        articleUrl: "",
+    });
+    const [savingSupplementalEvent, setSavingSupplementalEvent] = useState(false);
 
     const [collections, setCollections] = useState<any[]>([]);
     const [debates, setDebates] = useState<any[]>([]);
+    const clubOptions = useMemo(() => getAllClubNames().sort((left, right) => left.localeCompare(right)), []);
+    const selectedClubInsight = useMemo(() => {
+        const existing = siteSettings.clubIntelligence[getClubIntelligenceKey(selectedClubForInsights)];
+        return existing || createDefaultClubIntelligence(selectedClubForInsights);
+    }, [selectedClubForInsights, siteSettings.clubIntelligence]);
+    const selectedClubInsightSummary = useMemo(
+        () => calculateClubIntelligenceSummary(selectedClubInsight),
+        [selectedClubInsight],
+    );
+    const filteredTransferWatchEntries = useMemo(() => {
+        if (transferFilterClub === "all") return siteSettings.transferWatch;
+        return siteSettings.transferWatch.filter((entry) => entry.club === transferFilterClub);
+    }, [siteSettings.transferWatch, transferFilterClub]);
 
     const fetchSubscriberCount = useCallback(async () => {
         try {
@@ -77,23 +159,51 @@ export function AdminPage() {
             if (res.ok) setDebates(await res.json());
         } catch { }
     }, []);
+    const fetchServerPolls = useCallback(async () => {
+        try {
+            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const res = await fetch("/api/polls", {
+                headers: { Authorization: `Bearer ${pwd}` }
+            });
+            if (res.ok) setServerPolls(await res.json());
+        } catch {}
+    }, []);
+
+    const fetchServerMatchRatings = useCallback(async () => {
+        try {
+            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const res = await fetch("/api/match-ratings", {
+                headers: { Authorization: `Bearer ${pwd}` }
+            });
+            if (res.ok) setServerMatchRatings(await res.json());
+        } catch {}
+    }, []);
+
 
     const refreshPosts = useCallback(async () => {
         const latest = await getAllPostsAsync();
         setPosts(latest);
     }, []);
 
+    const refreshStories = useCallback(async () => {
+        const latest = await getAllStoriesAsync(true);
+        setStories(latest);
+    }, []);
+
     useEffect(() => {
         if (isAuthed) {
             refreshPosts();
+            refreshStories();
             fetchSubscriberCount();
             fetchCollections();
             fetchDebates();
+            fetchServerPolls();
+            fetchServerMatchRatings();
             getSiteSettingsAsync()
                 .then((settings) => setSiteSettings(settings))
                 .catch(() => { });
         }
-    }, [isAuthed, refreshPosts, fetchSubscriberCount, fetchCollections, fetchDebates]);
+    }, [isAuthed, refreshPosts, refreshStories, fetchSubscriberCount, fetchCollections, fetchDebates, fetchServerPolls, fetchServerMatchRatings]);
 
     const handleLogin = () => setIsAuthed(true);
     const handleLogout = () => { adminLogout(); setIsAuthed(false); };
@@ -179,115 +289,6 @@ export function AdminPage() {
         setNotifyingPostId(null);
     };
 
-    // Collection Handlers
-    const handleCreateCollection = async () => {
-        const title = window.prompt("Collection Title:");
-        if (!title) return;
-        const description = window.prompt("Description:");
-        const emoji = window.prompt("Emoji (e.g. 📚):", "📚");
-        const postIdsStr = window.prompt("Comma separated Post IDs to include (optional):", "");
-
-        try {
-            const res = await fetch("/api/collections", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title, description, emoji,
-                    postIds: postIdsStr ? postIdsStr.split(",").map(id => id.trim()) : []
-                })
-            });
-            if (res.ok) {
-                toast.success("Collection created!");
-                fetchCollections();
-            } else {
-                toast.error("Failed to create collection");
-            }
-        } catch { toast.error("Network error"); }
-    };
-
-    const handleDeleteCollection = async (id: string) => {
-        if (!window.confirm("Delete this collection?")) return;
-        try {
-            const res = await fetch(`/api/collections?id=${id}`, { method: "DELETE" });
-            if (res.ok) {
-                toast.success("Collection deleted");
-                fetchCollections();
-            } else toast.error("Failed to delete collection");
-        } catch { toast.error("Network error"); }
-    };
-
-    // Debate Handlers
-    const handleSaveDebate = async (data: { title: string; description: string; category: string; coverImage: string }) => {
-        try {
-            const res = await fetch("/api/debates", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "create", ...data })
-            });
-            if (res.ok) {
-                toast.success("Debate created!");
-                setShowDebateEditor(false);
-                fetchDebates();
-            } else {
-                toast.error("Failed to create debate");
-            }
-        } catch { toast.error("Network error"); }
-    };
-
-    const handleDeleteDebate = async (id: string) => {
-        if (!window.confirm("Delete this debate?")) return;
-        try {
-            const res = await fetch(`/api/debates?id=${id}`, { method: "DELETE" });
-            if (res.ok) {
-                toast.success("Debate deleted");
-                fetchDebates();
-            } else toast.error("Failed to delete debate");
-        } catch { toast.error("Network error"); }
-    };
-
-    const handleDeleteArgument = async (debateId: string, argumentId: string) => {
-        if (!window.confirm("Delete this comment?")) return;
-        try {
-            const res = await fetch(`/api/debates?id=${debateId}&argumentId=${argumentId}`, { method: "DELETE" });
-            if (res.ok) {
-                toast.success("Comment deleted");
-                fetchDebates();
-            } else toast.error("Failed to delete comment");
-        } catch { toast.error("Network error"); }
-    };
-
-    // Settings & Digest
-    const handleSaveSocialWall = async () => {
-        setSavingSiteSettings(true);
-        try {
-            const updated = await updateSiteSettingsAsync({
-                socialWallEnabled: siteSettings.socialWallEnabled,
-                socialWallTitle: siteSettings.socialWallTitle.trim() || "Social Wall",
-                socialWallEmbedCode: siteSettings.socialWallEmbedCode,
-            });
-            setSiteSettings(updated);
-            toast.success("Social Wall updated.");
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Failed to update.");
-        } finally {
-            setSavingSiteSettings(false);
-        }
-    };
-
-    const handleSendDigest = async () => {
-        if (!window.confirm("Send weekly digest to all subscribers now?")) return;
-        setSendingDigest(true);
-        try {
-            const res = await fetch("/api/digest", { method: "POST" });
-            const data = await res.json();
-            if (res.ok) toast.success(data.message || "Digest sent!");
-            else toast.error(data.error || "Failed to send digest");
-        } catch {
-            toast.error("Error sending digest");
-        }
-        setSendingDigest(false);
-    };
-
     const handleExport = () => {
         exportPostsAsJSON();
         toast.success("Posts exported! Move posts.json to your public/ folder.");
@@ -320,6 +321,86 @@ export function AdminPage() {
             if (postSort === "z-a") return b.title.localeCompare(a.title);
             return 0;
         });
+
+    const handleSavePoll = async () => {
+        try {
+            setSavingPoll(true);
+            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const isEditing = !!editingPoll._id;
+            const url = isEditing ? `/api/polls/${editingPoll._id}` : "/api/polls";
+            const method = isEditing ? "PUT" : "POST";
+            const res = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${pwd}` },
+                body: JSON.stringify(editingPoll),
+            });
+            if (res.ok) {
+                toast.success("Poll saved");
+                setEditingPoll(null);
+                fetchServerPolls();
+            } else {
+                toast.error("Failed to save poll");
+            }
+        } catch {
+            toast.error("Network error");
+        } finally {
+            setSavingPoll(false);
+        }
+    };
+
+    const handleDeletePoll = async (id: string) => {
+        if (!confirm("Delete this poll?")) return;
+        try {
+            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const res = await fetch(`/api/polls/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${pwd}` } });
+            if (res.ok) {
+                toast.success("Poll deleted");
+                fetchServerPolls();
+            }
+        } catch {
+            toast.error("Network error");
+        }
+    };
+
+    const handleSaveMatchRating = async () => {
+        try {
+            setSavingMatchRating(true);
+            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const isEditing = !!editingMatchRating._id;
+            const url = isEditing ? `/api/match-ratings/${editingMatchRating._id}` : "/api/match-ratings";
+            const method = isEditing ? "PUT" : "POST";
+            const res = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${pwd}` },
+                body: JSON.stringify(editingMatchRating),
+            });
+            if (res.ok) {
+                toast.success("Match Ratings saved");
+                setEditingMatchRating(null);
+                fetchServerMatchRatings();
+            } else {
+                toast.error("Failed to save match ratings");
+            }
+        } catch {
+            toast.error("Network error");
+        } finally {
+            setSavingMatchRating(false);
+        }
+    };
+
+    const handleDeleteMatchRating = async (id: string) => {
+        if (!confirm("Delete these match ratings?")) return;
+        try {
+            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const res = await fetch(`/api/match-ratings/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${pwd}` } });
+            if (res.ok) {
+                toast.success("Match Ratings deleted");
+                fetchServerMatchRatings();
+            }
+        } catch {
+            toast.error("Network error");
+        }
+    };
 
     if (!isAuthed) return <AdminLogin onLogin={handleLogin} />;
 
@@ -375,16 +456,52 @@ export function AdminPage() {
                         <Layout className="w-4 h-4" /> Posts
                     </button>
                     <button
+                        onClick={() => setActiveTab("stories")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "stories" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <ScanSearch className="w-4 h-4" /> Stories
+                    </button>
+                    <button
                         onClick={() => setActiveTab("collections")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "collections" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Library className="w-4 h-4" /> Collections
+                    </button>                    
+                    <button
+                        onClick={() => setActiveTab("polls")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "polls" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <HelpCircle className="w-4 h-4" /> Polls (Server)
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("match-ratings")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "match-ratings" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <BarChart3 className="w-4 h-4" /> Fan Ratings
                     </button>
                     <button
                         onClick={() => setActiveTab("debates")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "debates" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Flame className="w-4 h-4" /> Debates
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("run-in")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "run-in" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <ArrowUpDown className="w-4 h-4" /> Run-In Tracker
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("transfer-watch")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "transfer-watch" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <Repeat2 className="w-4 h-4" /> Transfer Watch
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("on-this-day")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "on-this-day" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <span className="text-base leading-none">📅</span> On This Day
                     </button>
                     <button
                         onClick={() => setActiveTab("settings")}
@@ -496,170 +613,84 @@ export function AdminPage() {
                     </>
                 )}
 
+                {/* STORIES TAB */}
+                {activeTab === "stories" && (
+                    <AdminStoriesTab 
+                        stories={stories}
+                        setStories={setStories}
+                    />
+                )}
+
                 {/* COLLECTIONS TAB */}
                 {activeTab === "collections" && (
-                    <>
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">Collections</h1>
-                                <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">{collections.length} Reading Lists</p>
-                            </div>
-                            <button onClick={handleCreateCollection} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
-                                <Plus className="w-4 h-4" />New Collection
-                            </button>
-                        </div>
-                        <div className="grid gap-4 sm:grid-cols-2">
-                            {collections.length === 0 && <p className="text-gray-500">No collections created yet.</p>}
-                            {collections.map((col) => (
-                                <div key={col.id} className="p-6 bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <span className="text-3xl mb-2 block">{col.emoji}</span>
-                                            <h3 className="font-bold text-[#0F172A] dark:text-white">{col.title}</h3>
-                                            <p className="text-sm text-gray-400 mt-1">{col.description}</p>
-                                        </div>
-                                        <button onClick={() => handleDeleteCollection(col.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
-                                    </div>
-                                    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 text-xs text-gray-500">
-                                        {col.postCount} post{col.postCount !== 1 ? 's' : ''} inside
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </>
+                    <AdminCollectionsTab 
+                        collections={collections}
+                        fetchCollections={fetchCollections}
+                    />
+                )}
+
+                {/* POLLS TAB */}
+                {activeTab === "polls" && (
+                    <AdminPollsTab 
+                        serverPolls={serverPolls}
+                        editingPoll={editingPoll}
+                        savingPoll={savingPoll}
+                        setEditingPoll={setEditingPoll}
+                        onSavePoll={handleSavePoll}
+                        onDeletePoll={handleDeletePoll}
+                    />
+                )}
+
+                {/* MATCH RATINGS TAB */}
+                {activeTab === "match-ratings" && (
+                    <AdminMatchRatingsTab
+                        serverSessions={serverMatchRatings}
+                        editingSession={editingMatchRating}
+                        savingSession={savingMatchRating}
+                        setEditingSession={setEditingMatchRating}
+                        onSaveSession={handleSaveMatchRating}
+                        onDeleteSession={handleDeleteMatchRating}
+                    />
                 )}
 
                 {/* DEBATES TAB */}
                 {activeTab === "debates" && (
-                    <>
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">Debate Corner</h1>
-                                <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">{debates.length} hot takes</p>
-                            </div>
-                            <button onClick={() => setShowDebateEditor(true)} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
-                                <Plus className="w-4 h-4" />New Debate
-                            </button>
-                        </div>
+                    <AdminDebatesTab 
+                        debates={debates}
+                        fetchDebates={fetchDebates}
+                    />
+                )}
 
-                        {showDebateEditor && (
-                            <DebateEditor onSave={handleSaveDebate} onCancel={() => setShowDebateEditor(false)} />
-                        )}
-                        <div className="space-y-3">
-                            {debates.length === 0 && <p className="text-gray-500">No debates created yet.</p>}
-                            {debates.map((deb) => (
-                                <div key={deb.id} className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left transition-all">
-                                    <div className="p-5 flex items-center justify-between">
-                                        <div>
-                                            <h3 className="font-semibold text-[#0F172A] dark:text-white">{deb.title}</h3>
-                                            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-                                                <span className="text-emerald-500 font-medium">{deb.agreeVotes} Agree</span>
-                                                <span className="text-red-500 font-medium">{deb.disagreeVotes} Disagree</span>
-                                                <span>•</span>
-                                                <span>{deb.totalArguments} Arguments</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button 
-                                                onClick={() => setExpandedDebateId(expandedDebateId === deb.id ? null : deb.id)} 
-                                                className={`p-2 rounded-lg transition-colors ${expandedDebateId === deb.id ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"}`}
-                                                title="View Comments"
-                                            >
-                                                <MessageSquare className="w-4 h-4" />
-                                            </button>
-                                            <button onClick={() => handleDeleteDebate(deb.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Expanded Comments View */}
-                                    {expandedDebateId === deb.id && deb.arguments && deb.arguments.length > 0 && (
-                                        <div className="bg-gray-50 dark:bg-[#0F172A] p-4 border-t border-gray-100 dark:border-gray-800 max-h-[300px] overflow-y-auto">
-                                            <div className="space-y-3">
-                                                {deb.arguments.map((arg: any) => (
-                                                    <div key={arg.id} className="flex items-start justify-between gap-4 p-3 bg-white dark:bg-[#1E293B] rounded-lg border border-gray-200 dark:border-gray-700">
-                                                        <div>
-                                                            <div className="flex items-center gap-2 mb-1">
-                                                                <span className="font-semibold text-sm text-[#0F172A] dark:text-gray-200">{arg.author}</span>
-                                                                <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${arg.side === "agree" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" : "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400"}`}>
-                                                                    {arg.side}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-sm text-gray-600 dark:text-gray-400">{arg.text}</p>
-                                                        </div>
-                                                        <button 
-                                                            onClick={() => handleDeleteArgument(deb.id, arg.id)}
-                                                            className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded-lg transition-colors flex-shrink-0"
-                                                            title="Delete Comment"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                    {expandedDebateId === deb.id && (!deb.arguments || deb.arguments.length === 0) && (
-                                        <div className="bg-gray-50 dark:bg-[#0F172A] p-4 border-t border-gray-100 dark:border-gray-800 text-center text-sm text-gray-500">
-                                            No comments on this debate yet.
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </>
+                {/* RUN-IN TRACKER TAB */}
+                {activeTab === "run-in" && (
+                    <AdminRunInEditor />
+                )}
+
+                {/* ON THIS DAY TAB */}
+                {activeTab === "on-this-day" && (
+                    <AdminOnThisDayTab 
+                        siteSettings={siteSettings}
+                        setSiteSettings={setSiteSettings}
+                    />
+                )}
+
+                {/* TRANSFER WATCH TAB */}
+                {activeTab === "transfer-watch" && (
+                    <AdminTransferWatchTab 
+                        siteSettings={siteSettings}
+                        setSiteSettings={setSiteSettings}
+                        clubOptions={clubOptions}
+                    />
                 )}
 
                 {/* SETTINGS TAB */}
                 {activeTab === "settings" && (
-                    <div className="space-y-8">
-                        {/* Digest section */}
-                        <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6 flex items-start justify-between">
-                            <div>
-                                <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2 mb-2">
-                                    <Mail className="w-5 h-5 text-[#16A34A]" /> Newsletter & Digest
-                                </h2>
-                                <p className="text-sm text-[#64748B] dark:text-gray-400 mb-4 max-w-lg">
-                                    You have <strong className="text-[#16A34A]">{subscriberCount} subscribers</strong>. The weekly digest triggers automatically via Vercel Cron. You can also send the digest right now to test it.
-                                </p>
-                                <button onClick={handleSendDigest} disabled={sendingDigest} className="px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all disabled:opacity-50 flex gap-2 items-center">
-                                    <Send className="w-4 h-4" /> {sendingDigest ? "Sending..." : "Send Digest Manually"}
-                                </button>
-                            </div>
-                        </section>
-
-                        {/* Social Wall */}
-                        <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
-                            <div className="flex items-start justify-between gap-4 mb-5">
-                                <div>
-                                    <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                                        <RadioTower className="w-5 h-5 text-[#16A34A]" /> Social Wall
-                                    </h2>
-                                    <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
-                                        Paste Curator.io or Tagembed code to show a live social feed in your homepage sidebar.
-                                    </p>
-                                </div>
-                                <label className="inline-flex items-center gap-2 cursor-pointer select-none">
-                                    <span className="text-sm font-medium text-[#0F172A] dark:text-white">Enabled</span>
-                                    <input type="checkbox" checked={siteSettings.socialWallEnabled} onChange={(e) => setSiteSettings(prev => ({ ...prev, socialWallEnabled: e.target.checked }))} className="h-4 w-4 accent-[#16A34A]" />
-                                </label>
-                            </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Section Title</label>
-                                    <input type="text" value={siteSettings.socialWallTitle} onChange={(e) => setSiteSettings((prev) => ({ ...prev, socialWallTitle: e.target.value }))} placeholder="Social Wall" className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Embed Snippet</label>
-                                    <textarea value={siteSettings.socialWallEmbedCode} onChange={(e) => setSiteSettings((prev) => ({ ...prev, socialWallEmbedCode: e.target.value }))} rows={4} placeholder="<div class='tagembed-widget' ...></div><script src='...'></script>" className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-3 text-xs font-mono text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]" />
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <button onClick={handleSaveSocialWall} disabled={savingSiteSettings} className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
-                                        {savingSiteSettings ? "Saving..." : "Save Social Wall"}
-                                    </button>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
+                    <AdminSettingsTab 
+                        subscriberCount={subscriberCount}
+                        siteSettings={siteSettings}
+                        setSiteSettings={setSiteSettings}
+                        clubOptions={clubOptions}
+                    />
                 )}
             </main>
         </div>

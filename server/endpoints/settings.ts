@@ -9,6 +9,53 @@ interface SiteSettings {
   socialWallEnabled: boolean;
   socialWallTitle: string;
   socialWallEmbedCode: string;
+  pollOfWeek: {
+    id: string;
+    enabled: boolean;
+    title: string;
+    description: string;
+    question: string;
+    options: Array<{
+      id: string;
+      text: string;
+      votes: number;
+    }>;
+    updatedAt: string;
+  };
+  clubIntelligence: Record<string, {
+    club: string;
+    xGPer90: number;
+    xGAPer90: number;
+    shotsOnTargetPer90: number;
+    keyPassesPer90: number;
+    progressivePassesPer90: number;
+    progressiveCarriesPer90: number;
+    possessionPct: number;
+    tacklesWonPer90: number;
+    interceptionsPer90: number;
+    aerialWinPct: number;
+    note: string;
+    updatedAt: string;
+  }>;
+  transferWatch: Array<{
+    id: string;
+    player: string;
+    club: string;
+    feeMode: "million-usd" | "not-disclosed";
+    feeMillions: number;
+    status: "confirmed" | "rumor";
+    updatedAt: string;
+  }>;
+  supplementalEvents: Array<{
+    id: string;
+    dateMMDD: string;
+    year: number;
+    text: string;
+    category: "birthday" | "death" | "event" | "selected";
+    thumbnail: string;
+    articleUrl: string;
+    updatedAt: string;
+  }>;
   updatedAt: string;
 }
 
@@ -20,14 +67,166 @@ const DEFAULT_SETTINGS: SiteSettings = {
   socialWallEnabled: false,
   socialWallTitle: "Social Wall",
   socialWallEmbedCode: "",
+  pollOfWeek: {
+    id: "",
+    enabled: false,
+    title: "Poll of the Week",
+    description: "",
+    question: "",
+    options: [
+      { id: "option-1", text: "", votes: 0 },
+      { id: "option-2", text: "", votes: 0 },
+    ],
+    updatedAt: "",
+  },
+  clubIntelligence: {},
+  transferWatch: [],
+  supplementalEvents: [],
   updatedAt: "",
 };
+
+function clampMetric(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(parsed)) return 0;
+  return parsed;
+}
+
+function normalizeClubIntelligenceMap(
+  input?: SiteSettings["clubIntelligence"] | null,
+): SiteSettings["clubIntelligence"] {
+  if (!input || typeof input !== "object") return {};
+
+  return Object.entries(input).reduce<SiteSettings["clubIntelligence"]>((acc, [key, value]) => {
+    if (!value || typeof value !== "object") return acc;
+
+    const club = String(value.club || key || "").trim();
+    if (!club) return acc;
+
+    acc[key] = {
+      club,
+      xGPer90: clampMetric(value.xGPer90),
+      xGAPer90: clampMetric(value.xGAPer90),
+      shotsOnTargetPer90: clampMetric(value.shotsOnTargetPer90),
+      keyPassesPer90: clampMetric(value.keyPassesPer90),
+      progressivePassesPer90: clampMetric(value.progressivePassesPer90),
+      progressiveCarriesPer90: clampMetric(value.progressiveCarriesPer90),
+      possessionPct: clampMetric(value.possessionPct),
+      tacklesWonPer90: clampMetric(value.tacklesWonPer90),
+      interceptionsPer90: clampMetric(value.interceptionsPer90),
+      aerialWinPct: clampMetric(value.aerialWinPct),
+      note: String(value.note || "").trim(),
+      updatedAt: String(value.updatedAt || ""),
+    };
+
+    return acc;
+  }, {});
+}
+
+function normalizeTransferWatch(
+  input?: SiteSettings["transferWatch"] | null,
+): SiteSettings["transferWatch"] {
+  if (!Array.isArray(input)) return [];
+
+  const normalized = input.reduce<SiteSettings["transferWatch"]>((acc, item) => {
+    if (!item || typeof item !== "object") return acc;
+
+    const player = String(item.player || "").trim();
+    const club = String(item.club || "").trim();
+    if (!player || !club) return acc;
+
+    acc.push({
+      id: String(item.id || `${player}-${club}`),
+      player,
+      club,
+      feeMode: item.feeMode === "million-usd" ? "million-usd" : "not-disclosed",
+      feeMillions: item.feeMode === "million-usd" ? clampMetric(item.feeMillions) : 0,
+      status: item.status === "confirmed" ? "confirmed" : "rumor",
+      updatedAt: String(item.updatedAt || ""),
+    });
+
+    return acc;
+  }, []);
+
+  return normalized.sort(
+    (left, right) => new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
+  );
+}
+
+function normalizePollOfWeek(
+  input?: SiteSettings["pollOfWeek"] | null,
+): SiteSettings["pollOfWeek"] {
+  const options = (Array.isArray(input?.options) ? input!.options : DEFAULT_SETTINGS.pollOfWeek.options)
+    .slice(0, 5)
+    .map((option, index) => ({
+      id: String(option?.id || `option-${index + 1}`),
+      text: String(option?.text || ""),
+      votes: Math.max(0, Math.round(clampMetric(option?.votes))),
+    }));
+
+  while (options.length < 2) {
+    options.push({
+      id: `option-${options.length + 1}`,
+      text: "",
+      votes: 0,
+    });
+  }
+
+  return {
+    id: String(input?.id || DEFAULT_SETTINGS.pollOfWeek.id),
+    enabled: input?.enabled ?? DEFAULT_SETTINGS.pollOfWeek.enabled,
+    title: String(input?.title || DEFAULT_SETTINGS.pollOfWeek.title),
+    description: String(input?.description || DEFAULT_SETTINGS.pollOfWeek.description),
+    question: String(input?.question || DEFAULT_SETTINGS.pollOfWeek.question),
+    options,
+    updatedAt: String(input?.updatedAt || DEFAULT_SETTINGS.pollOfWeek.updatedAt),
+  };
+}
+
+function normalizeSupplementalEvents(
+  input?: SiteSettings["supplementalEvents"] | null,
+): SiteSettings["supplementalEvents"] {
+  if (!Array.isArray(input)) return [];
+
+  const normalized = input.reduce<SiteSettings["supplementalEvents"]>((acc, item) => {
+    if (!item || typeof item !== "object") return acc;
+
+    const dateMMDD = String(item.dateMMDD || "").trim();
+    if (!/^\d{2}-\d{2}$/.test(dateMMDD)) return acc;
+
+    const categoryStr = String(item.category || "");
+    const category = (["birthday", "death", "event", "selected"].includes(categoryStr)
+      ? categoryStr
+      : "event") as "birthday" | "death" | "event" | "selected";
+
+    const text = String(item.text || "").trim();
+    if (!text) return acc;
+
+    acc.push({
+      id: String(item.id || `${dateMMDD}-${Date.now()}-${Math.random()}`),
+      dateMMDD,
+      year: typeof item.year === "number" ? item.year : Number(item.year) || new Date().getUTCFullYear(),
+      text,
+      category,
+      thumbnail: String(item.thumbnail || "").trim(),
+      articleUrl: String(item.articleUrl || "").trim(),
+      updatedAt: String(item.updatedAt || ""),
+    });
+
+    return acc;
+  }, []);
+
+  return normalized.sort((a, b) => b.year - a.year);
+}
 
 function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
   return {
     socialWallEnabled: input?.socialWallEnabled ?? DEFAULT_SETTINGS.socialWallEnabled,
     socialWallTitle: (input?.socialWallTitle || DEFAULT_SETTINGS.socialWallTitle).trim(),
     socialWallEmbedCode: input?.socialWallEmbedCode || DEFAULT_SETTINGS.socialWallEmbedCode,
+    pollOfWeek: normalizePollOfWeek(input?.pollOfWeek),
+    clubIntelligence: normalizeClubIntelligenceMap(input?.clubIntelligence),
+    transferWatch: normalizeTransferWatch(input?.transferWatch),
+    supplementalEvents: normalizeSupplementalEvents(input?.supplementalEvents),
     updatedAt: input?.updatedAt || DEFAULT_SETTINGS.updatedAt,
   };
 }

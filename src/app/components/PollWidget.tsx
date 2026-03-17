@@ -1,62 +1,102 @@
 import { useState, useEffect } from "react";
-import { CheckCircle2, BarChart3 } from "lucide-react";
+import { AlertCircle, BarChart3, CheckCircle2, Loader2 } from "lucide-react";
 
-interface PollOption {
+interface PollWidgetOption {
+    id?: string;
     text: string;
     votes: number;
 }
 
-interface PollData {
+interface PollWidgetData {
     question: string;
-    options: PollOption[];
+    options: PollWidgetOption[];
 }
 
 interface PollWidgetProps {
-    postId: string;
-    poll: PollData;
+    pollId: string;
+    poll: PollWidgetData;
+    title?: string;
+    description?: string;
+    className?: string;
+    voteMode?: "local" | "remote";
+    onVote?: (optionId: string, optionIndex: number) => Promise<PollWidgetData | null>;
 }
 
-export function PollWidget({ postId, poll }: PollWidgetProps) {
-    // Check local storage to see if user already voted on this specific poll
-    const storageKey = `poll_voted_${postId}`;
+export function PollWidget({
+    pollId,
+    poll,
+    title = "Poll",
+    description = "",
+    className = "my-8",
+    voteMode = "local",
+    onVote,
+}: PollWidgetProps) {
+    const storageKey = `poll_voted_${pollId}`;
     const [hasVoted, setHasVoted] = useState(false);
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
-    const [currentPoll, setCurrentPoll] = useState<PollData>(poll);
+    const [currentPoll, setCurrentPoll] = useState(poll);
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
+        setCurrentPoll(poll);
+        setError("");
         const storedVote = localStorage.getItem(storageKey);
         if (storedVote !== null) {
             setHasVoted(true);
             setSelectedOption(parseInt(storedVote, 10));
+        } else {
+            setHasVoted(false);
+            setSelectedOption(null);
         }
-    }, [storageKey]);
+    }, [poll, storageKey]);
 
     const totalVotes = currentPoll.options.reduce((sum, opt) => sum + opt.votes, 0);
 
-    const handleVote = (optionIndex: number) => {
-        if (hasVoted) return;
+    const handleVote = async (optionIndex: number) => {
+        if (hasVoted || submitting) return;
 
-        // In a real app with a backend, we would dispatch a POST request to update the vote count on the server here.
-        // For MVP, we'll update the local state and persist the 'voted' status locally.
-        const updatedOptions = [...currentPoll.options];
-        updatedOptions[optionIndex].votes += 1;
+        setSubmitting(true);
+        setError("");
 
-        setCurrentPoll({
-            ...currentPoll,
-            options: updatedOptions
-        });
+        try {
+            if (voteMode === "remote" && onVote) {
+                const optionId = currentPoll.options[optionIndex]?.id || `option-${optionIndex + 1}`;
+                const nextPoll = await onVote(optionId, optionIndex);
+                if (nextPoll) {
+                    setCurrentPoll(nextPoll);
+                } else {
+                    throw new Error("Could not save vote.");
+                }
+            } else {
+                const updatedOptions = [...currentPoll.options];
+                updatedOptions[optionIndex] = {
+                    ...updatedOptions[optionIndex],
+                    votes: updatedOptions[optionIndex].votes + 1,
+                };
 
-        setHasVoted(true);
-        setSelectedOption(optionIndex);
-        localStorage.setItem(storageKey, optionIndex.toString());
+                setCurrentPoll({
+                    ...currentPoll,
+                    options: updatedOptions,
+                });
+            }
+
+            setHasVoted(true);
+            setSelectedOption(optionIndex);
+            localStorage.setItem(storageKey, optionIndex.toString());
+        } catch (voteError: any) {
+            setError(voteError?.message || "Could not record your vote.");
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
-        <div className="my-8 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden animate-fade-in">
+        <div className={`${className} bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden animate-fade-in`}>
             <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
                 <h3 className="text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
                     <BarChart3 className="w-4 h-4 text-[#16A34A]" />
-                    Fan Poll
+                    {title}
                 </h3>
                 <span className="text-xs font-medium text-[#94A3B8] bg-gray-200 dark:bg-gray-700/50 px-2 py-1 rounded-md">
                     {totalVotes} {totalVotes === 1 ? 'Vote' : 'Votes'}
@@ -64,6 +104,11 @@ export function PollWidget({ postId, poll }: PollWidgetProps) {
             </div>
 
             <div className="p-6">
+                {description && (
+                    <p className="text-sm text-[#64748B] dark:text-gray-400 mb-3">
+                        {description}
+                    </p>
+                )}
                 <h4 className="text-lg font-bold text-[#0F172A] dark:text-white mb-6">
                     {currentPoll.question}
                 </h4>
@@ -81,13 +126,18 @@ export function PollWidget({ postId, poll }: PollWidgetProps) {
                                 {/* Vote Button View */}
                                 {!hasVoted ? (
                                     <button
-                                        onClick={() => handleVote(idx)}
+                                        onClick={() => { void handleVote(idx); }}
+                                        disabled={submitting}
                                         className="w-full text-left px-4 py-3 rounded-xl border-2 border-gray-100 dark:border-gray-800 hover:border-[#16A34A] hover:bg-[#16A34A]/5 dark:hover:bg-[#16A34A]/10 transition-all group flex items-center justify-between"
                                     >
                                         <span className="text-sm font-medium text-[#0F172A] dark:text-gray-200 group-hover:text-[#16A34A] transition-colors">
                                             {option.text}
                                         </span>
-                                        <div className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-[#16A34A] transition-colors" />
+                                        {submitting && selectedOption === null ? (
+                                            <Loader2 className="w-4 h-4 animate-spin text-[#16A34A]" />
+                                        ) : (
+                                            <div className="w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:border-[#16A34A] transition-colors" />
+                                        )}
                                     </button>
                                 ) : (
                                     /* Results View */
@@ -116,6 +166,13 @@ export function PollWidget({ postId, poll }: PollWidgetProps) {
                         );
                     })}
                 </div>
+
+                {error && (
+                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-300">
+                        <AlertCircle className="w-4 h-4" />
+                        {error}
+                    </div>
+                )}
             </div>
         </div>
     );

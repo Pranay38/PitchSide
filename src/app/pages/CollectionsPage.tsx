@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, BookOpen, Clock, ChevronRight, Loader2, Library } from "lucide-react";
+import { SEO } from "../components/SEO";
 
 interface Collection {
     id: string;
@@ -55,6 +56,12 @@ export function CollectionsPage() {
     if (activeCollection) {
         return (
             <div className="min-h-screen bg-[#0a0e1a] text-white">
+                <SEO
+                    title={`${activeCollection.title} | Reading Lists`}
+                    description={activeCollection.description || `A curated collection of ${activeCollection.posts.length} articles on The Touchline Dribble.`}
+                    type="website"
+                    url="https://pitchside-orcin.vercel.app/collections"
+                />
                 <div className="sticky top-0 z-50 bg-[#0a0e1a]/80 backdrop-blur-xl border-b border-white/5">
                     <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
                         <button onClick={() => setActiveCollection(null)} className="flex items-center gap-1.5 text-gray-400 hover:text-emerald-400 transition text-sm font-medium">
@@ -116,6 +123,12 @@ export function CollectionsPage() {
     // Collections list
     return (
         <div className="min-h-screen bg-[#0a0e1a] text-white">
+            <SEO
+                title="Reading Lists"
+                description="Curated article collections from The Touchline Dribble — deep dives, tactical breakdowns, and more."
+                type="website"
+                url="https://pitchside-orcin.vercel.app/collections"
+            />
             <div className="sticky top-0 z-50 bg-[#0a0e1a]/80 backdrop-blur-xl border-b border-white/5">
                 <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
                     <Link to="/" className="flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition text-sm font-medium">

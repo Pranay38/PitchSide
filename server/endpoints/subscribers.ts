@@ -20,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── POST: Subscribe a new email ───
         if (req.method === "POST") {
-            const { email } = req.body;
+            const { email, alertPreferences } = req.body;
 
             if (!email || !email.includes("@") || !email.includes(".")) {
                 return res.status(400).json({ error: "Please enter a valid email address." });
@@ -31,6 +31,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             // Check for duplicates
             const existing = await collection.findOne({ email: normalizedEmail });
             if (existing) {
+                await collection.updateOne(
+                    { email: normalizedEmail },
+                    {
+                        $set: {
+                            ...(alertPreferences ? { alertPreferences } : {}),
+                            updatedAt: new Date().toISOString(),
+                        },
+                    },
+                );
                 return res.status(200).json({ message: "You're already subscribed! 🎉", alreadySubscribed: true });
             }
 
@@ -38,6 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             await collection.insertOne({
                 email: normalizedEmail,
                 subscribedAt: new Date().toISOString(),
+                ...(alertPreferences ? { alertPreferences } : {}),
             });
 
             // Send welcome email (non-blocking, don't fail the request if email fails)
@@ -86,6 +96,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 subscribers: subscribers.map((s) => ({
                     email: s.email,
                     subscribedAt: s.subscribedAt,
+                    alertPreferences: s.alertPreferences || null,
                 })),
             });
         }

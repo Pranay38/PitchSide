@@ -7,6 +7,13 @@ import { TacticalBoardPage } from "./pages/TacticalBoardPage";
 import { CollectionsPage } from "./pages/CollectionsPage";
 import { DebateCornerPage } from "./pages/DebateCornerPage";
 import { LeagueClubSeasonPage } from "./pages/LeagueClubSeasonPage";
+import { DailyFixPage } from "./pages/DailyFixPage";
+import { TopicPage } from "./pages/TopicPage";
+import { SavedPage } from "./pages/SavedPage";
+import { StoriesPage } from "./pages/StoriesPage";
+import { StoryPage } from "./pages/StoryPage";
+import { AlertsPage } from "./pages/AlertsPage";
+import { TransferReliabilityPage } from "./pages/TransferReliabilityPage";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +36,34 @@ export const router = createBrowserRouter([
       {
         path: "about",
         Component: AboutPage,
+      },
+      {
+        path: "daily-fix",
+        Component: DailyFixPage,
+      },
+            {
+        path: "topic/:slug",
+        Component: TopicPage,
+      },
+      {
+        path: "saved",
+        Component: SavedPage,
+      },
+      {
+        path: "alerts",
+        Component: AlertsPage,
+      },
+      {
+        path: "transfers",
+        Component: TransferReliabilityPage,
+      },
+      {
+        path: "stories",
+        Component: StoriesPage,
+      },
+      {
+        path: "stories/:slug",
+        Component: StoryPage,
       },
       {
         path: "tactics",

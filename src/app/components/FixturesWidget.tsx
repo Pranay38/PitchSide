@@ -75,7 +75,7 @@ function StatusBadge({ status }: { status: string }) {
 function MatchRow({ match, competition }: { match: Match; competition: string }) {
     const hasScore = ["FINISHED", "IN_PLAY", "PAUSED"].includes(match.status);
     const matchDate = match.utcDate ? match.utcDate.split("T")[0] : "";
-    const matchUrl = `/match?id=${match.id}&home=${encodeURIComponent(match.homeTeam.name)}&away=${encodeURIComponent(match.awayTeam.name)}&date=${matchDate}&competition=${competition}`;
+    
     return (
         <Link to={matchUrl} className="block px-4 py-3 hover:bg-[#16A34A]/5 dark:hover:bg-[#16A34A]/10 transition-colors cursor-pointer">
             <div className="flex items-center justify-between mb-1.5">

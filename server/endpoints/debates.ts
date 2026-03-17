@@ -56,7 +56,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     return res.status(400).json({ error: "Valid debate id and side (agree/disagree) required" });
                 }
                 const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
-                const field = side === "agree" ? "agreeVotes" : "disagreeVotes";
+                
+                const debate = await collection.findOne(filter);
+                if (!debate) return res.status(404).json({ error: "Debate not found" });
+                const isClosed = !debate.active || (Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000);
+                if (isClosed) return res.status(403).json({ error: "Debate is closed" });
+
+const field = side === "agree" ? "agreeVotes" : "disagreeVotes";
                 await collection.updateOne(filter, { $inc: { [field]: 1 } });
                 return res.status(200).json({ success: true });
             }
@@ -68,6 +74,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     return res.status(400).json({ error: "Valid id, side, and argument text required" });
                 }
                 const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
+                
+                const debate = await collection.findOne(filter);
+                if (!debate) return res.status(404).json({ error: "Debate not found" });
+                const isClosed = !debate.active || (Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000);
+                if (isClosed) return res.status(403).json({ error: "Debate is closed" });
+
                 const argument = {
                     id: Date.now().toString(),
                     side,
@@ -85,6 +97,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 const { id, argumentId } = req.body;
                 if (!id || !argumentId) return res.status(400).json({ error: "Debate id and argument id required" });
                 const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
+                
+                const debate = await collection.findOne(filter);
+                if (!debate) return res.status(404).json({ error: "Debate not found" });
+                const isClosed = !debate.active || (Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000);
+                if (isClosed) return res.status(403).json({ error: "Debate is closed" });
+
                 await collection.updateOne(
                     { ...filter, "arguments.id": argumentId },
                     { $inc: { "arguments.$.likes": 1 } }

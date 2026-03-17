@@ -1,5 +1,46 @@
 {
     "rewrites": [
+
+    {
+      "source": "/api/polls/:id/vote",
+      "destination": "/api/sys?action=polls-vote&id=:id"
+    },
+    {
+      "source": "/api/polls/:id",
+      "destination": "/api/sys?action=polls&id=:id"
+    },
+    {
+      "source": "/api/polls",
+      "destination": "/api/sys?action=polls"
+    },
+    {
+      "source": "/api/match-ratings/:id/vote",
+      "destination": "/api/sys?action=match-ratings-vote&id=:id"
+    },
+    {
+      "source": "/api/match-ratings/:id",
+      "destination": "/api/sys?action=match-ratings&id=:id"
+    },
+    {
+      "source": "/api/match-ratings",
+      "destination": "/api/sys?action=match-ratings"
+    },
+        {
+            "source": "/api/on-this-day",
+            "destination": "/api/sys?route=on-this-day"
+        },
+        {
+            "source": "/api/run-in",
+            "destination": "/api/sys?route=run-in"
+        },
+        {
+            "source": "/api/predictions",
+            "destination": "/api/sys?route=predictions"
+        },
+        {
+            "source": "/api/poll-of-week",
+            "destination": "/api/sys?route=poll-of-week"
+        },
         {
             "source": "/api/auth",
             "destination": "/api/sys?route=auth"
