@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-03-16T06:18:22.972868",
+  "lastUpdated": "2026-03-17T05:56:43.668126",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Several clubs track Newcastle's Hall - Monday's gossip",
-    "sentimentScore": 41
+    "text": "Bayern battle Man Utd for Anderson - Tuesday's gossip",
+    "sentimentScore": 24
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 87
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 93
     },
     {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 85
+      "name": "David Moyes (EVE)",
+      "pressureScore": 70
     },
     {
       "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 83
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 75
-    },
-    {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 68
+      "pressureScore": 65
     }
   ]
 }
