@@ -34,17 +34,37 @@ const EXCLUDE_KEYWORDS = [
 ];
 
 const INCLUDE_KEYWORDS = [
+  // People
   "footballer", "football player", "football manager", "football coach",
+  "football referee", "football executive",
   "association football", "soccer",
+  // Governing bodies & competitions
   "fifa", "uefa", "conmebol", "concacaf", "caf", "afc",
   "world cup", "premier league", "la liga", "serie a", "bundesliga",
   "ligue 1", "champions league", "europa league", "fa cup", "copa del rey",
-  "eredivisie", "primeira liga", "copa libertadores",
+  "eredivisie", "primeira liga", "copa libertadores", "copa america",
+  "european championship", "euro 2", "euro 1", "euro 20", "euro 19",
+  "african cup of nations", "asian cup", "gold cup",
+  "league cup", "carabao cup", "efl cup", "community shield",
+  "super cup", "club world cup", "intercontinental cup",
+  "conference league", "cup winners' cup",
+  // Clubs
   "real madrid", "barcelona", "juventus", "bayern munich", "liverpool",
   "manchester united", "manchester city", "arsenal", "chelsea", "inter milan",
   "ac milan", "paris saint-germain", "borussia dortmund", "tottenham",
+  "atletico madrid", "napoli", "roma", "ajax", "benfica", "porto",
+  "celtic", "rangers", "everton", "west ham", "aston villa", "newcastle",
+  "nottingham forest", "leeds united", "sunderland",
+  // Positions & match language
   "striker", "midfielder", "defender", "goalkeeper", "winger", "forward",
+  "hat-trick", "hat trick", "penalty shootout", "own goal", "red card",
+  "relegation", "promotion", "football match", "football final",
+  "football league", "football club", "f.c.",
+  // Historic events
   "hillsborough", "heysel", "munich air disaster",
+  "hand of god", "wembley", "maracanã", "azteca", "camp nou", "bernabéu",
+  "old trafford", "anfield", "san siro", "transfer",
+  "ballon d'or", "golden boot", "golden ball",
 ];
 
 function isFootballEntry(text: string, description: string): boolean {
