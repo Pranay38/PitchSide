@@ -16,133 +16,39 @@ interface OnThisDayItem {
   articleUrl: string | null;
 }
 
-interface CacheDocument {
-  _id?: string;
-  cacheKey: string; // e.g. "03-17"
-  events: OnThisDayItem[];
-  cachedAt: Date;
-}
-
 /* ------------------------------------------------------------------ */
-/*  Football filter                                                    */
+/*  Curated Dataset (Fallback & Highlights)                            */
 /* ------------------------------------------------------------------ */
 
-const EXCLUDE_KEYWORDS = [
-  "american football", "gridiron", "nfl", "quarterback", "super bowl",
-  "wide receiver", "running back", "tight end", "linebacker", "cornerback",
-  "canadian football", "arena football", "xfl",
-];
-
-const INCLUDE_KEYWORDS = [
-  // People
-  "footballer", "football player", "football manager", "football coach",
-  "football referee", "football executive",
-  "association football", "soccer",
-  // Governing bodies & competitions
-  "fifa", "uefa", "conmebol", "concacaf", "caf", "afc",
-  "world cup", "premier league", "la liga", "serie a", "bundesliga",
-  "ligue 1", "champions league", "europa league", "fa cup", "copa del rey",
-  "eredivisie", "primeira liga", "copa libertadores", "copa america",
-  "european championship", "euro 2", "euro 1", "euro 20", "euro 19",
-  "african cup of nations", "asian cup", "gold cup",
-  "league cup", "carabao cup", "efl cup", "community shield",
-  "super cup", "club world cup", "intercontinental cup",
-  "conference league", "cup winners' cup",
-  // Clubs
-  "real madrid", "barcelona", "juventus", "bayern munich", "liverpool",
-  "manchester united", "manchester city", "arsenal", "chelsea", "inter milan",
-  "ac milan", "paris saint-germain", "borussia dortmund", "tottenham",
-  "atletico madrid", "napoli", "roma", "ajax", "benfica", "porto",
-  "celtic", "rangers", "everton", "west ham", "aston villa", "newcastle",
-  "nottingham forest", "leeds united", "sunderland",
-  // Positions & match language
-  "striker", "midfielder", "defender", "goalkeeper", "winger", "forward",
-  "hat-trick", "hat trick", "penalty shootout", "own goal", "red card",
-  "relegation", "promotion", "football match", "football final",
-  "football league", "football club", "f.c.",
-  // Historic events
-  "hillsborough", "heysel", "munich air disaster",
-  "hand of god", "wembley", "maracanã", "azteca", "camp nou", "bernabéu",
-  "old trafford", "anfield", "san siro", "transfer",
-  "ballon d'or", "golden boot", "golden ball",
-];
-
-function isFootballEntry(text: string, description: string): boolean {
-  const combined = (text + " " + description).toLowerCase();
-
-  // Exclusion before inclusion
-  if (EXCLUDE_KEYWORDS.some((kw) => combined.includes(kw))) return false;
-  if (INCLUDE_KEYWORDS.some((kw) => combined.includes(kw))) return true;
-
-  return false;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Wikipedia fetcher (one per endpoint type)                          */
-/* ------------------------------------------------------------------ */
-
-const BASE = "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday";
-const UA = { "User-Agent": "PitchsideBlog/1.0 (football blog widget)" };
-
-async function fetchEndpoint(
-  type: "births" | "deaths" | "events" | "selected",
-  mm: string,
-  dd: string,
-): Promise<OnThisDayItem[]> {
-  const res = await fetch(`${BASE}/${type}/${mm}/${dd}`, { headers: UA });
-  if (!res.ok) {
-    console.error(`Wikipedia ${type} API returned ${res.status}`);
-    return [];
-  }
-
-  const data = await res.json();
-  const entries: any[] = data[type] || [];
-
-  const categoryMap: Record<string, Category> = {
-    births: "birthday",
-    deaths: "death",
-    events: "event",
-    selected: "selected",
-  };
-
-  return entries
-    .filter((e: any) => {
-      const text = e.text || "";
-      const pages: any[] = e.pages || [];
-      const desc = pages.map((p: any) => p.description || "").join(" ");
-      return isFootballEntry(text, desc);
-    })
-    .map((e: any) => {
-      const pages: any[] = e.pages || [];
-      return {
-        year: e.year ?? 0,
-        text: e.text || "",
-        category: categoryMap[type],
-        thumbnail: pages[0]?.thumbnail?.source || null,
-        articleUrl: pages[0]?.content_urls?.desktop?.page || null,
-      };
-    });
-}
-
-/* ------------------------------------------------------------------ */
-/*  Deduplication                                                      */
-/* ------------------------------------------------------------------ */
-
-function deduplicateEvents(items: OnThisDayItem[]): OnThisDayItem[] {
-  const seen = new Set<string>();
-  return items.filter((item) => {
-    const fingerprint = `${item.year}::${item.text.slice(0, 60).toLowerCase()}`;
-    if (seen.has(fingerprint)) return false;
-    seen.add(fingerprint);
-    return true;
-  });
-}
+// A curated map of MM-DD to iconic football events.
+const CURATED_HISTORY: Record<string, OnThisDayItem[]> = {
+  "03-18": [
+    { year: 2012, text: "Fabrice Muamba collapsed on the pitch during an FA Cup tie between Bolton Wanderers and Tottenham Hotspur, surviving after his heart stopped for 78 minutes.", category: "event", thumbnail: null, articleUrl: null },
+    { year: 1900, text: "AFC Ajax, one of the most successful clubs in Dutch football history, was founded in Amsterdam.", category: "event", thumbnail: null, articleUrl: "https://en.wikipedia.org/wiki/AFC_Ajax" },
+  ],
+  "03-19": [
+    { year: 1976, text: "Alessandro Nesta, regarded as one of the greatest defenders of all time, was born in Rome, Italy.", category: "birthday", thumbnail: null, articleUrl: null },
+  ],
+  "03-20": [
+    { year: 1984, text: "Fernando Torres, legendary Spanish striker who scored the winning goal in Euro 2008, was born.", category: "birthday", thumbnail: null, articleUrl: null },
+  ],
+  "03-21": [
+    { year: 1980, text: "Ronaldinho, the Brazilian maestro who redefined skill and joy in football, was born in Porto Alegre.", category: "birthday", thumbnail: null, articleUrl: null },
+  ],
+  "05-26": [
+    { year: 1999, text: "Manchester United completed their historic Treble by defeating Bayern Munich 2-1 in the Champions League final with two dramatic injury-time goals.", category: "event", thumbnail: null, articleUrl: null },
+  ],
+  "07-09": [
+    { year: 2006, text: "Italy won their 4th World Cup, defeating France on penalties after a 1-1 draw remembered for Zinedine Zidane's infamous headbutt.", category: "event", thumbnail: null, articleUrl: null },
+  ],
+  "12-18": [
+    { year: 2022, text: "Lionel Messi lifted the World Cup as Argentina defeated France in a legendary final in Qatar, winning 4-2 on penalties after a 3-3 draw.", category: "event", thumbnail: null, articleUrl: null },
+  ]
+};
 
 /* ------------------------------------------------------------------ */
 /*  Main Handler                                                       */
 /* ------------------------------------------------------------------ */
-
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export default async function onThisDayHandler(
   req: VercelRequest,
@@ -158,42 +64,19 @@ export default async function onThisDayHandler(
     const now = new Date();
     const mm = String(now.getUTCMonth() + 1).padStart(2, "0");
     const dd = String(now.getUTCDate()).padStart(2, "0");
-    const cacheKey = `${mm}-${dd}`;
+    const todayKey = `${mm}-${dd}`;
 
     const { db } = await connectToDatabase();
-    const collection = db.collection<CacheDocument>("on_this_day_cache");
 
-    // 1. Check cache
-    const cached = await collection.findOne({ cacheKey });
+    // 1. Fetch curated static events for today
+    const curatedEvents = CURATED_HISTORY[todayKey] || [];
 
-    if (
-      cached?.cachedAt &&
-      now.getTime() - new Date(cached.cachedAt).getTime() < CACHE_TTL_MS
-    ) {
-      return res.status(200).json({
-        events: cached.events,
-        cachedAt: cached.cachedAt,
-      });
-    }
-
-    // 2. Cache miss — fetch all 4 endpoints in parallel (resilient)
-    const results = await Promise.allSettled([
-      fetchEndpoint("births", mm, dd),
-      fetchEndpoint("deaths", mm, dd),
-      fetchEndpoint("events", mm, dd),
-      fetchEndpoint("selected", mm, dd),
-    ]);
-
-    const merged: OnThisDayItem[] = results.flatMap((r) =>
-      r.status === "fulfilled" ? r.value : [],
-    );
-
-    // 2b. Inject custom events missing from Wikipedia from the Admin Panel
+    // 2. Inject custom events managed by the Admin from site-settings
     const settingsDoc = await db.collection("site-settings").findOne({ _id: "MAIN_SETTINGS" as any });
     const allSupplementalEvents: any[] = settingsDoc?.supplementalEvents || [];
     
     const manualInjections = allSupplementalEvents
-      .filter((evt) => evt.dateMMDD === cacheKey)
+      .filter((evt) => evt.dateMMDD === todayKey)
       .map((evt) => ({
         year: evt.year,
         text: evt.text,
@@ -202,20 +85,11 @@ export default async function onThisDayHandler(
         articleUrl: evt.articleUrl || null,
       }));
 
-    merged.push(...manualInjections);
+    // 3. Merge and sort by year descending
+    const merged = [...curatedEvents, ...manualInjections]
+      .sort((a, b) => b.year - a.year);
 
-    // 3. Deduplicate & sort by year descending
-    const final = deduplicateEvents(merged).sort((a, b) => b.year - a.year);
-
-    // 4. Upsert cache
-    const cachedAt = new Date();
-    await collection.updateOne(
-      { cacheKey },
-      { $set: { cacheKey, events: final, cachedAt } },
-      { upsert: true },
-    );
-
-    return res.status(200).json({ events: final, cachedAt });
+    return res.status(200).json({ events: merged, cachedAt: now });
   } catch (error: any) {
     console.error("OnThisDay API error:", error);
     return res.status(500).json({

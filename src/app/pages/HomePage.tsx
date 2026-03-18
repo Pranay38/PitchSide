@@ -7,6 +7,7 @@ import { Footer } from "../components/Footer";
 import { NewsTicker } from "../components/NewsTicker";
 import { PollOfTheWeekPanel } from "../components/PollOfTheWeekPanel";
 import { OnThisDayWidget } from "../components/OnThisDayWidget";
+import { DailyGossipWidget } from "../components/DailyGossipWidget";
 import { ManagerPressureWidget, type ManagerPressure } from "../components/ManagerPressureWidget";
 import { PostCard } from "../components/PostCard";
 import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
@@ -42,7 +43,7 @@ function pickOrderedItems<T extends { id: string }>(
   const byId = new Map(items.map((item) => [item.id, item]));
   const ordered = ids
     .map((id) => byId.get(id))
-    .filter((item): item is T => Boolean(item) && !excludedIds.has(item.id));
+    .filter((item): item is T => item !== undefined && !excludedIds.has(item.id));
 
   if (ordered.length >= limit) {
     return ordered.slice(0, limit);
@@ -394,6 +395,7 @@ export function HomePage() {
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
                 <PollOfTheWeekPanel />
+                <DailyGossipWidget />
                 <OnThisDayWidget />
                 {dailyFeatures?.managerPressure?.length ? (
                   <ManagerPressureWidget data={dailyFeatures.managerPressure} />
