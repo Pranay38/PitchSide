@@ -2,13 +2,24 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import { Header } from "../components/Header";
 import { SEO } from "../components/SEO";
-import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar, Share, Sparkles } from "lucide-react";
+import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar, Share, Sparkles, Bell } from "lucide-react";
 
 interface SavedArticle {
     id: string;
     title: string;
     excerpt?: string;
     savedAt: number;
+}
+
+function urlBase64ToUint8Array(base64String: string) {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/\-/g, "+").replace(/_/g, "/");
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
 }
 
 export function ProfilePage() {
@@ -18,8 +29,12 @@ export function ProfilePage() {
     const [followedClubsCount, setFollowedClubsCount] = useState(0);
     const [votesCount, setVotesCount] = useState(0);
     const [wrappedUrl, setWrappedUrl] = useState<string | null>(null);
+    const [pushStatus, setPushStatus] = useState<"default" | "granted" | "denied">("default");
 
     useEffect(() => {
+        if ("Notification" in window) {
+            setPushStatus(Notification.permission);
+        }
         // Load saved articles from localStorage
         try {
             const saved = JSON.parse(localStorage.getItem("saved-posts") || "[]");
@@ -43,6 +58,41 @@ export function ProfilePage() {
         }
         setVotesCount(vCount);
     }, []);
+
+    const subscribeToPush = async () => {
+        if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+            alert("Push notifications are not supported by your browser.");
+            return;
+        }
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission !== "granted") {
+                setPushStatus("denied");
+                return;
+            }
+
+            const registration = await navigator.serviceWorker.ready;
+            const publicVapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+            if (!publicVapidKey) throw new Error("VAPID public key missing from env");
+            
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+            });
+
+            await fetch("/api/push/subscribe", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(subscription)
+            });
+
+            setPushStatus("granted");
+            alert("Successfully configured Web Push Alerts.");
+        } catch (e: any) {
+            console.error("Failed to subscribe to push notifications:", e);
+            alert("Something went wrong enabling notifications.");
+        }
+    };
 
     const userName = localStorage.getItem("pitchside-username") || "Football Fan";
 
@@ -248,9 +298,26 @@ export function ProfilePage() {
                         {/* Notification preference info */}
                         <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B]/50 border border-gray-100 dark:border-gray-800/50">
                             <label className="block text-sm font-semibold text-[#0F172A] dark:text-gray-300 mb-2">Push Notifications</label>
-                            <p className="text-sm text-gray-500">
-                                Manage notifications from the 🔔 bell icon in the header.
+                            <p className="text-sm text-gray-500 mb-4">
+                                Receive instant alerts when major transfer bombs drop or your favorite clubs make news.
                             </p>
+                            
+                            {pushStatus === "granted" ? (
+                                <div className="inline-flex items-center gap-2 bg-[#16A34A]/10 text-[#16A34A] px-4 py-2 rounded-lg text-sm font-bold">
+                                    <Bell className="w-4 h-4" /> Receive Alerts Actively
+                                </div>
+                            ) : pushStatus === "denied" ? (
+                                <div className="inline-flex items-center gap-2 bg-red-500/10 text-red-500 px-4 py-2 rounded-lg text-sm font-bold">
+                                    Needs System Permission
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={subscribeToPush}
+                                    className="bg-[#16A34A] hover:bg-[#15803d] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-colors flex items-center gap-2"
+                                >
+                                    <Bell className="w-4 h-4" /> Enable Web Push
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}

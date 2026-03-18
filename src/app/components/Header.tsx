@@ -4,6 +4,7 @@ import { useTheme } from "../hooks/useTheme";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationBell } from "./NotificationBell";
 import { DesktopCommandPalette } from "./DesktopCommandPalette";
+import { SearchModal } from "./SearchModal";
 import { getClubByName } from "../data/clubs";
 import { Heart, House, Menu, Search, X, LogIn } from "lucide-react";
 import {
@@ -55,6 +56,7 @@ interface HeaderProps {
 export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [archiveQuery, setArchiveQuery] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
@@ -143,9 +145,18 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
               </button>
             )}
 
-            <NotificationBell />
-            <ThemeToggle />
-            <AuthButton />
+            <div className="flex items-center gap-2 lg:gap-3">
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="p-2 text-gray-500 hover:text-[#16A34A] dark:text-gray-400 dark:hover:text-[#4ade80] transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-[#1E293B]"
+                aria-label="Search"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+              <ThemeToggle />
+              <NotificationBell />
+              <AuthButton />
+            </div>
           </div>
 
           {/* Mobile: club badge + hamburger */}
@@ -156,58 +167,61 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             <ThemeToggle />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-xl hover:bg-gray-100/50 dark:hover:bg-gray-800/50 text-[#64748B] dark:text-gray-400 transition-all duration-200"
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-full transition-colors duration-200"
+              aria-label="Toggle menu"
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile menu dropdown */}
-        {mobileOpen && (
-          <div className="sm:hidden glass border-t border-white/10 dark:border-gray-800/50 px-6 py-4 space-y-3 animate-float-in">
-            <form onSubmit={handleArchiveSearch} className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-[#0F172A]">
-              <Search className="w-4 h-4 text-[#94A3B8]" />
-              <input
-                type="search"
-                value={archiveQuery}
-                onChange={(event) => setArchiveQuery(event.target.value)}
-                placeholder="Search archive"
-                className="flex-1 bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-[#94A3B8] dark:text-white"
-              />
-            </form>
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                onClick={() => setMobileOpen(false)}
-                aria-label={link.label}
-                className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"
-              >
-                {link.to === "/" ? <House className="w-4 h-4" /> : link.label}
-              </Link>
-            ))}
+          {/* Mobile menu dropdown */}
+          {mobileOpen && (
+            <div className="sm:hidden glass border-t border-white/10 dark:border-gray-800/50 px-6 py-4 space-y-3 animate-float-in">
+              <form onSubmit={handleArchiveSearch} className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-[#0F172A]">
+                <Search className="w-4 h-4 text-[#94A3B8]" />
+                <input
+                  type="search"
+                  value={archiveQuery}
+                  onChange={(event) => setArchiveQuery(event.target.value)}
+                  placeholder="Search archive"
+                  className="flex-1 bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-[#94A3B8] dark:text-white"
+                />
+              </form>
+              {navLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setMobileOpen(false)}
+                  aria-label={link.label}
+                  className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"
+                >
+                  {link.to === "/" ? <House className="w-4 h-4" /> : link.label}
+                </Link>
+              ))}
 
-            {favoriteClub && (
-              <div className="flex items-center gap-2 py-2">
-                {club?.logo && <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />}
-                <span className="text-sm font-semibold text-[#16A34A]">{favoriteClub}</span>
-              </div>
-            )}
+              {favoriteClub && (
+                <div className="flex items-center gap-2 py-2">
+                  {club?.logo && <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />}
+                  <span className="text-sm font-semibold text-[#16A34A]">{favoriteClub}</span>
+                </div>
+              )}
 
-            {onChangeClub && (
-              <button
-                onClick={() => { onChangeClub(); setMobileOpen(false); }}
-                className="block w-full text-left text-sm text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors font-medium py-2"
-              >
-                {favoriteClub ? "Change Club" : "Select Club"}
-              </button>
-            )}
+              {onChangeClub && (
+                <button
+                  onClick={() => { onChangeClub(); setMobileOpen(false); }}
+                  className="block w-full text-left text-sm text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors font-medium py-2"
+                >
+                  {favoriteClub ? "Change Club" : "Select Club"}
+                </button>
+              )}
 
-            <AuthButton />
-          </div>
-        )}
-      </header>
+              <AuthButton />
+            </div>
+          )}
+        </header>
+
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }
