@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Headphones, Pause, Play, Square } from "lucide-react";
+import { Headphones, Pause, Play, RotateCcw, Volume2 } from "lucide-react";
 import type { ArticleContentModel } from "./ArticleContentRenderer";
 
 type PlayerState = "idle" | "speaking" | "paused";
@@ -46,8 +46,10 @@ function extractNarrationText(title: string, excerpt: string, model: ArticleCont
 function estimateMinutes(text: string, rate: number): string {
   const words = text.split(/\s+/).filter(Boolean).length;
   const minutes = words / Math.max(130, 170 * rate);
-  return `${Math.max(1, Math.round(minutes))} min audio`;
+  return `${Math.max(1, Math.round(minutes))} min`;
 }
+
+const RATES = [0.9, 1, 1.15, 1.3];
 
 export function ArticleAudioPlayer({
   title,
@@ -62,10 +64,18 @@ export function ArticleAudioPlayer({
   const [playerState, setPlayerState] = useState<PlayerState>("idle");
   const [rate, setRate] = useState(1);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [progress, setProgress] = useState(0);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startTimeRef = useRef<number>(0);
 
   const narrationText = useMemo(() => extractNarrationText(title, excerpt, model), [excerpt, model, title]);
   const estimatedAudio = useMemo(() => estimateMinutes(narrationText, rate), [narrationText, rate]);
+
+  const estimatedDurationMs = useMemo(() => {
+    const words = narrationText.split(/\s+/).filter(Boolean).length;
+    return (words / Math.max(130, 170 * rate)) * 60 * 1000;
+  }, [narrationText, rate]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
@@ -92,14 +102,43 @@ export function ArticleAudioPlayer({
       if (typeof window !== "undefined" && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
+      if (progressInterval.current) clearInterval(progressInterval.current);
     };
   }, []);
+
+  const startProgressTracking = () => {
+    if (progressInterval.current) clearInterval(progressInterval.current);
+    startTimeRef.current = Date.now();
+    progressInterval.current = setInterval(() => {
+      const elapsed = Date.now() - startTimeRef.current;
+      const pct = Math.min(100, (elapsed / estimatedDurationMs) * 100);
+      setProgress(pct);
+      if (pct >= 100 && progressInterval.current) {
+        clearInterval(progressInterval.current);
+      }
+    }, 250);
+  };
+
+  const stopProgressTracking = () => {
+    if (progressInterval.current) {
+      clearInterval(progressInterval.current);
+      progressInterval.current = null;
+    }
+  };
 
   const stopPlayback = () => {
     if (!supported) return;
     window.speechSynthesis.cancel();
     utteranceRef.current = null;
     setPlayerState("idle");
+    setProgress(0);
+    stopProgressTracking();
+  };
+
+  const cycleRate = () => {
+    const currentIndex = RATES.indexOf(rate);
+    const nextIndex = (currentIndex + 1) % RATES.length;
+    setRate(RATES[nextIndex]);
   };
 
   const togglePlayback = () => {
@@ -108,12 +147,14 @@ export function ArticleAudioPlayer({
     if (playerState === "speaking") {
       window.speechSynthesis.pause();
       setPlayerState("paused");
+      stopProgressTracking();
       return;
     }
 
     if (playerState === "paused") {
       window.speechSynthesis.resume();
       setPlayerState("speaking");
+      startProgressTracking();
       return;
     }
 
@@ -128,63 +169,108 @@ export function ArticleAudioPlayer({
     utterance.onend = () => {
       utteranceRef.current = null;
       setPlayerState("idle");
+      setProgress(100);
+      stopProgressTracking();
     };
     utterance.onerror = () => {
       utteranceRef.current = null;
       setPlayerState("idle");
+      setProgress(0);
+      stopProgressTracking();
     };
-    utterance.onpause = () => setPlayerState("paused");
-    utterance.onresume = () => setPlayerState("speaking");
+    utterance.onpause = () => {
+      setPlayerState("paused");
+      stopProgressTracking();
+    };
+    utterance.onresume = () => {
+      setPlayerState("speaking");
+      startProgressTracking();
+    };
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
     setPlayerState("speaking");
+    setProgress(0);
+    startProgressTracking();
   };
 
   if (!supported) {
     return null;
   }
 
+  const isActive = playerState !== "idle";
+
   return (
-    <div className="mb-8 rounded-[2rem] border border-[#16A34A]/15 bg-[#0F172A] p-5 text-white shadow-xl shadow-[#0F172A]/10">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#86efac]">
-            <Headphones className="h-3.5 w-3.5" />
-            Listen To Article
-          </p>
-          <h2 className="mt-3 text-xl font-black font-outfit text-white">Audio mode for this long read</h2>
-          <p className="mt-2 text-sm leading-6 text-white/68">
-            Browser voice playback for a cleaner listen-through. {estimatedAudio}
+    <div className="mb-8 rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-[#0F172A] overflow-hidden">
+      {/* Progress bar */}
+      <div className="h-[3px] w-full bg-gray-100 dark:bg-gray-800">
+        <div
+          className="h-full bg-[#16A34A] transition-all duration-300 ease-linear"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      <div className="flex items-center gap-3 px-4 py-3 sm:gap-4 sm:px-5">
+        {/* Play / Pause button */}
+        <button
+          type="button"
+          onClick={togglePlayback}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors ${
+            isActive
+              ? "bg-[#16A34A] text-white shadow-md shadow-[#16A34A]/20"
+              : "bg-[#16A34A]/10 text-[#16A34A] hover:bg-[#16A34A]/20"
+          }`}
+        >
+          {playerState === "speaking" ? (
+            <Pause className="h-4 w-4" />
+          ) : (
+            <Play className="h-4 w-4 translate-x-[1px]" />
+          )}
+        </button>
+
+        {/* Info */}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            {isActive ? (
+              <Volume2 className="h-3.5 w-3.5 shrink-0 text-[#16A34A] animate-pulse" />
+            ) : (
+              <Headphones className="h-3.5 w-3.5 shrink-0 text-[#16A34A]" />
+            )}
+            <p className="truncate text-sm font-bold text-[#0F172A] dark:text-white">
+              {isActive
+                ? playerState === "paused"
+                  ? "Paused"
+                  : "Listening…"
+                : "Listen to this article"}
+            </p>
+          </div>
+          <p className="mt-0.5 text-xs text-[#64748B] dark:text-gray-400">
+            {estimatedAudio} · Browser voice · {rate}x speed
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Controls */}
+        <div className="flex shrink-0 items-center gap-1.5">
+          {/* Speed toggle */}
           <button
             type="button"
-            onClick={togglePlayback}
-            className="inline-flex min-w-[140px] items-center justify-center gap-2 rounded-full bg-[#16A34A] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#15803d]"
+            onClick={cycleRate}
+            className="rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-black text-[#0F172A] transition-colors hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-700 dark:text-white dark:hover:border-[#16A34A]/30"
           >
-            {playerState === "speaking" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-            {playerState === "speaking" ? "Pause audio" : playerState === "paused" ? "Resume audio" : "Play audio"}
+            {rate}x
           </button>
-          <button
-            type="button"
-            onClick={stopPlayback}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 px-4 py-3 text-sm font-bold text-white/82 transition-colors hover:border-white/20 hover:text-white"
-          >
-            <Square className="h-4 w-4" />
-            Stop
-          </button>
-          <select
-            value={rate}
-            onChange={(event) => setRate(Number(event.target.value))}
-            className="rounded-full border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white outline-none"
-          >
-            <option value={0.9}>0.9x</option>
-            <option value={1}>1.0x</option>
-            <option value={1.15}>1.15x</option>
-          </select>
+
+          {/* Stop / Reset */}
+          {isActive && (
+            <button
+              type="button"
+              onClick={stopPlayback}
+              className="rounded-lg border border-gray-200 p-1.5 text-[#64748B] transition-colors hover:border-red-300 hover:text-red-500 dark:border-gray-700 dark:text-gray-400 dark:hover:border-red-800 dark:hover:text-red-400"
+              title="Stop playback"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
     </div>

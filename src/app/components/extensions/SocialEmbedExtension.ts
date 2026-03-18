@@ -74,12 +74,14 @@ export const SocialEmbed = Node.create({
         const { url, platform, creditText, creditUrl } = HTMLAttributes;
         const p = (platform || detectPlatform(url || "")) as SocialPlatform;
 
-        const isThirdPartyEmbed = p === "twitter" || p === "instagram";
+        const isThirdPartyEmbed = p === "twitter" || p === "instagram" || p === "sofascore";
         const wrapperAttrs = mergeAttributes({
+            class: `pitchside-social-embed pitchside-social-embed--${p}`,
             "data-social-embed": p,
+            "data-embed-ready": isThirdPartyEmbed ? "false" : "true",
             "data-url": url,
             style: isThirdPartyEmbed 
-                ? "margin: 1.5rem 0; display: flex; justify-content: center; width: 100%;" 
+                ? "margin: 1.5rem 0; display: flex; justify-content: center; width: 100%; position: relative; overflow: hidden;" 
                 : "margin: 1.5rem 0; border-radius: 12px; overflow: hidden; border: 1px solid rgba(100,116,139,0.2); background: #f8fafc;",
         });
 
@@ -90,7 +92,7 @@ export const SocialEmbed = Node.create({
                 wrapperAttrs,
                 [
                     "blockquote",
-                    { class: "twitter-tweet", "data-dnt": "true" },
+                    { class: "twitter-tweet", "data-dnt": "true", style: "width: 100%; max-width: 560px; margin: 0 auto;" },
                     [
                         "a",
                         { href: cleanTweetUrl(url) },
@@ -163,7 +165,7 @@ export const SocialEmbed = Node.create({
                         frameborder: "0",
                         scrolling: "no",
                         sandbox: "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
-                        style: "border: none; border-radius: 12px; background: white; min-height: 400px;",
+                        style: "border: none; border-radius: 12px; background: transparent; min-height: 400px;",
                     },
                 ],
             ];

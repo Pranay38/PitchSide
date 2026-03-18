@@ -29,7 +29,7 @@ export function NewsTicker() {
     const [news, setNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [expanded, setExpanded] = useState(true);
+    const [expanded, setExpanded] = useState(false);
     const [failedImages, setFailedImages] = useState<Record<string, true>>({});
     const tickerRef = useRef<HTMLDivElement>(null);
 

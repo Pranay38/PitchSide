@@ -488,17 +488,6 @@ export function BlogPostPage() {
 
           <aside className="hidden xl:block">
             <div className="sticky top-24 space-y-6">
-              <div className="rounded-[2rem] border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#0F172A]">
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-                  Article Snapshot
-                </p>
-                <div className="mt-4 space-y-3 text-sm text-[#475569] dark:text-gray-300">
-                  <div className="rounded-2xl bg-[#F8FAFC] px-4 py-3 dark:bg-[#08111f]">{post.club}</div>
-                  <div className="rounded-2xl bg-[#F8FAFC] px-4 py-3 dark:bg-[#08111f]">{post.readTime}</div>
-                  <div className="rounded-2xl bg-[#F8FAFC] px-4 py-3 dark:bg-[#08111f]">{post.date}</div>
-                </div>
-              </div>
-
               {headings.length > 0 && (
                 <div className="rounded-[2rem] border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#0F172A]">
                   <div className="mb-4 flex items-center gap-2">
