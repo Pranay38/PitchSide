@@ -39,6 +39,10 @@ function easeInOutSine(t: number) {
     return -(Math.cos(Math.PI * t) - 1) / 2;
 }
 
+function buildTacticalEmbedSnippet(id: string, title: string) {
+    return `[tactical-board id="${id}" title="${title.replace(/"/g, "'")}"]`;
+}
+
 function interpolatePlayers(fromPlayers: Player[], toPlayers: Player[], t: number): Player[] {
     const toById = new Map(toPlayers.map((p) => [p.id, p]));
 
@@ -472,9 +476,13 @@ export function TacticalBoardPage() {
     const handleSaveSequence = async () => {
         if (!saveTitle.trim()) return;
         try {
+            const authToken = localStorage.getItem("pitchside_admin_auth");
             const res = await fetch("/api/tactics", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+                },
                 body: JSON.stringify({
                     title: saveTitle,
                     formation,
@@ -482,9 +490,12 @@ export function TacticalBoardPage() {
                 })
             });
             if (res.ok) {
+                const saved = await res.json();
                 setShowSaveModal(false);
                 setSaveTitle("");
-                alert("Tactical sequence saved successfully!");
+                const embedSnippet = buildTacticalEmbedSnippet(saved.id, saved.title || "Tactical board");
+                await navigator.clipboard.writeText(embedSnippet).catch(() => {});
+                alert("Tactical sequence saved. The embed snippet has been copied to your clipboard.");
             } else {
                 alert("Failed to save sequence.");
             }
@@ -519,11 +530,26 @@ export function TacticalBoardPage() {
         setShowLoadModal(false);
     };
 
+    const copyEmbedSnippet = async (tactic: any, event?: React.MouseEvent) => {
+        event?.stopPropagation();
+        try {
+            await navigator.clipboard.writeText(buildTacticalEmbedSnippet(tactic.id, tactic.title || "Tactical board"));
+            alert("Embed snippet copied. Paste it into an article using the Tactical Board editorial block.");
+        } catch (error) {
+            console.error("Error copying embed snippet:", error);
+            alert("Could not copy the embed snippet.");
+        }
+    };
+
     const deleteTactic = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         if (!window.confirm("Delete this saved sequence?")) return;
         try {
-            const res = await fetch(`/api/tactics?id=${id}`, { method: "DELETE" });
+            const authToken = localStorage.getItem("pitchside_admin_auth");
+            const res = await fetch(`/api/tactics?id=${id}`, {
+                method: "DELETE",
+                headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+            });
             if (res.ok) {
                 setSavedTactics(prev => prev.filter(t => t.id !== id));
             }
@@ -534,7 +560,7 @@ export function TacticalBoardPage() {
 
     return (
         <div className="min-h-screen bg-[#0a0e1a] text-white">
-            <SEO title="Tactical Board" description="Create and share football tactics and formations with our interactive whiteboard." url="https://pitchside.vercel.app/tactics" />
+            <SEO title="Tactical Embed Studio" description="Create, save, and embed football tactics and formations directly into articles." url="https://pitchside.vercel.app/tactics" />
             {/* Top nav */}
             <div className="sticky top-0 z-50 bg-[#0a0e1a]/80 backdrop-blur-xl border-b border-white/5">
                 <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -542,7 +568,7 @@ export function TacticalBoardPage() {
                         <ArrowLeft className="w-4 h-4" /> Back
                     </Link>
                     <h1 className="text-sm font-bold text-white flex items-center gap-2">
-                        <Users className="w-4 h-4 text-emerald-400" /> Tactical Board
+                        <Users className="w-4 h-4 text-emerald-400" /> Tactical Embed Studio
                     </h1>
                     <button
                         onClick={handleDownload}
@@ -660,6 +686,10 @@ export function TacticalBoardPage() {
                     >
                         <RotateCcw className="w-4 h-4" /> Reset
                     </button>
+                </div>
+
+                <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+                    Save a sequence to copy an article-ready embed snippet. Use the Tactical Board editorial block in the post editor to drop this board directly into a story or analysis piece.
                 </div>
 
                 {/* ─── Pitch ─── */}
@@ -912,7 +942,7 @@ export function TacticalBoardPage() {
                             <Save className="w-5 h-5 text-blue-400" /> Save Sequence
                         </h3>
                         <p className="text-sm text-gray-400 mb-4">
-                            Save this {keyframes.length}-frame sequence to your database.
+                            Save this {keyframes.length}-frame sequence to your database. A tactical embed snippet will be copied as soon as it is saved.
                         </p>
                         <input
                             type="text"
@@ -963,12 +993,20 @@ export function TacticalBoardPage() {
                                                 {t.formation} • {t.keyframes?.length || 1} Frames
                                             </p>
                                         </div>
-                                        <button
-                                            onClick={(e) => deleteTactic(t.id, e)}
-                                            className="p-2 rounded-lg hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition opacity-0 group-hover:opacity-100 hidden sm:block"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={(e) => copyEmbedSnippet(t, e)}
+                                                className="hidden sm:inline-flex rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-gray-300 transition hover:border-emerald-500/30 hover:text-emerald-300"
+                                            >
+                                                Copy Embed
+                                            </button>
+                                            <button
+                                                onClick={(e) => deleteTactic(t.id, e)}
+                                                className="p-2 rounded-lg hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition opacity-0 group-hover:opacity-100 hidden sm:block"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </div>
                                 ))
                             )}

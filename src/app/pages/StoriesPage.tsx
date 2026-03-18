@@ -1,26 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, Layers3, ScanSearch } from "lucide-react";
+import { ArrowRight, Layers3, ScanSearch, Search } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
+import { PageState } from "../components/PageState";
+import { StoryFeatureCard } from "../components/StoryFeatureCard";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import type { StoryFeature } from "../data/stories";
 
+function sortStories(stories: StoryFeature[], sort: string): StoryFeature[] {
+  const ordered = [...stories];
+
+  if (sort === "oldest") {
+    return ordered.sort((left, right) => new Date(left.updatedAt || left.date).getTime() - new Date(right.updatedAt || right.date).getTime());
+  }
+  if (sort === "a-z") {
+    return ordered.sort((left, right) => left.title.localeCompare(right.title));
+  }
+
+  return ordered.sort((left, right) => new Date(right.updatedAt || right.date).getTime() - new Date(left.updatedAt || left.date).getTime());
+}
+
 export function StoriesPage() {
   const [stories, setStories] = useState<StoryFeature[]>(() => getAllStories());
+  const [loading, setLoading] = useState(stories.length === 0);
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("newest");
 
   useEffect(() => {
     let isMounted = true;
 
     getAllStoriesAsync()
       .then((nextStories) => {
-        if (isMounted) {
-          setStories(nextStories);
-        }
+        if (!isMounted) return;
+        setStories(nextStories);
+        setLoading(false);
       })
       .catch(() => {
-        // Keep the local snapshot when the API is unavailable.
+        if (!isMounted) return;
+        setLoading(false);
       });
 
     return () => {
@@ -28,8 +47,26 @@ export function StoriesPage() {
     };
   }, []);
 
+  const filteredStories = useMemo(() => {
+    const matched = query.trim()
+      ? stories.filter((story) => {
+          const haystacks = [story.title, story.subtitle, story.excerpt, story.eyebrow, ...story.highlights];
+          return haystacks.some((value) => value.toLowerCase().includes(query.trim().toLowerCase()));
+        })
+      : stories;
+
+    return sortStories(matched, sort);
+  }, [query, sort, stories]);
+
+  const featuredStory = filteredStories[0] || null;
+  const remainingStories = featuredStory
+    ? filteredStories.filter((story) => story.id !== featuredStory.id)
+    : filteredStories;
+  const totalChapters = filteredStories.reduce((total, story) => total + story.chapters.length, 0);
+  const totalHighlights = filteredStories.reduce((total, story) => total + story.highlights.length, 0);
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+    <div className="page-atmosphere min-h-screen transition-colors duration-300">
       <SEO
         title="Stories"
         description="Scroll-driven football stories built for deeper, visual longform reading."
@@ -37,101 +74,138 @@ export function StoriesPage() {
       />
       <Header />
 
-      <main className="max-w-[1180px] mx-auto px-4 sm:px-6 py-8">
-        <section className="mb-10 rounded-[2rem] overflow-hidden bg-[#0F172A] text-white">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="p-8 md:p-10 lg:p-12">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#4ade80] mb-4">
-                Scrollytelling Studio
-              </p>
-              <h1 className="text-4xl md:text-5xl font-black font-outfit leading-[0.95] max-w-3xl">
-                Longform football stories designed to move as you scroll.
+      <main className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6">
+        <section className="editorial-hero rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8">
+          <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+          <div className="pointer-events-none absolute right-0 top-0 h-52 w-52 rounded-full bg-[#16A34A]/10 blur-3xl" />
+          <div className="relative">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+              Longform Section
+            </p>
+          </div>
+
+          <div className="relative mt-4 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+            <div className="max-w-3xl">
+              <h1 className="text-4xl font-black font-outfit leading-tight text-[#0F172A] dark:text-white md:text-5xl">
+                Longform football stories designed with chapters, progression, and a cleaner next read.
               </h1>
-              <p className="text-base md:text-lg text-white/70 max-w-2xl mt-5">
-                This is where deeper pieces live: layered narratives, sticky visuals, momentum swings,
-                and chapter-by-chapter storytelling instead of ordinary article blocks.
+              <p className="mt-3 text-base leading-7 text-[#64748B] dark:text-gray-400">
+                Stories now behave like a premium section instead of a flat archive: stronger lead cards, clearer chapter context, and a cleaner path into the wider story library.
               </p>
-              <div className="flex flex-wrap gap-3 mt-8">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm font-semibold">
-                  <Layers3 className="w-4 h-4 text-[#4ade80]" />
-                  Chapter-based reading
-                </div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm font-semibold">
-                  <ScanSearch className="w-4 h-4 text-[#4ade80]" />
-                  Scroll-reactive visuals
-                </div>
-              </div>
             </div>
 
-            <div className="relative min-h-[280px] lg:min-h-full">
-              <img
-                src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200"
-                alt="Football stadium under lights"
-                className="absolute inset-0 w-full h-full object-cover opacity-70"
+            <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[340px]">
+              <div className="rounded-2xl bg-[#16A34A]/8 p-4">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Stories</p>
+                <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">{filteredStories.length}</p>
+              </div>
+              <div className="rounded-2xl bg-[#0F172A]/5 p-4 dark:bg-white/5">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Chapters</p>
+                <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">{totalChapters}</p>
+              </div>
+              <div className="rounded-2xl bg-[#0F172A]/5 p-4 dark:bg-white/5">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Signals</p>
+                <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">{totalHighlights}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative mt-7 flex flex-wrap gap-2">
+            <div className="filter-chip">
+              <Layers3 className="h-3.5 w-3.5" />
+              Chapter-based reading
+            </div>
+            <div className="filter-chip">
+              <ScanSearch className="h-3.5 w-3.5" />
+              Scroll-reactive visuals
+            </div>
+            <Link to="/archive?type=story" className="filter-chip">
+              Story archive
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </section>
+
+        <section className="section-surface mt-10 rounded-[2rem] border border-gray-200 p-4 shadow-sm dark:border-gray-800 md:p-5">
+          <div className="grid gap-3 lg:grid-cols-[2fr_220px_220px]">
+            <label className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 dark:border-gray-700 dark:bg-[#08111f]">
+              <Search className="h-4 w-4 text-[#94A3B8]" />
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search stories, themes, and highlights"
+                className="w-full bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-[#94A3B8] dark:text-white"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-[#16A34A]/35 via-transparent to-[#0F172A]" />
+            </label>
+            <select value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-2xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 text-sm text-[#0F172A] outline-none dark:border-gray-700 dark:bg-[#08111f] dark:text-white">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="a-z">A-Z</option>
+            </select>
+            <div className="rounded-2xl bg-[#16A34A]/10 px-4 py-3 text-sm font-semibold text-[#16A34A]">
+              {filteredStories.length} stor{filteredStories.length === 1 ? "y" : "ies"}
             </div>
           </div>
         </section>
 
-        <section className="grid gap-6">
-          {stories.map((story) => (
-            <Link
-              key={story.slug}
-              to={`/stories/${story.slug}`}
-              className="group rounded-[2rem] overflow-hidden bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 hover:border-[#16A34A]/30 transition-all duration-300"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr]">
-                <div className="relative min-h-[240px] lg:min-h-full">
-                  <img
-                    src={story.coverImage}
-                    alt={story.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
-                  />
-                  <div
-                    className="absolute inset-0 opacity-80"
-                    style={{ background: `linear-gradient(135deg, ${story.themeFrom}99, ${story.themeTo}66)` }}
-                  />
-                </div>
+        <section className="mt-10">
+          {loading && stories.length === 0 ? (
+            <div className="grid gap-6">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="h-[320px] animate-pulse rounded-[2rem] bg-gray-200 dark:bg-gray-800" />
+              ))}
+            </div>
+          ) : featuredStory ? (
+            <div className="space-y-10">
+              <div>
+                <p className="mb-4 text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+                  Lead Story
+                </p>
+                <StoryFeatureCard story={featuredStory} variant="feature" label="Lead story" />
+              </div>
 
-                <div className="p-7 md:p-8 lg:p-10">
-                  <div className="flex flex-wrap items-center gap-3 mb-4">
-                    <span className="px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] bg-[#16A34A]/10 text-[#16A34A]">
-                      {story.eyebrow}
-                    </span>
-                    <span className="text-xs font-semibold text-[#64748B] dark:text-gray-400">{story.date}</span>
-                    <span className="text-xs font-semibold text-[#64748B] dark:text-gray-400">{story.readTime}</span>
+              {remainingStories.length > 0 && (
+                <section>
+                  <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+                        More Stories
+                      </p>
+                      <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                        Continue through the longform shelf
+                      </h2>
+                    </div>
+                    <Link to="/archive?type=story" className="text-sm font-bold text-[#16A34A]">
+                      Search story archive
+                    </Link>
                   </div>
 
-                  <h2 className="text-3xl md:text-4xl font-black font-outfit text-[#0F172A] dark:text-white leading-[1]">
-                    {story.title}
-                  </h2>
-                  <p className="text-lg text-[#16A34A] font-semibold mt-3">
-                    {story.subtitle}
-                  </p>
-                  <p className="text-base text-[#475569] dark:text-gray-300 mt-5 max-w-2xl">
-                    {story.excerpt}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mt-6">
-                    {story.highlights.map((item) => (
-                      <span
-                        key={item}
-                        className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-[#334155] dark:bg-white/5 dark:text-gray-200"
-                      >
-                        {item}
-                      </span>
+                  <div className="grid gap-6 lg:grid-cols-2">
+                    {remainingStories.map((story) => (
+                      <StoryFeatureCard key={story.id} story={story} />
                     ))}
                   </div>
-
-                  <div className="inline-flex items-center gap-2 mt-8 text-sm font-black uppercase tracking-[0.18em] text-[#16A34A]">
-                    Open story
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+                </section>
+              )}
+            </div>
+          ) : (
+            <PageState
+              icon={Layers3}
+              eyebrow="Stories"
+              title="No stories matched that search"
+              description="Try a broader keyword or switch to the full archive if you want to search across stories and articles together."
+              action={(
+                <Link
+                  to="/archive?type=story"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#16A34A] px-5 py-3 text-sm font-bold text-white"
+                >
+                  Open story archive
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
+            />
+          )}
         </section>
       </main>
 

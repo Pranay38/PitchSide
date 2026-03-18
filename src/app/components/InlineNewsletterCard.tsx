@@ -1,0 +1,97 @@
+import { useState } from "react";
+import { Mail, Send } from "lucide-react";
+import { toast } from "sonner";
+
+interface InlineNewsletterCardProps {
+  title?: string;
+  description?: string;
+  className?: string;
+}
+
+export function InlineNewsletterCard({
+  title = "Get the week's best reads in one email",
+  description = "A concise football briefing with the strongest analysis, long reads, and standout stories from the site.",
+  className = "",
+}: InlineNewsletterCardProps) {
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!email.trim() || !email.includes("@") || submitting) {
+      toast.error("Enter a valid email address.");
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const res = await fetch("/api/subscribers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const payload = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(
+          typeof payload.error === "string" ? payload.error : "Could not save your subscription.",
+        );
+      }
+
+      toast.success(payload.alreadySubscribed ? "You're already subscribed." : "Subscribed.");
+      setEmail("");
+    } catch (error) {
+      try {
+        const subscribers = JSON.parse(localStorage.getItem("pitchside_subscribers") || "[]");
+        if (Array.isArray(subscribers) && subscribers.includes(email.trim())) {
+          toast.info("You're already subscribed.");
+        } else {
+          const next = Array.isArray(subscribers) ? [...subscribers, email.trim()] : [email.trim()];
+          localStorage.setItem("pitchside_subscribers", JSON.stringify(next));
+          toast.success("Subscribed.");
+        }
+        setEmail("");
+      } catch {
+        toast.error(error instanceof Error ? error.message : "Could not save your subscription.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <section className={`overflow-hidden rounded-[2rem] border border-[#16A34A]/15 bg-gradient-to-br from-[#0F172A] via-[#0B1B2F] to-[#10203A] p-6 text-white shadow-xl ${className}`}>
+      <div className="max-w-2xl">
+        <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/8 px-3 py-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#86efac]">
+          <Mail className="h-3.5 w-3.5" />
+          Newsletter
+        </p>
+        <h2 className="mt-4 text-2xl font-black font-outfit leading-tight md:text-3xl">
+          {title}
+        </h2>
+        <p className="mt-3 max-w-xl text-sm leading-6 text-white/72">
+          {description}
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3 md:flex-row">
+        <input
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="you@example.com"
+          className="min-h-12 flex-1 rounded-2xl border border-white/12 bg-white/8 px-4 text-sm text-white placeholder:text-white/35 focus:border-[#4ade80] focus:outline-none"
+        />
+        <button
+          type="submit"
+          disabled={submitting}
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#16A34A] px-5 text-sm font-bold text-white transition-colors hover:bg-[#15803d] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <Send className="h-4 w-4" />
+          {submitting ? "Saving..." : "Subscribe"}
+        </button>
+      </form>
+    </section>
+  );
+}

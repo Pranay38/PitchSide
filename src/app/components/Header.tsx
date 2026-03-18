@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useTheme } from "../hooks/useTheme";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationBell } from "./NotificationBell";
+import { DesktopCommandPalette } from "./DesktopCommandPalette";
 import { getClubByName } from "../data/clubs";
-import { Heart, House, Menu, X, LogIn } from "lucide-react";
+import { Heart, House, Menu, Search, X, LogIn } from "lucide-react";
 import {
   SignInButton,
   UserButton,
@@ -54,20 +55,34 @@ interface HeaderProps {
 export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [archiveQuery, setArchiveQuery] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const club = favoriteClub ? getClubByName(favoriteClub) : null;
   const navLinks = [
     { to: "/", label: "Home" },
-    { to: "/daily-fix", label: "Daily Fix" },
-    { to: "/transfers", label: "Transfers" },
-    { to: "/alerts", label: "Alerts" },
+    { to: "/archive", label: "Archive" },
     { to: "/stories", label: "Stories" },
-
-    { to: "/saved", label: "Saved" },
-    { to: "/tactics", label: "Tactics" },
+    { to: "/transfers", label: "Transfers" },
     { to: "/collections", label: "Lists" },
     { to: "/about", label: "About" },
   ];
+
+  useEffect(() => {
+    if (location.pathname !== "/archive") return;
+    setArchiveQuery(new URLSearchParams(location.search).get("q") || "");
+  }, [location.pathname, location.search]);
+
+  const handleArchiveSearch = (event: React.FormEvent) => {
+    event.preventDefault();
+    const params = new URLSearchParams();
+    if (archiveQuery.trim()) {
+      params.set("q", archiveQuery.trim());
+    }
+    navigate(params.toString() ? `/archive?${params.toString()}` : "/archive");
+    setMobileOpen(false);
+  };
 
   return (
     <>
@@ -100,6 +115,8 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#16A34A] to-[#4ade80] group-hover:w-full transition-all duration-300 rounded-full" />
               </Link>
             ))}
+
+            <DesktopCommandPalette />
 
             {/* Club badge */}
             {favoriteClub && (
@@ -148,6 +165,16 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
         {/* Mobile menu dropdown */}
         {mobileOpen && (
           <div className="sm:hidden glass border-t border-white/10 dark:border-gray-800/50 px-6 py-4 space-y-3 animate-float-in">
+            <form onSubmit={handleArchiveSearch} className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-[#0F172A]">
+              <Search className="w-4 h-4 text-[#94A3B8]" />
+              <input
+                type="search"
+                value={archiveQuery}
+                onChange={(event) => setArchiveQuery(event.target.value)}
+                placeholder="Search archive"
+                className="flex-1 bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-[#94A3B8] dark:text-white"
+              />
+            </form>
             {navLinks.map((link) => (
               <Link
                 key={link.to}

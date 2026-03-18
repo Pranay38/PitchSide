@@ -1,5 +1,6 @@
 export type TransferWatchStatus = "confirmed" | "rumor";
 export type TransferFeeMode = "million-usd" | "not-disclosed";
+export type TransferRumorTier = 1 | 2 | 3 | 4 | 5 | null;
 
 export interface TransferWatchEntry {
   id: string;
@@ -8,6 +9,7 @@ export interface TransferWatchEntry {
   feeMode: TransferFeeMode;
   feeMillions: number;
   status: TransferWatchStatus;
+  tier: TransferRumorTier;
   updatedAt: string;
 }
 
@@ -33,8 +35,27 @@ function clampFee(value: unknown): number {
   return Number(parsed.toFixed(1));
 }
 
+function normalizeRumorTier(value: unknown, status: TransferWatchStatus): TransferRumorTier {
+  if (status === "confirmed") return null;
+
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(parsed)) return 3;
+  return Math.max(1, Math.min(5, Math.round(parsed))) as 1 | 2 | 3 | 4 | 5;
+}
+
 export function buildTransferWatchId(player: string, club: string, updatedAt: string): string {
   return `${slugify(player)}-${slugify(club)}-${updatedAt.replace(/[^0-9]/g, "").slice(0, 14)}`;
+}
+
+export function buildTransferDossierSlug(entry: Pick<TransferWatchEntry, "player" | "club">): string {
+  return `${slugify(entry.player)}-to-${slugify(entry.club)}`;
+}
+
+export function matchesTransferDossierSlug(
+  entry: Pick<TransferWatchEntry, "player" | "club">,
+  slug: string,
+): boolean {
+  return buildTransferDossierSlug(entry) === slug;
 }
 
 export function buildTransferTopic(player: string, club: string): string {
@@ -43,6 +64,12 @@ export function buildTransferTopic(player: string, club: string): string {
 
 export function getTransferTopicLabel(entry: Pick<TransferWatchEntry, "player" | "club">): string {
   return `${entry.player} -> ${entry.club}`;
+}
+
+export function getTransferTierLabel(tier: TransferRumorTier, status?: TransferWatchStatus): string {
+  if (status === "confirmed") return "Confirmed";
+  if (!tier) return "Tiered rumor";
+  return `Tier ${tier}`;
 }
 
 export function normalizeTransferWatchEntry(
@@ -61,6 +88,7 @@ export function normalizeTransferWatchEntry(
   const feeMode = TRANSFER_FEE_MODES.includes(input.feeMode as TransferFeeMode)
     ? (input.feeMode as TransferFeeMode)
     : "not-disclosed";
+  const tier = normalizeRumorTier(input.tier, status);
   const updatedAt = String(input.updatedAt || new Date().toISOString());
   const feeMillions = feeMode === "million-usd" ? clampFee(input.feeMillions) : 0;
   const id = String(input.id || buildTransferWatchId(player, club, updatedAt));
@@ -72,6 +100,7 @@ export function normalizeTransferWatchEntry(
     feeMode,
     feeMillions,
     status,
+    tier,
     updatedAt,
   };
 }

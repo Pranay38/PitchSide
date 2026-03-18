@@ -4,7 +4,6 @@ import type { BlogPost } from "../data/posts";
 import { AdminLogin } from "../components/AdminLogin";
 import { PostEditor } from "../components/PostEditor";
 import { ThemeToggle } from "../components/ThemeToggle";
-import { StoryEditor } from "../components/StoryEditor";
 import {
     isAdminAuthenticated,
     adminLogout,
@@ -23,7 +22,7 @@ import {
     type SiteSettings,
 } from "../lib/siteSettingsStorage";
 import { getAllClubNames } from "../data/clubs";
-import { duplicateStoryFeature, type StoryFeature } from "../data/stories";
+import type { StoryFeature } from "../data/stories";
 import {
     calculateClubIntelligenceSummary,
     createDefaultClubIntelligence,
@@ -32,21 +31,14 @@ import {
     type ClubIntelligence,
 } from "../lib/clubIntelligence";
 import {
-    buildTransferWatchId,
     formatTransferWatchAmount,
     normalizeTransferWatchEntry,
     type TransferFeeMode,
     type TransferWatchStatus,
 } from "../lib/transferWatch";
-import {
-    addStoryAsync,
-    deleteStoryAsync,
-    getAllStories,
-    getAllStoriesAsync,
-    updateStoryAsync,
-} from "../lib/storyStorage";
+import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { createDefaultPollOfWeek, normalizePollOfWeek } from "../lib/pollOfWeek";
-import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, MessageSquare, Repeat2, ScanSearch, Copy, BarChart3, LineChart } from "lucide-react";
+import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart } from "lucide-react";
 import { toast } from "sonner";
 import { AdminRunInEditor } from "../components/AdminRunInEditor";
 import type { SupplementalEvent } from "../lib/siteSettingsStorage";
@@ -100,8 +92,6 @@ export function AdminPage() {
     const [savingClubIntelligence, setSavingClubIntelligence] = useState(false);
     const [savingTransferWatch, setSavingTransferWatch] = useState(false);
     const [stories, setStories] = useState<StoryFeature[]>(() => getAllStories(true));
-    const [showStoryEditor, setShowStoryEditor] = useState(false);
-    const [editingStory, setEditingStory] = useState<StoryFeature | null>(null);
     const [selectedClubForInsights, setSelectedClubForInsights] = useState("Arsenal");
     const [transferDraft, setTransferDraft] = useState({
         player: "",
@@ -109,6 +99,7 @@ export function AdminPage() {
         feeMode: "million-usd" as TransferFeeMode,
         feeMillions: "",
         status: "rumor" as TransferWatchStatus,
+        tier: 3,
     });
     const [transferFilterClub, setTransferFilterClub] = useState("all");
 
@@ -404,6 +395,264 @@ export function AdminPage() {
         }
     };
 
+    const handleAddTransferWatchEntry = () => {
+        const normalized = normalizeTransferWatchEntry({
+            ...transferDraft,
+            feeMillions: transferDraft.feeMillions,
+            updatedAt: new Date().toISOString(),
+        });
+
+        if (!normalized) {
+            toast.error("Add at least a player name and club before saving a transfer item.");
+            return;
+        }
+
+        setSiteSettings((prev) => ({
+            ...prev,
+            transferWatch: [normalized, ...prev.transferWatch.filter((entry) => entry.id !== normalized.id)],
+        }));
+        setTransferDraft({
+            player: "",
+            club: transferDraft.club,
+            feeMode: "million-usd",
+            feeMillions: "",
+            status: "rumor",
+            tier: 3,
+        });
+        toast.success("Transfer watch item added to the draft feed.");
+    };
+
+    const handleDeleteTransferWatchEntry = (id: string) => {
+        setSiteSettings((prev) => ({
+            ...prev,
+            transferWatch: prev.transferWatch.filter((entry) => entry.id !== id),
+        }));
+    };
+
+    const handleSaveTransferWatch = async () => {
+        setSavingTransferWatch(true);
+        try {
+            const updated = await updateSiteSettingsAsync({
+                transferWatch: siteSettings.transferWatch,
+            });
+            setSiteSettings(updated);
+            toast.success("Transfer watch updated.");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to save transfer watch.");
+        } finally {
+            setSavingTransferWatch(false);
+        }
+    };
+
+    const handlePollFieldChange = (field: "enabled" | "title" | "description" | "question", value: string | boolean) => {
+        setSiteSettings((prev) => ({
+            ...prev,
+            pollOfWeek: normalizePollOfWeek({
+                ...prev.pollOfWeek,
+                [field]: value,
+            }),
+        }));
+    };
+
+    const handlePollOptionChange = (index: number, text: string) => {
+        setSiteSettings((prev) => ({
+            ...prev,
+            pollOfWeek: normalizePollOfWeek({
+                ...prev.pollOfWeek,
+                options: prev.pollOfWeek.options.map((option, optionIndex) => (
+                    optionIndex === index
+                        ? { ...option, text }
+                        : option
+                )),
+            }),
+        }));
+    };
+
+    const handleAddPollOption = () => {
+        if (siteSettings.pollOfWeek.options.length >= 5) return;
+
+        setSiteSettings((prev) => ({
+            ...prev,
+            pollOfWeek: normalizePollOfWeek({
+                ...prev.pollOfWeek,
+                options: [
+                    ...prev.pollOfWeek.options,
+                    {
+                        id: `option-${prev.pollOfWeek.options.length + 1}`,
+                        text: "",
+                        votes: 0,
+                    },
+                ],
+            }),
+        }));
+    };
+
+    const handleRemovePollOption = (index: number) => {
+        if (siteSettings.pollOfWeek.options.length <= 2) return;
+
+        setSiteSettings((prev) => ({
+            ...prev,
+            pollOfWeek: normalizePollOfWeek({
+                ...prev.pollOfWeek,
+                options: prev.pollOfWeek.options.filter((_, optionIndex) => optionIndex !== index),
+            }),
+        }));
+    };
+
+    const handleResetPollDraft = () => {
+        if (!window.confirm("Clear the current Poll of the Week draft?")) return;
+
+        setSiteSettings((prev) => ({
+            ...prev,
+            pollOfWeek: createDefaultPollOfWeek(),
+        }));
+        toast.success("Poll draft cleared.");
+    };
+
+    const handleSavePollOfWeek = async () => {
+        setSavingPollOfWeek(true);
+        try {
+            const normalized = normalizePollOfWeek(siteSettings.pollOfWeek);
+            const filledOptions = normalized.options
+                .map((option) => ({ ...option, text: option.text.trim() }))
+                .filter((option) => option.text.length > 0)
+                .slice(0, 5);
+
+            if (normalized.enabled) {
+                if (!normalized.question.trim()) {
+                    throw new Error("Add a question before publishing the poll.");
+                }
+
+                if (filledOptions.length < 2) {
+                    throw new Error("Add at least two answer options before publishing.");
+                }
+            }
+
+            const timestamp = new Date().toISOString();
+            const nextPoll = normalizePollOfWeek({
+                ...normalized,
+                id: normalized.enabled ? `poll-${Date.now()}` : normalized.id,
+                title: normalized.title.trim() || "Poll of the Week",
+                description: normalized.description.trim(),
+                question: normalized.question.trim(),
+                options: normalized.enabled
+                    ? filledOptions.map((option, index) => ({
+                        id: `option-${index + 1}-${Date.now()}`,
+                        text: option.text,
+                        votes: 0,
+                    }))
+                    : normalized.options,
+                updatedAt: timestamp,
+            });
+
+            const updated = await updateSiteSettingsAsync({
+                pollOfWeek: nextPoll,
+            });
+            setSiteSettings(updated);
+            toast.success(nextPoll.enabled ? "Poll of the Week published." : "Poll of the Week saved.");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to save poll.");
+        } finally {
+            setSavingPollOfWeek(false);
+        }
+    };
+
+    const handleSaveSocialWall = async () => {
+        setSavingSiteSettings(true);
+        try {
+            const updated = await updateSiteSettingsAsync({
+                socialWallEnabled: siteSettings.socialWallEnabled,
+                socialWallTitle: siteSettings.socialWallTitle,
+                socialWallEmbedCode: siteSettings.socialWallEmbedCode,
+            });
+            setSiteSettings(updated);
+            toast.success("Social wall updated.");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to save the social wall.");
+        } finally {
+            setSavingSiteSettings(false);
+        }
+    };
+
+    const handleSaveHomepageCuration = async () => {
+        setSavingSiteSettings(true);
+        try {
+            const updated = await updateSiteSettingsAsync({
+                homepageCuration: siteSettings.homepageCuration,
+            });
+            setSiteSettings(updated);
+            toast.success("Homepage curation updated.");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to save homepage curation.");
+        } finally {
+            setSavingSiteSettings(false);
+        }
+    };
+
+    const handleClubInsightChange = (field: keyof ClubIntelligence, value: string | number) => {
+        setSiteSettings((prev) => {
+            const key = getClubIntelligenceKey(selectedClubForInsights);
+            const current = prev.clubIntelligence[key] || createDefaultClubIntelligence(selectedClubForInsights);
+            const nextValue = field === "note" || field === "club" || field === "updatedAt" ? String(value) : Number(value);
+            const normalized = normalizeClubIntelligence({
+                ...current,
+                club: selectedClubForInsights,
+                [field]: nextValue,
+                updatedAt: new Date().toISOString(),
+            }, selectedClubForInsights);
+
+            return {
+                ...prev,
+                clubIntelligence: {
+                    ...prev.clubIntelligence,
+                    [key]: normalized,
+                },
+            };
+        });
+    };
+
+    const handleResetClubInsight = () => {
+        if (!window.confirm(`Reset manual insight inputs for ${selectedClubForInsights}?`)) return;
+        setSiteSettings((prev) => {
+            const nextMap = { ...prev.clubIntelligence };
+            delete nextMap[getClubIntelligenceKey(selectedClubForInsights)];
+            return {
+                ...prev,
+                clubIntelligence: nextMap,
+            };
+        });
+        toast.success(`Cleared manual data for ${selectedClubForInsights}.`);
+    };
+
+    const handleSaveClubIntelligence = async () => {
+        setSavingClubIntelligence(true);
+        try {
+            const updated = await updateSiteSettingsAsync({
+                clubIntelligence: siteSettings.clubIntelligence,
+            });
+            setSiteSettings(updated);
+            toast.success(`Club intelligence saved for ${selectedClubForInsights}.`);
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to save club intelligence.");
+        } finally {
+            setSavingClubIntelligence(false);
+        }
+    };
+
+    const handleSendDigest = async () => {
+        if (!window.confirm("Send weekly digest to all subscribers now?")) return;
+        setSendingDigest(true);
+        try {
+            const res = await fetch("/api/digest", { method: "POST" });
+            const data = await res.json();
+            if (res.ok) toast.success(data.message || "Digest sent!");
+            else toast.error(data.error || "Failed to send digest");
+        } catch {
+            toast.error("Error sending digest");
+        }
+        setSendingDigest(false);
+    };
+
     if (!isAuthed) return <AdminLogin onLogin={handleLogin} />;
 
     if (view === "create" || view === "edit") {
@@ -692,18 +941,49 @@ export function AdminPage() {
                 {activeTab === "transfer-watch" && (
                     <AdminTransferWatchTab 
                         siteSettings={siteSettings}
-                        setSiteSettings={setSiteSettings}
-                        clubOptions={clubOptions}
+                        transferDraft={transferDraft}
+                        transferFilterClub={transferFilterClub}
+                        filteredTransferWatchEntries={filteredTransferWatchEntries}
+                        savingTransferWatch={savingTransferWatch}
+                        setTransferDraft={setTransferDraft}
+                        setTransferFilterClub={setTransferFilterClub}
+                        handleAddTransferWatchEntry={handleAddTransferWatchEntry}
+                        handleSaveTransferWatch={handleSaveTransferWatch}
+                        handleDeleteTransferWatchEntry={handleDeleteTransferWatchEntry}
+                        formatTransferWatchAmount={formatTransferWatchAmount}
                     />
                 )}
 
                 {/* SETTINGS TAB */}
                 {activeTab === "settings" && (
                     <AdminSettingsTab 
-                        subscriberCount={subscriberCount}
                         siteSettings={siteSettings}
+                        posts={posts}
+                        stories={stories}
+                        subscriberCount={subscriberCount}
+                        sendingDigest={sendingDigest}
+                        savingPollOfWeek={savingPollOfWeek}
+                        savingSiteSettings={savingSiteSettings}
+                        savingClubIntelligence={savingClubIntelligence}
+                        selectedClubForInsights={selectedClubForInsights}
+                        selectedClubInsight={selectedClubInsight}
+                        selectedClubInsightSummary={selectedClubInsightSummary}
                         setSiteSettings={setSiteSettings}
                         clubOptions={clubOptions}
+                        handleSendDigest={handleSendDigest}
+                        handlePollFieldChange={handlePollFieldChange}
+                        handleAddPollOption={handleAddPollOption}
+                        handlePollOptionChange={handlePollOptionChange}
+                        handleRemovePollOption={handleRemovePollOption}
+                        handleSavePollOfWeek={handleSavePollOfWeek}
+                        handleResetPollDraft={handleResetPollDraft}
+                        handleSaveSocialWall={handleSaveSocialWall}
+                        handleSaveHomepageCuration={handleSaveHomepageCuration}
+                        setSelectedClubForInsights={setSelectedClubForInsights}
+                        handleClubInsightChange={handleClubInsightChange}
+                        handleSaveClubIntelligence={handleSaveClubIntelligence}
+                        handleResetClubInsight={handleResetClubInsight}
+                        normalizePollOfWeek={normalizePollOfWeek}
                     />
                 )}
 

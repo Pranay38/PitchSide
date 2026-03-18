@@ -20,6 +20,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── GET: Fetch all saved tactics ───
         if (req.method === "GET") {
+            const id = typeof req.query.id === "string" ? req.query.id : "";
+            if (id) {
+                const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
+                const tactic = await collection.findOne(filter);
+                if (!tactic) {
+                    return res.status(404).json({ error: "Tactics not found" });
+                }
+                const { _id, ...rest } = tactic;
+                return res.status(200).json({ id: _id.toString(), ...rest });
+            }
+
             const tactics = await collection.find({}).sort({ createdAt: -1 }).toArray();
             return res.status(200).json(
                 tactics.map((t) => {

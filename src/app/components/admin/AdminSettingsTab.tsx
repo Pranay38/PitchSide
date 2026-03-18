@@ -1,37 +1,104 @@
-import { Mail, Send, BarChart3, RadioTower, Layout, Trash2 } from "lucide-react";
+import type { Dispatch, SetStateAction } from "react";
+import { Mail, Send, BarChart3, RadioTower, Layout, Trash2, Sparkles } from "lucide-react";
 import { PollWidget } from "../PollWidget";
-import { getAllClubNames } from "../../data/clubs";
-import type { ClubIntelligence } from "../../lib/clubIntelligence";
-const clubOptions = getAllClubNames().sort((left, right) => left.localeCompare(right));
+import type { BlogPost } from "../../data/posts";
+import type { StoryFeature } from "../../data/stories";
+import type { ClubIntelligence, ClubIntelligenceSummary } from "../../lib/clubIntelligence";
+import type { SiteSettings } from "../../lib/siteSettingsStorage";
+import { getTransferTierLabel } from "../../lib/transferWatch";
 
 interface AdminSettingsTabProps {
-    siteSettings: any;
+    siteSettings: SiteSettings;
+    posts: BlogPost[];
+    stories: StoryFeature[];
     subscriberCount: number;
     sendingDigest: boolean;
     savingPollOfWeek: boolean;
     savingSiteSettings: boolean;
     savingClubIntelligence: boolean;
     selectedClubForInsights: string;
-    selectedClubInsight: Partial<ClubIntelligence>;
-    selectedClubInsightSummary: any;
+    selectedClubInsight: ClubIntelligence;
+    selectedClubInsightSummary: ClubIntelligenceSummary;
+    setSiteSettings: Dispatch<SetStateAction<SiteSettings>>;
+    clubOptions: string[];
     handleSendDigest: () => Promise<void>;
-    handlePollFieldChange: (field: string, value: any) => void;
+    handlePollFieldChange: (field: "enabled" | "title" | "description" | "question", value: string | boolean) => void;
     handleAddPollOption: () => void;
     handlePollOptionChange: (index: number, value: string) => void;
     handleRemovePollOption: (index: number) => void;
     handleSavePollOfWeek: () => Promise<void>;
     handleResetPollDraft: () => void;
-    setSiteSettings: React.Dispatch<React.SetStateAction<any>>;
     handleSaveSocialWall: () => Promise<void>;
+    handleSaveHomepageCuration: () => Promise<void>;
     setSelectedClubForInsights: (club: string) => void;
-    handleClubInsightChange: (key: keyof ClubIntelligence | "note", value: any) => void;
+    handleClubInsightChange: (key: keyof ClubIntelligence, value: string | number) => void;
     handleSaveClubIntelligence: () => Promise<void>;
     handleResetClubInsight: () => void;
-    normalizePollOfWeek: (poll: any) => any;
+    normalizePollOfWeek: (poll: SiteSettings["pollOfWeek"]) => SiteSettings["pollOfWeek"];
+}
+
+function toggleSelection(values: string[], id: string, max: number): string[] {
+    if (!id) return values;
+    if (values.includes(id)) {
+        return values.filter((value) => value !== id);
+    }
+    if (values.length >= max) {
+        return values;
+    }
+    return [...values, id];
+}
+
+function SelectionCard({
+    title,
+    meta,
+    description,
+    selectedIndex,
+    onClick,
+}: {
+    title: string;
+    meta: string;
+    description: string;
+    selectedIndex: number;
+    onClick: () => void;
+}) {
+    const selected = selectedIndex >= 0;
+
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={`w-full rounded-[1.5rem] border p-4 text-left transition-all ${
+                selected
+                    ? "border-[#16A34A]/30 bg-[#16A34A]/8 shadow-sm"
+                    : "border-gray-200 bg-white hover:border-[#16A34A]/20 hover:bg-[#F8FAFC] dark:border-gray-800 dark:bg-[#0F172A] dark:hover:bg-[#08111f]"
+            }`}
+        >
+            <div className="flex items-start justify-between gap-3">
+                <div>
+                    <p className="text-sm font-bold text-[#0F172A] dark:text-white">{title}</p>
+                    <p className="mt-1 text-[11px] font-black uppercase tracking-[0.16em] text-[#16A34A]">{meta}</p>
+                </div>
+                <span
+                    className={`inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-[11px] font-black ${
+                        selected
+                            ? "bg-[#16A34A] text-white"
+                            : "bg-gray-100 text-[#94A3B8] dark:bg-white/5"
+                    }`}
+                >
+                    {selected ? selectedIndex + 1 : "+"}
+                </span>
+            </div>
+            <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#64748B] dark:text-gray-400">
+                {description}
+            </p>
+        </button>
+    );
 }
 
 export function AdminSettingsTab({
     siteSettings,
+    posts,
+    stories,
     subscriberCount,
     sendingDigest,
     savingPollOfWeek,
@@ -40,6 +107,8 @@ export function AdminSettingsTab({
     selectedClubForInsights,
     selectedClubInsight,
     selectedClubInsightSummary,
+    setSiteSettings,
+    clubOptions,
     handleSendDigest,
     handlePollFieldChange,
     handleAddPollOption,
@@ -47,17 +116,278 @@ export function AdminSettingsTab({
     handleRemovePollOption,
     handleSavePollOfWeek,
     handleResetPollDraft,
-    setSiteSettings,
     handleSaveSocialWall,
+    handleSaveHomepageCuration,
     setSelectedClubForInsights,
     handleClubInsightChange,
     handleSaveClubIntelligence,
     handleResetClubInsight,
-    normalizePollOfWeek
+    normalizePollOfWeek,
 }: AdminSettingsTabProps) {
+    const publishedPosts = posts.filter((post) => !post.isDraft);
+    const publishedStories = stories.filter((story) => !story.isDraft);
+    const heroItems = siteSettings.homepageCuration.hero.type === "story" ? publishedStories : publishedPosts;
+
     return (
         <div className="space-y-8">
-            {/* Digest section */}
+            <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
+                    <div>
+                        <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-[#16A34A]" /> Homepage Curation
+                        </h2>
+                        <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1 max-w-3xl">
+                            Control the homepage hero and editorial lanes directly from admin. If a selected item disappears from the published feed, the homepage falls back automatically.
+                        </p>
+                    </div>
+                    <button
+                        onClick={handleSaveHomepageCuration}
+                        disabled={savingSiteSettings}
+                        className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] disabled:opacity-50"
+                    >
+                        {savingSiteSettings ? "Saving..." : "Save Homepage"}
+                    </button>
+                </div>
+
+                <div className="grid gap-8 xl:grid-cols-[0.85fr_1.15fr]">
+                    <div className="space-y-5">
+                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
+                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#16A34A] mb-3">Hero Slot</p>
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <label className="block">
+                                    <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Hero Type</span>
+                                    <select
+                                        value={siteSettings.homepageCuration.hero.type}
+                                        onChange={(event) => {
+                                            const type = event.target.value === "story" ? "story" : "post";
+                                            setSiteSettings((prev) => ({
+                                                ...prev,
+                                                homepageCuration: {
+                                                    ...prev.homepageCuration,
+                                                    hero: { type, id: "" },
+                                                },
+                                            }));
+                                        }}
+                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                    >
+                                        <option value="post">Article</option>
+                                        <option value="story">Story</option>
+                                    </select>
+                                </label>
+
+                                <label className="block">
+                                    <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Hero Selection</span>
+                                    <select
+                                        value={siteSettings.homepageCuration.hero.id}
+                                        onChange={(event) => setSiteSettings((prev) => ({
+                                            ...prev,
+                                            homepageCuration: {
+                                                ...prev.homepageCuration,
+                                                hero: {
+                                                    ...prev.homepageCuration.hero,
+                                                    id: event.target.value,
+                                                },
+                                            },
+                                        }))}
+                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                    >
+                                        <option value="">Automatic fallback</option>
+                                        {heroItems.map((item) => (
+                                            <option key={item.id} value={item.id}>{item.title}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
+                            <div className="mt-4 rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
+                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
+                                    Current Hero
+                                </p>
+                                <p className="mt-2 text-lg font-bold text-[#0F172A] dark:text-white">
+                                    {heroItems.find((item) => item.id === siteSettings.homepageCuration.hero.id)?.title || "Automatic homepage pick"}
+                                </p>
+                                <p className="mt-2 text-sm text-[#64748B] dark:text-gray-400">
+                                    {siteSettings.homepageCuration.hero.type === "story"
+                                        ? "Uses the selected longform story as the front-page lead."
+                                        : "Uses the selected article as the front-page lead."}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
+                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#16A34A] mb-3">Selection Summary</p>
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <div className="rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Latest Analysis</p>
+                                    <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.latestPostIds.length}</p>
+                                </div>
+                                <div className="rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Editor Picks</p>
+                                    <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.editorPickIds.length}</p>
+                                </div>
+                                <div className="rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Featured Stories</p>
+                                    <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.featuredStoryIds.length}</p>
+                                </div>
+                                <div className="rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Transfer Spotlights</p>
+                                    <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.transferSpotlightIds.length}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
+                            <div className="flex items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane One</p>
+                                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Latest Analysis</h3>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setSiteSettings((prev) => ({
+                                        ...prev,
+                                        homepageCuration: { ...prev.homepageCuration, latestPostIds: [] },
+                                    }))}
+                                    className="text-sm font-medium text-[#64748B] hover:text-[#16A34A]"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+                            <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1 md:grid-cols-2">
+                                {publishedPosts.map((post) => (
+                                    <SelectionCard
+                                        key={post.id}
+                                        title={post.title}
+                                        meta={`${post.club} · ${post.readTime}`}
+                                        description={post.excerpt}
+                                        selectedIndex={siteSettings.homepageCuration.latestPostIds.indexOf(post.id)}
+                                        onClick={() => setSiteSettings((prev) => ({
+                                            ...prev,
+                                            homepageCuration: {
+                                                ...prev.homepageCuration,
+                                                latestPostIds: toggleSelection(prev.homepageCuration.latestPostIds, post.id, 6),
+                                            },
+                                        }))}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
+                            <div className="flex items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane Two</p>
+                                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Editor Picks</h3>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setSiteSettings((prev) => ({
+                                        ...prev,
+                                        homepageCuration: { ...prev.homepageCuration, editorPickIds: [] },
+                                    }))}
+                                    className="text-sm font-medium text-[#64748B] hover:text-[#16A34A]"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+                            <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1 md:grid-cols-2">
+                                {publishedPosts.map((post) => (
+                                    <SelectionCard
+                                        key={post.id}
+                                        title={post.title}
+                                        meta={`${post.mustRead ? "Must Read" : "Article"} · ${post.club}`}
+                                        description={post.excerpt}
+                                        selectedIndex={siteSettings.homepageCuration.editorPickIds.indexOf(post.id)}
+                                        onClick={() => setSiteSettings((prev) => ({
+                                            ...prev,
+                                            homepageCuration: {
+                                                ...prev.homepageCuration,
+                                                editorPickIds: toggleSelection(prev.homepageCuration.editorPickIds, post.id, 4),
+                                            },
+                                        }))}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
+                            <div className="flex items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane Three</p>
+                                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Featured Stories</h3>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setSiteSettings((prev) => ({
+                                        ...prev,
+                                        homepageCuration: { ...prev.homepageCuration, featuredStoryIds: [] },
+                                    }))}
+                                    className="text-sm font-medium text-[#64748B] hover:text-[#16A34A]"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+                            <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1 md:grid-cols-2">
+                                {publishedStories.map((story) => (
+                                    <SelectionCard
+                                        key={story.id}
+                                        title={story.title}
+                                        meta={`${story.eyebrow} · ${story.readTime}`}
+                                        description={story.excerpt}
+                                        selectedIndex={siteSettings.homepageCuration.featuredStoryIds.indexOf(story.id)}
+                                        onClick={() => setSiteSettings((prev) => ({
+                                            ...prev,
+                                            homepageCuration: {
+                                                ...prev.homepageCuration,
+                                                featuredStoryIds: toggleSelection(prev.homepageCuration.featuredStoryIds, story.id, 3),
+                                            },
+                                        }))}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
+                            <div className="flex items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane Four</p>
+                                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Transfer Spotlights</h3>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setSiteSettings((prev) => ({
+                                        ...prev,
+                                        homepageCuration: { ...prev.homepageCuration, transferSpotlightIds: [] },
+                                    }))}
+                                    className="text-sm font-medium text-[#64748B] hover:text-[#16A34A]"
+                                >
+                                    Clear
+                                </button>
+                            </div>
+                            <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1 md:grid-cols-2">
+                                {siteSettings.transferWatch.map((entry) => (
+                                    <SelectionCard
+                                        key={entry.id}
+                                        title={`${entry.player} to ${entry.club}`}
+                                        meta={`${entry.status === "confirmed" ? "Confirmed" : getTransferTierLabel(entry.tier, entry.status)} · ${entry.updatedAt.slice(0, 10)}`}
+                                        description="Shows as a dossier-led transfer spotlight on the homepage."
+                                        selectedIndex={siteSettings.homepageCuration.transferSpotlightIds.indexOf(entry.id)}
+                                        onClick={() => setSiteSettings((prev) => ({
+                                            ...prev,
+                                            homepageCuration: {
+                                                ...prev.homepageCuration,
+                                                transferSpotlightIds: toggleSelection(prev.homepageCuration.transferSpotlightIds, entry.id, 2),
+                                            },
+                                        }))}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6 flex items-start justify-between">
                 <div>
                     <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2 mb-2">
@@ -143,7 +473,7 @@ export function AdminSettingsTab({
                                 </button>
                             </div>
                             <div className="space-y-3">
-                                {siteSettings.pollOfWeek.options.map((option: any, index: number) => (
+                                {siteSettings.pollOfWeek.options.map((option, index) => (
                                     <div key={option.id || index} className="flex items-center gap-3">
                                         <div className="w-8 h-8 rounded-full bg-[#16A34A]/10 text-[#16A34A] text-xs font-black flex items-center justify-center shrink-0">
                                             {index + 1}
@@ -205,7 +535,6 @@ export function AdminSettingsTab({
                 </div>
             </section>
 
-            {/* Social Wall */}
             <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
                 <div className="flex items-start justify-between gap-4 mb-5">
                     <div>
@@ -218,20 +547,37 @@ export function AdminSettingsTab({
                     </div>
                     <label className="inline-flex items-center gap-2 cursor-pointer select-none">
                         <span className="text-sm font-medium text-[#0F172A] dark:text-white">Enabled</span>
-                        <input type="checkbox" checked={siteSettings.socialWallEnabled} onChange={(e) => setSiteSettings((prev: any) => ({ ...prev, socialWallEnabled: e.target.checked }))} className="h-4 w-4 accent-[#16A34A]" />
+                        <input
+                            type="checkbox"
+                            checked={siteSettings.socialWallEnabled}
+                            onChange={(e) => setSiteSettings((prev) => ({ ...prev, socialWallEnabled: e.target.checked }))}
+                            className="h-4 w-4 accent-[#16A34A]"
+                        />
                     </label>
                 </div>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Section Title</label>
-                        <input type="text" value={siteSettings.socialWallTitle} onChange={(e) => setSiteSettings((prev: any) => ({ ...prev, socialWallTitle: e.target.value }))} placeholder="Social Wall" className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]" />
+                        <input
+                            type="text"
+                            value={siteSettings.socialWallTitle}
+                            onChange={(e) => setSiteSettings((prev) => ({ ...prev, socialWallTitle: e.target.value }))}
+                            placeholder="Social Wall"
+                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                        />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Embed Snippet</label>
-                        <textarea value={siteSettings.socialWallEmbedCode} onChange={(e) => setSiteSettings((prev: any) => ({ ...prev, socialWallEmbedCode: e.target.value }))} rows={4} placeholder="<div class='tagembed-widget' ...></div><script src='...'></script>" className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-3 text-xs font-mono text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]" />
+                        <textarea
+                            value={siteSettings.socialWallEmbedCode}
+                            onChange={(e) => setSiteSettings((prev) => ({ ...prev, socialWallEmbedCode: e.target.value }))}
+                            rows={4}
+                            placeholder="<div class='tagembed-widget' ...></div><script src='...'></script>"
+                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-3 text-xs font-mono text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                        />
                     </div>
                     <div className="flex items-center gap-3">
-                        <button onClick={handleSaveSocialWall} disabled={savingSiteSettings} className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
+                        <button onClick={handleSaveSocialWall} disabled={savingSiteSettings} className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] disabled:opacity-50">
                             {savingSiteSettings ? "Saving..." : "Save Social Wall"}
                         </button>
                     </div>
@@ -291,8 +637,8 @@ export function AdminSettingsTab({
                                             type="number"
                                             min={0}
                                             step={field.step}
-                                            value={selectedClubInsight[field.key as keyof ClubIntelligence] as number}
-                                            onChange={(e) => handleClubInsightChange(field.key as keyof ClubIntelligence, e.target.value)}
+                                            value={selectedClubInsight[field.key] as number}
+                                            onChange={(e) => handleClubInsightChange(field.key, e.target.value)}
                                             className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
                                         />
                                     </label>
@@ -333,7 +679,7 @@ export function AdminSettingsTab({
                         <h3 className="text-xl font-bold text-[#0F172A] dark:text-white mb-4">{selectedClubForInsights}</h3>
 
                         <div className="flex flex-wrap gap-2 mb-5">
-                            {selectedClubInsightSummary.styleTags.map((tag: string) => (
+                            {selectedClubInsightSummary.styleTags.map((tag) => (
                                 <span key={tag} className="px-3 py-1.5 rounded-full text-xs font-bold bg-[#16A34A]/10 text-[#16A34A]">
                                     {tag}
                                 </span>
@@ -341,7 +687,7 @@ export function AdminSettingsTab({
                         </div>
 
                         <div className="space-y-4 mb-6">
-                            {selectedClubInsightSummary.styleBars.map((bar: any) => (
+                            {selectedClubInsightSummary.styleBars.map((bar) => (
                                 <div key={bar.label}>
                                     <div className="flex items-center justify-between text-xs font-semibold text-[#475569] dark:text-gray-300 mb-1">
                                         <span>{bar.label}</span>

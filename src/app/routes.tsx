@@ -4,16 +4,19 @@ import { BlogPostPage } from "./pages/BlogPostPage";
 import { AdminPage } from "./pages/AdminPage";
 import { AboutPage } from "./pages/AboutPage";
 import { TacticalBoardPage } from "./pages/TacticalBoardPage";
+import { TacticalEmbedPage } from "./pages/TacticalEmbedPage";
 import { CollectionsPage } from "./pages/CollectionsPage";
 import { DebateCornerPage } from "./pages/DebateCornerPage";
 import { LeagueClubSeasonPage } from "./pages/LeagueClubSeasonPage";
 import { DailyFixPage } from "./pages/DailyFixPage";
 import { TopicPage } from "./pages/TopicPage";
+import { ArchivePage } from "./pages/ArchivePage";
 import { SavedPage } from "./pages/SavedPage";
 import { StoriesPage } from "./pages/StoriesPage";
 import { StoryPage } from "./pages/StoryPage";
 import { AlertsPage } from "./pages/AlertsPage";
 import { TransferReliabilityPage } from "./pages/TransferReliabilityPage";
+import { TransferDossierPage } from "./pages/TransferDossierPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 
@@ -46,9 +49,13 @@ export const router = createBrowserRouter([
         path: "daily-fix",
         Component: DailyFixPage,
       },
-            {
+      {
         path: "topic/:slug",
         Component: TopicPage,
+      },
+      {
+        path: "archive",
+        Component: ArchivePage,
       },
       {
         path: "saved",
@@ -63,6 +70,10 @@ export const router = createBrowserRouter([
         Component: TransferReliabilityPage,
       },
       {
+        path: "transfers/:slug",
+        Component: TransferDossierPage,
+      },
+      {
         path: "stories",
         Component: StoriesPage,
       },
@@ -73,6 +84,10 @@ export const router = createBrowserRouter([
       {
         path: "tactics",
         Component: TacticalBoardPage,
+      },
+      {
+        path: "tactics/embed/:id",
+        Component: TacticalEmbedPage,
       },
       {
         path: "collections",

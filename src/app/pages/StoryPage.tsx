@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 import { ArrowLeft, ArrowRight, Quote, Sparkles, BookOpen } from "lucide-react";
 import { SEO } from "../components/SEO";
@@ -13,8 +13,8 @@ import {
   getStoryPreview,
   getAllStories,
 } from "../lib/storyStorage";
-import { PostCard } from "../components/PostCard";
 import { ReactionUI } from "../components/ReactionUI";
+import { StoryFeatureCard } from "../components/StoryFeatureCard";
 
 function StoryVisual({ story, chapter }: { story: StoryFeature; chapter: StoryChapter }) {
   return (
@@ -72,17 +72,31 @@ export function StoryPage() {
   const readingTime = story 
     ? Math.max(1, Math.ceil(story.chapters.reduce((total, ch) => total + ch.body.join(" ").split(" ").length, 0) / 200))
     : 0;
-    
-  // Fetch related stories (exclude current)
-  const relatedStories = story 
-    ? getAllStories()
-        .filter(s => s.id !== story.id)
-        .sort((a, b) => {
-          const getScore = (p: typeof a) => (p.reactions?.fire || 0) * 2 + (p.reactions?.mindblown || 0) * 2 + (p.reactions?.target || 0) * 2 - (p.reactions?.thumbsdown || 0) - (p.reactions?.cold || 0);
-          return getScore(b) - getScore(a);
-        })
-        .slice(0, 3) 
-    : [];
+  const activeChapterIndex = story
+    ? Math.max(0, story.chapters.findIndex((chapter) => chapter.id === activeChapterId))
+    : 0;
+  const chapterProgress = story
+    ? ((activeChapterIndex + 1) / Math.max(story.chapters.length, 1)) * 100
+    : 0;
+  const relatedStories = useMemo(() => {
+    if (!story) return [];
+
+    return getAllStories()
+      .filter((candidate) => candidate.id !== story.id)
+      .map((candidate) => {
+        const sharedHighlights = candidate.highlights.filter((item) => story.highlights.includes(item)).length;
+        const sameEyebrow = candidate.eyebrow === story.eyebrow ? 2 : 0;
+        const reactionScore = (candidate.reactions?.fire || 0) + (candidate.reactions?.target || 0);
+
+        return {
+          candidate,
+          score: sharedHighlights * 3 + sameEyebrow + reactionScore,
+        };
+      })
+      .sort((left, right) => right.score - left.score)
+      .map((item) => item.candidate)
+      .slice(0, 3);
+  }, [story]);
 
   useEffect(() => {
     const localPreviewStory = isPreviewMode ? getStoryPreview(previewId, slug) : undefined;
@@ -262,6 +276,29 @@ export function StoryPage() {
                   {story.chapters.length} chapters
                 </span>
               </div>
+
+              <div className="mt-8 max-w-2xl rounded-[1.5rem] border border-white/10 bg-black/20 p-5 backdrop-blur-sm">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#bbf7d0]">
+                      Story Progress
+                    </p>
+                    <p className="mt-2 text-sm font-semibold text-white/84">
+                      Chapter {activeChapterIndex + 1} of {story.chapters.length}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => chapterRefs.current[story.chapters[0]?.id]?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                    className="rounded-full border border-white/10 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-white/10"
+                  >
+                    Start reading
+                  </button>
+                </div>
+                <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full rounded-full bg-[#4ade80]" style={{ width: `${chapterProgress}%` }} />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -269,6 +306,41 @@ export function StoryPage() {
         <section className="max-w-[1180px] mx-auto px-4 sm:px-6 py-10 md:py-12">
           <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,0.95fr)_420px] gap-8 xl:gap-10">
             <div className="space-y-8">
+              <div className="xl:hidden rounded-[1.75rem] bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+                      Chapter Navigation
+                    </p>
+                    <h2 className="mt-2 text-xl font-black font-outfit text-[#0F172A] dark:text-white">
+                      Jump through the story
+                    </h2>
+                  </div>
+                  <div className="rounded-full bg-[#16A34A]/10 px-3 py-1 text-xs font-bold text-[#16A34A]">
+                    {activeChapterIndex + 1}/{story.chapters.length}
+                  </div>
+                </div>
+                <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+                  {story.chapters.map((chapter, index) => {
+                    const isActive = chapter.id === activeChapter.id;
+                    return (
+                      <button
+                        key={chapter.id}
+                        type="button"
+                        onClick={() => chapterRefs.current[chapter.id]?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                        className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                          isActive
+                            ? "bg-[#16A34A] text-white"
+                            : "bg-[#F8FAFC] text-[#475569] dark:bg-[#08111f] dark:text-gray-300"
+                        }`}
+                      >
+                        {index + 1}. {chapter.title}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {story.chapters.map((chapter, index) => (
                 <section
                   key={chapter.id}
@@ -422,22 +494,21 @@ export function StoryPage() {
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-1.5 h-6 rounded-full gradient-accent" />
                 <h2 className="text-2xl font-black font-outfit uppercase tracking-tight text-[#0F172A] dark:text-white">
-                  Keep Reading
+                  Read Next In This Lane
                 </h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedStories.map(related => (
-                  <PostCard key={related.id} post={{
-                    id: related.id,
-                    title: related.title,
-                    excerpt: related.excerpt,
-                    coverImage: related.coverImage,
-                    club: related.eyebrow || "Story",
-                    tags: ["Story"],
-                    date: related.date,
-                    readTime: `${Math.max(1, Math.ceil(related.chapters.reduce((t, c) => t + c.body.join(" ").split(" ").length, 0) / 200))} min read`,
-                    content: ""
-                  }} />
+              <p className="mb-6 max-w-3xl text-sm leading-6 text-[#64748B] dark:text-gray-400">
+                These picks are weighted toward shared themes and adjacent story signals, so the next click feels like a continuation rather than a reset.
+              </p>
+              <div className="grid grid-cols-1 gap-6">
+                {relatedStories.map((related, index) => (
+                  <StoryFeatureCard
+                    key={related.id}
+                    story={related}
+                    variant="compact"
+                    label={index === 0 ? "Start here next" : "Continue reading"}
+                    ctaLabel="Open story"
+                  />
                 ))}
               </div>
             </div>

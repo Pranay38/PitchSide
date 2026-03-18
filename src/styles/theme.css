@@ -216,6 +216,112 @@
   font-family: var(--font-outfit);
 }
 
+.page-atmosphere {
+  background-image:
+    radial-gradient(circle at top left, rgba(22, 163, 74, 0.1), transparent 28%),
+    radial-gradient(circle at top right, rgba(15, 23, 42, 0.08), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(248, 250, 252, 0.96));
+}
+
+.dark .page-atmosphere {
+  background-image:
+    radial-gradient(circle at top left, rgba(74, 222, 128, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(148, 163, 184, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(11, 17, 32, 0.94), rgba(7, 12, 23, 0.98));
+}
+
+.editorial-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 128, 0.22), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(15, 23, 42, 0.1), transparent 35%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(242, 247, 244, 0.98));
+}
+
+.dark .editorial-hero {
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 128, 0.16), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(148, 163, 184, 0.08), transparent 35%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(8, 17, 31, 0.98));
+}
+
+.section-surface {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.98));
+}
+
+.dark .section-surface {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(8, 17, 31, 0.96));
+}
+
+.tinted-panel {
+  background:
+    linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(255, 255, 255, 0.94));
+}
+
+.dark .tinted-panel {
+  background:
+    linear-gradient(135deg, rgba(22, 163, 74, 0.14), rgba(15, 23, 42, 0.96));
+}
+
+.grid-fade {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.dark .grid-fade {
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(22, 163, 74, 0.14);
+  background: rgba(22, 163, 74, 0.08);
+  padding: 0.45rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #15803d;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease;
+}
+
+.filter-chip:hover,
+.filter-chip:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(22, 163, 74, 0.24);
+  background: rgba(22, 163, 74, 0.14);
+  box-shadow: 0 10px 24px rgba(22, 163, 74, 0.08);
+}
+
+.dark .filter-chip {
+  border-color: rgba(74, 222, 128, 0.18);
+  background: rgba(22, 163, 74, 0.16);
+  color: #86efac;
+}
+
+.dark .filter-chip:hover,
+.dark .filter-chip:focus-visible {
+  border-color: rgba(74, 222, 128, 0.32);
+  background: rgba(22, 163, 74, 0.24);
+  box-shadow: 0 12px 28px rgba(8, 17, 31, 0.35);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

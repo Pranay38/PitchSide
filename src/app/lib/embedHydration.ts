@@ -14,6 +14,15 @@ type InstagramWindow = Window & {
   };
 };
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function ensureScript(id: string, src: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const existing = document.getElementById(id) as HTMLScriptElement | null;
@@ -93,6 +102,35 @@ function normalizeSofascoreEmbeds(container: HTMLElement) {
   });
 }
 
+function hydrateTacticalEmbeds(container: HTMLElement) {
+  const embedNodes = Array.from(
+    container.querySelectorAll<HTMLElement>("[data-tactical-board-embed]:not([data-tactical-mounted='true'])"),
+  );
+
+  embedNodes.forEach((node, index) => {
+    const id = node.dataset.tacticalBoardEmbed?.trim();
+    if (!id) return;
+
+    const title = escapeHtml(node.dataset.title || `Tactical board ${index + 1}`);
+    const description = escapeHtml(node.dataset.description || "Interactive tactical sequence");
+    node.dataset.tacticalMounted = "true";
+    node.innerHTML = `
+      <div class="border-b border-white/10 px-4 py-4">
+        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#4ade80]">Interactive Tactics</p>
+        <h4 class="mt-2 text-lg font-black font-outfit text-white">${title}</h4>
+        <p class="mt-2 text-sm leading-6 text-white/68">${description}</p>
+      </div>
+      <iframe
+        src="/tactics/embed/${encodeURIComponent(id)}"
+        title="${title}"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+        style="display:block;width:100%;min-height:540px;border:none;background:#08111f;"
+      ></iframe>
+    `;
+  });
+}
+
 async function hydrateTwitterEmbeds(container: HTMLElement) {
   const hasTwitter = !!container.querySelector(".twitter-tweet, [data-social-embed='twitter']");
   if (!hasTwitter) return;
@@ -120,6 +158,7 @@ async function hydrateInstagramEmbeds(container: HTMLElement) {
 async function hydrateEmbeds(container: HTMLElement) {
   reactivateInlineScripts(container);
   normalizeSofascoreEmbeds(container);
+  hydrateTacticalEmbeds(container);
 
   await Promise.allSettled([
     hydrateTwitterEmbeds(container),

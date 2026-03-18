@@ -5,8 +5,9 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
 import { getPublishedPosts } from "../lib/postStorage";
+import { topicPath } from "../lib/contentPaths";
 import { useClubPreference } from "../hooks/useClubPreference";
-import { ArrowLeft, Trophy, Target, Users, Loader2, AlertCircle } from "lucide-react";
+import { Trophy, Target, Users, Loader2, AlertCircle } from "lucide-react";
 
 /** Available leagues for internal linking */
 const LEAGUES = [
@@ -75,21 +76,58 @@ export function LeagueClubSeasonPage() {
     const [data, setData] = useState<SeasonData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [articleSort, setArticleSort] = useState<"newest" | "oldest" | "a-z">("newest");
 
     const blogPosts = useMemo(() => getPublishedPosts(), []);
 
-    // Find related blog posts for this club
-    const relatedPosts = useMemo(() => {
-        if (!club) return [];
-        const clubName = club.replace(/-/g, " ").toLowerCase();
-        return blogPosts
-            .filter((p) =>
-                p.club?.toLowerCase().includes(clubName) ||
-                p.tags.some((t) => t.toLowerCase().includes(clubName)) ||
-                p.title.toLowerCase().includes(clubName)
-            )
-            .slice(0, 4);
-    }, [blogPosts, club]);
+    const articleMatches = useMemo(() => {
+        const leagueLabel = (data?.leagueName || league || "").replace(/-/g, " ").toLowerCase();
+        const clubLabel = (data?.club?.name || club || "").replace(/-/g, " ").toLowerCase();
+
+        const matched = blogPosts.filter((post) => {
+            const haystacks = [post.club, post.title, post.excerpt, ...post.tags].map((value) => value.toLowerCase());
+
+            if (clubLabel) {
+                return haystacks.some((value) => value.includes(clubLabel));
+            }
+
+            return haystacks.some((value) => value.includes(leagueLabel));
+        });
+
+        return [...matched].sort((left, right) => {
+            if (articleSort === "oldest") {
+                return new Date(left.date).getTime() - new Date(right.date).getTime();
+            }
+            if (articleSort === "a-z") {
+                return left.title.localeCompare(right.title);
+            }
+            return new Date(right.date).getTime() - new Date(left.date).getTime();
+        });
+    }, [articleSort, blogPosts, club, data?.club?.name, data?.leagueName, league]);
+
+    const featuredArticle = articleMatches[0] || null;
+    const latestArticles = featuredArticle
+        ? articleMatches.filter((post) => post.id !== featuredArticle.id)
+        : articleMatches;
+    const relatedTopics = useMemo(() => {
+        const counts = new Map<string, number>();
+        const clubLabel = data?.club?.name || club?.replace(/-/g, " ") || "";
+        const leagueLabel = data?.leagueName || league?.replace(/-/g, " ") || "";
+
+        articleMatches.forEach((post) => {
+            post.tags.forEach((tag) => {
+                if (tag.toLowerCase() === clubLabel.toLowerCase() || tag.toLowerCase() === leagueLabel.toLowerCase()) {
+                    return;
+                }
+                counts.set(tag, (counts.get(tag) || 0) + 1);
+            });
+        });
+
+        return Array.from(counts.entries())
+            .sort((left, right) => right[1] - left[1])
+            .slice(0, 6)
+            .map(([tag]) => tag);
+    }, [articleMatches, club, data?.club?.name, data?.leagueName, league]);
 
     useEffect(() => {
         if (!league) return;
@@ -126,7 +164,7 @@ export function LeagueClubSeasonPage() {
         : `${data?.leagueName || ""} ${data?.season || ""} standings, top scorers, and analysis.`;
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+        <div className="page-atmosphere min-h-screen transition-colors duration-300">
             <SEO
                 title={pageTitle}
                 description={pageDescription}
@@ -183,19 +221,70 @@ export function LeagueClubSeasonPage() {
                 {data && !loading && (
                     <div className="space-y-10">
                         {/* Page Header */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                            {data.leagueEmblem && (
-                                <img src={data.leagueEmblem} alt="" className="w-12 h-12 object-contain" />
-                            )}
-                            <div>
-                                <h1 className="text-2xl sm:text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
-                                    {data.club ? data.club.name : data.leagueName}
-                                </h1>
-                                <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
-                                    {data.leagueName} · {data.season} Season
+                        <section className="editorial-hero rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8">
+                            <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+                            <div className="pointer-events-none absolute right-0 top-0 h-48 w-48 rounded-full bg-[#16A34A]/10 blur-3xl" />
+                            <div className="relative">
+                                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+                                    {data.club ? "Club Season Page" : "League Page"}
                                 </p>
                             </div>
-                        </div>
+
+                            <div className="relative mt-4 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+                                <div className="max-w-3xl">
+                                    <div className="flex items-center gap-3">
+                                        {data.leagueEmblem && (
+                                            <img src={data.leagueEmblem} alt="" className="h-12 w-12 object-contain" />
+                                        )}
+                                        <div>
+                                            <h1 className="text-4xl font-black font-outfit text-[#0F172A] dark:text-white md:text-5xl">
+                                                {data.club ? data.club.name : data.leagueName}
+                                            </h1>
+                                            <p className="mt-2 text-base leading-7 text-[#64748B] dark:text-gray-400">
+                                                {data.leagueName} · {data.season} season view with standings, scorers, and attached editorial coverage.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[360px]">
+                                    <div className="rounded-2xl bg-[#16A34A]/8 p-4">
+                                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
+                                            {data.club ? "Position" : "Clubs"}
+                                        </p>
+                                        <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                                            {data.club ? `#${data.club.position}` : data.table.length}
+                                        </p>
+                                    </div>
+                                    <div className="rounded-2xl bg-[#0F172A]/5 p-4 dark:bg-white/5">
+                                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">
+                                            {data.club ? "Points" : "Top scorer"}
+                                        </p>
+                                        <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                                            {data.club ? data.club.points : data.topScorers[0]?.goals || 0}
+                                        </p>
+                                    </div>
+                                    <div className="rounded-2xl bg-[#0F172A]/5 p-4 dark:bg-white/5">
+                                        <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">
+                                            Attached coverage
+                                        </p>
+                                        <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                                            {articleMatches.length}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {relatedTopics.length > 0 && (
+                                <div className="relative mt-7 flex flex-wrap gap-2">
+                                    {relatedTopics.map((topic) => (
+                                        <Link key={topic} to={topicPath(topic)} className="filter-chip">
+                                            {topic}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
 
                         {/* Club Stats Card (if club view) */}
                         {data.club && (
@@ -322,20 +411,41 @@ export function LeagueClubSeasonPage() {
                             </section>
                         )}
 
-                        {/* Related Blog Posts */}
-                        {relatedPosts.length > 0 && (
-                            <section>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-1.5 h-6 rounded-full gradient-accent" />
-                                    <h2 className="text-xl font-black font-outfit text-[#0F172A] dark:text-white uppercase tracking-tight">
-                                        Related Articles
-                                    </h2>
+                        {/* Attached Blog Posts */}
+                        {featuredArticle && (
+                            <section className="space-y-6">
+                                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                                    <div>
+                                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+                                            Attached Coverage
+                                        </p>
+                                        <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                                            Featured article plus the latest linked reads
+                                        </h2>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-semibold text-[#64748B] dark:text-gray-400">Sort</span>
+                                        <select
+                                            value={articleSort}
+                                            onChange={(event) => setArticleSort(event.target.value as "newest" | "oldest" | "a-z")}
+                                            className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-[#0F172A] outline-none dark:border-gray-700 dark:bg-[#0F172A] dark:text-white"
+                                        >
+                                            <option value="newest">Newest first</option>
+                                            <option value="oldest">Oldest first</option>
+                                            <option value="a-z">A-Z</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    {relatedPosts.map((post) => (
-                                        <PostCard key={post.id} post={post} />
-                                    ))}
-                                </div>
+
+                                <PostCard post={featuredArticle} featured />
+
+                                {latestArticles.length > 0 && (
+                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                                        {latestArticles.slice(0, 6).map((post) => (
+                                            <PostCard key={post.id} post={post} />
+                                        ))}
+                                    </div>
+                                )}
                             </section>
                         )}
 

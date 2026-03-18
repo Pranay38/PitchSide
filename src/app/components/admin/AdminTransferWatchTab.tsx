@@ -1,7 +1,7 @@
 import { Repeat2, Trash2 } from "lucide-react";
 import { getAllClubNames } from "../../data/clubs";
 const clubOptions = getAllClubNames().sort((left, right) => left.localeCompare(right));
-import type { TransferWatchEntry, TransferFeeMode, TransferWatchStatus } from "../../data/transferWatch";
+import { getTransferTierLabel, type TransferWatchEntry, type TransferFeeMode, type TransferWatchStatus } from "../../lib/transferWatch";
 
 interface AdminTransferWatchTabProps {
     siteSettings: any;
@@ -176,6 +176,9 @@ export function AdminTransferWatchTab({
                                                 <p className="text-sm font-bold text-[#0F172A] dark:text-white">{entry.player}</p>
                                                 <p className="text-xs text-[#64748B] dark:text-gray-400 mt-1">
                                                     {entry.club} · {formatTransferWatchAmount(entry)}
+                                                </p>
+                                                <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#94A3B8]">
+                                                    {getTransferTierLabel(entry.tier, entry.status)}
                                                 </p>
                                             </div>
                                             <div className="flex items-center gap-2">

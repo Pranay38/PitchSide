@@ -6,9 +6,10 @@ import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import { SocialEmbed, detectPlatform } from "./extensions/SocialEmbedExtension";
 import type { SocialPlatform } from "./extensions/SocialEmbedExtension";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BlogPost } from "../data/posts";
 import { InternalLinkSuggestion } from "./InternalLinkSuggestion";
+import { EDITORIAL_SNIPPETS } from "../lib/editorialBlocks";
 import {
     Bold,
     Italic,
@@ -28,9 +29,9 @@ import {
     Undo2,
     Redo2,
     ImagePlus,
-    Camera,
     X,
     Share2,
+    Sparkles,
     BarChart2,
     MessageCircle, // using as a generic tweet icon since lucide might not have X logo natively
 } from "lucide-react";
@@ -38,7 +39,6 @@ import {
 interface RichTextEditorProps {
     content: string;
     onChange: (html: string) => void;
-    placeholder?: string;
     existingPosts?: BlogPost[];
 }
 
@@ -101,7 +101,7 @@ function ToolbarDivider() {
     return <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />;
 }
 
-export function RichTextEditor({ content, onChange, placeholder, existingPosts = [] }: RichTextEditorProps) {
+export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTextEditorProps) {
     const imageInputRef = useRef<HTMLInputElement>(null);
     const [showEmbedModal, setShowEmbedModal] = useState(false);
     const [embedSrc, setEmbedSrc] = useState("");
@@ -113,6 +113,7 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
     const [isImageUploadModal, setIsImageUploadModal] = useState(false);
     const [isTweetModal, setIsTweetModal] = useState(false);
     const [savedSelection, setSavedSelection] = useState<number | null>(null);
+    const [showEditorialMenu, setShowEditorialMenu] = useState(false);
 
     const handleEmbedUrlChange = (val: string) => {
         let extractedUrl = val;
@@ -174,6 +175,12 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
         },
     });
 
+    useEffect(() => {
+        if (!editor) return;
+        if (editor.getHTML() === (content || "")) return;
+        editor.commands.setContent(content || "", false);
+    }, [content, editor]);
+
     if (!editor) return null;
 
     const addLink = () => {
@@ -210,6 +217,11 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
 
     const triggerImageUpload = () => {
         imageInputRef.current?.click();
+    };
+
+    const insertEditorialSnippet = (html: string) => {
+        editor.chain().focus().insertContent(html).run();
+        setShowEditorialMenu(false);
     };
 
     return (
@@ -356,6 +368,13 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                 }} title="Embed Sofascore Widget">
                     <BarChart2 className="w-4 h-4" />
                 </ToolbarButton>
+                <ToolbarButton
+                    onClick={() => setShowEditorialMenu((current) => !current)}
+                    title="Editorial Blocks"
+                    isActive={showEditorialMenu}
+                >
+                    <Sparkles className="w-4 h-4" />
+                </ToolbarButton>
 
                 <ToolbarDivider />
 
@@ -382,6 +401,42 @@ export function RichTextEditor({ content, onChange, placeholder, existingPosts =
                     <AlignRight className="w-4 h-4" />
                 </ToolbarButton>
             </div>
+
+            {showEditorialMenu && (
+                <div className="border-b border-gray-200 bg-[#F8FAFC] px-3 py-3 dark:border-gray-700 dark:bg-[#08111f]">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                        <div>
+                            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
+                                Editorial Blocks
+                            </p>
+                            <p className="mt-1 text-xs text-[#64748B] dark:text-gray-400">
+                                Insert structured blocks for timelines, stat cards, takeaways, quotes, and comparisons.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setShowEditorialMenu(false)}
+                            className="rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-[#475569] transition-colors hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-700 dark:text-gray-300"
+                        >
+                            Close
+                        </button>
+                    </div>
+
+                    <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+                        {EDITORIAL_SNIPPETS.map((snippet) => (
+                            <button
+                                key={snippet.id}
+                                type="button"
+                                onClick={() => insertEditorialSnippet(snippet.html)}
+                                className="rounded-[1.1rem] border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:border-[#16A34A]/30 hover:bg-[#16A34A]/5 dark:border-gray-700 dark:bg-[#0F172A] dark:hover:bg-[#16A34A]/10"
+                            >
+                                <p className="text-sm font-bold text-[#0F172A] dark:text-white">{snippet.label}</p>
+                                <p className="mt-1 text-xs leading-5 text-[#64748B] dark:text-gray-400">{snippet.description}</p>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Editor */}
             <EditorContent editor={editor} />

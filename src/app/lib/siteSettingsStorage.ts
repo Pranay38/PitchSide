@@ -25,6 +25,19 @@ export interface SupplementalEvent {
   updatedAt: string;
 }
 
+export interface HomepageHeroSelection {
+  type: "post" | "story";
+  id: string;
+}
+
+export interface HomepageCuration {
+  hero: HomepageHeroSelection;
+  latestPostIds: string[];
+  editorPickIds: string[];
+  featuredStoryIds: string[];
+  transferSpotlightIds: string[];
+}
+
 export interface SiteSettings {
   socialWallEnabled: boolean;
   socialWallTitle: string;
@@ -32,6 +45,7 @@ export interface SiteSettings {
   pollOfWeek: PollOfWeek;
   clubIntelligence: Record<string, ClubIntelligence>;
   transferWatch: TransferWatchEntry[];
+  homepageCuration: HomepageCuration;
   supplementalEvents: SupplementalEvent[];
   updatedAt: string;
 }
@@ -47,6 +61,13 @@ const DEFAULT_SETTINGS: SiteSettings = {
   pollOfWeek: createDefaultPollOfWeek(),
   clubIntelligence: {},
   transferWatch: [],
+  homepageCuration: {
+    hero: { type: "post", id: "" },
+    latestPostIds: [],
+    editorPickIds: [],
+    featuredStoryIds: [],
+    transferSpotlightIds: [],
+  },
   supplementalEvents: [],
   updatedAt: "",
 };
@@ -70,6 +91,35 @@ function normalizeClubIntelligenceMap(
     acc[getClubIntelligenceKey(normalized.club)] = normalized;
     return acc;
   }, {});
+}
+
+function uniqueIds(values: unknown): string[] {
+  if (!Array.isArray(values)) return [];
+
+  const seen = new Set<string>();
+  const ordered: string[] = [];
+
+  values.forEach((value) => {
+    const next = String(value || "").trim();
+    if (!next || seen.has(next)) return;
+    seen.add(next);
+    ordered.push(next);
+  });
+
+  return ordered;
+}
+
+function normalizeHomepageCuration(input?: Partial<HomepageCuration> | null): HomepageCuration {
+  return {
+    hero: {
+      type: input?.hero?.type === "story" ? "story" : "post",
+      id: String(input?.hero?.id || "").trim(),
+    },
+    latestPostIds: uniqueIds(input?.latestPostIds),
+    editorPickIds: uniqueIds(input?.editorPickIds),
+    featuredStoryIds: uniqueIds(input?.featuredStoryIds),
+    transferSpotlightIds: uniqueIds(input?.transferSpotlightIds),
+  };
 }
 
 function normalizeSupplementalEvents(input?: SupplementalEvent[] | null): SupplementalEvent[] {
@@ -109,6 +159,7 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     pollOfWeek: normalizePollOfWeek(input?.pollOfWeek),
     clubIntelligence: normalizeClubIntelligenceMap(input?.clubIntelligence),
     transferWatch: normalizeTransferWatchEntries(input?.transferWatch),
+    homepageCuration: normalizeHomepageCuration(input?.homepageCuration),
     supplementalEvents: normalizeSupplementalEvents(input?.supplementalEvents),
     updatedAt: input?.updatedAt || DEFAULT_SETTINGS.updatedAt,
   };

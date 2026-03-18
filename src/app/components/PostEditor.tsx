@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import type { BlogPost } from "../data/posts";
 import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName, deleteCustomClub, isCustomClub } from "../data/clubs";
 import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
+import { ArticleContentRenderer, getArticleContentModel } from "./ArticleContentRenderer";
 import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { PollWidget } from "./PollWidget";
 import { scheduleEmbedHydration } from "../lib/embedHydration";
@@ -104,6 +105,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
     const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const previewArticleModel = useMemo(() => getArticleContentModel(content), [content]);
 
     // Derive the effective "club" field based on category
     const effectiveClub = category === "club" ? club : category;
@@ -959,6 +961,9 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 {calculateReadTime(content.replace(/<[^>]*>/g, " "))}
                             </span>
                         </div>
+                        <p className="mb-3 text-xs leading-5 text-[#64748B] dark:text-gray-400">
+                            Use the editorial blocks menu for timelines, stats cards, quote blocks, key takeaways, comparison tables, and tactical board embeds. They render in both preview and published articles.
+                        </p>
                         {errors.content && <p className="text-red-500 text-xs mb-2">{errors.content}</p>}
                         <RichTextEditor content={content} onChange={setContent} existingPosts={getAllPosts()} />
                     </div>
@@ -1104,24 +1109,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
 
                             {/* Article Body */}
                             <div ref={previewContentRef}>
-                                {content.trim().startsWith("<") ? (
-                                    <div
-                                        className="pitchside-article-content"
-                                        dangerouslySetInnerHTML={{ __html: content }}
-                                    />
-                                ) : (
-                                    <div className="pitchside-article-content">
-                                        {content.split("\n\n").map((paragraph, index) => {
-                                            if (paragraph.startsWith("## "))
-                                                return <h2 key={index}>{paragraph.replace("## ", "")}</h2>;
-                                            if (paragraph.startsWith("### "))
-                                                return <h3 key={index}>{paragraph.replace("### ", "")}</h3>;
-                                            if (paragraph.startsWith("> "))
-                                                return <blockquote key={index}>{paragraph.replace("> ", "").replace(/"/g, "")}</blockquote>;
-                                            return <p key={index}>{paragraph}</p>;
-                                        })}
-                                    </div>
-                                )}
+                                <ArticleContentRenderer model={previewArticleModel} />
                             </div>
 
                             {/* Media Embed */}

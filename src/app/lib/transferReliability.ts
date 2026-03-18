@@ -1,5 +1,7 @@
 import {
+  buildTransferDossierSlug,
   buildTransferTopic,
+  getTransferTierLabel,
   getTransferTopicLabel,
   type TransferWatchEntry,
 } from "./transferWatch";
@@ -7,6 +9,7 @@ import {
 export interface TransferReliabilityEntry extends TransferWatchEntry {
   topic: string;
   topicLabel: string;
+  dossierSlug: string;
   reliabilityScore: number;
   reliabilityLabel: string;
   boardLabel: string;
@@ -21,7 +24,17 @@ function hoursSince(updatedAt: string): number {
 
 export function scoreTransferReliability(entry: TransferWatchEntry): TransferReliabilityEntry {
   const ageHours = hoursSince(entry.updatedAt);
-  let score = entry.status === "confirmed" ? 96 : 54;
+  let score = entry.status === "confirmed"
+    ? 96
+    : entry.tier === 1
+      ? 86
+      : entry.tier === 2
+        ? 76
+        : entry.tier === 3
+          ? 66
+          : entry.tier === 4
+            ? 56
+            : 46;
 
   if (entry.feeMode === "million-usd") score += 8;
   if (ageHours <= 24) score += 8;
@@ -40,12 +53,16 @@ export function scoreTransferReliability(entry: TransferWatchEntry): TransferRel
 
   const boardLabel = entry.status === "confirmed"
     ? "Official move"
-    : score >= 70
-      ? "Rumor with traction"
-      : "Early rumor";
+    : entry.tier && entry.tier <= 2
+      ? `${getTransferTierLabel(entry.tier)} rumor`
+      : score >= 70
+        ? "Rumor with traction"
+        : "Early rumor";
 
   const rationale = [
-    entry.status === "confirmed" ? "Marked as confirmed in admin." : "Still tagged as a rumor.",
+    entry.status === "confirmed"
+      ? "Marked as confirmed in admin."
+      : `${getTransferTierLabel(entry.tier, entry.status)} rumor currently set in admin.`,
     entry.feeMode === "million-usd" ? "A fee is attached, which makes the signal stronger." : "Fee not disclosed, so the signal is softer.",
     ageHours <= 72 ? "Updated recently." : "This item is getting older and needs refreshing.",
   ];
@@ -54,6 +71,7 @@ export function scoreTransferReliability(entry: TransferWatchEntry): TransferRel
     ...entry,
     topic: buildTransferTopic(entry.player, entry.club),
     topicLabel: getTransferTopicLabel(entry),
+    dossierSlug: buildTransferDossierSlug(entry),
     reliabilityScore: score,
     reliabilityLabel,
     boardLabel,
