@@ -46,7 +46,7 @@ import {
     updateStoryAsync,
 } from "../lib/storyStorage";
 import { createDefaultPollOfWeek, normalizePollOfWeek } from "../lib/pollOfWeek";
-import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, MessageSquare, Repeat2, ScanSearch, Copy, BarChart3 } from "lucide-react";
+import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, MessageSquare, Repeat2, ScanSearch, Copy, BarChart3, LineChart } from "lucide-react";
 import { toast } from "sonner";
 import { AdminRunInEditor } from "../components/AdminRunInEditor";
 import type { SupplementalEvent } from "../lib/siteSettingsStorage";
@@ -61,9 +61,10 @@ import { AdminTransferWatchTab } from "../components/admin/AdminTransferWatchTab
 import { AdminSettingsTab } from "../components/admin/AdminSettingsTab";
 import { AdminMatchRatingsTab } from "../components/admin/AdminMatchRatingsTab";
 import { AdminNewsletterTab } from "../components/admin/AdminNewsletterTab";
+import { AdminAnalyticsTab } from "../components/admin/AdminAnalyticsTab";
 
 type View = "list" | "create" | "edit";
-type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter";
+type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics";
 
 export function AdminPage() {
     const navigate = useNavigate();
@@ -516,6 +517,12 @@ export function AdminPage() {
                     >
                         <Mail className="w-4 h-4" /> Newsletter
                     </button>
+                    <button
+                        onClick={() => setActiveTab("analytics")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "analytics" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <LineChart className="w-4 h-4" /> Analytics
+                    </button>
                 </div>
 
                 {/* POSTS TAB */}
@@ -703,6 +710,11 @@ export function AdminPage() {
                 {/* NEWSLETTER TAB */}
                 {activeTab === "newsletter" && (
                     <AdminNewsletterTab />
+                )}
+
+                {/* ANALYTICS TAB */}
+                {activeTab === "analytics" && (
+                    <AdminAnalyticsTab />
                 )}
             </main>
         </div>

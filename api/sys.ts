@@ -13,6 +13,7 @@ import runInHandler from "../server/endpoints/run-in.js";
 import pollOfWeekHandler from "../server/endpoints/poll-of-week.js";
 import onThisDayHandler from "../server/endpoints/on-this-day.js";
 import newsletterHandler from "../server/endpoints/newsletter.js";
+import analyticsHandler from "../server/endpoints/analytics.js";
 import { getPolls, createPoll, updatePoll, deletePoll, votePoll } from "../server/endpoints/polls.js";
 import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRating, voteMatchRating } from "../server/endpoints/matchRatings.js";
 
@@ -42,6 +43,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return subscribersHandler(req, res);
         case "newsletter":
             return newsletterHandler(req, res);
+        case "analytics":
+            return analyticsHandler(req, res);
         case "tactics":
             return tacticsHandler(req, res);
         case "og":
