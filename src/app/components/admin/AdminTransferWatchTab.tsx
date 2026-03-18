@@ -111,6 +111,21 @@ export function AdminTransferWatchTab({
                                     className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A] disabled:opacity-50"
                                 />
                             </label>
+                            <label className="block lg:col-span-2">
+                                <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Reliability Tier</span>
+                                <select
+                                    value={transferDraft.tier || 3}
+                                    onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, tier: Number(e.target.value) }))}
+                                    disabled={transferDraft.status === "confirmed"}
+                                    className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A] disabled:opacity-50"
+                                >
+                                    <option value={1}>Tier 1 (Fabrizio, Ornstein - Incredible)</option>
+                                    <option value={2}>Tier 2 (Reliable Local Journalists)</option>
+                                    <option value={3}>Tier 3 (Mainstream/Mixed Relentless)</option>
+                                    <option value={4}>Tier 4 (Aggregators, Tabloids)</option>
+                                    <option value={5}>Tier 5 (Unreliable/Banter)</option>
+                                </select>
+                            </label>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-3">
