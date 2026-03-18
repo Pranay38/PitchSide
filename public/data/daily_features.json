@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-03-17T05:56:43.668126",
+  "lastUpdated": "2026-03-18T06:00:30.010549",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Bayern battle Man Utd for Anderson - Tuesday's gossip",
-    "sentimentScore": 24
+    "text": "Arsenal eye Bayern's Goretzka - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 93
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 80
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 70
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 74
     },
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 65
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 72
+    },
+    {
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 61
     }
   ]
 }
