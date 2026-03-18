@@ -7,7 +7,7 @@ import { Footer } from "../components/Footer";
 import { NewsTicker } from "../components/NewsTicker";
 import { PollOfTheWeekPanel } from "../components/PollOfTheWeekPanel";
 import { OnThisDayWidget } from "../components/OnThisDayWidget";
-import { DailyGossipWidget } from "../components/DailyGossipWidget";
+import { RumorMillWidget, type RumorMill } from "../components/RumorMillWidget";
 import { ManagerPressureWidget, type ManagerPressure } from "../components/ManagerPressureWidget";
 import { PostCard } from "../components/PostCard";
 import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
@@ -23,6 +23,7 @@ import type { StoryFeature } from "../data/stories";
 
 interface DailyFeaturesData {
   lastUpdated: string;
+  rumorMill?: RumorMill;
   managerPressure: ManagerPressure[];
 }
 
@@ -339,7 +340,9 @@ export function HomePage() {
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
                 <PollOfTheWeekPanel />
-                <DailyGossipWidget />
+                {dailyFeatures?.rumorMill ? (
+                  <RumorMillWidget data={dailyFeatures.rumorMill} />
+                ) : null}
                 <OnThisDayWidget />
                 {dailyFeatures?.managerPressure?.length ? (
                   <ManagerPressureWidget data={dailyFeatures.managerPressure} />

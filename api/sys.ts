@@ -14,7 +14,6 @@ import pollOfWeekHandler from "../server/endpoints/poll-of-week.js";
 import onThisDayHandler from "../server/endpoints/on-this-day.js";
 import newsletterHandler from "../server/endpoints/newsletter.js";
 import analyticsHandler from "../server/endpoints/analytics.js";
-import fanPulseHandler from "../server/endpoints/fan-pulse.js";
 import { getPolls, createPoll, updatePoll, deletePoll, votePoll } from "../server/endpoints/polls.js";
 import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRating, voteMatchRating } from "../server/endpoints/matchRatings.js";
 
@@ -70,8 +69,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         case "match-ratings-vote":
             if (req.method === "POST") return await voteMatchRating(req as any, res as any);
             return res.status(405).json({ error: "Method not allowed" });
-        case "fan-pulse":
-            return fanPulseHandler(req, res);
         default:
             return res.status(404).json({ error: "Route not found: " + route });
     }
