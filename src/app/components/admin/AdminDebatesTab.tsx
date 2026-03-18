@@ -49,6 +49,14 @@ export function AdminDebatesTab({
                                     <span className="text-red-500 font-medium">{deb.disagreeVotes} Disagree</span>
                                     <span>•</span>
                                     <span>{deb.totalArguments} Arguments</span>
+                                    {deb.endsAt && (
+                                        <>
+                                            <span>•</span>
+                                            <span className={new Date(deb.endsAt) < new Date() ? "text-red-400" : "text-orange-400"}>
+                                                {new Date(deb.endsAt) < new Date() ? "Ended" : `Ends ${new Date(deb.endsAt).toLocaleString()}`}
+                                            </span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex gap-2">

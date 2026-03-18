@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { useTheme } from "../hooks/useTheme";
 import { ThemeToggle } from "./ThemeToggle";
+import { NotificationBell } from "./NotificationBell";
 import { getClubByName } from "../data/clubs";
 import { Heart, House, Menu, X, LogIn } from "lucide-react";
 import {
@@ -124,6 +125,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
               </button>
             )}
 
+            <NotificationBell />
             <ThemeToggle />
             <AuthButton />
           </div>

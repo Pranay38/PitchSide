@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Link } from "react-router";
 import {
     ArrowLeft, Flame, ThumbsUp, ThumbsDown, Send, MessageSquare, Share2, Clock,
-    Loader2, Heart, ChevronDown, ChevronUp, TrendingUp,
+    Loader2, Heart, ChevronDown, ChevronUp, Download, Timer,
 } from "lucide-react";
-import { PieChart, Pie, Cell } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { SEO } from "../components/SEO";
 
 interface Argument {
@@ -16,6 +16,11 @@ interface Argument {
     likes: number;
 }
 
+interface VoteHistoryEntry {
+    side: "agree" | "disagree";
+    timestamp: string;
+}
+
 interface Debate {
     id: string;
     title: string;
@@ -25,10 +30,45 @@ interface Debate {
     disagreeVotes: number;
     totalArguments: number;
     arguments?: Argument[];
+    voteHistory?: VoteHistoryEntry[];
     createdAt: string;
+    endsAt?: string;
     active: boolean;
 }
 
+// ─── Live Countdown Hook ───
+function useCountdown(endsAt?: string) {
+    const [timeLeft, setTimeLeft] = useState("");
+    const [isExpired, setIsExpired] = useState(false);
+
+    useEffect(() => {
+        if (!endsAt) { setTimeLeft(""); return; }
+
+        const tick = () => {
+            const diff = new Date(endsAt).getTime() - Date.now();
+            if (diff <= 0) {
+                setTimeLeft("00:00:00");
+                setIsExpired(true);
+                return;
+            }
+            setIsExpired(false);
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            setTimeLeft(
+                `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`
+            );
+        };
+
+        tick();
+        const interval = setInterval(tick, 1000);
+        return () => clearInterval(interval);
+    }, [endsAt]);
+
+    return { timeLeft, isExpired };
+}
+
+// ─── Vote Bar ───
 function VoteBar({ agree, disagree }: { agree: number; disagree: number }) {
     const total = agree + disagree || 1;
     const agreePct = Math.round((agree / total) * 100);
@@ -52,6 +92,108 @@ function VoteBar({ agree, disagree }: { agree: number; disagree: number }) {
     );
 }
 
+// ─── Swing Chart ───
+function VoteSwingChart({ voteHistory }: { voteHistory: VoteHistoryEntry[] }) {
+    if (!voteHistory || voteHistory.length < 2) return null;
+
+    // Build cumulative time-series data
+    let agreeCount = 0;
+    let disagreeCount = 0;
+    const dataPoints = voteHistory.map((entry) => {
+        if (entry.side === "agree") agreeCount++;
+        else disagreeCount++;
+        return {
+            time: new Date(entry.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            agree: agreeCount,
+            disagree: disagreeCount,
+        };
+    });
+
+    // Sample to max ~30 points for readability
+    const step = Math.max(1, Math.floor(dataPoints.length / 30));
+    const sampled = dataPoints.filter((_, i) => i % step === 0 || i === dataPoints.length - 1);
+
+    return (
+        <div className="mt-4 rounded-2xl bg-white/[0.03] border border-white/5 p-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-3">Vote Momentum</p>
+            <ResponsiveContainer width="100%" height={160}>
+                <AreaChart data={sampled}>
+                    <defs>
+                        <linearGradient id="agreeGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="disagreeGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#EF4444" stopOpacity={0.4} />
+                            <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
+                        </linearGradient>
+                    </defs>
+                    <XAxis dataKey="time" tick={{ fontSize: 9, fill: "#6B7280" }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 9, fill: "#6B7280" }} axisLine={false} tickLine={false} width={28} />
+                    <Tooltip
+                        contentStyle={{ background: "#1E293B", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                        labelStyle={{ color: "#94A3B8" }}
+                    />
+                    <Area type="monotone" dataKey="agree" stroke="#10B981" strokeWidth={2} fill="url(#agreeGrad)" name="Agree" />
+                    <Area type="monotone" dataKey="disagree" stroke="#EF4444" strokeWidth={2} fill="url(#disagreeGrad)" name="Disagree" />
+                </AreaChart>
+            </ResponsiveContainer>
+        </div>
+    );
+}
+
+// ─── Shareable Result Card ───
+function DebateResultCard({ debate, cardRef }: { debate: Debate; cardRef: React.RefObject<HTMLDivElement | null> }) {
+    const total = debate.agreeVotes + debate.disagreeVotes || 1;
+    const agreePct = Math.round((debate.agreeVotes / total) * 100);
+    const disagreePct = 100 - agreePct;
+
+    return (
+        <div
+            ref={cardRef}
+            style={{ width: 600, padding: 40, position: "absolute", left: -9999, top: -9999, background: "linear-gradient(135deg, #0a0e1a 0%, #111827 45%, #0b1120 100%)" }}
+        >
+            <div style={{ borderBottom: "2px solid rgba(16,185,129,0.3)", paddingBottom: 20, marginBottom: 24 }}>
+                <p style={{ color: "#10B981", fontSize: 11, fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase" as const, marginBottom: 8 }}>
+                    DEBATE RESULT
+                </p>
+                <h2 style={{ color: "white", fontSize: 26, fontWeight: 900, lineHeight: 1.3 }}>{debate.title}</h2>
+            </div>
+            <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+                <div style={{ flex: 1, background: "rgba(16,185,129,0.1)", borderRadius: 16, padding: 20, textAlign: "center" as const }}>
+                    <p style={{ color: "#10B981", fontSize: 40, fontWeight: 900 }}>{agreePct}%</p>
+                    <p style={{ color: "#6EE7B7", fontSize: 13, fontWeight: 700, marginTop: 4 }}>AGREE</p>
+                    <p style={{ color: "#6B7280", fontSize: 11, marginTop: 4 }}>{debate.agreeVotes} votes</p>
+                </div>
+                <div style={{ flex: 1, background: "rgba(239,68,68,0.1)", borderRadius: 16, padding: 20, textAlign: "center" as const }}>
+                    <p style={{ color: "#EF4444", fontSize: 40, fontWeight: 900 }}>{disagreePct}%</p>
+                    <p style={{ color: "#FCA5A5", fontSize: 13, fontWeight: 700, marginTop: 4 }}>DISAGREE</p>
+                    <p style={{ color: "#6B7280", fontSize: 11, marginTop: 4 }}>{debate.disagreeVotes} votes</p>
+                </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <p style={{ color: "#6B7280", fontSize: 11 }}>{debate.agreeVotes + debate.disagreeVotes} total votes • {debate.totalArguments} arguments</p>
+                <p style={{ color: "#10B981", fontSize: 13, fontWeight: 900, letterSpacing: "0.1em" }}>⚽ PITCHSIDE</p>
+            </div>
+        </div>
+    );
+}
+
+// ─── Countdown Badge ───
+function CountdownBadge({ debate }: { debate: Debate }) {
+    const { timeLeft, isExpired } = useCountdown(debate.endsAt);
+    const isClosed = !debate.active || isExpired || (!debate.endsAt && (Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000));
+
+    if (isClosed) {
+        return <span className="text-[9px] font-black uppercase tracking-wider text-red-400 bg-red-500/10 px-2 py-0.5 rounded-md border border-red-500/20">Closed</span>;
+    }
+    return (
+        <span className="flex items-center gap-1 text-[9px] font-bold tracking-wider text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-md border border-orange-500/20 tabular-nums">
+            <Timer className="w-2.5 h-2.5 animate-pulse" /> {timeLeft || "..."}
+        </span>
+    );
+}
+
 export function DebateCornerPage() {
     const [debates, setDebates] = useState<Debate[]>([]);
     const [loading, setLoading] = useState(true);
@@ -62,14 +204,18 @@ export function DebateCornerPage() {
     const [argSide, setArgSide] = useState<"agree" | "disagree">("agree");
     const [submitting, setSubmitting] = useState(false);
     const [votedIds, setVotedIds] = useState<Set<string>>(new Set());
+    const [sharingId, setSharingId] = useState<string | null>(null);
+    const resultCardRef = useRef<HTMLDivElement>(null);
 
     const fetchDebates = useCallback(async () => {
-        setLoading(true);
         try {
             const res = await fetch("/api/debates");
-            if (res.ok) setDebates(await res.json());
-        } catch (e) { console.error(e); }
-        setLoading(false);
+            if (res.ok) {
+                const data = await res.json();
+                setDebates(data);
+                setLoading(false);
+            }
+        } catch (e) { console.error(e); setLoading(false); }
     }, []);
 
     const fetchDetail = useCallback(async (id: string) => {
@@ -78,13 +224,21 @@ export function DebateCornerPage() {
             if (res.ok) {
                 const data = await res.json();
                 setExpandedDebate(data);
-                // Also update the debate in the list
                 setDebates(prev => prev.map(d => d.id === id ? { ...d, agreeVotes: data.agreeVotes, disagreeVotes: data.disagreeVotes } : d));
             }
         } catch (e) { console.error(e); }
     }, []);
 
     useEffect(() => { fetchDebates(); }, [fetchDebates]);
+
+    // ─── Auto-refresh every 10s ───
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchDebates();
+            if (expandedId) fetchDetail(expandedId);
+        }, 10000);
+        return () => clearInterval(interval);
+    }, [fetchDebates, fetchDetail, expandedId]);
 
     const handleExpand = (id: string) => {
         if (expandedId === id) {
@@ -94,6 +248,12 @@ export function DebateCornerPage() {
             setExpandedId(id);
             fetchDetail(id);
         }
+    };
+
+    const isDebateClosed = (debate: Debate) => {
+        if (!debate.active) return true;
+        if (debate.endsAt) return Date.now() > new Date(debate.endsAt).getTime();
+        return Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000;
     };
 
     const handleVote = async (id: string, side: "agree" | "disagree") => {
@@ -149,8 +309,31 @@ export function DebateCornerPage() {
 
     const handleShareTwitter = (debate: Debate) => {
         const url = encodeURIComponent(window.location.origin + "/debates");
-        const text = encodeURIComponent(`🔥 ${debate.title}\n\nWhere do you stand? Agree or Disagree? Vote now on Pitchside!`);
+        const total = debate.agreeVotes + debate.disagreeVotes || 1;
+        const agreePct = Math.round((debate.agreeVotes / total) * 100);
+        const text = encodeURIComponent(`🔥 ${debate.title}\n\n✅ ${agreePct}% Agree • ❌ ${100 - agreePct}% Disagree\n\nCast your vote on Pitchside!`);
         window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, "_blank");
+    };
+
+    const handleShareResultCard = async (debate: Debate) => {
+        setSharingId(debate.id);
+        // Give time for the hidden result card to render
+        await new Promise(r => setTimeout(r, 200));
+        try {
+            const html2canvas = (await import("html2canvas")).default;
+            if (!resultCardRef.current) return;
+            const canvas = await html2canvas(resultCardRef.current, {
+                backgroundColor: null,
+                scale: 2,
+            });
+            const link = document.createElement("a");
+            link.download = `pitchside-debate-${debate.id}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        } catch (e) {
+            console.error("Failed to generate result card:", e);
+        }
+        setSharingId(null);
     };
 
     return (
@@ -176,7 +359,7 @@ export function DebateCornerPage() {
             <div className="max-w-3xl mx-auto px-4 py-8">
                 <div className="text-center mb-8">
                     <h1 className="text-2xl sm:text-3xl font-black text-white mb-2">🔥 Debate Corner</h1>
-                    <p className="text-gray-400 text-sm">Hot takes. Bold opinions. Your vote matters.</p>
+                    <p className="text-gray-400 text-sm">Hot takes. Bold opinions. Live vote tracking.</p>
                 </div>
 
                 {loading ? (
@@ -195,11 +378,7 @@ export function DebateCornerPage() {
                         {debates.map((debate) => {
                             const isExpanded = expandedId === debate.id;
                             const hasVoted = votedIds.has(debate.id);
-                            const createdDate = new Date(debate.createdAt);
-                            const expiryDate = new Date(createdDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-                            const now = new Date();
-                            const isClosed = !debate.active || now > expiryDate;
-                            const daysLeft = Math.max(0, Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+                            const isClosed = isDebateClosed(debate);
 
                             return (
                                 <div
@@ -219,20 +398,23 @@ export function DebateCornerPage() {
                                                         <h3 className="text-base sm:text-lg font-bold text-white mt-0.5 pr-2">{debate.title}</h3>
                                                     </div>
                                                     <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                                                        <button 
-                                                            onClick={() => handleShareTwitter(debate)}
-                                                            className="text-gray-500 hover:text-[#1DA1F2] transition bg-white/5 p-1.5 rounded-lg"
-                                                            title="Share to Twitter"
-                                                        >
-                                                            <Share2 className="w-3.5 h-3.5" />
-                                                        </button>
-                                                        {isClosed ? (
-                                                            <span className="text-[9px] font-black uppercase tracking-wider text-red-400 bg-red-500/10 px-2 py-0.5 rounded-md border border-red-500/20">Closed</span>
-                                                        ) : (
-                                                            <span className="flex items-center gap-1 text-[9px] font-bold tracking-wider text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded-md border border-orange-500/20">
-                                                                <Clock className="w-2.5 h-2.5" /> {daysLeft} days left
-                                                            </span>
-                                                        )}
+                                                        <div className="flex gap-1.5">
+                                                            <button
+                                                                onClick={() => handleShareTwitter(debate)}
+                                                                className="text-gray-500 hover:text-[#1DA1F2] transition bg-white/5 p-1.5 rounded-lg"
+                                                                title="Share to Twitter"
+                                                            >
+                                                                <Share2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleShareResultCard(debate)}
+                                                                className="text-gray-500 hover:text-emerald-400 transition bg-white/5 p-1.5 rounded-lg"
+                                                                title="Download Result Card"
+                                                            >
+                                                                <Download className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </div>
+                                                        <CountdownBadge debate={debate} />
                                                     </div>
                                                 </div>
                                                 {debate.description && <p className="text-sm text-gray-500 mt-2">{debate.description}</p>}
@@ -262,7 +444,7 @@ export function DebateCornerPage() {
                                                         : "bg-emerald-600 hover:bg-emerald-500 text-white"
                                                     }`}
                                             >
-                                                <ThumbsUp className="w-4 h-4" /> {isClosed ? "Voting Closed" : hasVoted ? "Voted Agree" : "I Agree"}
+                                                <ThumbsUp className="w-4 h-4" /> {isClosed ? "Closed" : hasVoted ? "Voted" : "I Agree"}
                                             </button>
                                             <button
                                                 onClick={() => handleVote(debate.id, "disagree")}
@@ -272,9 +454,14 @@ export function DebateCornerPage() {
                                                         : "bg-red-600 hover:bg-red-500 text-white"
                                                     }`}
                                             >
-                                                <ThumbsDown className="w-4 h-4" /> {isClosed ? "Voting Closed" : hasVoted ? "Voted Disagree" : "I Disagree"}
+                                                <ThumbsDown className="w-4 h-4" /> {isClosed ? "Closed" : hasVoted ? "Voted" : "I Disagree"}
                                             </button>
                                         </div>
+
+                                        {/* Vote Swing Chart (only in expanded view) */}
+                                        {isExpanded && expandedDebate?.id === debate.id && expandedDebate.voteHistory && (
+                                            <VoteSwingChart voteHistory={expandedDebate.voteHistory} />
+                                        )}
                                     </div>
 
                                     {/* Arguments section */}
@@ -379,6 +566,11 @@ export function DebateCornerPage() {
                     </div>
                 )}
             </div>
+
+            {/* Hidden result card for html2canvas capture */}
+            {sharingId && debates.find(d => d.id === sharingId) && (
+                <DebateResultCard debate={debates.find(d => d.id === sharingId)!} cardRef={resultCardRef} />
+            )}
         </div>
     );
 }

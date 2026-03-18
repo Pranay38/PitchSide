@@ -5,6 +5,17 @@ import { connectToDatabase } from "../_db.js";
 
 const COLLECTION = "debates";
 
+function buildFilter(id: string) {
+    return ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
+}
+
+function isDebateClosed(debate: any): boolean {
+    if (!debate.active) return true;
+    if (debate.endsAt) return Date.now() > new Date(debate.endsAt).getTime();
+    // Legacy fallback: 7-day hardcoded expiry
+    return Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000;
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     applyCors(req, res);
     if (!checkRateLimit(req, res)) return;
@@ -20,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const id = req.query.id as string;
 
             if (id) {
-                const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
+                const filter = buildFilter(id);
                 const debate = await collection.findOne(filter);
                 if (!debate) return res.status(404).json({ error: "Debate not found" });
                 const { _id, ...rest } = debate;
@@ -55,15 +66,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 if (!id || !["agree", "disagree"].includes(side)) {
                     return res.status(400).json({ error: "Valid debate id and side (agree/disagree) required" });
                 }
-                const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
-                
+                const filter = buildFilter(id);
+
                 const debate = await collection.findOne(filter);
                 if (!debate) return res.status(404).json({ error: "Debate not found" });
-                const isClosed = !debate.active || (Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000);
-                if (isClosed) return res.status(403).json({ error: "Debate is closed" });
+                if (isDebateClosed(debate)) return res.status(403).json({ error: "Debate is closed" });
 
-const field = side === "agree" ? "agreeVotes" : "disagreeVotes";
-                await collection.updateOne(filter, { $inc: { [field]: 1 } });
+                const field = side === "agree" ? "agreeVotes" : "disagreeVotes";
+                const historyEntry = { side, timestamp: new Date().toISOString() };
+                await collection.updateOne(filter, {
+                    $inc: { [field]: 1 },
+                    $push: { voteHistory: historyEntry } as any,
+                });
                 return res.status(200).json({ success: true });
             }
 
@@ -73,12 +87,11 @@ const field = side === "agree" ? "agreeVotes" : "disagreeVotes";
                 if (!id || !["agree", "disagree"].includes(side) || !text?.trim()) {
                     return res.status(400).json({ error: "Valid id, side, and argument text required" });
                 }
-                const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
-                
+                const filter = buildFilter(id);
+
                 const debate = await collection.findOne(filter);
                 if (!debate) return res.status(404).json({ error: "Debate not found" });
-                const isClosed = !debate.active || (Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000);
-                if (isClosed) return res.status(403).json({ error: "Debate is closed" });
+                if (isDebateClosed(debate)) return res.status(403).json({ error: "Debate is closed" });
 
                 const argument = {
                     id: Date.now().toString(),
@@ -96,12 +109,11 @@ const field = side === "agree" ? "agreeVotes" : "disagreeVotes";
             if (action === "like") {
                 const { id, argumentId } = req.body;
                 if (!id || !argumentId) return res.status(400).json({ error: "Debate id and argument id required" });
-                const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
-                
+                const filter = buildFilter(id);
+
                 const debate = await collection.findOne(filter);
                 if (!debate) return res.status(404).json({ error: "Debate not found" });
-                const isClosed = !debate.active || (Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000);
-                if (isClosed) return res.status(403).json({ error: "Debate is closed" });
+                if (isDebateClosed(debate)) return res.status(403).json({ error: "Debate is closed" });
 
                 await collection.updateOne(
                     { ...filter, "arguments.id": argumentId },
@@ -112,8 +124,12 @@ const field = side === "agree" ? "agreeVotes" : "disagreeVotes";
 
             // Create a new debate (admin)
             if (!requireAuth(req, res)) return;
-            const { title, description, category } = req.body;
+            const { title, description, category, durationHours } = req.body;
             if (!title?.trim()) return res.status(400).json({ error: "Title is required" });
+
+            const now = new Date();
+            const hours = Math.max(1, parseInt(durationHours) || 168); // default 7 days
+            const endsAt = new Date(now.getTime() + hours * 60 * 60 * 1000).toISOString();
 
             const doc = {
                 title: title.trim(),
@@ -122,7 +138,9 @@ const field = side === "agree" ? "agreeVotes" : "disagreeVotes";
                 agreeVotes: 0,
                 disagreeVotes: 0,
                 arguments: [],
-                createdAt: new Date().toISOString(),
+                voteHistory: [],
+                createdAt: now.toISOString(),
+                endsAt,
                 active: true,
             };
             const result = await collection.insertOne(doc);
@@ -136,7 +154,7 @@ const field = side === "agree" ? "agreeVotes" : "disagreeVotes";
             const argumentId = req.query.argumentId as string;
 
             if (!id) return res.status(400).json({ error: "Missing debate id" });
-            const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };
+            const filter = buildFilter(id);
 
             if (argumentId) {
                 // Delete a specific argument

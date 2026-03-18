@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Link, FileText, Tag, ArrowLeft } from "lucide-react";
+import { Link, FileText, Tag, ArrowLeft, Clock } from "lucide-react";
 
 interface DebateEditorProps {
-    onSave: (data: { title: string; description: string; category: string; coverImage: string }) => void;
+    onSave: (data: { title: string; description: string; category: string; coverImage: string; durationHours: number }) => void;
     onCancel: () => void;
 }
 
@@ -11,6 +11,7 @@ export function DebateEditor({ onSave, onCancel }: DebateEditorProps) {
     const [description, setDescription] = useState("");
     const [category, setCategory] = useState("General");
     const [coverImage, setCoverImage] = useState("");
+    const [durationHours, setDurationHours] = useState(168); // default 7 days
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const validate = () => {
@@ -29,9 +30,18 @@ export function DebateEditor({ onSave, onCancel }: DebateEditorProps) {
             title: title.trim(),
             description: description.trim(),
             category: category.trim() || "General",
-            coverImage: coverImage.trim() || "https://images.unsplash.com/photo-1549923015-badf41b04831?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmb290YmFsbCUyMHN0YWRpdW0lMjBtYXRjaHxlbnwxfHx8fDE3NzIyOTU0ODJ8MA&ixlib=rb-4.1.0&q=80&w=1080"
+            coverImage: coverImage.trim() || "",
+            durationHours,
         });
     };
+
+    const PRESET_DURATIONS = [
+        { label: "1 hour", value: 1 },
+        { label: "6 hours", value: 6 },
+        { label: "24 hours", value: 24 },
+        { label: "3 days", value: 72 },
+        { label: "7 days", value: 168 },
+    ];
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm shadow-2xl animate-in fade-in duration-200">
@@ -102,6 +112,32 @@ export function DebateEditor({ onSave, onCancel }: DebateEditorProps) {
                                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 transition-all text-sm"
                             />
                         </div>
+                    </div>
+
+                    {/* Duration picker */}
+                    <div>
+                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-gray-300 mb-2">
+                            <Clock className="w-4 h-4 text-orange-500" /> Debate Duration
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                            {PRESET_DURATIONS.map((preset) => (
+                                <button
+                                    key={preset.value}
+                                    type="button"
+                                    onClick={() => setDurationHours(preset.value)}
+                                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                                        durationHours === preset.value
+                                            ? "bg-orange-500 text-white shadow-md shadow-orange-500/25"
+                                            : "bg-gray-100 dark:bg-[#0F172A] text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-orange-400"
+                                    }`}
+                                >
+                                    {preset.label}
+                                </button>
+                            ))}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                            Debate will close automatically after {durationHours >= 24 ? `${Math.round(durationHours / 24)} day${Math.round(durationHours / 24) !== 1 ? 's' : ''}` : `${durationHours} hour${durationHours !== 1 ? 's' : ''}`}
+                        </p>
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800 mt-6">
