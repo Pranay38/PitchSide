@@ -14,6 +14,8 @@ import { StoriesPage } from "./pages/StoriesPage";
 import { StoryPage } from "./pages/StoryPage";
 import { AlertsPage } from "./pages/AlertsPage";
 import { TransferReliabilityPage } from "./pages/TransferReliabilityPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { MobileBottomNav } from "./components/MobileBottomNav";
 
 export const router = createBrowserRouter([
   {
@@ -21,7 +23,10 @@ export const router = createBrowserRouter([
     element: (
       <>
         <ScrollRestoration />
-        < Outlet />
+        <div className="pb-16 sm:pb-0">
+          <Outlet />
+        </div>
+        <MobileBottomNav />
       </>
     ),
     children: [
@@ -76,6 +81,10 @@ export const router = createBrowserRouter([
       {
         path: "debates",
         Component: DebateCornerPage,
+      },
+      {
+        path: "profile",
+        Component: ProfilePage,
       },
       {
         path: "pitchside-manage-x7k9",

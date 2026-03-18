@@ -5,6 +5,7 @@ import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ReadingProgress } from "../components/ReadingProgress";
+import { CommentSection } from "../components/CommentSection";
 import type { StoryChapter, StoryFeature } from "../data/stories";
 import {
   getStoryBySlug,
@@ -443,6 +444,11 @@ export function StoryPage() {
           </section>
         )}
       </main>
+
+      {/* Comments */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-12">
+        <CommentSection postId={`story-${story.slug}`} />
+      </div>
 
       <Footer />
     </div>
