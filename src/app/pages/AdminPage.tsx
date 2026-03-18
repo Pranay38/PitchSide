@@ -50,6 +50,7 @@ import { AdminDebatesTab } from "../components/admin/AdminDebatesTab";
 import { AdminPollsTab } from "../components/admin/AdminPollsTab";
 import { AdminOnThisDayTab } from "../components/admin/AdminOnThisDayTab";
 import { AdminTransferWatchTab } from "../components/admin/AdminTransferWatchTab";
+import { AdminTransferTrackerTab } from "../components/admin/AdminTransferTrackerTab";
 import { AdminSettingsTab } from "../components/admin/AdminSettingsTab";
 import { AdminMatchRatingsTab } from "../components/admin/AdminMatchRatingsTab";
 import { AdminNewsletterTab } from "../components/admin/AdminNewsletterTab";
@@ -57,9 +58,10 @@ import { AdminAnalyticsTab } from "../components/admin/AdminAnalyticsTab";
 import { InstagramCarouselGenerator } from "../components/admin/InstagramCarouselGenerator";
 import { DraftAssistant } from "../components/admin/DraftAssistant";
 import { TweetThreadGenerator } from "../components/admin/TweetThreadGenerator";
+import { AdminCalendarTab } from "../components/admin/AdminCalendarTab";
 
 type View = "list" | "create" | "edit";
-type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator";
+type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
 
 export function AdminPage() {
     const navigate = useNavigate();
@@ -747,6 +749,12 @@ export function AdminPage() {
                         <ArrowUpDown className="w-4 h-4" /> Run-In Tracker
                     </button>
                     <button
+                        onClick={() => setActiveTab("transfer-tracker")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "transfer-tracker" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <Repeat2 className="w-4 h-4" /> Transfer Tracker
+                    </button>
+                    <button
                         onClick={() => setActiveTab("transfer-watch")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "transfer-watch" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
@@ -793,6 +801,12 @@ export function AdminPage() {
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "tweet-generator" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <MessageSquare className="w-4 h-4" /> Tweet Gen
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("calendar")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "calendar" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <span className="text-base leading-none">📅</span> Calendar
                     </button>
                 </div>
 
@@ -965,6 +979,11 @@ export function AdminPage() {
                     />
                 )}
 
+                {/* TRANSFER TRACKER TAB */}
+                {activeTab === "transfer-tracker" && (
+                    <AdminTransferTrackerTab />
+                )}
+
                 {/* TRANSFER WATCH TAB */}
                 {activeTab === "transfer-watch" && (
                     <AdminTransferWatchTab 
@@ -1041,6 +1060,11 @@ export function AdminPage() {
                 {/* TWEET THREAD GENERATOR TAB */}
                 {activeTab === "tweet-generator" && (
                     <TweetThreadGenerator />
+                )}
+
+                {/* CALENDAR TAB */}
+                {activeTab === "calendar" && (
+                    <AdminCalendarTab posts={posts} />
                 )}
             </main>
         </div>

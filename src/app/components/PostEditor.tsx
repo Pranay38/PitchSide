@@ -5,9 +5,10 @@ import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
 import { ArticleContentRenderer, getArticleContentModel } from "./ArticleContentRenderer";
-import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2, MessageSquare } from "lucide-react";
 import { PollWidget } from "./PollWidget";
 import { scheduleEmbedHydration } from "../lib/embedHydration";
+import { toast } from "sonner";
 
 /** Categories that are NOT club-specific */
 const GENERAL_CATEGORIES = [
@@ -100,6 +101,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     // Custom Team Modal State
     const [showCustomTeamModal, setShowCustomTeamModal] = useState(false);
     const [customTeamLogoInput, setCustomTeamLogoInput] = useState("");
+    const [copiedThread, setCopiedThread] = useState(false);
 
     // Auto-save state
     const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -234,6 +236,35 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         setDragOver(false);
         const file = e.dataTransfer.files[0];
         if (file) handleFileUpload(file);
+    };
+
+    const handleCopyAsThread = () => {
+        // Strip HTML but preserve paragraphs
+        let plain = content
+            .replace(/<\/p>/gi, '\n\n')
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<[^>]*>/g, ' ')
+            .trim();
+            
+        // Clean up excessive spaces
+        plain = plain.replace(/  +/g, ' ');
+
+        const paragraphs = plain.split(/\n\s*\n/).map(p => p.trim()).filter(p => p.length > 0);
+        
+        if (paragraphs.length === 0) {
+            toast.error("Editor is empty!");
+            return;
+        }
+
+        const total = paragraphs.length;
+        const threadText = paragraphs
+            .map((p, i) => `${i + 1}/${total}\n${p}`)
+            .join('\n\n———\n\n');
+
+        navigator.clipboard.writeText(threadText);
+        setCopiedThread(true);
+        toast.success("Thread copied to clipboard!");
+        setTimeout(() => setCopiedThread(false), 2000);
     };
 
     const validate = (): boolean => {
@@ -952,14 +983,23 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
 
                     {/* Rich Text Content */}
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <div className="flex items-center justify-between mb-3">
+                        <div className="flex flex-wrap items-center justify-between mb-3 gap-2">
                             <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
                                 <FileText className="w-4 h-4 text-[#16A34A]" />
                                 Content
                             </label>
-                            <span className="text-xs text-[#94A3B8] dark:text-gray-500">
-                                {calculateReadTime(content.replace(/<[^>]*>/g, " "))}
-                            </span>
+                            <div className="flex items-center gap-4">
+                                <button
+                                    type="button"
+                                    onClick={handleCopyAsThread}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0F172A] dark:bg-white text-white dark:text-[#0F172A] text-xs font-semibold rounded-lg hover:opacity-80 transition-opacity"
+                                >
+                                    {copiedThread ? <><CheckCircle2 className="w-3.5 h-3.5" /> Copied Thread</> : <><MessageSquare className="w-3.5 h-3.5" /> Copy as Thread</>}
+                                </button>
+                                <span className="text-xs font-medium text-[#94A3B8] dark:text-gray-500">
+                                    {calculateReadTime(content.replace(/<[^>]*>/g, " "))}
+                                </span>
+                            </div>
                         </div>
                         <p className="mb-3 text-xs leading-5 text-[#64748B] dark:text-gray-400">
                             Use the editorial blocks menu for timelines, stats cards, quote blocks, key takeaways, comparison tables, and tactical board embeds. They render in both preview and published articles.

@@ -1,0 +1,295 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router";
+import { ArrowRight, Search, Heart, Shield, Flame, Target } from "lucide-react";
+import { SEO } from "../components/SEO";
+import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
+import { PostCard } from "../components/PostCard";
+import { PageState } from "../components/PageState";
+import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
+import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
+import { deslugify } from "../lib/contentPaths";
+import type { BlogPost } from "../data/posts";
+import type { StoryFeature } from "../data/stories";
+import { toast } from "sonner";
+import { getClubByName } from "../data/clubs";
+
+function sortPosts(posts: BlogPost[], sort: string): BlogPost[] {
+  const ordered = [...posts];
+  if (sort === "oldest") {
+    return ordered.sort((left, right) => new Date(left.date).getTime() - new Date(right.date).getTime());
+  }
+  if (sort === "a-z") {
+    return ordered.sort((left, right) => left.title.localeCompare(right.title));
+  }
+  return ordered.sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
+}
+
+export function ClubHubPage() {
+  const { slug = "" } = useParams();
+  const [posts, setPosts] = useState<BlogPost[]>(() => getPublishedPosts());
+  const [stories, setStories] = useState<StoryFeature[]>(() => getAllStories(true));
+  const [loading, setLoading] = useState(posts.length === 0);
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const normalizedSlug = slug.toLowerCase();
+  const clubLabel = deslugify(slug);
+  const clubData = getClubByName(clubLabel);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    Promise.all([getPublishedPostsAsync(), getAllStoriesAsync(true)])
+      .then(([nextPosts, nextStories]) => {
+        if (!isMounted) return;
+        setPosts(nextPosts);
+        setStories(nextStories);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setLoading(false);
+      });
+
+    // Check favorite status
+    const currentFav = localStorage.getItem("favoriteClub");
+    setIsFavorite(currentFav?.toLowerCase() === clubLabel.toLowerCase());
+
+    return () => {
+      isMounted = false;
+    };
+  }, [clubLabel]);
+
+  const toggleFavorite = () => {
+    if (isFavorite) {
+      localStorage.removeItem("favoriteClub");
+      setIsFavorite(false);
+      toast.success(`${clubLabel} removed from favorites`);
+      // Optional: Dispatch event to sync other tabs
+      window.dispatchEvent(new Event("storage"));
+    } else {
+      localStorage.setItem("favoriteClub", clubLabel);
+      setIsFavorite(true);
+      toast.success(`${clubLabel} set as your favorite club!`);
+      window.dispatchEvent(new Event("storage"));
+    }
+  };
+
+  const matchingPosts = useMemo(() => {
+    const clubMatches = posts.filter((post) => {
+      // Direct club match or tag match
+      return post.club?.toLowerCase() === normalizedSlug.replace(/-/g, " ") ||
+             post.tags.some(t => t.toLowerCase() === normalizedSlug.replace(/-/g, " "));
+    });
+
+    const filteredByQuery = query.trim()
+      ? clubMatches.filter((post) => {
+          const haystacks = [post.title, post.excerpt, post.playerName || "", ...post.tags];
+          return haystacks.some((value) => value.toLowerCase().includes(query.trim().toLowerCase()));
+        })
+      : clubMatches;
+
+    return sortPosts(filteredByQuery, sort);
+  }, [normalizedSlug, posts, query, sort]);
+
+  const matchingStories = useMemo(() => {
+    return stories.filter(story => 
+      story.club?.toLowerCase() === normalizedSlug.replace(/-/g, " ") ||
+      story.tags?.some(t => t.toLowerCase() === normalizedSlug.replace(/-/g, " "))
+    );
+  }, [stories, normalizedSlug]);
+
+  const featuredPost = matchingPosts.find(p => p.mainStory) || matchingPosts[0] || null;
+  const latestPosts = featuredPost
+    ? matchingPosts.filter((post) => post.id !== featuredPost.id)
+    : matchingPosts;
+
+  return (
+    <div className="page-atmosphere min-h-screen transition-colors duration-300">
+      <SEO
+        title={`${clubLabel} Hub`}
+        description={`The ultimate ${clubLabel} fan hub. Read the latest news, stories, and tactical analysis.`}
+      />
+      <Header />
+
+      <main className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6">
+        {/* Club Hero Banner */}
+        <section className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#0F172A] to-[#1E293B] dark:from-[#0B1120] dark:to-[#0F172A] border border-gray-800 p-8 md:p-12 lg:p-16 shadow-2xl">
+          {/* Decorative background elements */}
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+          <div className="absolute -top-32 -right-32 w-96 h-96 bg-[#16A34A]/20 rounded-full blur-3xl opacity-50"></div>
+          <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl opacity-50"></div>
+
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="flex items-center gap-6">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white/10 backdrop-blur-md border border-white/20 p-4 sm:p-6 flex items-center justify-center shrink-0 shadow-xl relative overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-[#16A34A]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  {clubData?.logo ? (
+                      <img src={clubData.logo} alt={clubLabel} className="w-full h-full object-contain relative z-10 filter drop-shadow-md" />
+                  ) : (
+                      <Shield className="w-12 h-12 text-white/50" />
+                  )}
+              </div>
+              
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                    <span className="px-3 py-1 bg-white/10 text-white/80 text-[10px] font-black uppercase tracking-widest rounded-full backdrop-blur-sm border border-white/10">Club Hub</span>
+                </div>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-black font-outfit text-white tracking-tight mb-2">
+                  {clubLabel}
+                </h1>
+                <p className="text-white/60 text-lg font-medium max-w-xl">
+                  {clubData?.league || "Global Football"}
+                </p>
+              </div>
+            </div>
+
+            <div className="shrink-0">
+                <button
+                    onClick={toggleFavorite}
+                    className={`group relative flex items-center gap-3 px-6 py-4 rounded-2xl font-bold text-sm transition-all duration-300 overflow-hidden ${
+                        isFavorite 
+                            ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 shadow-[0_0_20px_rgba(239,68,68,0.1)]' 
+                            : 'bg-white text-[#0F172A] hover:bg-gray-100 hover:scale-105 shadow-xl'
+                    }`}
+                >
+                    <div className="relative z-10 flex items-center gap-2">
+                        <Heart className={`w-5 h-5 transition-transform duration-300 ${isFavorite ? 'fill-current scale-110' : 'group-hover:scale-110'}`} />
+                        <span>{isFavorite ? 'Remove from favorites' : 'Set as favorite club'}</span>
+                    </div>
+                </button>
+            </div>
+          </div>
+          
+          <div className="relative z-10 mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-white/10 pt-8">
+            <div className="flex flex-col">
+                <span className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Total Posts</span>
+                <span className="text-white text-2xl font-black">{matchingPosts.length}</span>
+            </div>
+            <div className="flex flex-col">
+                <span className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Web Stories</span>
+                <span className="text-white text-2xl font-black">{matchingStories.length}</span>
+            </div>
+            <div className="flex flex-col">
+                <span className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Fan Sentiment</span>
+                <span className="text-[#16A34A] flex items-center gap-1.5 text-lg font-bold">
+                    <Flame className="w-5 h-5 fill-current" /> High
+                </span>
+            </div>
+          </div>
+        </section>
+
+        {/* Stories Section (if any) */}
+        {matchingStories.length > 0 && (
+          <section className="mt-12">
+            <div className="flex items-center gap-2 mb-6">
+                <Target className="w-5 h-5 text-[#16A34A]" />
+                <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">Web Stories</h2>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
+              {matchingStories.map(story => (
+                <Link 
+                  key={story.id} 
+                  to={`/stories/${story.slug}`}
+                  className="relative shrink-0 w-32 h-48 sm:w-40 sm:h-60 rounded-2xl overflow-hidden group snap-start border border-gray-200 dark:border-gray-800"
+                >
+                  <img src={story.coverImage} alt={story.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-3">
+                    <p className="text-white text-sm font-bold leading-tight">{story.title}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Filters */}
+        <section className="section-surface mt-8 rounded-[2rem] border border-gray-200 p-4 shadow-sm dark:border-gray-800 md:p-5">
+          <div className="grid gap-3 lg:grid-cols-[2fr_220px_220px]">
+            <label className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 dark:border-gray-700 dark:bg-[#08111f]">
+              <Search className="h-4 w-4 text-[#94A3B8]" />
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={`Search ${clubLabel} coverage...`}
+                className="w-full bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-[#94A3B8] dark:text-white"
+              />
+            </label>
+            <select value={sort} onChange={(event) => setSort(event.target.value)} className="rounded-2xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 text-sm text-[#0F172A] outline-none dark:border-gray-700 dark:bg-[#08111f] dark:text-white">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="a-z">A-Z</option>
+            </select>
+            <div className="rounded-2xl bg-[#16A34A]/10 px-4 py-3 text-sm font-semibold text-[#16A34A]">
+              {matchingPosts.length} article{matchingPosts.length === 1 ? "" : "s"}
+            </div>
+          </div>
+        </section>
+
+        {/* Posts Area */}
+        <section className="mt-10">
+          {loading && posts.length === 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="h-[360px] animate-pulse rounded-[1.75rem] bg-gray-200 dark:bg-gray-800" />
+              ))}
+            </div>
+          ) : featuredPost ? (
+            <div className="space-y-10">
+              <section>
+                <div className="mb-6">
+                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+                    Featured Match / News
+                  </p>
+                  <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                    Lead {clubLabel} Story
+                  </h2>
+                </div>
+                <PostCard post={featuredPost} featured />
+              </section>
+
+              {latestPosts.length > 0 && (
+                <section className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-black font-outfit text-[#0F172A] dark:text-white">
+                      Latest Coverage
+                    </h2>
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {latestPosts.map((post) => (
+                      <PostCard key={post.id} post={post} />
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+          ) : (
+            <PageState
+              icon={Shield}
+              eyebrow={clubLabel}
+              title={`No coverage for ${clubLabel} yet`}
+              description={query.trim()
+                ? "Nothing matched your search filter. Try clearing it."
+                : "Check back later for the latest news, tactics, and interviews for this club."}
+              action={(
+                <Link
+                  to={`/`}
+                  className="inline-flex items-center gap-2 rounded-full bg-[#16A34A] px-5 py-3 text-sm font-bold text-white"
+                >
+                  Return home
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              )}
+            />
+          )}
+        </section>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

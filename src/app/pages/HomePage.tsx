@@ -20,6 +20,7 @@ import { buildTransferReliabilityBoard } from "../lib/transferReliability";
 import { formatTransferWatchAmount, getTransferTierLabel } from "../lib/transferWatch";
 import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
+import { DebateWidget } from "../components/DebateWidget";
 
 interface DailyFeaturesData {
   lastUpdated: string;
@@ -340,6 +341,7 @@ export function HomePage() {
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
                 <PollOfTheWeekPanel />
+                <DebateWidget />
                 {dailyFeatures?.rumorMill ? (
                   <RumorMillWidget data={dailyFeatures.rumorMill} />
                 ) : null}

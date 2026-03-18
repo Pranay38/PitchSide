@@ -10,6 +10,7 @@ import { DebateCornerPage } from "./pages/DebateCornerPage";
 import { LeagueClubSeasonPage } from "./pages/LeagueClubSeasonPage";
 import { DailyFixPage } from "./pages/DailyFixPage";
 import { TopicPage } from "./pages/TopicPage";
+import { ClubHubPage } from "./pages/ClubHubPage";
 import { ArchivePage } from "./pages/ArchivePage";
 import { SavedPage } from "./pages/SavedPage";
 import { StoriesPage } from "./pages/StoriesPage";
@@ -17,6 +18,7 @@ import { StoryPage } from "./pages/StoryPage";
 import { AlertsPage } from "./pages/AlertsPage";
 import { TransferReliabilityPage } from "./pages/TransferReliabilityPage";
 import { TransferDossierPage } from "./pages/TransferDossierPage";
+import { TransferTrackerPage } from "./pages/TransferTrackerPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 
@@ -54,6 +56,10 @@ export const router = createBrowserRouter([
         Component: TopicPage,
       },
       {
+        path: "club/:slug",
+        Component: ClubHubPage,
+      },
+      {
         path: "archive",
         Component: ArchivePage,
       },
@@ -72,6 +78,10 @@ export const router = createBrowserRouter([
       {
         path: "transfers/:slug",
         Component: TransferDossierPage,
+      },
+      {
+        path: "transfer-tracker",
+        Component: TransferTrackerPage,
       },
       {
         path: "stories",

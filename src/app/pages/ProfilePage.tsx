@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import { Header } from "../components/Header";
 import { SEO } from "../components/SEO";
-import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar } from "lucide-react";
+import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar, Share, Sparkles } from "lucide-react";
 
 interface SavedArticle {
     id: string;
@@ -15,6 +15,9 @@ export function ProfilePage() {
     const [activeTab, setActiveTab] = useState<"saved" | "activity" | "settings">("saved");
     const [savedArticles, setSavedArticles] = useState<SavedArticle[]>([]);
     const [favoriteClub, setFavoriteClub] = useState<string | null>(null);
+    const [followedClubsCount, setFollowedClubsCount] = useState(0);
+    const [votesCount, setVotesCount] = useState(0);
+    const [wrappedUrl, setWrappedUrl] = useState<string | null>(null);
 
     useEffect(() => {
         // Load saved articles from localStorage
@@ -23,7 +26,22 @@ export function ProfilePage() {
             setSavedArticles(saved);
         } catch { /* empty */ }
 
-        setFavoriteClub(localStorage.getItem("favoriteClub"));
+        setFavoriteClub(localStorage.getItem("favoriteClub") || null);
+
+        try {
+            const clubs = JSON.parse(localStorage.getItem("pitchside_followed_clubs") || "[]");
+            setFollowedClubsCount(clubs.length);
+        } catch { /* empty */ }
+
+        // Count votes by looking at localStorage keys starting with specific patterns if tracked locally
+        let vCount = 0;
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith("hasVoted") || key.startsWith("pitchside_voted"))) {
+                vCount++;
+            }
+        }
+        setVotesCount(vCount);
     }, []);
 
     const userName = localStorage.getItem("pitchside-username") || "Football Fan";
@@ -72,11 +90,63 @@ export function ProfilePage() {
                             <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Comments</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-lg font-black text-[#0F172A] dark:text-white">0</p>
+                            <p className="text-lg font-black text-[#0F172A] dark:text-white">{votesCount}</p>
                             <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Votes</p>
                         </div>
                     </div>
                 </div>
+
+                {/* Pitchside Wrapped Banner (Only from June 16th onwards each year) */}
+                {(new Date().getMonth() > 5 || (new Date().getMonth() === 5 && new Date().getDate() >= 16) || localStorage.getItem("dev_force_wrapped") === "true") && (
+                    <div className="mb-6 p-6 rounded-2xl bg-gradient-to-r from-gray-900 via-[#0F172A] to-[#1E293B] border border-gray-800 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#16A34A] opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+                        
+                        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                            <div>
+                                <p className="text-emerald-400 text-xs font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                                    <Sparkles className="w-3.5 h-3.5" /> Season in Review
+                                </p>
+                                <h2 className="text-2xl sm:text-3xl font-black font-outfit text-white mb-2">Pitchside Wrapped</h2>
+                                <p className="text-sm text-gray-400">Your personalized end-of-season graphic is ready.</p>
+                            </div>
+                            <button 
+                                onClick={() => {
+                                    const url = `/api/wrapped?username=${encodeURIComponent(userName)}&saved=${savedArticles.length}&clubs=${followedClubsCount}&debates=${votesCount}&year=${new Date().getFullYear()}`;
+                                    setWrappedUrl(url);
+                                }}
+                                className="bg-[#16A34A] hover:bg-[#15803d] text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-[#16A34A]/30 transition-all active:scale-95 whitespace-nowrap"
+                            >
+                                Generate My Wrapped
+                            </button>
+                        </div>
+
+                        {wrappedUrl && (
+                            <div className="mt-8 relative z-10 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <h3 className="text-white text-sm font-bold mb-3">Your Graphic is Ready:</h3>
+                                <div className="rounded-xl overflow-hidden border border-gray-800 bg-black/50 aspect-[1200/630] relative shadow-2xl">
+                                    <img src={wrappedUrl} alt="Pitchside Wrapped Graphic" className="w-full h-full object-cover" />
+                                </div>
+                                <div className="flex gap-3 mt-4">
+                                    <a 
+                                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Here's my Pitchside Wrapped for ${new Date().getFullYear()}! ⚽🔥\n\nGenerate yours:`)}&url=${encodeURIComponent(window.location.origin)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-black hover:bg-gray-900 border border-gray-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-colors"
+                                    >
+                                        <Share className="w-4 h-4" /> Share to X
+                                    </a>
+                                    <a 
+                                        href={wrappedUrl}
+                                        download={`pitchside-wrapped-${new Date().getFullYear()}.svg`}
+                                        className="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-colors"
+                                    >
+                                        Download SVG
+                                    </a>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Tab bar */}
                 <div className="flex gap-1 mb-6 bg-gray-100/50 dark:bg-white/5 rounded-xl p-1">
