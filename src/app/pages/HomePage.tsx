@@ -98,6 +98,54 @@ function StoryLinkCard({ story }: { story: StoryFeature }) {
   );
 }
 
+function YourVoiceSection() {
+  const [activeVoiceTab, setActiveVoiceTab] = useState<"poll" | "debate">("poll");
+  return (
+    <div className="tinted-panel rounded-[2rem] border border-gray-200 p-5 shadow-sm dark:border-gray-800">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="h-6 w-1.5 rounded-full bg-[#16A34A]" />
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
+            Fan Zone
+          </p>
+          <h2 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white">
+            Your Voice
+          </h2>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 bg-gray-100/50 dark:bg-white/5 rounded-xl p-1 mb-4">
+        <button
+          onClick={() => setActiveVoiceTab("poll")}
+          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+            activeVoiceTab === "poll"
+              ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
+              : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
+        >
+          ⚡ Poll of the Week
+        </button>
+        <button
+          onClick={() => setActiveVoiceTab("debate")}
+          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+            activeVoiceTab === "debate"
+              ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
+              : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
+        >
+          🔥 Debate Arena
+        </button>
+      </div>
+
+      {/* Content */}
+      <div>
+        {activeVoiceTab === "poll" ? <PollOfTheWeekPanel /> : <DebateWidget />}
+      </div>
+    </div>
+  );
+}
+
 function TransferSpotlightCard({ entry }: { entry: ReturnType<typeof buildTransferReliabilityBoard>[number] }) {
   return (
     <Link
@@ -340,8 +388,8 @@ export function HomePage() {
               </div>
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
-                <PollOfTheWeekPanel />
-                <DebateWidget />
+                {/* Combined Poll + Debate: "Your Voice" */}
+                <YourVoiceSection />
                 {dailyFeatures?.rumorMill ? (
                   <RumorMillWidget data={dailyFeatures.rumorMill} />
                 ) : null}
