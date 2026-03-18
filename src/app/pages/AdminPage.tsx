@@ -60,9 +60,10 @@ import { AdminOnThisDayTab } from "../components/admin/AdminOnThisDayTab";
 import { AdminTransferWatchTab } from "../components/admin/AdminTransferWatchTab";
 import { AdminSettingsTab } from "../components/admin/AdminSettingsTab";
 import { AdminMatchRatingsTab } from "../components/admin/AdminMatchRatingsTab";
+import { AdminNewsletterTab } from "../components/admin/AdminNewsletterTab";
 
 type View = "list" | "create" | "edit";
-type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "on-this-day" | "settings" | "polls" | "match-ratings";
+type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter";
 
 export function AdminPage() {
     const navigate = useNavigate();
@@ -509,6 +510,12 @@ export function AdminPage() {
                     >
                         <RadioTower className="w-4 h-4" /> Settings & Newsletter
                     </button>
+                    <button
+                        onClick={() => setActiveTab("newsletter")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "newsletter" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <Mail className="w-4 h-4" /> Newsletter
+                    </button>
                 </div>
 
                 {/* POSTS TAB */}
@@ -691,6 +698,11 @@ export function AdminPage() {
                         setSiteSettings={setSiteSettings}
                         clubOptions={clubOptions}
                     />
+                )}
+
+                {/* NEWSLETTER TAB */}
+                {activeTab === "newsletter" && (
+                    <AdminNewsletterTab />
                 )}
             </main>
         </div>
