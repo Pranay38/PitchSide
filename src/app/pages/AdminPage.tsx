@@ -38,7 +38,7 @@ import {
 } from "../lib/transferWatch";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { createDefaultPollOfWeek, normalizePollOfWeek } from "../lib/pollOfWeek";
-import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart } from "lucide-react";
+import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon, PenLine, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { AdminRunInEditor } from "../components/AdminRunInEditor";
 import type { SupplementalEvent } from "../lib/siteSettingsStorage";
@@ -54,15 +54,19 @@ import { AdminSettingsTab } from "../components/admin/AdminSettingsTab";
 import { AdminMatchRatingsTab } from "../components/admin/AdminMatchRatingsTab";
 import { AdminNewsletterTab } from "../components/admin/AdminNewsletterTab";
 import { AdminAnalyticsTab } from "../components/admin/AdminAnalyticsTab";
+import { InstagramCarouselGenerator } from "../components/admin/InstagramCarouselGenerator";
+import { DraftAssistant } from "../components/admin/DraftAssistant";
+import { TweetThreadGenerator } from "../components/admin/TweetThreadGenerator";
 
 type View = "list" | "create" | "edit";
-type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics";
+type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator";
 
 export function AdminPage() {
     const navigate = useNavigate();
     const [isAuthed, setIsAuthed] = useState(isAdminAuthenticated());
     const [view, setView] = useState<View>("list");
     const [activeTab, setActiveTab] = useState<Tab>("posts");
+    const [targetCarouselText, setTargetCarouselText] = useState("");
     const [showDebateEditor, setShowDebateEditor] = useState(false);
     const [expandedDebateId, setExpandedDebateId] = useState<string | null>(null);
     const [serverPolls, setServerPolls] = useState<any[]>([]);
@@ -772,6 +776,24 @@ export function AdminPage() {
                     >
                         <LineChart className="w-4 h-4" /> Analytics
                     </button>
+                    <button
+                        onClick={() => setActiveTab("carousel-generator")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "carousel-generator" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <ImageIcon className="w-4 h-4" /> Carousel Gen
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("draft-assistant")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "draft-assistant" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <PenLine className="w-4 h-4" /> Draft AI
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("tweet-generator")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "tweet-generator" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <MessageSquare className="w-4 h-4" /> Tweet Gen
+                    </button>
                 </div>
 
                 {/* POSTS TAB */}
@@ -864,6 +886,12 @@ export function AdminPage() {
                                         <div className="flex items-center gap-1 flex-shrink-0">
                                             <button onClick={() => notifySubscribers(post)} disabled={notifyingPostId === post.id || post.isDraft} className={`p-2 rounded-lg ${post.isDraft ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors'}`} title="Notify Subscribers">
                                                 <Send className={`w-4 h-4 ${notifyingPostId === post.id ? 'animate-pulse' : ''}`} />
+                                            </button>
+                                            <button onClick={() => {
+                                                setTargetCarouselText(post.content);
+                                                setActiveTab("carousel-generator");
+                                            }} className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-green-600 transition-colors" title="Create Carousel">
+                                                <ImageIcon className="w-4 h-4" />
                                             </button>
                                             <button onClick={() => navigate(`/post/${post.id}`)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
                                             <button onClick={() => handleEditPost(post)} className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-[#64748B] dark:text-gray-400 hover:text-blue-600 transition-colors" title="Edit"><Edit3 className="w-4 h-4" /></button>
@@ -995,6 +1023,24 @@ export function AdminPage() {
                 {/* ANALYTICS TAB */}
                 {activeTab === "analytics" && (
                     <AdminAnalyticsTab />
+                )}
+
+                {/* CAROUSEL GENERATOR TAB */}
+                {activeTab === "carousel-generator" && (
+                    <InstagramCarouselGenerator 
+                        initialText={targetCarouselText} 
+                        key={targetCarouselText ? targetCarouselText.substring(0, 30) : "empty"} 
+                    />
+                )}
+
+                {/* DRAFT ASSISTANT TAB */}
+                {activeTab === "draft-assistant" && (
+                    <DraftAssistant />
+                )}
+
+                {/* TWEET THREAD GENERATOR TAB */}
+                {activeTab === "tweet-generator" && (
+                    <TweetThreadGenerator />
                 )}
             </main>
         </div>
