@@ -303,7 +303,7 @@ export function HomePage() {
         url="https://pitchside-orcin.vercel.app/"
       />
       <Header />
-      <TransferTicker />
+
 
       <main className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6">
         <section className="section-surface mb-14 rounded-[2rem] border border-gray-200 p-3 shadow-sm dark:border-gray-800 md:p-4">
