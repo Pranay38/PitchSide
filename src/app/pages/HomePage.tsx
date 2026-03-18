@@ -304,62 +304,6 @@ export function HomePage() {
       <TransferTicker />
 
       <main className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6">
-        <section className="editorial-hero mb-10 rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8">
-          <div className="pointer-events-none absolute inset-0 grid-fade opacity-45" />
-          <div className="pointer-events-none absolute right-0 top-0 h-48 w-48 rounded-full bg-[#16A34A]/10 blur-3xl" />
-          <div className="relative">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-              Front Page
-            </p>
-          </div>
-          <div className="relative mt-4 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-            <div className="max-w-3xl">
-              <h1 className="text-4xl font-black font-outfit leading-tight text-[#0F172A] dark:text-white md:text-5xl">
-                Daily briefing, sharper analysis, and better longform in one place.
-              </h1>
-              <p className="mt-3 text-base leading-7 text-[#64748B] dark:text-gray-400">
-                The homepage now does the job that Home and Daily Fix used to split between them: lead story, market scan, daily modules, deep reads, and a clean path into the archive.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                to="/archive"
-                className="inline-flex items-center gap-2 rounded-full bg-[#16A34A] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#15803d]"
-              >
-                Open Archive
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/stories"
-                className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-3 text-sm font-bold text-[#0F172A] transition-colors hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-700 dark:text-white"
-              >
-                Browse Stories
-              </Link>
-            </div>
-          </div>
-          <div className="relative mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-[1.5rem] border border-white/60 bg-white/80 px-4 py-4 backdrop-blur-sm dark:border-white/8 dark:bg-[#0F172A]/80">
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Issue Date</p>
-              <p className="mt-2 text-lg font-black font-outfit text-[#0F172A] dark:text-white">{issueDate}</p>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/60 bg-white/80 px-4 py-4 backdrop-blur-sm dark:border-white/8 dark:bg-[#0F172A]/80">
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Articles</p>
-              <p className="mt-2 text-lg font-black font-outfit text-[#0F172A] dark:text-white">{posts.length} live</p>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/60 bg-white/80 px-4 py-4 backdrop-blur-sm dark:border-white/8 dark:bg-[#0F172A]/80">
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Stories</p>
-              <p className="mt-2 text-lg font-black font-outfit text-[#0F172A] dark:text-white">{stories.length} longform</p>
-            </div>
-            <div className="rounded-[1.5rem] border border-white/60 bg-white/80 px-4 py-4 backdrop-blur-sm dark:border-white/8 dark:bg-[#0F172A]/80">
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Browse Lanes</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <Link to="/topic/premier-league" className="filter-chip">Premier League</Link>
-                <Link to="/archive?type=story" className="filter-chip">Stories</Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section className="section-surface mb-14 rounded-[2rem] border border-gray-200 p-3 shadow-sm dark:border-gray-800 md:p-4">
           <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
             <div>
