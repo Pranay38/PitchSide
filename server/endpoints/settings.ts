@@ -44,8 +44,19 @@ interface SiteSettings {
     feeMode: "million-usd" | "not-disclosed";
     feeMillions: number;
     status: "confirmed" | "rumor";
+    tier: 1 | 2 | 3 | 4 | 5 | null;
     updatedAt: string;
   }>;
+  homepageCuration: {
+    hero: {
+      type: "post" | "story";
+      id: string;
+    };
+    latestPostIds: string[];
+    editorPickIds: string[];
+    featuredStoryIds: string[];
+    transferSpotlightIds: string[];
+  };
   supplementalEvents: Array<{
     id: string;
     dateMMDD: string;
@@ -81,6 +92,13 @@ const DEFAULT_SETTINGS: SiteSettings = {
   },
   clubIntelligence: {},
   transferWatch: [],
+  homepageCuration: {
+    hero: { type: "post", id: "" },
+    latestPostIds: [],
+    editorPickIds: [],
+    featuredStoryIds: [],
+    transferSpotlightIds: [],
+  },
   supplementalEvents: [],
   updatedAt: "",
 };
@@ -122,6 +140,37 @@ function normalizeClubIntelligenceMap(
   }, {});
 }
 
+function uniqueIds(values: unknown): string[] {
+  if (!Array.isArray(values)) return [];
+
+  const seen = new Set<string>();
+  const ordered: string[] = [];
+
+  values.forEach((value) => {
+    const next = String(value || "").trim();
+    if (!next || seen.has(next)) return;
+    seen.add(next);
+    ordered.push(next);
+  });
+
+  return ordered;
+}
+
+function normalizeHomepageCuration(
+  input?: Partial<SiteSettings["homepageCuration"]> | null,
+): SiteSettings["homepageCuration"] {
+  return {
+    hero: {
+      type: input?.hero?.type === "story" ? "story" : "post",
+      id: String(input?.hero?.id || "").trim(),
+    },
+    latestPostIds: uniqueIds(input?.latestPostIds),
+    editorPickIds: uniqueIds(input?.editorPickIds),
+    featuredStoryIds: uniqueIds(input?.featuredStoryIds),
+    transferSpotlightIds: uniqueIds(input?.transferSpotlightIds),
+  };
+}
+
 function normalizeTransferWatch(
   input?: SiteSettings["transferWatch"] | null,
 ): SiteSettings["transferWatch"] {
@@ -141,6 +190,9 @@ function normalizeTransferWatch(
       feeMode: item.feeMode === "million-usd" ? "million-usd" : "not-disclosed",
       feeMillions: item.feeMode === "million-usd" ? clampMetric(item.feeMillions) : 0,
       status: item.status === "confirmed" ? "confirmed" : "rumor",
+      tier: item.status === "confirmed"
+        ? null
+        : ([1, 2, 3, 4, 5].includes(Number(item.tier)) ? Number(item.tier) as 1 | 2 | 3 | 4 | 5 : 3),
       updatedAt: String(item.updatedAt || ""),
     });
 
@@ -226,6 +278,7 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     pollOfWeek: normalizePollOfWeek(input?.pollOfWeek),
     clubIntelligence: normalizeClubIntelligenceMap(input?.clubIntelligence),
     transferWatch: normalizeTransferWatch(input?.transferWatch),
+    homepageCuration: normalizeHomepageCuration(input?.homepageCuration),
     supplementalEvents: normalizeSupplementalEvents(input?.supplementalEvents),
     updatedAt: input?.updatedAt || DEFAULT_SETTINGS.updatedAt,
   };
