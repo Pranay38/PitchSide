@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-03-18T06:00:30.010549",
+  "lastUpdated": "2026-03-19T05:55:34.057857",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal eye Bayern's Goretzka - Tuesday's gossip",
+    "text": "Barcelona seek second Rashford loan - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 80
-    },
-    {
       "name": "Michael Carrick (MUN)",
-      "pressureScore": 74
+      "pressureScore": 98
     },
     {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 72
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 98
     },
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 61
+      "name": "David Moyes (EVE)",
+      "pressureScore": 75
+    },
+    {
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 71
     }
   ]
 }
