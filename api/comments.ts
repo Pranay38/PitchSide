@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { connectToDatabase } from "./_db.js";
+import { checkOrigin, rejectHoneypot, sanitizeString } from "../server/utils/security.js";
 
 const COLLECTION = "comments";
 
@@ -12,6 +13,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === "OPTIONS") {
         return res.status(200).end();
     }
+
+    // CSRF origin check for state-changing methods
+    if (!checkOrigin(req, res)) return;
 
     try {
         const { db } = await connectToDatabase();
@@ -47,8 +51,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (req.method === "POST") {
             const { postId, parentId, name, text, action, commentId, clubBadge } = req.body;
 
+            // Honeypot check
+            if (!rejectHoneypot(req, res)) return;
+
             // Handle like action
             if (action === "like" && commentId) {
+                const cid = sanitizeString(commentId);
+                if (!cid) return res.status(400).json({ error: "Invalid commentId" });
                 const { ObjectId } = await import("mongodb");
                 let filter: any;
                 try {
@@ -60,8 +69,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(200).json({ success: true });
             }
 
-            if (!postId || !name?.trim() || !text?.trim()) {
-                return res.status(400).json({ error: "postId, name, and text are required." });
+            const safeName = sanitizeString(name);
+            const safeText = sanitizeString(text);
+            const safePostId = sanitizeString(postId);
+
+            if (!safePostId || !safeName || !safeText) {
+                return res.status(400).json({ error: "postId, name, and text must be non-empty strings." });
             }
 
             const now = new Date().toISOString();

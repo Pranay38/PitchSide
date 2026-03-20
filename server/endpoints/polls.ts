@@ -195,31 +195,46 @@ export const votePoll = async (req: VercelRequest, res: VercelResponse) => {
             return res.status(400).json({ error: "Invalid ID" });
         }
         
-        if (!optionId) {
-             return res.status(400).json({ error: "Missing optionId" });
+        if (!optionId || typeof optionId !== "string") {
+             return res.status(400).json({ error: "Missing or invalid optionId" });
         }
+
+        // Derive a voter fingerprint from IP
+        const voterIp = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket?.remoteAddress || "unknown";
 
         const client = await connectToDatabase();
         const collection = client.db(dbName).collection<PollDocument>("polls");
 
-        // Use findOneAndUpdate to atomically increment the vote count for the specific nested array element
+        // Check if this IP already voted on this poll
+        const existingPoll = await collection.findOne({
+            _id: new ObjectId(id),
+            votedIps: voterIp,
+        });
+
+        if (existingPoll) {
+            return res.status(409).json({ error: "You have already voted on this poll." });
+        }
+
+        // Atomically increment vote and add IP to votedIps
         const result = await collection.findOneAndUpdate(
             { 
                _id: new ObjectId(id),
                "options.id": optionId 
             },
             { 
-               $inc: { "options.$.votes": 1 } 
+               $inc: { "options.$.votes": 1 },
+               $addToSet: { votedIps: voterIp },
             },
             { returnDocument: "after" }
         );
 
         if (!result) {
-            // Could mean poll ID is bad, or option ID is bad.
             return res.status(404).json({ error: "Poll or option not found" });
         }
 
-        return res.status(200).json(result);
+        // Strip votedIps from response for privacy
+        const { votedIps, ...safeResult } = result as any;
+        return res.status(200).json(safeResult);
      } catch (error) {
         console.error("Failed to cast vote:", error);
         return res.status(500).json({ error: "Failed to cast vote" });

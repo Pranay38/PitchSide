@@ -89,3 +89,61 @@ export function requireAuth(req: VercelRequest, res: VercelResponse): boolean {
         return false;
     }
 }
+
+// ──────────────────────────────────────────
+// 4. CSRF ORIGIN CHECK
+// ──────────────────────────────────────────
+/**
+ * For state-changing methods (POST, PUT, DELETE), verify that the
+ * request Origin header matches our allowed origins. Returns false
+ * and sends 403 if origin is mismatched. GET/OPTIONS are always allowed.
+ */
+export function checkOrigin(req: VercelRequest, res: VercelResponse): boolean {
+    const method = (req.method || "").toUpperCase();
+    if (method === "GET" || method === "OPTIONS" || method === "HEAD") return true;
+
+    const origin = req.headers.origin;
+    // Server-to-server or same-origin requests may have no origin header
+    if (!origin) return true;
+
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+        ? process.env.ALLOWED_ORIGINS.split(",")
+        : ["http://localhost:5173", "https://pitchside-orcin.vercel.app"];
+
+    if (allowedOrigins.includes(origin)) return true;
+
+    res.status(403).json({ error: "Forbidden: Origin not allowed" });
+    return false;
+}
+
+// ──────────────────────────────────────────
+// 5. HONEYPOT BOT DETECTION
+// ──────────────────────────────────────────
+/**
+ * Check if the request body contains a filled honeypot field.
+ * The frontend renders a hidden input named `_hp`. Bots fill it,
+ * humans never do. Returns false (with 200 OK to not tip off bots)
+ * if the honeypot is filled.
+ */
+export function rejectHoneypot(req: VercelRequest, res: VercelResponse): boolean {
+    const hp = req.body?._hp;
+    if (hp && String(hp).trim().length > 0) {
+        // Return 200 so bots think the submission worked
+        res.status(200).json({ success: true });
+        return false;
+    }
+    return true;
+}
+
+// ──────────────────────────────────────────
+// 6. INPUT SANITIZATION
+// ──────────────────────────────────────────
+/**
+ * Ensure a user-supplied value is a plain string. Prevents MongoDB
+ * injection attacks like { "$gt": "" }. Returns the trimmed string,
+ * or null if the value is not a string.
+ */
+export function sanitizeString(value: unknown): string | null {
+    if (typeof value !== "string") return null;
+    return value.trim();
+}

@@ -87,6 +87,7 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
                     name: authorName, 
                     text: content.trim(),
                     clubBadge: userClubBadge || undefined,
+                    _hp: "",
                 }),
             });
 
@@ -198,6 +199,8 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
                 {isReplying && (
                     <div className="ml-8 mt-2">
                         <form onSubmit={(e) => handleSubmit(e, comment.id)}>
+                            {/* Honeypot */}
+                            <input type="text" name="_hp" autoComplete="off" tabIndex={-1} style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }} />
                             <div className="bg-gray-50 dark:bg-[#1E293B]/50 rounded-2xl p-3 border border-[#16A34A]/20">
                                 {!isSignedIn && !userName && (
                                     <input
@@ -252,6 +255,8 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
 
             {/* Top-level Comment form */}
             <form onSubmit={(e) => handleSubmit(e, null)} className="mb-10">
+                {/* Honeypot — invisible to humans, bots fill it */}
+                <input type="text" name="_hp" autoComplete="off" tabIndex={-1} style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0, width: 0 }} />
                 <div className="bg-gray-50 dark:bg-[#1E293B]/50 rounded-2xl p-4 border border-gray-100 dark:border-gray-800 focus-within:border-[#16A34A]/40 transition-colors">
                     {!isSignedIn && !userName && (
                         <input

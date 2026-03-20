@@ -10,6 +10,7 @@ import {
 } from "../lib/editorialBlocks";
 import { getAllTerms, lookupTerm } from "../data/footballGlossary";
 import { GlossaryTooltip, GlossaryStyles } from "./GlossaryTooltip";
+import DOMPurify from "dompurify";
 
 export interface ContentHeading {
   id: string;
@@ -377,7 +378,7 @@ export function buildQuickSummary(post: BlogPost, model: ArticleContentModel): s
 
 function EditorialBlockView({ block }: { block: EditorialBlock }) {
   return (
-    <div dangerouslySetInnerHTML={{ __html: renderEditorialBlockHtml(block) }} />
+    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderEditorialBlockHtml(block), { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel"] }) }} />
   );
 }
 
@@ -426,7 +427,7 @@ export function ArticleContentRenderer({
       return (
         <>
           <GlossaryStyles />
-          <div ref={containerRef} className={className} dangerouslySetInnerHTML={{ __html: model.html || "" }} />
+          <div ref={containerRef} className={className} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(model.html || "", { ADD_TAGS: ["iframe", "span"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel", "data-glossary-term", "data-glossary-def", "style"] }) }} />
         </>
       );
     }

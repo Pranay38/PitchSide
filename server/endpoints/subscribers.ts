@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors, checkRateLimit, requireAuth } from "../utils/security.js";
+import { applyCors, checkRateLimit, requireAuth, checkOrigin, rejectHoneypot, sanitizeString } from "../utils/security.js";
 import { connectToDatabase } from "../_db.js";
 import { sendEmail, isMailerConfigured } from "../_mailer.js";
 
@@ -19,8 +19,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const collection = db.collection(COLLECTION);
 
         // ─── POST: Subscribe a new email ───
-        if (req.method === "POST") {
-            const { email, alertPreferences } = req.body;
+        if (req.method === "POST" && !req.query.action) {
+            // CSRF + honeypot
+            if (!checkOrigin(req, res)) return;
+            if (!rejectHoneypot(req, res)) return;
+
+            const email = sanitizeString(req.body?.email);
+
+            const alertPreferences = req.body?.alertPreferences;
 
             if (!email || !email.includes("@") || !email.includes(".")) {
                 return res.status(400).json({ error: "Please enter a valid email address." });
