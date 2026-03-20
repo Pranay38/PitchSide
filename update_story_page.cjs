@@ -64,7 +64,7 @@ content = content.replace(/<\/section>\s*<\/main>/s, (match) => {
                     excerpt: related.excerpt,
                     coverImage: related.coverImage,
                     category: "Story",
-                    author: { name: "Pitchside", avatar: "" },
+                    author: { name: "The Touchline Dribble", avatar: "" },
                     date: related.date,
                     readTime: \`\${Math.max(1, Math.ceil(related.chapters.reduce((t, c) => t + c.body.join(" ").split(" ").length, 0) / 200))} min read\`,
                     blocks: []

@@ -7,6 +7,7 @@ import { DesktopCommandPalette } from "./DesktopCommandPalette";
 import { SearchModal } from "./SearchModal";
 import { getClubByName } from "../data/clubs";
 import { Heart, House, Menu, Search, X, LogIn } from "lucide-react";
+import { PillNav } from "./PillNav";
 import {
   SignInButton,
   UserButton,
@@ -58,12 +59,13 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [archiveQuery, setArchiveQuery] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   const club = favoriteClub ? getClubByName(favoriteClub) : null;
   const navLinks = [
-    { to: "/", label: "Home" },
+    { to: "/", label: "Home", icon: <House className="w-4 h-4" /> },
     { to: "/archive", label: "Archive" },
     { to: "/stories", label: "Stories" },
     { to: "/transfers", label: "Transfers" },
@@ -72,10 +74,29 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
     { to: "/about", label: "About" },
   ];
 
+  const pillNavItems = navLinks.map(link => ({
+    href: link.to,
+    label: link.label,
+    icon: link.icon
+  }));
+
   useEffect(() => {
     if (location.pathname !== "/archive") return;
     setArchiveQuery(new URLSearchParams(location.search).get("q") || "");
   }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Shrink and blur when scrolled down 100px
+      if (window.scrollY > 100) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleArchiveSearch = (event: React.FormEvent) => {
     event.preventDefault();
@@ -91,34 +112,44 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
     <>
       {/* Animated gradient accent line at the very top */}
       <div className="gradient-accent-line w-full" />
-      <header className="sticky top-0 z-50 glass transition-colors duration-300">
-        <div className="max-w-[1100px] mx-auto px-6 py-3.5 flex items-center justify-between">
+      <header className={`sticky top-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+        isScrolled 
+          ? "glass shadow-sm dark:shadow-none bg-white/70 dark:bg-[#0F172A]/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/5" 
+          : "bg-transparent border-b border-transparent"
+      }`}>
+        <div className={`w-full max-w-7xl mx-auto px-4 lg:px-6 flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+          isScrolled ? "py-2" : "py-3.5"
+        }`}>
           {/* Logo */}
-          <Link to="/" className="group flex items-center gap-2.5">
+          <Link to="/" className="group flex items-center gap-2.5 flex-shrink-0">
             <div className="relative">
               <img src="/logo.png" alt="The Touchline Dribble" className="w-9 h-9 object-contain rounded-lg group-hover:scale-110 transition-transform duration-300" />
               <div className="absolute inset-0 rounded-lg bg-[#16A34A]/0 group-hover:bg-[#16A34A]/10 transition-colors duration-300" />
             </div>
-            <span className="text-xl font-extrabold font-outfit bg-gradient-to-r from-[#16A34A] via-[#22c55e] to-[#4ade80] bg-clip-text text-transparent group-hover:from-[#4ade80] group-hover:to-[#16A34A] transition-all duration-500">
+            <span className="hidden xl:block text-xl font-extrabold font-outfit bg-gradient-to-r from-[#16A34A] via-[#22c55e] to-[#4ade80] bg-clip-text text-transparent group-hover:from-[#4ade80] group-hover:to-[#16A34A] transition-all duration-500 whitespace-nowrap">
               The Touchline Dribble
             </span>
           </Link>
 
-          {/* Desktop Right side */}
-          <div className="hidden sm:flex items-center gap-4">
-            {/* Nav links with underline sweep */}
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                aria-label={link.label}
-                className="relative text-sm font-semibold text-[#475569] dark:text-gray-300 hover:text-[#16A34A] dark:hover:text-[#4ade80] transition-colors duration-200 py-1 group"
-              >
-                {link.to === "/" ? <House className="w-4 h-4" /> : link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#16A34A] to-[#4ade80] group-hover:w-full transition-all duration-300 rounded-full" />
-              </Link>
-            ))}
+          {/* Desktop Nav - Centered with PillNav */}
+          <div className="hidden lg:flex flex-1 justify-center px-4 2xl:px-8"
+            style={{
+              "--pill-base": "rgba(22, 163, 74, 0.1)", // #16A34A with 10% opacity for hover circle
+              "--pill-bg": "transparent",
+              "--pill-hover-text": "#16A34A",
+              "--pill-text": "currentColor",
+              "--pill-pad-x": "12px", // Decrease inner padding to save space
+            } as React.CSSProperties}
+          >
+            <PillNav 
+              items={pillNavItems}
+              initialLoadAnimation={true}
+              className="text-[#475569] dark:text-gray-300 w-full justify-center flex"
+            />
+          </div>
 
+          {/* Desktop Right side */}
+          <div className="hidden sm:flex items-center justify-end gap-2 lg:gap-3 flex-shrink-0 relative z-10 min-w-max">
             <DesktopCommandPalette />
 
             {/* Club badge */}
@@ -160,7 +191,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           </div>
 
           {/* Mobile: club badge + hamburger */}
-          <div className="flex sm:hidden items-center gap-2">
+          <div className="flex sm:hidden items-center gap-2 relative z-10">
             {favoriteClub && club?.logo && (
               <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />
             )}
@@ -196,7 +227,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                   aria-label={link.label}
                   className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"
                 >
-                  {link.to === "/" ? <House className="w-4 h-4" /> : link.label}
+                  {link.icon || link.label}
                 </Link>
               ))}
 

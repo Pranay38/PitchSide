@@ -47,7 +47,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   const hasFooter = writer || publishedAt;
 
   return (
-    <Card className={cn("flex w-full flex-col gap-3 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#16A34A]/30", className)}>
+    <Card className={cn("flex w-full flex-col gap-3 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#16A34A]/30 cursor-pointer", className)}>
       {cover && (
         <CardHeader className="p-0">
           <div className="relative h-56 w-full overflow-hidden">

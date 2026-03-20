@@ -1,30 +1,34 @@
 import { createBrowserRouter, Outlet, ScrollRestoration } from "react-router";
 import { trackPageView } from "./lib/analytics";
+import { lazy, Suspense } from "react";
 import { HomePage } from "./pages/HomePage";
-import { BlogPostPage } from "./pages/BlogPostPage";
-import { AdminPage } from "./pages/AdminPage";
-import { AboutPage } from "./pages/AboutPage";
-import { TacticalBoardPage } from "./pages/TacticalBoardPage";
-import { TacticalEmbedPage } from "./pages/TacticalEmbedPage";
-import { MatchCenterEmbedPage } from "./pages/MatchCenterEmbedPage";
-import { MatchCenterPage } from "./pages/MatchCenterPage";
-import { CollectionsPage } from "./pages/CollectionsPage";
-import { DebateCornerPage } from "./pages/DebateCornerPage";
-import { LeagueClubSeasonPage } from "./pages/LeagueClubSeasonPage";
-import { DailyFixPage } from "./pages/DailyFixPage";
-import { TopicPage } from "./pages/TopicPage";
-import { ClubHubPage } from "./pages/ClubHubPage";
-import { ArchivePage } from "./pages/ArchivePage";
-import { SavedPage } from "./pages/SavedPage";
-import { StoriesPage } from "./pages/StoriesPage";
-import { StoryPage } from "./pages/StoryPage";
-import { AlertsPage } from "./pages/AlertsPage";
-import { TransferReliabilityPage } from "./pages/TransferReliabilityPage";
-import { TransferDossierPage } from "./pages/TransferDossierPage";
-import { TransferTrackerPage } from "./pages/TransferTrackerPage";
-import { ProfilePage } from "./pages/ProfilePage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { MobileBottomNav } from "./components/MobileBottomNav";
+
+// Lazy-loaded below-fold pages (code-splitting)
+const BlogPostPage = lazy(() => import("./pages/BlogPostPage").then(m => ({ default: m.BlogPostPage })));
+const AdminPage = lazy(() => import("./pages/AdminPage").then(m => ({ default: m.AdminPage })));
+const AboutPage = lazy(() => import("./pages/AboutPage").then(m => ({ default: m.AboutPage })));
+const TacticalBoardPage = lazy(() => import("./pages/TacticalBoardPage").then(m => ({ default: m.TacticalBoardPage })));
+const TacticalEmbedPage = lazy(() => import("./pages/TacticalEmbedPage").then(m => ({ default: m.TacticalEmbedPage })));
+const MatchCenterEmbedPage = lazy(() => import("./pages/MatchCenterEmbedPage").then(m => ({ default: m.MatchCenterEmbedPage })));
+const MatchCenterPage = lazy(() => import("./pages/MatchCenterPage").then(m => ({ default: m.MatchCenterPage })));
+const CollectionsPage = lazy(() => import("./pages/CollectionsPage").then(m => ({ default: m.CollectionsPage })));
+const DebateCornerPage = lazy(() => import("./pages/DebateCornerPage").then(m => ({ default: m.DebateCornerPage })));
+const LeagueClubSeasonPage = lazy(() => import("./pages/LeagueClubSeasonPage").then(m => ({ default: m.LeagueClubSeasonPage })));
+const DailyFixPage = lazy(() => import("./pages/DailyFixPage").then(m => ({ default: m.DailyFixPage })));
+const TopicPage = lazy(() => import("./pages/TopicPage").then(m => ({ default: m.TopicPage })));
+const ClubHubPage = lazy(() => import("./pages/ClubHubPage").then(m => ({ default: m.ClubHubPage })));
+const ArchivePage = lazy(() => import("./pages/ArchivePage").then(m => ({ default: m.ArchivePage })));
+const SavedPage = lazy(() => import("./pages/SavedPage").then(m => ({ default: m.SavedPage })));
+const StoriesPage = lazy(() => import("./pages/StoriesPage").then(m => ({ default: m.StoriesPage })));
+const StoryPage = lazy(() => import("./pages/StoryPage").then(m => ({ default: m.StoryPage })));
+const AlertsPage = lazy(() => import("./pages/AlertsPage").then(m => ({ default: m.AlertsPage })));
+const TransferReliabilityPage = lazy(() => import("./pages/TransferReliabilityPage").then(m => ({ default: m.TransferReliabilityPage })));
+const TransferDossierPage = lazy(() => import("./pages/TransferDossierPage").then(m => ({ default: m.TransferDossierPage })));
+const TransferTrackerPage = lazy(() => import("./pages/TransferTrackerPage").then(m => ({ default: m.TransferTrackerPage })));
+const ProfilePage = lazy(() => import("./pages/ProfilePage").then(m => ({ default: m.ProfilePage })));
+const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage").then(m => ({ default: m.LeaderboardPage })));
 
 export const router = createBrowserRouter([
   {
@@ -33,7 +37,9 @@ export const router = createBrowserRouter([
       <>
         <ScrollRestoration />
         <div className="pb-16 sm:pb-0">
-          <Outlet />
+          <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="h-8 w-8 animate-spin rounded-full border-4 border-[#16A34A] border-t-transparent" /></div>}>
+            <Outlet />
+          </Suspense>
         </div>
         <MobileBottomNav />
       </>

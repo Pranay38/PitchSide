@@ -50,6 +50,10 @@
             "destination": "/api/sys?route=run-in"
         },
         {
+            "source": "/api/title-race",
+            "destination": "/api/sys?route=title-race"
+        },
+        {
             "source": "/api/predictions",
             "destination": "/api/sys?route=predictions"
         },

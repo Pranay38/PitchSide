@@ -4,6 +4,7 @@ import { Footer } from "../components/Footer";
 import { Twitter, Instagram, Mail, PenLine, BarChart3, Zap } from "lucide-react";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { SEO } from "../components/SEO";
+import { GlowButton } from "../components/ui/GlowButton";
 
 export function AboutPage() {
     const { favoriteClub } = useClubPreference();
@@ -84,13 +85,10 @@ export function AboutPage() {
                 </div>
 
                 {/* CTA */}
-                <div className="text-center">
-                    <Link
-                        to="/"
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#16A34A] text-white font-semibold rounded-xl hover:bg-[#15803d] transition-all hover:shadow-lg hover:shadow-[#16A34A]/25"
-                    >
-                        ← Start Reading
-                    </Link>
+                <div className="text-center pt-8">
+                    <GlowButton href="/">
+                        Start Reading
+                    </GlowButton>
                 </div>
             </main>
 

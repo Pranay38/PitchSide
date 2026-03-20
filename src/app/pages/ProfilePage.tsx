@@ -166,7 +166,7 @@ export function ProfilePage() {
                     </div>
                 </div>
 
-                {/* Pitchside Wrapped Banner (Only from June 16th onwards each year) */}
+                {/* The Touchline Dribble Wrapped Banner (Only from June 16th onwards each year) */}
                 {(new Date().getMonth() > 5 || (new Date().getMonth() === 5 && new Date().getDate() >= 16) || localStorage.getItem("dev_force_wrapped") === "true") && (
                     <div className="mb-6 p-6 rounded-2xl bg-gradient-to-r from-gray-900 via-[#0F172A] to-[#1E293B] border border-gray-800 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#16A34A] opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
@@ -176,7 +176,7 @@ export function ProfilePage() {
                                 <p className="text-emerald-400 text-xs font-black uppercase tracking-widest mb-1 flex items-center gap-1.5">
                                     <Sparkles className="w-3.5 h-3.5" /> Season in Review
                                 </p>
-                                <h2 className="text-2xl sm:text-3xl font-black font-outfit text-white mb-2">Pitchside Wrapped</h2>
+                                <h2 className="text-2xl sm:text-3xl font-black font-outfit text-white mb-2">The Touchline Dribble Wrapped</h2>
                                 <p className="text-sm text-gray-400">Your personalized end-of-season graphic is ready.</p>
                             </div>
                             <button 
@@ -194,11 +194,11 @@ export function ProfilePage() {
                             <div className="mt-8 relative z-10 animate-in fade-in slide-in-from-top-4 duration-500">
                                 <h3 className="text-white text-sm font-bold mb-3">Your Graphic is Ready:</h3>
                                 <div className="rounded-xl overflow-hidden border border-gray-800 bg-black/50 aspect-[1200/630] relative shadow-2xl">
-                                    <img src={wrappedUrl} alt="Pitchside Wrapped Graphic" className="w-full h-full object-cover" />
+                                    <img src={wrappedUrl} alt="The Touchline Dribble Wrapped Graphic" className="w-full h-full object-cover" />
                                 </div>
                                 <div className="flex gap-3 mt-4">
                                     <a 
-                                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Here's my Pitchside Wrapped for ${new Date().getFullYear()}! ⚽🔥\n\nGenerate yours:`)}&url=${encodeURIComponent(window.location.origin)}`}
+                                        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Here's my The Touchline Dribble Wrapped for ${new Date().getFullYear()}! ⚽🔥\n\nGenerate yours:`)}&url=${encodeURIComponent(window.location.origin)}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-black hover:bg-gray-900 border border-gray-800 text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-colors"

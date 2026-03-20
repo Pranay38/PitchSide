@@ -73,7 +73,7 @@ export function LeaderboardPage() {
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
       <SEO
         title="Predictions Leaderboard"
-        description="See who knows football best. Make predictions, rank up, and top the Pitchside global leaderboard."
+        description="See who knows football best. Make predictions, rank up, and top the The Touchline Dribble global leaderboard."
         url="https://pitchside-orcin.vercel.app/leaderboard"
       />
       <Header />

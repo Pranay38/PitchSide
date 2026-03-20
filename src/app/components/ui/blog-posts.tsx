@@ -53,7 +53,7 @@ export const BlogPostsGrid = ({
         {description}
       </p>
       
-      <div className="grid h-auto grid-cols-1 gap-5 md:h-[650px] md:grid-cols-2 lg:grid-cols-[1fr_0.5fr] z-10 relative">
+      <div className="grid h-auto grid-cols-1 gap-4 md:grid-rows-2 md:h-[650px] md:grid-cols-2 lg:grid-cols-[1fr_0.5fr] z-10 relative">
         {posts.map((post, index) => {
           const {
             id,

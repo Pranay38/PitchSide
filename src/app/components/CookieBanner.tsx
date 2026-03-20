@@ -46,7 +46,7 @@ export function CookieBanner() {
               We value your privacy
             </h3>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed max-w-3xl">
-              Pitchside uses cookies and similar technologies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking "Accept", you consent to our use of cookies required for analytics and monetization tools.
+              The Touchline Dribble uses cookies and similar technologies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking "Accept", you consent to our use of cookies required for analytics and monetization tools.
             </p>
           </div>
 

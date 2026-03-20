@@ -311,7 +311,7 @@ export function DebateCornerPage() {
         const url = encodeURIComponent(window.location.origin + "/debates");
         const total = debate.agreeVotes + debate.disagreeVotes || 1;
         const agreePct = Math.round((debate.agreeVotes / total) * 100);
-        const text = encodeURIComponent(`🔥 ${debate.title}\n\n✅ ${agreePct}% Agree • ❌ ${100 - agreePct}% Disagree\n\nCast your vote on Pitchside!`);
+        const text = encodeURIComponent(`🔥 ${debate.title}\n\n✅ ${agreePct}% Agree • ❌ ${100 - agreePct}% Disagree\n\nCast your vote on The Touchline Dribble!`);
         window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, "_blank");
     };
 

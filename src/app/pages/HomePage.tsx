@@ -12,6 +12,9 @@ import { ManagerPressureWidget, type ManagerPressure } from "../components/Manag
 import { PostCard } from "../components/PostCard";
 import { ArticleCard } from "../components/ui/blog-post-card";
 import { BlogPostsGrid } from "../components/ui/blog-posts";
+import { HeroSection } from "../components/ui/hero-section-shadcnui";
+import { TitleRaceTracker } from "../components/TitleRaceTracker";
+import { ContainerScroll } from "../components/ui/container-scroll-animation";
 import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
 import { ProSubscriptionScroll } from "../components/ProSubscriptionScroll";
 import { PlatformFeaturesBento } from "../components/PlatformFeaturesBento";
@@ -246,8 +249,9 @@ export function HomePage() {
   }, []);
 
   const fallbackFeaturedPost = useMemo(() => {
+    const mustReads = posts.filter((post) => post.mustRead);
     const flagged = posts.filter((post) => post.mainStory);
-    return flagged[0] || posts[0] || null;
+    return mustReads[0] || flagged[0] || posts[0] || null;
   }, [posts]);
 
   // If the admin generated an AI Punchy Line for a Transfer Watch entry, use it to override the daily_features.json!
@@ -376,10 +380,21 @@ export function HomePage() {
 
 
       <main className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 md:py-12">
+
+
+
         <section className="mb-24">
-          <div className="grid gap-8 lg:gap-16 lg:grid-cols-[1.4fr_0.9fr] items-start">
-            {/* Main Cinematic Hero Story (Sticky) */}
+          <div className="grid gap-8 lg:gap-16 lg:grid-cols-[8fr_4fr] items-start">
+            {/* Main Hero Story (Sticky) */}
             <div className="lg:sticky lg:top-24">
+              <div className="mb-6">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+                  Featured
+                </p>
+                <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                  Must Read
+                </h2>
+              </div>
               {heroSelection?.type === "post" ? (
                 <PostCard post={heroSelection.post} featured />
               ) : heroSelection?.type === "story" ? (
@@ -395,7 +410,7 @@ export function HomePage() {
             </div>
 
             {/* Daily Briefing Modules (Scrolling Sidebar) */}
-            <div className="space-y-6">
+            <div className="space-y-6" id="daily-briefing">
               <div className="tinted-panel rounded-[2rem] border border-gray-200 p-5 shadow-sm dark:border-gray-800">
                 <div className="mb-4 flex items-center gap-3">
                   <div className="h-6 w-1.5 rounded-full bg-[#16A34A]" />
@@ -427,7 +442,11 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="mt-24">
+        <section className="mb-24">
+          <TitleRaceTracker />
+        </section>
+
+        <section className="mt-24" id="latest-articles">
           <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
@@ -467,7 +486,7 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="mt-24 grid gap-12 xl:grid-cols-[1fr_0.8fr] items-start">
+        <section className="mt-24 grid gap-12 xl:grid-cols-[8fr_4fr] items-start">
           <div className="w-full">
             <div className="w-full">
               {latestStories.length > 0 ? (
@@ -589,9 +608,10 @@ export function HomePage() {
           <InlineNewsletterCard />
         </section>
 
-        <section className="mt-8 mb-8">
+        {/* Pro Subscription Upsell (Hidden for now until audience scales) */}
+        {/* <section className="mt-8 mb-8">
           <ProSubscriptionScroll />
-        </section>
+        </section> */}
 
         <PlatformFeaturesBento />
       </main>

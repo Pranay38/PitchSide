@@ -7,7 +7,7 @@ self.addEventListener("push", function (event) {
     try {
         const data = event.data.json();
         const options = {
-            body: data.body || "New update from Pitchside",
+            body: data.body || "New update from The Touchline Dribble",
             icon: "/logo.png",
             badge: "/logo.png",
             vibrate: [100, 50, 100],
@@ -18,12 +18,12 @@ self.addEventListener("push", function (event) {
         };
 
         event.waitUntil(
-            self.registration.showNotification(data.title || "Pitchside", options)
+            self.registration.showNotification(data.title || "The Touchline Dribble", options)
         );
     } catch (e) {
         // Fallback for plain text push
         event.waitUntil(
-            self.registration.showNotification("Pitchside", {
+            self.registration.showNotification("The Touchline Dribble", {
                 body: event.data.text(),
                 icon: "/logo.png",
             })

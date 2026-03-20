@@ -517,7 +517,7 @@ Rules: 1-2 stats, 1-2 facts max. Keep ALL text extremely short. Hype energy. Les
         <textarea
           value={article} onChange={e => setArticle(e.target.value)}
           disabled={busy}
-          placeholder="Paste your Pitchside article here..."
+          placeholder="Paste your The Touchline Dribble article here..."
           style={{ width: "100%", height: 110, resize: "vertical",
             fontSize: 13, lineHeight: 1.55, padding: "10px 12px",
             marginBottom: 10, borderRadius: "var(--border-radius-md)",

@@ -83,7 +83,7 @@ content = content.replace(/function VoteBar.*?return \([\s\S]*?\);\n\}/, newVote
 content = content.replace(/const handleLike =.*?catch \(e\) \{ console\.error\(e\); \}\n    \};/s, (match) => {
     return match + `\n\n    const handleShareTwitter = (debate: Debate) => {
         const url = encodeURIComponent(window.location.origin + "/debates");
-        const text = encodeURIComponent(\`🔥 \${debate.title}\\n\\nWhere do you stand? Agree or Disagree? Vote now on Pitchside!\`);
+        const text = encodeURIComponent(\`🔥 \${debate.title}\\n\\nWhere do you stand? Agree or Disagree? Vote now on The Touchline Dribble!\`);
         window.open(\`https://twitter.com/intent/tweet?url=\${url}&text=\${text}\`, "_blank");
     };`;
 });

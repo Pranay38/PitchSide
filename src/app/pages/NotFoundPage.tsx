@@ -3,6 +3,7 @@ import { Flag, Home, Library } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
+import { GlowButton } from "../components/ui/GlowButton";
 
 export function NotFoundPage() {
   return (
@@ -25,18 +26,14 @@ export function NotFoundPage() {
           and this page has been ruled out.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center">
-          <Link
-            to="/"
-            className="flex items-center justify-center gap-2 rounded-xl bg-[#16A34A] px-6 py-3.5 text-base font-bold text-white shadow-[0_0_20px_rgba(22,163,74,0.3)] transition-all hover:-translate-y-0.5 hover:bg-green-600 hover:shadow-[0_0_25px_rgba(22,163,74,0.4)]"
-          >
-            <Home className="w-5 h-5" />
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md justify-center mt-4">
+          <GlowButton href="/">
             Back to Pitch
-          </Link>
+          </GlowButton>
           
           <Link
             to="/archive"
-            className="flex items-center justify-center gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 px-6 py-3.5 text-base font-bold text-slate-900 dark:text-white transition-all hover:bg-slate-200 dark:hover:bg-slate-700"
+            className="flex items-center justify-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800 px-6 py-3.5 text-base font-bold text-slate-900 dark:text-white transition-all hover:bg-slate-200 dark:hover:bg-slate-700"
           >
             <Library className="w-5 h-5" />
             Read Latest News

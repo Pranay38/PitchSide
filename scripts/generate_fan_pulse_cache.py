@@ -219,7 +219,7 @@ NEGATIVE_WORDS = {
 }
 
 REDDIT_HEADERS = {
-    "User-Agent": os.getenv("REDDIT_USER_AGENT", "PitchSideFanPulseBot/1.0"),
+    "User-Agent": os.getenv("REDDIT_USER_AGENT", "The Touchline DribbleFanPulseBot/1.0"),
     "Accept": "application/json,text/plain,*/*",
 }
 
@@ -361,7 +361,7 @@ def get_reddit_client() -> Any:
     return praw.Reddit(
         client_id=client_id,
         client_secret=client_secret,
-        user_agent=os.getenv("REDDIT_USER_AGENT", "PitchSideFanPulseBot/1.0"),
+        user_agent=os.getenv("REDDIT_USER_AGENT", "The Touchline DribbleFanPulseBot/1.0"),
         check_for_async=False,
     )
 

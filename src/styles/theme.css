@@ -119,6 +119,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-outfit: 'Outfit', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-newsreader: 'Newsreader', Georgia, 'Times New Roman', serif;
 }
 
 /* ─── Glassmorphism & Premium Utilities ─── */
@@ -165,7 +166,7 @@
   height: 3px;
   background: linear-gradient(90deg, #16A34A, #22c55e, #4ade80, #16A34A);
   background-size: 200% 100%;
-  animation: shimmer 3s ease-in-out infinite;
+  animation: shimmer 3s ease-in-out 3;
 }
 
 @keyframes shimmer {
@@ -214,6 +215,10 @@
 
 .font-outfit {
   font-family: var(--font-outfit);
+}
+
+.font-newsreader {
+  font-family: var(--font-newsreader);
 }
 
 .page-atmosphere {
@@ -411,6 +416,7 @@
     color: #0F172A;
     line-height: 1.8;
     font-size: 1.05rem;
+    font-family: var(--font-newsreader);
   }
 
   .dark .pitchside-article-content {
@@ -653,5 +659,15 @@
 
   .dark .tiptap hr {
     border-color: #334155;
+  }
+}
+
+/* ─── Accessibility: Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

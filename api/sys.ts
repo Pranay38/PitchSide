@@ -10,6 +10,7 @@ import clubSeasonHandler from "../server/endpoints/club-season.js";
 import authHandler from "../server/endpoints/auth.js";
 import predictionsHandler from "../server/endpoints/predictions.js";
 import runInHandler from "../server/endpoints/run-in.js";
+import titleRaceHandler from "../server/endpoints/title-race.js";
 import pollOfWeekHandler from "../server/endpoints/poll-of-week.js";
 import onThisDayHandler from "../server/endpoints/on-this-day.js";
 import analyticsHandler from "../server/endpoints/analytics.js";
@@ -30,6 +31,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return predictionsHandler(req, res);
         case "run-in":
             return runInHandler(req as any, res as any);
+        case "title-race":
+            return titleRaceHandler(req as any, res as any);
         case "poll-of-week":
             return pollOfWeekHandler(req, res);
         case "collections":

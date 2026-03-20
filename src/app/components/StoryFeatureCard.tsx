@@ -19,7 +19,7 @@ export function StoryFeatureCard({
     return (
       <Link
         to={`/stories/${story.slug}`}
-        className="group overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800 dark:bg-[#0F172A]"
+        className="group cursor-pointer overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800 dark:bg-[#0F172A]"
       >
         <div className="grid gap-0 md:grid-cols-[220px_minmax(0,1fr)]">
           <div className="relative min-h-[200px] overflow-hidden">
@@ -61,7 +61,7 @@ export function StoryFeatureCard({
     return (
       <Link
         to={`/stories/${story.slug}`}
-        className="group overflow-hidden rounded-[2rem] border border-gray-200 bg-white shadow-xl shadow-[#0F172A]/[0.04] transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-2xl dark:border-gray-800 dark:bg-[#0F172A]"
+        className="group cursor-pointer overflow-hidden rounded-[2rem] border border-gray-200 bg-white shadow-xl shadow-[#0F172A]/[0.04] transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-2xl dark:border-gray-800 dark:bg-[#0F172A]"
       >
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="relative min-h-[320px] overflow-hidden lg:min-h-full">
@@ -136,7 +136,7 @@ export function StoryFeatureCard({
   return (
     <Link
       to={`/stories/${story.slug}`}
-      className="group overflow-hidden rounded-[1.9rem] border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800 dark:bg-[#0F172A]"
+      className="group cursor-pointer overflow-hidden rounded-[1.9rem] border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800 dark:bg-[#0F172A]"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
         <img

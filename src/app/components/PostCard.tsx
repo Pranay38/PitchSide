@@ -15,7 +15,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
     return (
       <Link
         to={`/post/${post.id}`}
-        className="group block relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 bg-slate-900 aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5] xl:aspect-[1/1]"
+        className="group block cursor-pointer relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 bg-slate-900 aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5] xl:aspect-[1/1]"
       >
         <div className="absolute inset-0 overflow-hidden">
           <img
@@ -74,7 +74,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
   return (
     <Link
       to={`/post/${post.id}`}
-      className="group block glass-card rounded-2xl hover:shadow-xl hover:shadow-[#16A34A]/5 dark:hover:shadow-[#16A34A]/10 transition-all duration-400 hover:-translate-y-1.5 overflow-hidden"
+      className="group block cursor-pointer glass-card rounded-2xl hover:shadow-xl hover:shadow-[#16A34A]/5 dark:hover:shadow-[#16A34A]/10 transition-all duration-400 hover:-translate-y-1.5 overflow-hidden"
     >
       {/* Gradient accent line at top */}
       <div className="h-0.5 w-full bg-gradient-to-r from-[#16A34A] via-[#22c55e] to-[#4ade80] opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
