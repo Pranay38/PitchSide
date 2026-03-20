@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import { Header } from "../components/Header";
 import { SEO } from "../components/SEO";
-import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar, Share, Sparkles, Bell } from "lucide-react";
+import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar, Share, Sparkles, Bell, Search, Shield, X } from "lucide-react";
+import { getAllClubs, getClubByName, searchClubsOnline, type Club, type SearchResult } from "../data/clubs";
 
 interface SavedArticle {
     id: string;
@@ -26,10 +27,17 @@ export function ProfilePage() {
     const [activeTab, setActiveTab] = useState<"saved" | "activity" | "settings">("saved");
     const [savedArticles, setSavedArticles] = useState<SavedArticle[]>([]);
     const [favoriteClub, setFavoriteClub] = useState<string | null>(null);
+    const [fanClub, setFanClub] = useState<{ name: string; logoUrl: string | null; league?: string } | null>(null);
     const [followedClubsCount, setFollowedClubsCount] = useState(0);
     const [votesCount, setVotesCount] = useState(0);
     const [wrappedUrl, setWrappedUrl] = useState<string | null>(null);
     const [pushStatus, setPushStatus] = useState<"default" | "granted" | "denied">("default");
+
+    // Club selector state
+    const [clubSearchTerm, setClubSearchTerm] = useState("");
+    const [showClubPicker, setShowClubPicker] = useState(false);
+    const [onlineResults, setOnlineResults] = useState<SearchResult[]>([]);
+    const [searchingOnline, setSearchingOnline] = useState(false);
 
     useEffect(() => {
         if ("Notification" in window) {
@@ -42,6 +50,15 @@ export function ProfilePage() {
         } catch { /* empty */ }
 
         setFavoriteClub(localStorage.getItem("favoriteClub") || null);
+
+        // Load fan club badge
+        try {
+            const raw = localStorage.getItem("pitchside_fan_club");
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed?.name) setFanClub(parsed);
+            }
+        } catch { /* empty */ }
 
         try {
             const clubs = JSON.parse(localStorage.getItem("pitchside_followed_clubs") || "[]");
@@ -117,9 +134,12 @@ export function ProfilePage() {
                         <div>
                             <h1 className="text-xl font-black text-[#0F172A] dark:text-white">{userName}</h1>
                             <div className="flex items-center gap-3 mt-1">
-                                {favoriteClub && (
-                                    <span className="text-xs font-semibold text-[#16A34A] bg-[#16A34A]/10 px-2.5 py-0.5 rounded-full">
-                                        ⚽ {favoriteClub}
+                            {(fanClub || favoriteClub) && (
+                                    <span className="text-xs font-semibold text-[#16A34A] bg-[#16A34A]/10 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                                        {fanClub?.logoUrl && (
+                                            <img src={fanClub.logoUrl} alt="" className="w-4 h-4 object-contain" />
+                                        )}
+                                        ⚽ {fanClub?.name || favoriteClub}
                                     </span>
                                 )}
                                 <span className="text-xs text-gray-500 flex items-center gap-1">
@@ -282,17 +302,117 @@ export function ProfilePage() {
                             />
                         </div>
 
-                        {/* Favorite Club */}
+                        {/* Fan Club Badge Selector */}
                         <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B]/50 border border-gray-100 dark:border-gray-800/50">
-                            <label className="block text-sm font-semibold text-[#0F172A] dark:text-gray-300 mb-2">Favorite Club</label>
-                            <p className="text-sm text-gray-500">
-                                {favoriteClub ? (
-                                    <span className="text-[#16A34A] font-semibold">⚽ {favoriteClub}</span>
-                                ) : (
-                                    "No club selected"
-                                )}
+                            <label className="block text-sm font-semibold text-[#0F172A] dark:text-gray-300 mb-2 flex items-center gap-2">
+                                <Shield className="w-4 h-4 text-[#16A34A]" />
+                                Club Allegiance
+                            </label>
+                            <p className="text-xs text-gray-500 mb-3">
+                                Your club badge appears on your comments for everyone to see.
                             </p>
-                            <p className="text-xs text-gray-400 mt-1">Change your club from the homepage header.</p>
+
+                            {/* Current selection */}
+                            {fanClub && (
+                                <div className="flex items-center gap-3 mb-3 p-3 rounded-lg bg-[#16A34A]/5 border border-[#16A34A]/20">
+                                    {fanClub.logoUrl && (
+                                        <img src={fanClub.logoUrl} alt={fanClub.name} className="w-8 h-8 object-contain" />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-bold text-[#0F172A] dark:text-white truncate">{fanClub.name}</p>
+                                        {fanClub.league && <p className="text-[10px] text-gray-500">{fanClub.league}</p>}
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setFanClub(null);
+                                            localStorage.removeItem("pitchside_fan_club");
+                                        }}
+                                        className="text-gray-400 hover:text-red-500 transition-colors"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Search / Picker */}
+                            <div className="relative">
+                                <div className="flex items-center gap-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-[#0F172A] px-3 py-2">
+                                    <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                    <input
+                                        type="text"
+                                        value={clubSearchTerm}
+                                        onChange={(e) => {
+                                            setClubSearchTerm(e.target.value);
+                                            setShowClubPicker(true);
+                                            // Online search debounce
+                                            if (e.target.value.length >= 3) {
+                                                setSearchingOnline(true);
+                                                searchClubsOnline(e.target.value).then((r) => {
+                                                    setOnlineResults(r);
+                                                    setSearchingOnline(false);
+                                                });
+                                            } else {
+                                                setOnlineResults([]);
+                                            }
+                                        }}
+                                        onFocus={() => setShowClubPicker(true)}
+                                        placeholder="Search for your club..."
+                                        className="w-full bg-transparent text-sm text-[#0F172A] dark:text-white placeholder:text-gray-400 focus:outline-none"
+                                    />
+                                </div>
+
+                                {showClubPicker && clubSearchTerm.length > 0 && (
+                                    <div className="absolute z-20 top-full mt-1 w-full bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-52 overflow-y-auto">
+                                        {(() => {
+                                            const localClubs = getAllClubs().filter((c) =>
+                                                c.name.toLowerCase().includes(clubSearchTerm.toLowerCase())
+                                            );
+                                            const localNames = new Set(localClubs.map((c) => c.name.toLowerCase()));
+                                            const uniqueOnline = onlineResults.filter(
+                                                (r) => !localNames.has(r.name.toLowerCase())
+                                            );
+                                            const allResults = [
+                                                ...localClubs.map((c) => ({ name: c.name, league: c.league, logo: c.logo })),
+                                                ...uniqueOnline.map((r) => ({ name: r.name, league: r.league, logo: r.logo })),
+                                            ];
+
+                                            if (allResults.length === 0) {
+                                                return (
+                                                    <div className="px-4 py-3 text-sm text-gray-500">
+                                                        {searchingOnline ? "Searching..." : "No clubs found"}
+                                                    </div>
+                                                );
+                                            }
+
+                                            return allResults.slice(0, 8).map((club) => (
+                                                <button
+                                                    key={club.name}
+                                                    onClick={() => {
+                                                        const badge = { name: club.name, logoUrl: club.logo || null, league: club.league };
+                                                        setFanClub(badge);
+                                                        localStorage.setItem("pitchside_fan_club", JSON.stringify(badge));
+                                                        setClubSearchTerm("");
+                                                        setShowClubPicker(false);
+                                                    }}
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
+                                                >
+                                                    {club.logo ? (
+                                                        <img src={club.logo} alt="" className="w-6 h-6 object-contain flex-shrink-0" />
+                                                    ) : (
+                                                        <div className="w-6 h-6 rounded bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-500">
+                                                            {club.name.charAt(0)}
+                                                        </div>
+                                                    )}
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-semibold text-[#0F172A] dark:text-white truncate">{club.name}</p>
+                                                        <p className="text-[10px] text-gray-500 truncate">{club.league}</p>
+                                                    </div>
+                                                </button>
+                                            ));
+                                        })()}
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Notification preference info */}

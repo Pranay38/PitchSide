@@ -33,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(400).json({ error: "Missing itemId, type, or reaction" });
         }
 
-        const validReactions = ["fire", "mindblown", "thumbsdown", "target", "cold"];
+        const validReactions = ["fire", "mindblown", "thumbsdown", "target", "cold", "screamer", "howler", "offside", "worldie", "tekkers", "shithouse", "bottled"];
         if (!validReactions.includes(reaction)) {
             return res.status(400).json({ error: "Invalid reaction type" });
         }

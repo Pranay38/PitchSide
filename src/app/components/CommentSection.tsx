@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, Send, Loader2, CornerDownRight, ThumbsUp, Reply } from "lucide-react";
 
+interface ClubBadge {
+    name: string;
+    logoUrl: string | null;
+}
+
 interface Comment {
     id: string;
     postId: string;
@@ -9,6 +14,7 @@ interface Comment {
     text: string;
     likes: number;
     createdAt: string;
+    clubBadge?: ClubBadge | null;
 }
 
 interface CommentSectionProps {
@@ -32,6 +38,18 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
     
     // Optimistic UI for likes
     const [likedComments, setLikedComments] = useState<Set<string>>(new Set());
+
+    // Read user's fan club from localStorage
+    const [userClubBadge, setUserClubBadge] = useState<ClubBadge | null>(null);
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem("pitchside_fan_club");
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed?.name) setUserClubBadge(parsed);
+            }
+        } catch { /* ignore */ }
+    }, []);
 
     const fetchComments = useCallback(async () => {
         try {
@@ -67,7 +85,8 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
                     postId, 
                     parentId,
                     name: authorName, 
-                    text: content.trim() 
+                    text: content.trim(),
+                    clubBadge: userClubBadge || undefined,
                 }),
             });
 
@@ -129,12 +148,24 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
                 )}
                 
                 <div className="group flex gap-3 p-4 rounded-xl bg-white dark:bg-[#1E293B]/30 border border-gray-100 dark:border-gray-800/50 hover:border-[#16A34A]/20 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#16A34A] to-[#4ade80] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                        {comment.name.charAt(0).toUpperCase()}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#16A34A] to-[#4ade80] flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden">
+                        {comment.clubBadge?.logoUrl ? (
+                            <img src={comment.clubBadge.logoUrl} alt={comment.clubBadge.name} className="w-full h-full object-cover" />
+                        ) : (
+                            comment.name.charAt(0).toUpperCase()
+                        )}
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-baseline gap-2 mb-1">
                             <span className="text-sm font-semibold text-[#0F172A] dark:text-white">{comment.name}</span>
+                            {comment.clubBadge?.name && (
+                                <span className="text-[10px] font-semibold text-[#16A34A] bg-[#16A34A]/10 px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                                    {comment.clubBadge.logoUrl && (
+                                        <img src={comment.clubBadge.logoUrl} alt="" className="w-3 h-3 object-contain" />
+                                    )}
+                                    {comment.clubBadge.name}
+                                </span>
+                            )}
                             <span className="text-[10px] text-gray-400">{formatTime(comment.createdAt)}</span>
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-3">

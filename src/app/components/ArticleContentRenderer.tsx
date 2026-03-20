@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useRef } from "react";
 import type { BlogPost } from "../data/posts";
 import {
   buildEditorialBlock,
@@ -8,6 +8,8 @@ import {
   renderEditorialBlockHtml,
   type EditorialBlock,
 } from "../lib/editorialBlocks";
+import { getAllTerms, lookupTerm } from "../data/footballGlossary";
+import { GlossaryTooltip, GlossaryStyles } from "./GlossaryTooltip";
 
 export interface ContentHeading {
   id: string;
@@ -146,12 +148,61 @@ function buildHtmlEditorialModel(content: string): ArticleContentModel {
     });
   });
 
+  // Annotate glossary terms in the HTML
+  const annotatedHtml = annotateHtmlWithGlossary(doc.body.innerHTML);
+
   return {
     isRich: true,
-    html: doc.body.innerHTML,
+    html: annotatedHtml,
     headings,
     editorialKinds,
   };
+}
+
+/** Build a regex that matches any glossary term (case-insensitive, whole-word) */
+function buildGlossaryRegex(): RegExp {
+  const terms = getAllTerms(); // sorted longest-first
+  if (terms.length === 0) return /(?!)/; // never matches
+  const escaped = terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return new RegExp(`\\b(${escaped.join("|")})\\b`, "gi");
+}
+
+const glossaryRegex = buildGlossaryRegex();
+
+/** Wrap glossary terms in HTML string with data-glossary span markers */
+function annotateHtmlWithGlossary(html: string): string {
+  // Only annotate text outside of HTML tags
+  return html.replace(/(<[^>]*>)|([^<]+)/g, (match, tag, text) => {
+    if (tag) return tag; // pass-through HTML tags
+    return text.replace(glossaryRegex, (m: string) => {
+      const entry = lookupTerm(m);
+      if (!entry) return m;
+      return `<span class="glossary-term-wrapper" data-glossary-term="${entry.term}" data-glossary-def="${entry.definition.replace(/"/g, '&quot;')}" style="position:relative;display:inline;cursor:help"><span class="glossary-term" style="border-bottom:1.5px dotted #16A34A">${m}</span></span>`;
+    });
+  });
+}
+
+/** Wrap glossary terms in plain text, returning React nodes */
+function annotateTextWithGlossary(text: string): React.ReactNode {
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  const re = new RegExp(glossaryRegex.source, glossaryRegex.flags);
+  while ((match = re.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(
+      <GlossaryTooltip key={`${match.index}-${match[0]}`} term={match[0]}>
+        {match[0]}
+      </GlossaryTooltip>
+    );
+    lastIndex = re.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts.length === 1 && typeof parts[0] === "string" ? parts[0] : <>{parts}</>;
 }
 
 function buildPlainEditorialModel(content: string): ArticleContentModel {
@@ -330,6 +381,36 @@ function EditorialBlockView({ block }: { block: EditorialBlock }) {
   );
 }
 
+/** Hydrate data-glossary-term spans in rich HTML content for hover tooltips */
+function useGlossaryHydration(containerRef: React.RefObject<HTMLDivElement | null>) {
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const spans = el.querySelectorAll<HTMLElement>("[data-glossary-term]");
+    spans.forEach((span) => {
+      const term = span.getAttribute("data-glossary-term") || "";
+      const def = span.getAttribute("data-glossary-def") || "";
+      let tooltipEl: HTMLElement | null = null;
+
+      const show = () => {
+        if (tooltipEl) return;
+        tooltipEl = document.createElement("span");
+        tooltipEl.className = "glossary-tooltip";
+        const rect = span.getBoundingClientRect();
+        if (rect.top < 120) tooltipEl.classList.add("glossary-tooltip--below");
+        tooltipEl.innerHTML = `<span class="glossary-tooltip__term">${term}</span><span class="glossary-tooltip__def">${def}</span>`;
+        span.appendChild(tooltipEl);
+      };
+      const hide = () => {
+        if (tooltipEl) { tooltipEl.remove(); tooltipEl = null; }
+      };
+      span.addEventListener("mouseenter", show);
+      span.addEventListener("mouseleave", hide);
+      span.addEventListener("click", () => tooltipEl ? hide() : show());
+    });
+  }, [containerRef.current]);
+}
+
 export function ArticleContentRenderer({
   model,
   className = "pitchside-article-content",
@@ -337,43 +418,54 @@ export function ArticleContentRenderer({
   model: ArticleContentModel;
   className?: string;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  useGlossaryHydration(containerRef);
+
   const content = useMemo(() => {
     if (model.isRich) {
-      return <div className={className} dangerouslySetInnerHTML={{ __html: model.html || "" }} />;
+      return (
+        <>
+          <GlossaryStyles />
+          <div ref={containerRef} className={className} dangerouslySetInnerHTML={{ __html: model.html || "" }} />
+        </>
+      );
     }
 
     return (
-      <div className={className}>
-        {model.blocks?.map((block, index) => {
-          if (block.type === "heading" && block.level === 2) {
-            return <h2 key={block.id || index} id={block.id}>{block.text}</h2>;
-          }
-          if (block.type === "heading" && block.level === 3) {
-            return <h3 key={block.id || index} id={block.id}>{block.text}</h3>;
-          }
-          if (block.type === "blockquote") {
-            return <blockquote key={index}>{block.text}</blockquote>;
-          }
-          if (block.type === "unordered-list") {
-            return (
-              <ul key={index}>
-                {block.items.map((item) => <li key={item}>{item}</li>)}
-              </ul>
-            );
-          }
-          if (block.type === "ordered-list") {
-            return (
-              <ol key={index}>
-                {block.items.map((item) => <li key={item}>{item}</li>)}
-              </ol>
-            );
-          }
-          if (block.type === "editorial") {
-            return <EditorialBlockView key={`${block.block.kind}-${index}`} block={block.block} />;
-          }
-          return <p key={index}>{block.text}</p>;
-        })}
-      </div>
+      <>
+        <GlossaryStyles />
+        <div ref={containerRef} className={className}>
+          {model.blocks?.map((block, index) => {
+            if (block.type === "heading" && block.level === 2) {
+              return <h2 key={block.id || index} id={block.id}>{block.text}</h2>;
+            }
+            if (block.type === "heading" && block.level === 3) {
+              return <h3 key={block.id || index} id={block.id}>{block.text}</h3>;
+            }
+            if (block.type === "blockquote") {
+              return <blockquote key={index}>{annotateTextWithGlossary(block.text)}</blockquote>;
+            }
+            if (block.type === "unordered-list") {
+              return (
+                <ul key={index}>
+                  {block.items.map((item) => <li key={item}>{annotateTextWithGlossary(item)}</li>)}
+                </ul>
+              );
+            }
+            if (block.type === "ordered-list") {
+              return (
+                <ol key={index}>
+                  {block.items.map((item) => <li key={item}>{annotateTextWithGlossary(item)}</li>)}
+                </ol>
+              );
+            }
+            if (block.type === "editorial") {
+              return <EditorialBlockView key={`${block.block.kind}-${index}`} block={block.block} />;
+            }
+            return <p key={index}>{annotateTextWithGlossary(block.text)}</p>;
+          })}
+        </div>
+      </>
     );
   }, [className, model]);
 

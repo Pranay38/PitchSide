@@ -10,7 +10,11 @@ import { OnThisDayWidget } from "../components/OnThisDayWidget";
 import { RumorMillWidget, type RumorMill } from "../components/RumorMillWidget";
 import { ManagerPressureWidget, type ManagerPressure } from "../components/ManagerPressureWidget";
 import { PostCard } from "../components/PostCard";
+import { ArticleCard } from "../components/ui/blog-post-card";
+import { BlogPostsGrid } from "../components/ui/blog-posts";
 import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
+import { ProSubscriptionScroll } from "../components/ProSubscriptionScroll";
+import { PlatformFeaturesBento } from "../components/PlatformFeaturesBento";
 import { PageState } from "../components/PageState";
 import { TransferTicker } from "../components/TransferTicker";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
@@ -246,6 +250,24 @@ export function HomePage() {
     return flagged[0] || posts[0] || null;
   }, [posts]);
 
+  // If the admin generated an AI Punchy Line for a Transfer Watch entry, use it to override the daily_features.json!
+  const rumorMillCandidate = useMemo(() => {
+    const entries = siteSettings?.transferWatch || [];
+    // Find the first one with a punchyLine that isn't confirmed
+    const entryWithAI = entries.find((e) => e.status === "rumor" && !!e.punchyLine);
+    
+    if (!entryWithAI) return null;
+
+    // Use higher sentiment if it's a reliable tier
+    const sentimentScore = entryWithAI.tier === 1 ? 85 : entryWithAI.tier === 2 ? 65 : 45;
+
+    return {
+      text: `${entryWithAI.player} to ${entryWithAI.club} (${entryWithAI.feeMode === "not-disclosed" ? "undisclosed fee" : `$${entryWithAI.feeMillions}m`})`,
+      sentimentScore,
+      punchyLine: entryWithAI.punchyLine
+    };
+  }, [siteSettings]);
+
   const fallbackFeaturedStory = useMemo(() => stories[0] || null, [stories]);
   const heroSelection = useMemo(() => {
     const hero = siteSettings.homepageCuration.hero;
@@ -353,10 +375,11 @@ export function HomePage() {
       <Header />
 
 
-      <main className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6">
-        <section className="section-surface mb-14 rounded-[2rem] border border-gray-200 p-3 shadow-sm dark:border-gray-800 md:p-4">
-          <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
-            <div>
+      <main className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 md:py-12">
+        <section className="mb-24">
+          <div className="grid gap-8 lg:gap-16 lg:grid-cols-[1.4fr_0.9fr] items-start">
+            {/* Main Cinematic Hero Story (Sticky) */}
+            <div className="lg:sticky lg:top-24">
               {heroSelection?.type === "post" ? (
                 <PostCard post={heroSelection.post} featured />
               ) : heroSelection?.type === "story" ? (
@@ -371,6 +394,7 @@ export function HomePage() {
               )}
             </div>
 
+            {/* Daily Briefing Modules (Scrolling Sidebar) */}
             <div className="space-y-6">
               <div className="tinted-panel rounded-[2rem] border border-gray-200 p-5 shadow-sm dark:border-gray-800">
                 <div className="mb-4 flex items-center gap-3">
@@ -387,10 +411,11 @@ export function HomePage() {
                 <NewsTicker />
               </div>
 
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
-                {/* Combined Poll + Debate: "Your Voice" */}
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
                 <YourVoiceSection />
-                {dailyFeatures?.rumorMill ? (
+                {rumorMillCandidate ? (
+                  <RumorMillWidget data={rumorMillCandidate} />
+                ) : dailyFeatures?.rumorMill ? (
                   <RumorMillWidget data={dailyFeatures.rumorMill} />
                 ) : null}
                 <OnThisDayWidget />
@@ -402,14 +427,14 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="section-surface mt-14 rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8">
-          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <section className="mt-24">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
                 Latest Analysis
               </p>
-              <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
-                Fresh reads from the main feed
+              <h2 className="mt-2 text-4xl font-black font-outfit text-[#0F172A] dark:text-white">
+                Fresh reads from the feed
               </h2>
             </div>
             <Link
@@ -425,40 +450,45 @@ export function HomePage() {
             <Link to="/archive?topic=Tactics" className="filter-chip">Tactics</Link>
             <Link to="/archive?format=Must%20Read" className="filter-chip">Must Reads</Link>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
             {latestPosts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <ArticleCard
+                key={post.id}
+                headline={post.title}
+                excerpt={post.excerpt}
+                cover={post.coverImage}
+                tag={post.club || (post.tags && post.tags[0])}
+                readingTime={post.readTime}
+                writer={post.author || ""}
+                publishedAt={post.date}
+                className="h-full"
+              />
             ))}
           </div>
         </section>
 
-        <section className="mt-14 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-          <div>
-            <div className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8">
-              <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-                    Deep Reads
-                  </p>
-                  <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
-                    Longform stories built for slower reading
-                  </h2>
-                </div>
-                <Link
-                  to="/stories"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
-                >
-                  Open stories
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-
+        <section className="mt-24 grid gap-12 xl:grid-cols-[1fr_0.8fr] items-start">
+          <div className="w-full">
+            <div className="w-full">
               {latestStories.length > 0 ? (
-                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-1">
-                  {latestStories.map((story) => (
-                    <StoryLinkCard key={story.id} story={story} />
-                  ))}
-                </div>
+                <BlogPostsGrid
+                  title="Deep Reads"
+                  description="Immersive longform stories built for slower reading. Dive deeper."
+                  backgroundLabel="READS"
+                  posts={latestStories.slice(0, 3).map(story => ({
+                    id: story.id,
+                    title: story.title,
+                    category: story.eyebrow,
+                    imageUrl: story.coverImage,
+                    views: Math.floor(Math.random() * 5000) + 1000, // Simulated since we don't have views count yet
+                    readTime: parseInt(story.readTime || "5", 10),
+                    rating: 5,
+                    href: `/stories/${story.slug}`
+                  }))}
+                  onPostClick={(post) => {
+                    if (post.href) window.location.href = post.href;
+                  }}
+                />
               ) : (
                 <PageState
                   icon={ScrollText}
@@ -470,7 +500,7 @@ export function HomePage() {
             </div>
           </div>
 
-            <div className="space-y-6">
+          <div className="space-y-8">
               <div className="rounded-[2rem] border border-gray-200 bg-[linear-gradient(180deg,#0f172a,#111f35)] p-6 text-white shadow-xl shadow-[#0F172A]/10 dark:border-gray-800">
               <div className="mb-5 flex items-center gap-3">
                 <div className="h-6 w-1.5 rounded-full bg-[#16A34A]" />
@@ -512,7 +542,7 @@ export function HomePage() {
                   </Link>
                 ))}
               </div>
-              </div>
+            </div>
 
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-1">
               {transferSpotlights.length > 0 ? (
@@ -555,41 +585,15 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="mt-14">
+        <section className="mt-24">
           <InlineNewsletterCard />
         </section>
 
-        <section className="mt-14 rounded-[2rem] border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-[#0F172A] md:p-8">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-                Browse Smarter
-              </p>
-              <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
-                Topic pages and archive filters now do different jobs.
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-[#64748B] dark:text-gray-400">
-                Topic pages stay editorial. The archive handles broad search and filtering when you know roughly what you want.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                to="/archive"
-                className="inline-flex items-center gap-2 rounded-full bg-[#16A34A] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#15803d]"
-              >
-                Search archive
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/topic/premier-league"
-                className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-3 text-sm font-bold text-[#0F172A] transition-colors hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-700 dark:text-white"
-              >
-                <Newspaper className="h-4 w-4 text-[#16A34A]" />
-                Open a topic page
-              </Link>
-            </div>
-          </div>
+        <section className="mt-8 mb-8">
+          <ProSubscriptionScroll />
         </section>
+
+        <PlatformFeaturesBento />
       </main>
 
       <Footer />

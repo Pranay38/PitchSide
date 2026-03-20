@@ -45,6 +45,7 @@ interface SiteSettings {
     feeMillions: number;
     status: "confirmed" | "rumor";
     tier: 1 | 2 | 3 | 4 | 5 | null;
+    punchyLine?: string;
     updatedAt: string;
   }>;
   homepageCuration: {
@@ -193,6 +194,7 @@ function normalizeTransferWatch(
       tier: item.status === "confirmed"
         ? null
         : ([1, 2, 3, 4, 5].includes(Number(item.tier)) ? Number(item.tier) as 1 | 2 | 3 | 4 | 5 : 3),
+      punchyLine: item.punchyLine ? String(item.punchyLine).trim() : undefined,
       updatedAt: String(item.updatedAt || ""),
     });
 

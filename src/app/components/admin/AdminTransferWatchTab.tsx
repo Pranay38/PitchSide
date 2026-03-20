@@ -1,4 +1,6 @@
-import { Repeat2, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Repeat2, Trash2, Sparkles, LoaderCircle } from "lucide-react";
+import { toast } from "sonner";
 import { getAllClubNames } from "../../data/clubs";
 const clubOptions = getAllClubNames().sort((left, right) => left.localeCompare(right));
 import { getTransferTierLabel, type TransferWatchEntry, type TransferFeeMode, type TransferWatchStatus } from "../../lib/transferWatch";
@@ -30,6 +32,40 @@ export function AdminTransferWatchTab({
     handleDeleteTransferWatchEntry,
     formatTransferWatchAmount
 }: AdminTransferWatchTabProps) {
+    const [generatingLine, setGeneratingLine] = useState(false);
+
+    const handleGeneratePunchyLine = async () => {
+        if (!transferDraft.player || !transferDraft.club) {
+            toast.error("Enter a player and club first.");
+            return;
+        }
+        setGeneratingLine(true);
+        try {
+            const res = await fetch("/api/ai-generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    type: "rumour-rater",
+                    player: transferDraft.player,
+                    club: transferDraft.club,
+                    fee: transferDraft.feeMode === "not-disclosed" ? "undisclosed" : `$${transferDraft.feeMillions}m`,
+                    tier: transferDraft.tier || 3,
+                }),
+            });
+            const data = await res.json();
+            if (data.data) {
+                setTransferDraft((prev: any) => ({ ...prev, punchyLine: data.data.trim() }));
+                toast.success("Punchy line generated!");
+            } else {
+                toast.error(data.error || "AI generation failed.");
+            }
+        } catch {
+            toast.error("AI generation failed.");
+        } finally {
+            setGeneratingLine(false);
+        }
+    };
+
     return (
         <div className="space-y-8">
             <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
@@ -128,7 +164,32 @@ export function AdminTransferWatchTab({
                             </label>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-3">
+                        {/* AI Punchy Line */}
+                        <div className="border-t border-gray-100 dark:border-gray-800 pt-5 mt-5">
+                            <label className="block">
+                                <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2 flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-purple-500" />
+                                    AI Punchy Line
+                                </span>
+                                <textarea
+                                    value={transferDraft.punchyLine || ""}
+                                    onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, punchyLine: e.target.value }))}
+                                    placeholder='e.g. "Here we go — Mbappe to Arsenal is 7/10 on the believability meter"'
+                                    rows={2}
+                                    className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none italic"
+                                />
+                            </label>
+                            <button
+                                onClick={handleGeneratePunchyLine}
+                                disabled={generatingLine || !transferDraft.player}
+                                className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-colors disabled:opacity-50"
+                            >
+                                {generatingLine ? <LoaderCircle className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                                {generatingLine ? "Generating..." : "🪄 Generate AI Line"}
+                            </button>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3 mt-5">
                             <button
                                 onClick={handleAddTransferWatchEntry}
                                 className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]"
@@ -200,6 +261,11 @@ export function AdminTransferWatchTab({
                                         <p className="text-[11px] uppercase tracking-wider text-[#94A3B8] mt-3">
                                             Updated {new Date(entry.updatedAt).toLocaleString()}
                                         </p>
+                                        {entry.punchyLine && (
+                                            <p className="mt-2 text-sm italic text-purple-500 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 px-3 py-2 rounded-lg border border-purple-100 dark:border-purple-500/20">
+                                                "{entry.punchyLine}"
+                                            </p>
+                                        )}
                                     </div>
                                 ))
                             )}

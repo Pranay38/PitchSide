@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { applyCors, checkRateLimit, requireAuth } from "../server/utils/security.js";
 import { ObjectId } from "mongodb";
+import { randomBytes } from "crypto";
 import { connectToDatabase } from "./_db.js";
 
 // Default seed posts (used when DB is empty on first run)
@@ -41,6 +42,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── GET: Fetch all posts ───
         if (req.method === "GET") {
+            // Preview mode: fetch a single draft by its secret preview token
+            const previewToken = req.query.preview as string | undefined;
+            if (previewToken) {
+                const draft = await collection.findOne({ previewToken });
+                if (!draft) return res.status(404).json({ error: "Preview not found or token expired" });
+                const { _id, ...rest } = draft;
+                return res.status(200).json({ ...rest, id: rest.id || String(_id) });
+            }
+
             let posts = await collection.find({}).sort({ _id: -1 }).toArray();
 
             // If empty, seed with defaults
@@ -52,10 +62,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
 
             // Map _id → id for client compatibility
-            const result = posts.map((p) => {
+            let result = posts.map((p) => {
                 const { _id, ...rest } = p;
                 return { ...rest, id: rest.id || String(_id) };
             });
+
+            // For public users, filter out posts scheduled for the future
+            const authHeader = req.headers.authorization;
+            const isAdmin = authHeader && authHeader.startsWith("Bearer ") && authHeader.split(" ")[1] === process.env.ADMIN_TOKEN;
+            if (!isAdmin) {
+                const now = new Date();
+                result = result.filter((p: any) => {
+                    if (!p.publishAt) return true; // No schedule = visible immediately
+                    return new Date(p.publishAt) <= now;
+                });
+            }
 
             return res.status(200).json(result);
         }
@@ -65,6 +86,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (!requireAuth(req, res)) return;
             const postData = req.body;
             const id = Date.now().toString();
+            // Auto-generate preview token for drafts
+            if (postData.isDraft && !postData.previewToken) {
+                postData.previewToken = randomBytes(12).toString("hex");
+            }
             const newPost = { ...postData, id, _id: id as any };
             await collection.insertOne(newPost);
             const { _id, ...result } = newPost;
@@ -76,6 +101,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (!requireAuth(req, res)) return;
             const { id, ...updates } = req.body;
             if (!id) return res.status(400).json({ error: "Missing post id" });
+
+            // Auto-generate preview token for drafts that don't have one
+            if (updates.isDraft && !updates.previewToken) {
+                const existing = await collection.findOne(buildIdFilter(id));
+                if (existing && !existing.previewToken) {
+                    updates.previewToken = randomBytes(12).toString("hex");
+                }
+            }
+            // Clear preview token when publishing (no longer a draft)
+            if (updates.isDraft === false) {
+                updates.previewToken = null;
+            }
 
             const result = await collection.updateOne(buildIdFilter(id), { $set: updates });
             if (result.matchedCount === 0) {

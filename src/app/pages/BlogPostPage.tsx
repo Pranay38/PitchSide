@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import {
   ArrowLeft,
   ArrowRight,
@@ -50,12 +50,31 @@ function sortPosts(posts: BlogPost[]): BlogPost[] {
 export function BlogPostPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const previewToken = searchParams.get("preview");
+
   const [posts, setPosts] = useState<BlogPost[]>(() => sortPosts(getPublishedPosts()));
-  const [loading, setLoading] = useState(posts.length === 0);
+  const [previewPost, setPreviewPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(posts.length === 0 || !!previewToken);
   const [saved, setSaved] = useState(false);
   const [followingClub, setFollowingClub] = useState(false);
   const [followingPlayer, setFollowingPlayer] = useState(false);
   const articleContentRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetch preview post by secret token
+  useEffect(() => {
+    if (!previewToken) return;
+    let cancelled = false;
+    fetch(`/api/posts?preview=${encodeURIComponent(previewToken)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        if (data) setPreviewPost(data);
+        setLoading(false);
+      })
+      .catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [previewToken]);
 
   useEffect(() => {
     let isMounted = true;
@@ -64,11 +83,11 @@ export function BlogPostPage() {
       .then((nextPosts) => {
         if (!isMounted) return;
         setPosts(sortPosts(nextPosts));
-        setLoading(false);
+        if (!previewToken) setLoading(false);
       })
       .catch(() => {
         if (!isMounted) return;
-        setLoading(false);
+        if (!previewToken) setLoading(false);
       });
 
     return () => {
@@ -77,9 +96,10 @@ export function BlogPostPage() {
   }, []);
 
   const currentIndex = posts.findIndex((post) => post.id === id);
-  const post = currentIndex >= 0 ? posts[currentIndex] : null;
-  const previousPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
-  const nextPost = currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
+  const post = previewPost || (currentIndex >= 0 ? posts[currentIndex] : null);
+  const isPreview = !!previewPost;
+  const previousPost = !isPreview && currentIndex > 0 ? posts[currentIndex - 1] : null;
+  const nextPost = !isPreview && currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
 
   const articleContentModel = useMemo(
     () => (post ? getArticleContentModel(post.content) : null),
@@ -176,8 +196,12 @@ export function BlogPostPage() {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     headline: post.title,
+    description: post.excerpt || "",
     image: [post.coverImage],
     datePublished: new Date(post.date).toISOString(),
+    dateModified: (post as any).updatedAt ? new Date((post as any).updatedAt).toISOString() : new Date(post.date).toISOString(),
+    articleSection: post.club || "Football",
+    wordCount: post.content?.split(/\s+/).length || 0,
     author: [{
       "@type": "Person",
       name: "Pranay Agrawal",
@@ -190,6 +214,10 @@ export function BlogPostPage() {
         "@type": "ImageObject",
         url: "https://pitchside.vercel.app/logo.png",
       },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://thetouchlinedribble.com/post/${post.id}`,
     },
   });
 
@@ -206,6 +234,12 @@ export function BlogPostPage() {
       />
       <ReadingProgress />
       <Header />
+
+      {isPreview && (
+        <div className="bg-amber-500 text-black py-2.5 px-4 text-center text-sm font-bold sticky top-0 z-50">
+          📝 Draft Preview — This article is not published yet
+        </div>
+      )}
 
       <main>
         <section className="relative overflow-hidden">

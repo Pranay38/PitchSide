@@ -42,6 +42,10 @@ export interface TacticalBoardData {
   description?: string;
 }
 
+export interface MatchCenterData {
+  id: string;
+}
+
 export type EditorialBlock =
   | {
       kind: "timeline";
@@ -68,6 +72,10 @@ export type EditorialBlock =
   | {
       kind: "tactical-board";
       data: TacticalBoardData;
+    }
+  | {
+      kind: "match-center";
+      data: MatchCenterData;
     };
 
 interface EditorialOpenMarker {
@@ -92,6 +100,7 @@ const BLOCK_LABELS: Record<EditorialBlock["kind"], string> = {
   "key-takeaways": "Key Takeaways",
   "comparison-table": "Comparison Table",
   "tactical-board": "Tactical Board",
+  "match-center": "Stadium Match Center",
 };
 
 export const EDITORIAL_SNIPPETS: EditorialSnippet[] = [
@@ -165,6 +174,15 @@ export const EDITORIAL_SNIPPETS: EditorialSnippet[] = [
       "<p></p>",
     ].join(""),
   },
+  {
+    id: "match-center",
+    label: "Stadium Match Center",
+    description: "Embed a live or finished broadcast-style match center.",
+    html: [
+      "<p>[match-center id=\"match-id-here\"]</p>",
+      "<p></p>",
+    ].join(""),
+  },
 ];
 
 function parseAttributes(attributeString = ""): Record<string, string> {
@@ -200,7 +218,7 @@ export function parseEditorialCloseMarker(value: string): EditorialBlock["kind"]
 }
 
 export function isSelfClosingEditorialBlock(kind: EditorialBlock["kind"]): boolean {
-  return kind === "quote-block" || kind === "tactical-board";
+  return kind === "quote-block" || kind === "tactical-board" || kind === "match-center";
 }
 
 function parseTimelineItems(lines: string[]): TimelineItem[] {
@@ -288,6 +306,15 @@ export function buildEditorialBlock(
         id: marker.attrs.id || "",
         title: marker.attrs.title || "Tactical board",
         description: marker.attrs.description || "",
+      },
+    };
+  }
+
+  if (marker.kind === "match-center") {
+    return {
+      kind: "match-center",
+      data: {
+        id: marker.attrs.id || "",
       },
     };
   }
@@ -407,6 +434,20 @@ export function renderEditorialBlockHtml(block: EditorialBlock): string {
         >
           <div class="flex min-h-[320px] items-center justify-center px-6 py-10 text-center text-sm text-white/62">
             Tactical sequence preview will load here.
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  if (block.kind === "match-center") {
+    const id = escapeHtml(block.data.id || "");
+
+    return `
+      <section class="not-prose my-10 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-[#0F172A]">
+        <div data-match-center-embed="${id}">
+          <div class="flex min-h-[400px] items-center justify-center text-sm text-gray-500 font-bold uppercase tracking-widest bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+            Stadium Match Center loading...
           </div>
         </div>
       </section>

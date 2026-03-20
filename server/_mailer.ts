@@ -29,6 +29,7 @@ function createTransporter() {
  */
 export async function sendEmail(options: {
     to: string | string[];
+    bcc?: string | string[];
     subject: string;
     html: string;
 }): Promise<void> {
@@ -37,6 +38,7 @@ export async function sendEmail(options: {
     await transporter.sendMail({
         from: `"The Touchline Dribble" <${GMAIL_USER}>`,
         to: Array.isArray(options.to) ? options.to.join(", ") : options.to,
+        bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc.join(", ") : options.bcc) : undefined,
         subject: options.subject,
         html: options.html,
     });

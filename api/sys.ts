@@ -12,9 +12,9 @@ import predictionsHandler from "../server/endpoints/predictions.js";
 import runInHandler from "../server/endpoints/run-in.js";
 import pollOfWeekHandler from "../server/endpoints/poll-of-week.js";
 import onThisDayHandler from "../server/endpoints/on-this-day.js";
-import newsletterHandler from "../server/endpoints/newsletter.js";
 import analyticsHandler from "../server/endpoints/analytics.js";
 import aiGenerateHandler from "../server/endpoints/ai-generate.js";
+import sitemapHandler from "../server/endpoints/sitemap.js";
 import { getPolls, createPoll, updatePoll, deletePoll, votePoll } from "../server/endpoints/polls.js";
 import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRating, voteMatchRating } from "../server/endpoints/matchRatings.js";
 
@@ -42,8 +42,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return settingsHandler(req, res);
         case "subscribers":
             return subscribersHandler(req, res);
-        case "newsletter":
-            return newsletterHandler(req, res);
         case "analytics":
             return analyticsHandler(req, res);
         case "generate-carousel":
@@ -74,6 +72,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         case "match-ratings-vote":
             if (req.method === "POST") return await voteMatchRating(req as any, res as any);
             return res.status(405).json({ error: "Method not allowed" });
+        case "sitemap":
+            return sitemapHandler(req, res);
         default:
             return res.status(404).json({ error: "Route not found: " + route });
     }

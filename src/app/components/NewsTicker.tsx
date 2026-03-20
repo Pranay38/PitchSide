@@ -59,11 +59,10 @@ export function NewsTicker() {
     }, [fetchNews]);
 
     return (
-        <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden relative">
             {/* Header */}
             <div
-                onClick={() => setExpanded(!expanded)}
-                className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-amber-500/5 to-transparent dark:from-amber-500/10 cursor-pointer select-none"
+                className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-amber-500/5 to-transparent dark:from-amber-500/10 select-none"
             >
                 <div className="flex items-center justify-between">
                     <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
@@ -78,23 +77,18 @@ export function NewsTicker() {
                         >
                             <RefreshCw className={`w-3.5 h-3.5 text-[#94A3B8] ${loading ? "animate-spin" : ""}`} />
                         </button>
-                        {expanded ? <ChevronUp className="w-4 h-4 text-[#94A3B8]" /> : <ChevronDown className="w-4 h-4 text-[#94A3B8]" />}
                     </div>
                 </div>
-                {!expanded && news.length > 0 && (
-                    <p className="text-[11px] text-[#94A3B8] mt-1 truncate">{news[0].sourceIcon} {news[0].title}</p>
-                )}
             </div>
 
             {/* News List */}
-            {expanded && (
-                <div ref={tickerRef} className="max-h-[400px] overflow-y-auto scrollbar-hide">
-                    {loading && news.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-12">
-                            <RefreshCw className="w-5 h-5 animate-spin text-amber-500 mb-2" />
-                            <span className="text-xs text-[#94A3B8]">Fetching latest news...</span>
-                        </div>
-                    ) : error && news.length === 0 ? (
+            <div ref={tickerRef} className="h-[450px] overflow-y-auto scrollbar-hide pb-6">
+                {loading && news.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12">
+                        <RefreshCw className="w-5 h-5 animate-spin text-amber-500 mb-2" />
+                        <span className="text-xs text-[#94A3B8]">Fetching latest news...</span>
+                    </div>
+                ) : error && news.length === 0 ? (
                         <div className="text-center py-8 px-4">
                             <Newspaper className="w-6 h-6 text-[#94A3B8] mx-auto mb-2" />
                             <p className="text-sm text-[#64748B]">{error}</p>
@@ -154,7 +148,6 @@ export function NewsTicker() {
                         </>
                     )}
                 </div>
-            )}
         </div>
     );
 }

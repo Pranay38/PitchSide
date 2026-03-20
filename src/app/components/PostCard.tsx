@@ -15,7 +15,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
     return (
       <Link
         to={`/post/${post.id}`}
-        className="group block relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 h-full bg-slate-900"
+        className="group block relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 bg-slate-900 aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5] xl:aspect-[1/1]"
       >
         <div className="absolute inset-0 overflow-hidden">
           <img

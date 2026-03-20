@@ -1,6 +1,9 @@
 {
     "rewrites": [
-
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sys?route=sitemap"
+    },
     {
       "source": "/api/polls/:id/vote",
       "destination": "/api/sys?action=polls-vote&id=:id"
@@ -76,6 +79,18 @@
         {
             "source": "/api/og",
             "destination": "/api/sys?route=og"
+        },
+        {
+            "source": "/api/ai-generate",
+            "destination": "/api/sys?route=ai-generate"
+        },
+        {
+            "source": "/api/generate-carousel",
+            "destination": "/api/sys?route=generate-carousel"
+        },
+        {
+            "source": "/api/analytics",
+            "destination": "/api/sys?route=analytics"
         },
         {
             "source": "/api/(.*)",

@@ -32,35 +32,68 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(200).json(
                 comments.map((c) => ({
                     id: c._id.toString(),
+                    postId: c.postId,
+                    parentId: c.parentId || null,
                     name: c.name,
                     text: c.text,
-                    timestamp: c.timestamp,
+                    likes: c.likes || 0,
+                    createdAt: c.createdAt || new Date(c.timestamp).toISOString(),
+                    clubBadge: c.clubBadge || null,
                 }))
             );
         }
 
         // ─── POST: Add a comment ───
         if (req.method === "POST") {
-            const { postId, name, text } = req.body;
+            const { postId, parentId, name, text, action, commentId, clubBadge } = req.body;
+
+            // Handle like action
+            if (action === "like" && commentId) {
+                const { ObjectId } = await import("mongodb");
+                let filter: any;
+                try {
+                    filter = { _id: new ObjectId(commentId) };
+                } catch {
+                    filter = { _id: commentId };
+                }
+                await collection.updateOne(filter, { $inc: { likes: 1 } });
+                return res.status(200).json({ success: true });
+            }
 
             if (!postId || !name?.trim() || !text?.trim()) {
                 return res.status(400).json({ error: "postId, name, and text are required." });
             }
 
-            const comment = {
+            const now = new Date().toISOString();
+            const comment: any = {
                 postId,
+                parentId: parentId || null,
                 name: name.trim(),
                 text: text.trim(),
+                likes: 0,
+                createdAt: now,
                 timestamp: Date.now(),
             };
 
-            await collection.insertOne(comment);
+            // Attach club badge if provided
+            if (clubBadge && clubBadge.name) {
+                comment.clubBadge = {
+                    name: clubBadge.name,
+                    logoUrl: clubBadge.logoUrl || null,
+                };
+            }
+
+            const result = await collection.insertOne(comment);
 
             return res.status(201).json({
-                id: comment.postId,
+                id: result.insertedId.toString(),
+                postId: comment.postId,
+                parentId: comment.parentId,
                 name: comment.name,
                 text: comment.text,
-                timestamp: comment.timestamp,
+                likes: 0,
+                createdAt: now,
+                clubBadge: comment.clubBadge || null,
             });
         }
 

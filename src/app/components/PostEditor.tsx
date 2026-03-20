@@ -5,10 +5,11 @@ import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
 import { ArticleContentRenderer, getArticleContentModel } from "./ArticleContentRenderer";
-import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2, MessageSquare } from "lucide-react";
+import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2, MessageSquare, CalendarDays } from "lucide-react";
 import { PollWidget } from "./PollWidget";
 import { scheduleEmbedHydration } from "../lib/embedHydration";
 import { toast } from "sonner";
+import { SpellcheckBar } from "./admin/SpellcheckBar";
 
 /** Categories that are NOT club-specific */
 const GENERAL_CATEGORIES = [
@@ -94,6 +95,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [usePoll, setUsePoll] = useState(!!post?.poll);
     const [matchRatings, setMatchRatings] = useState<{playerName: string, editorRating: number}[]>(post?.matchRatings || []);
     const [useMatchRatings, setUseMatchRatings] = useState(!!post?.matchRatings && post.matchRatings.length > 0);
+    const [publishAt, setPublishAt] = useState(post?.publishAt || "");
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
     const previewContentRef = useRef<HTMLDivElement | null>(null);
@@ -300,6 +302,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             isDraft: isAutoSave, // If auto-save, it's a draft. Click 'Publish' makes it false.
             poll: usePoll && poll.question.trim() ? poll : undefined,
             matchRatings: useMatchRatings && matchRatings.filter(r => r.playerName.trim()).length > 0 ? matchRatings.filter(r => r.playerName.trim()) : undefined,
+            publishAt: publishAt || undefined,
         });
 
         if (isAutoSave) {
@@ -383,6 +386,21 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     </div >
 
                     <div className="flex items-center gap-3">
+                        {/* Copy Preview Link — only for saved drafts */}
+                        {post?.isDraft && post?.previewToken && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const previewUrl = `${window.location.origin}/post/${post.id}?preview=${post.previewToken}`;
+                                    navigator.clipboard.writeText(previewUrl);
+                                    toast.success("Preview link copied! Share it for feedback.");
+                                }}
+                                className="flex items-center gap-2 px-4 py-1.5 border border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 rounded-lg font-medium text-sm hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-all duration-200"
+                            >
+                                <Link className="w-4 h-4" />
+                                Copy Preview Link
+                            </button>
+                        )}
                         <button
                             type="button"
                             onClick={() => setShowPreview(true)}
@@ -553,6 +571,35 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             className={`w-full px-4 py-3 rounded-xl border ${errors.excerpt ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm resize-none`}
                         />
                         {errors.excerpt && <p className="text-red-500 text-xs">{errors.excerpt}</p>}
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                if (!content.trim()) {
+                                    toast.error("Write some content first so AI can generate a description.");
+                                    return;
+                                }
+                                toast.loading("Generating meta description...", { id: "meta-gen" });
+                                try {
+                                    const res = await fetch("/api/ai-generate", {
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({ type: "meta-description", text: content.slice(0, 3000) }),
+                                    });
+                                    const data = await res.json();
+                                    if (data.data) {
+                                        setExcerpt(data.data.trim());
+                                        toast.success("Meta description generated!", { id: "meta-gen" });
+                                    } else {
+                                        toast.error(data.error || "Failed", { id: "meta-gen" });
+                                    }
+                                } catch {
+                                    toast.error("AI generation failed", { id: "meta-gen" });
+                                }
+                            }}
+                            className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-colors"
+                        >
+                            🪄 AI Meta Description
+                        </button>
                     </div>
 
                     {/* Category & Club */}
@@ -979,6 +1026,41 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-400/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-500"></div>
                             </label>
                         </div>
+
+                        {/* Schedule Publishing */}
+                        <div className="flex border-t border-gray-100 dark:border-gray-800 pt-6 flex-col gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${publishAt ? 'bg-blue-500/10 text-blue-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
+                                    <CalendarDays className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-[#0F172A] dark:text-white mb-0.5">Schedule Publish</p>
+                                    <p className="text-xs text-[#64748B] dark:text-gray-400">
+                                        {publishAt
+                                            ? `Scheduled for ${new Date(publishAt).toLocaleString()}`
+                                            : "Set a future date to auto-publish before matchday."}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="datetime-local"
+                                    value={publishAt ? new Date(new Date(publishAt).getTime() - new Date(publishAt).getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
+                                    onChange={(e) => setPublishAt(e.target.value ? new Date(e.target.value).toISOString() : "")}
+                                    className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                />
+                                {publishAt && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setPublishAt("")}
+                                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                        title="Clear schedule"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Rich Text Content */}
@@ -1005,6 +1087,14 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             Use the editorial blocks menu for timelines, stats cards, quote blocks, key takeaways, comparison tables, and tactical board embeds. They render in both preview and published articles.
                         </p>
                         {errors.content && <p className="text-red-500 text-xs mb-2">{errors.content}</p>}
+                        <SpellcheckBar
+                            content={content}
+                            onFix={(found, replacement) => {
+                                // Replace all occurrences (case-sensitive)
+                                const re = new RegExp(found.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+                                setContent((prev) => prev.replace(re, replacement));
+                            }}
+                        />
                         <RichTextEditor content={content} onChange={setContent} existingPosts={getAllPosts()} />
                     </div>
 

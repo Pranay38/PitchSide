@@ -183,9 +183,17 @@ export function TopicPage() {
 
         <section className="mt-10">
           {loading && posts.length === 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="h-[360px] animate-pulse rounded-[1.75rem] bg-gray-200 dark:bg-gray-800" />
+                <div key={index} className="overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white dark:border-gray-800 dark:bg-[#0F172A]">
+                  <div className="aspect-[16/10] animate-pulse bg-gray-200 dark:bg-gray-800" />
+                  <div className="space-y-4 p-5">
+                    <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+                    <div className="h-6 w-4/5 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+                    <div className="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+                    <div className="h-4 w-2/3 animate-pulse rounded bg-gray-200 dark:bg-gray-800" />
+                  </div>
+                </div>
               ))}
             </div>
           ) : featuredPost ? (

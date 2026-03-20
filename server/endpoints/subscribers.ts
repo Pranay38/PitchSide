@@ -90,6 +90,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── GET: List all subscribers (for admin) ───
         if (req.method === "GET") {
+            if (!requireAuth(req, res)) return;
             const subscribers = await collection.find({}).sort({ subscribedAt: -1 }).toArray();
             return res.status(200).json({
                 count: subscribers.length,
@@ -99,6 +100,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     alertPreferences: s.alertPreferences || null,
                 })),
             });
+        }
+
+        // ─── POST: Send Digest (for admin) ───
+        if (req.method === "POST" && req.query.action === "send-digest") {
+            if (!requireAuth(req, res)) return;
+
+            if (!isMailerConfigured()) {
+                return res.status(500).json({ error: "Mailer is not configured." });
+            }
+
+            const { subject, htmlContent } = req.body;
+            if (!subject || !htmlContent) {
+                return res.status(400).json({ error: "Subject and HTML are required." });
+            }
+
+            // Fetch active subscribers
+            const subscribers = await collection.find({}).toArray();
+            if (subscribers.length === 0) {
+                return res.status(400).json({ error: "No subscribers found." });
+            }
+
+            const bccList = subscribers.map(s => s.email);
+
+            await sendEmail({
+                to: "noreply@thetouchlinedribble.com", // Sent *to* ourselves
+                bcc: bccList, // BCC everyone else
+                subject,
+                html: htmlContent,
+            });
+
+            return res.status(200).json({ message: `Digest sent to ${subscribers.length} subscribers!` });
         }
 
         return res.status(405).json({ error: "Method not allowed" });

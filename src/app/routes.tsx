@@ -1,10 +1,13 @@
 import { createBrowserRouter, Outlet, ScrollRestoration } from "react-router";
+import { trackPageView } from "./lib/analytics";
 import { HomePage } from "./pages/HomePage";
 import { BlogPostPage } from "./pages/BlogPostPage";
 import { AdminPage } from "./pages/AdminPage";
 import { AboutPage } from "./pages/AboutPage";
 import { TacticalBoardPage } from "./pages/TacticalBoardPage";
 import { TacticalEmbedPage } from "./pages/TacticalEmbedPage";
+import { MatchCenterEmbedPage } from "./pages/MatchCenterEmbedPage";
+import { MatchCenterPage } from "./pages/MatchCenterPage";
 import { CollectionsPage } from "./pages/CollectionsPage";
 import { DebateCornerPage } from "./pages/DebateCornerPage";
 import { LeagueClubSeasonPage } from "./pages/LeagueClubSeasonPage";
@@ -20,6 +23,7 @@ import { TransferReliabilityPage } from "./pages/TransferReliabilityPage";
 import { TransferDossierPage } from "./pages/TransferDossierPage";
 import { TransferTrackerPage } from "./pages/TransferTrackerPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 
 export const router = createBrowserRouter([
@@ -100,6 +104,14 @@ export const router = createBrowserRouter([
         Component: TacticalEmbedPage,
       },
       {
+        path: "match-center/embed/:id",
+        Component: MatchCenterEmbedPage,
+      },
+      {
+        path: "match-center/:id",
+        Component: MatchCenterPage,
+      },
+      {
         path: "collections",
         Component: CollectionsPage,
       },
@@ -128,6 +140,17 @@ export const router = createBrowserRouter([
         path: ":league",
         Component: LeagueClubSeasonPage,
       },
+      {
+        path: "*",
+        Component: NotFoundPage,
+      },
     ],
   },
 ]);
+
+// Track SPA page views in GA4 on every route change
+router.subscribe((state) => {
+  if (state.navigation.state === "idle") {
+    trackPageView(state.location.pathname + state.location.search);
+  }
+});

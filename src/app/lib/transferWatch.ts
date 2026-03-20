@@ -10,6 +10,7 @@ export interface TransferWatchEntry {
   feeMillions: number;
   status: TransferWatchStatus;
   tier: TransferRumorTier;
+  punchyLine?: string;
   updatedAt: string;
 }
 
@@ -101,6 +102,7 @@ export function normalizeTransferWatchEntry(
     feeMillions,
     status,
     tier,
+    punchyLine: typeof input.punchyLine === "string" ? input.punchyLine.trim() : undefined,
     updatedAt,
   };
 }

@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { connectToDatabase } from "../_db.js";
 
 // ── Prompt templates ──────────────────────────────────────────────────────
 
@@ -68,6 +69,26 @@ Be genuinely provocative but not stupid. Back it up. Return ONLY raw JSON.`,
 - 3-4 bullet points capturing the key takeaways
 - One concluding sentence with the overall narrative
 Format as clean markdown with bullet points.`,
+
+    "meta-description": `You are an SEO specialist for a football blog. Write a single meta description for the provided article.
+Rules:
+- Exactly 140-155 characters
+- Include a primary keyword naturally
+- Compelling, click-worthy, accurate
+- Do NOT wrap in quotes
+- Return ONLY the meta description text, nothing else.`,
+
+    "rumour-rater": `You are a charismatic football journalist writing for "The Touchline Dribble". 
+You receive transfer rumour details (player, club, fee, reliability tier) and must:
+1. Rate its credibility from 1-10
+2. Write ONE punchy, witty sentence that sounds like insider gossip
+
+Rules:
+- Channel Fabrizio Romano energy, use phrases like "here we go", "done deal", "concrete interest"
+- Include the credibility score naturally, e.g. "7/10 on the believability meter"
+- Max 1-2 sentences total
+- If tier is 1, lean confident. If tier 4-5, be skeptical and funny about it.
+- Return ONLY the punchy text, no JSON, no quotes, no markdown.`,
 };
 
 // ── Gemini API call ───────────────────────────────────────────────────────
@@ -142,21 +163,78 @@ export default async function aiGenerateHandler(req: VercelRequest, res: VercelR
                 userContent = text;
                 break;
             }
+            case "meta-description": {
+                if (!text) return res.status(400).json({ error: "Missing 'text' field." });
+                systemPrompt = DRAFT_PROMPTS["meta-description"];
+                userContent = text;
+                break;
+            }
+            case "rumour-rater": {
+                const { player, club, fee, tier, text: rumourText } = req.body;
+                systemPrompt = DRAFT_PROMPTS["rumour-rater"];
+                if (rumourText) {
+                    // Raw rumor text from homepage widget
+                    userContent = `Transfer rumour: "${rumourText}"`;
+                } else if (player) {
+                    // Structured data from admin
+                    userContent = `Transfer rumour: ${player} to ${club || "unknown club"}. Fee: ${fee || "undisclosed"}. Source reliability: Tier ${tier || 3}.`;
+                } else {
+                    return res.status(400).json({ error: "Missing rumour text or player." });
+                }
+                break;
+            }
             default:
                 return res.status(400).json({ error: `Unknown type: ${type}` });
         }
 
+        // Check database cache first
+        let dbCollection;
+        let cacheId;
+        
+        try {
+            const { db } = await connectToDatabase();
+            dbCollection = db.collection<any>("ai_cache");
+            cacheId = `${type}-${userContent.slice(0, 50).replace(/[^a-zA-Z0-9]/g, "").toLowerCase()}`;
+            
+            const cachedDoc = await dbCollection.findOne({ _id: cacheId });
+            if (cachedDoc && cachedDoc.data) {
+                if (type === "rumour-rater") {
+                    const ageHours = (Date.now() - new Date(cachedDoc.createdAt).getTime()) / (1000 * 60 * 60);
+                    if (ageHours < 24) {
+                        return res.status(200).json({ data: cachedDoc.data });
+                    }
+                } else {
+                    return res.status(200).json({ data: cachedDoc.data });
+                }
+            }
+        } catch (e) {
+            console.warn("AI cache read failed:", e);
+        }
+
         const raw = await callGemini(systemPrompt, userContent, apiKey);
+
+        let finalData: any = raw;
 
         // For JSON-returning types, clean and parse
         if (type === "carousel" || type === "tweet-thread" || (type === "draft-assist" && (action === "headlines" || action === "hottake"))) {
             const cleaned = raw.replace(/```json|```/g, "").trim();
-            const parsed = JSON.parse(cleaned);
-            return res.status(200).json({ data: parsed });
+            finalData = JSON.parse(cleaned);
         }
 
-        // For text-returning types, return raw
-        return res.status(200).json({ data: raw });
+        // Save to cache
+        if (dbCollection && cacheId) {
+            try {
+                await dbCollection.updateOne(
+                    { _id: cacheId },
+                    { $set: { data: finalData, createdAt: new Date().toISOString() } },
+                    { upsert: true }
+                );
+            } catch (e) {
+                console.warn("AI cache write failed:", e);
+            }
+        }
+
+        return res.status(200).json({ data: finalData });
 
     } catch (error: any) {
         console.error("Error in ai-generate:", error);

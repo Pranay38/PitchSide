@@ -5,6 +5,8 @@ import { Toaster } from "./components/ui/sonner";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import { ClerkProvider } from "@clerk/clerk-react";
+import { BackToTopButton } from "./components/BackToTopButton";
+import { CookieBanner } from "./components/CookieBanner";
 
 const CLERK_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 
@@ -15,6 +17,8 @@ export default function App() {
       <RouterProvider router={router} />
       <PWAInstallPrompt />
       <Toaster />
+      <BackToTopButton />
+      <CookieBanner />
     </HelmetProvider>
   );
 

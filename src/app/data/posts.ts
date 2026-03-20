@@ -16,6 +16,8 @@ export interface BlogPost {
   sofascoreWidget?: any; // Structured WidgetConfig
   playerName?: string;
   isDraft?: boolean;
+  previewToken?: string; // Secret token for sharing draft previews
+  publishAt?: string; // ISO date string for scheduled publishing
   poll?: {
     question: string;
     options: { text: string; votes: number }[];
@@ -24,13 +26,7 @@ export interface BlogPost {
     playerName: string;
     editorRating: number;
   }[];
-  reactions?: {
-    fire: number;
-    mindblown: number;
-    thumbsdown: number;
-    target: number;
-    cold: number;
-  };
+  reactions?: Record<string, number>;
 }
 
 export const blogPosts: BlogPost[] = [

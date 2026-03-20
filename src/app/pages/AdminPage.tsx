@@ -35,10 +35,15 @@ import {
     normalizeTransferWatchEntry,
     type TransferFeeMode,
     type TransferWatchStatus,
-} from "../lib/transferWatch";
+}
+from "../lib/transferWatch";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { createDefaultPollOfWeek, normalizePollOfWeek } from "../lib/pollOfWeek";
-import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon, PenLine, MessageSquare } from "lucide-react";
+import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon,    Mic,
+    MessageSquare,
+    Calendar,
+    BarChart2
+} from "lucide-react";
 import { toast } from "sonner";
 import { AdminRunInEditor } from "../components/AdminRunInEditor";
 import type { SupplementalEvent } from "../lib/siteSettingsStorage";
@@ -59,9 +64,10 @@ import { InstagramCarouselGenerator } from "../components/admin/InstagramCarouse
 import { DraftAssistant } from "../components/admin/DraftAssistant";
 import { TweetThreadGenerator } from "../components/admin/TweetThreadGenerator";
 import { AdminCalendarTab } from "../components/admin/AdminCalendarTab";
+import { AdminMatchCenterTab } from "../components/admin/AdminMatchCenterTab";
 
 type View = "list" | "create" | "edit";
-type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
+type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
 
 export function AdminPage() {
     const navigate = useNavigate();
@@ -749,6 +755,13 @@ export function AdminPage() {
                         <ArrowUpDown className="w-4 h-4" /> Run-In Tracker
                     </button>
                     <button
+                        onClick={() => setActiveTab("match-center")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "match-center" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <BarChart2 className="w-4 h-4" />
+                        Match Center
+                    </button>
+                    <button
                         onClick={() => setActiveTab("transfer-tracker")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "transfer-tracker" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
@@ -969,6 +982,11 @@ export function AdminPage() {
                 {/* RUN-IN TRACKER TAB */}
                 {activeTab === "run-in" && (
                     <AdminRunInEditor />
+                )}
+
+                {/* MATCH CENTER TAB */}
+                {activeTab === "match-center" && (
+                    <AdminMatchCenterTab />
                 )}
 
                 {/* ON THIS DAY TAB */}
