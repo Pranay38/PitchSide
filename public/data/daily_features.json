@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-03-19T05:55:34.057857",
+  "lastUpdated": "2026-03-20T05:49:03.818072",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barcelona seek second Rashford loan - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Man Utd & Real Madrid want Guimaraes - Friday's gossip",
+    "sentimentScore": 44
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
+      "name": "Igor Tudor (TOT)",
       "pressureScore": 98
     },
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 98
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 94
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 75
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 80
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 71
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 63
     }
   ]
 }
