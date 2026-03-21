@@ -21,6 +21,7 @@ import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRatin
 import { recordArticleView, getRecommendations, getTagBasedFallback } from "./_recommendations-lib";
 import { connectToDatabase } from "./_db";
 import notificationsHandler from "../server/endpoints/notifications.js";
+import digestHandler from "../server/endpoints/digest.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const route = (req.query.route || req.query.action) as string;
@@ -48,6 +49,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return settingsHandler(req, res);
         case "subscribers":
             return subscribersHandler(req, res);
+        case "digest":
+            return digestHandler(req, res);
         case "analytics":
             return analyticsHandler(req, res);
         case "generate-carousel":
