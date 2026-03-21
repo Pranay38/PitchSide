@@ -372,29 +372,8 @@ export function BlogPostPage() {
               />
             )}
 
-            {headings.length > 0 && (
-              <div className="mb-8 rounded-[2rem] border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#0F172A] xl:hidden">
-                <div className="mb-3 flex items-center gap-2">
-                  <List className="h-4 w-4 text-[#16A34A]" />
-                  <h2 className="text-sm font-black font-outfit uppercase tracking-[0.18em] text-[#0F172A] dark:text-white">
-                    In this article
-                  </h2>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {headings.map((heading) => (
-                    <a
-                      key={heading.id}
-                      href={`#${heading.id}`}
-                      className="rounded-full bg-[#F8FAFC] px-3 py-2 text-sm font-medium text-[#475569] transition-colors hover:text-[#16A34A] dark:bg-[#08111f] dark:text-gray-300"
-                    >
-                      {heading.text}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div ref={articleContentRef}>
+            <div
+              ref={articleContentRef}>
               {articleContentModel && (
                 <ArticleContentRenderer model={articleContentModel} />
               )}
@@ -520,32 +499,6 @@ export function BlogPostPage() {
 
           <aside className="hidden xl:block">
             <div className="sticky top-24 space-y-6">
-              {headings.length > 0 && (
-                <div className="rounded-[2rem] border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#0F172A]">
-                  <div className="mb-4 flex items-center gap-2">
-                    <List className="h-4 w-4 text-[#16A34A]" />
-                    <h2 className="text-sm font-black font-outfit uppercase tracking-[0.18em] text-[#0F172A] dark:text-white">
-                      In this article
-                    </h2>
-                  </div>
-                  <div className="space-y-2">
-                    {headings.map((heading) => (
-                      <a
-                        key={heading.id}
-                        href={`#${heading.id}`}
-                        className={`block rounded-2xl px-4 py-3 text-sm transition-colors ${
-                          heading.level === 3
-                            ? "ml-4 bg-[#F8FAFC] text-[#64748B] hover:text-[#16A34A] dark:bg-[#08111f] dark:text-gray-400"
-                            : "bg-[#F8FAFC] font-semibold text-[#0F172A] hover:text-[#16A34A] dark:bg-[#08111f] dark:text-white"
-                        }`}
-                      >
-                        {heading.text}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               <div className="rounded-[2rem] border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#0F172A]">
                 <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
                   Share
