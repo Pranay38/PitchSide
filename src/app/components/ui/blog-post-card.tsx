@@ -47,14 +47,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   const hasFooter = writer || publishedAt;
 
   return (
-    <Card className={cn("flex w-full flex-col gap-3 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#16A34A]/30 cursor-pointer", className)}>
+    <Card className={cn("group flex w-full flex-col gap-3 overflow-hidden rounded-3xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#16A34A]/30 cursor-pointer", className)}>
       {cover && (
         <CardHeader className="p-0">
           <div className="relative h-56 w-full overflow-hidden">
             <img
               src={cover}
               alt={headline}
-              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </div>
         </CardHeader>
@@ -64,21 +64,21 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         {hasMeta && (
           <div className="mb-4 flex items-center text-xs font-semibold text-gray-400">
             {tag && (
-            <Badge className="rounded-full bg-gray-100 dark:bg-gray-800 text-[#475569] dark:text-gray-300 px-3 py-1 font-medium border-none shadow-none">
-              {tag}
-            </Badge>
+              <Badge className="rounded-full bg-gray-100 dark:bg-gray-800 text-[#475569] dark:text-gray-300 px-3 py-1 font-medium border-none shadow-none">
+                {tag}
+              </Badge>
             )}
             {tag && readingTime && <span className="mx-2">•</span>}
             {readingTime && (
               <span className="flex items-center gap-1">
-                 <Clock className="w-3.5 h-3.5" />
-                 {readingTime}
+                <Clock className="w-3.5 h-3.5" />
+                {readingTime}
               </span>
             )}
           </div>
         )}
 
-        <h2 className="mb-2 text-2xl md:text-3xl font-extrabold font-outfit leading-tight text-[#0F172A] dark:text-white transition-colors duration-300 hover:text-[#4ade80]">
+        <h2 className="mb-2 text-2xl md:text-3xl font-extrabold font-outfit leading-tight text-[#0F172A] dark:text-white transition-colors duration-300 group-hover:text-[#16A34A] dark:group-hover:text-[#4ade80]">
           {headline}
         </h2>
 

@@ -37,16 +37,22 @@ export type PollDocument = {
 export const getPolls = async (req: VercelRequest, res: VercelResponse) => {
     try {
         const client = await connectToDatabase();
-        const collection = client.db(dbName).collection<PollDocument>("polls");
+        const collection = client.db(dbName).collection("polls");
         
         const activeOnly = req.query.active === 'true';
+        const deviceId = req.cookies?.deviceId;
         
         if (activeOnly) {
             const activePoll = await collection.findOne({ isActive: true });
             if (!activePoll) {
                 return res.status(200).json(null);
             }
-            return res.status(200).json(activePoll);
+            
+            // Map the user's vote if signed via deviceId
+            const userVotedOptionId = deviceId && activePoll.votedDevices ? activePoll.votedDevices[deviceId] : null;
+            
+            const { votedIps, votedDevices, ...safePoll } = activePoll as any;
+            return res.status(200).json({ ...safePoll, userVotedOptionId });
         }
 
         // Require simple auth check for getting all polls (Admin only)
@@ -64,7 +70,7 @@ export const getPolls = async (req: VercelRequest, res: VercelResponse) => {
     }
 };
 
-// POST /api/polls - Create a new poll (Admin)
+// ... skipping createPoll, updatePoll, deletePoll as they don't need rewriting right now ...
 export const createPoll = async (req: VercelRequest, res: VercelResponse) => {
     const authHeader = req.headers.authorization;
     const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
@@ -81,16 +87,16 @@ export const createPoll = async (req: VercelRequest, res: VercelResponse) => {
         }
 
         const client = await connectToDatabase();
-        const collection = client.db(dbName).collection<PollDocument>("polls");
+        const collection = client.db(dbName).collection("polls");
 
         // If setting this to active, deactivate all others first
         if (isActive) {
             await collection.updateMany({}, { $set: { isActive: false } });
         }
 
-        const newPoll: PollDocument = {
+        const newPoll = {
             question,
-            options: options.map(opt => ({ ...opt, votes: 0 })), // ensure votes start at 0
+            options: options.map((opt: any) => ({ ...opt, votes: 0 })), // ensure votes start at 0
             isActive: Boolean(isActive),
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
@@ -104,7 +110,6 @@ export const createPoll = async (req: VercelRequest, res: VercelResponse) => {
     }
 };
 
-// PUT /api/polls/:id - Update a poll (Admin)
 export const updatePoll = async (req: VercelRequest, res: VercelResponse) => {
     const authHeader = req.headers.authorization;
     const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
@@ -122,14 +127,14 @@ export const updatePoll = async (req: VercelRequest, res: VercelResponse) => {
         }
 
         const client = await connectToDatabase();
-        const collection = client.db(dbName).collection<PollDocument>("polls");
+        const collection = client.db(dbName).collection("polls");
 
         // If activating this poll, deactivate others
         if (isActive) {
              await collection.updateMany({ _id: { $ne: new ObjectId(id) } }, { $set: { isActive: false } });
         }
 
-        const updates: Partial<PollDocument> = {
+        const updates: any = {
             updatedAt: new Date().toISOString()
         };
         
@@ -154,7 +159,6 @@ export const updatePoll = async (req: VercelRequest, res: VercelResponse) => {
     }
 };
 
-// DELETE /api/polls/:id - Delete a poll (Admin)
 export const deletePoll = async (req: VercelRequest, res: VercelResponse) => {
     const authHeader = req.headers.authorization;
     const expectedAuth = `Bearer ${process.env.ADMIN_PASSWORD}`;
@@ -199,23 +203,24 @@ export const votePoll = async (req: VercelRequest, res: VercelResponse) => {
              return res.status(400).json({ error: "Missing or invalid optionId" });
         }
 
-        // Derive a voter fingerprint from IP
-        const voterIp = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket?.remoteAddress || "unknown";
+        // Derive a voter fingerprint from cookies
+        const deviceId = req.cookies?.deviceId || req.body?.deviceId;
+        if (!deviceId) return res.status(400).json({ error: "Missing deviceId cookie for voting" });
 
         const client = await connectToDatabase();
-        const collection = client.db(dbName).collection<PollDocument>("polls");
+        const collection = client.db(dbName).collection("polls");
 
-        // Check if this IP already voted on this poll
+        // Check if this device already voted on this poll
         const existingPoll = await collection.findOne({
             _id: new ObjectId(id),
-            votedIps: voterIp,
+            [`votedDevices.${deviceId}`]: { $exists: true }
         });
 
         if (existingPoll) {
             return res.status(409).json({ error: "You have already voted on this poll." });
         }
 
-        // Atomically increment vote and add IP to votedIps
+        // Atomically increment vote and add deviceId mapping
         const result = await collection.findOneAndUpdate(
             { 
                _id: new ObjectId(id),
@@ -223,7 +228,7 @@ export const votePoll = async (req: VercelRequest, res: VercelResponse) => {
             },
             { 
                $inc: { "options.$.votes": 1 },
-               $addToSet: { votedIps: voterIp },
+               $set: { [`votedDevices.${deviceId}`]: optionId },
             },
             { returnDocument: "after" }
         );
@@ -232,9 +237,9 @@ export const votePoll = async (req: VercelRequest, res: VercelResponse) => {
             return res.status(404).json({ error: "Poll or option not found" });
         }
 
-        // Strip votedIps from response for privacy
-        const { votedIps, ...safeResult } = result as any;
-        return res.status(200).json(safeResult);
+        // Strip tracking props from response for privacy
+        const { votedIps, votedDevices, ...safeResult } = result as any;
+        return res.status(200).json({ ...safeResult, userVotedOptionId: optionId });
      } catch (error) {
         console.error("Failed to cast vote:", error);
         return res.status(500).json({ error: "Failed to cast vote" });

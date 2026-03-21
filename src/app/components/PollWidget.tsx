@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AlertCircle, BarChart3, CheckCircle2, Loader2 } from "lucide-react";
+import { getDeviceId } from "../lib/deviceId";
 
 interface PollWidgetOption {
     id?: string;
@@ -10,6 +11,7 @@ interface PollWidgetOption {
 interface PollWidgetData {
     question: string;
     options: PollWidgetOption[];
+    userVotedOptionId?: string | null;
 }
 
 interface PollWidgetProps {
@@ -31,7 +33,6 @@ export function PollWidget({
     voteMode = "local",
     onVote,
 }: PollWidgetProps) {
-    const storageKey = `poll_voted_${pollId}`;
     const [hasVoted, setHasVoted] = useState(false);
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [currentPoll, setCurrentPoll] = useState(poll);
@@ -39,17 +40,22 @@ export function PollWidget({
     const [error, setError] = useState("");
 
     useEffect(() => {
+        // Ensure device ID is captured across visits
+        if (voteMode === "remote") getDeviceId();
+
         setCurrentPoll(poll);
         setError("");
-        const storedVote = localStorage.getItem(storageKey);
-        if (storedVote !== null) {
+        
+        // Use backend state if provided, otherwise assume not voted
+        if (poll.userVotedOptionId) {
             setHasVoted(true);
-            setSelectedOption(parseInt(storedVote, 10));
+            const idx = poll.options.findIndex(o => o.id === poll.userVotedOptionId);
+            setSelectedOption(idx >= 0 ? idx : null);
         } else {
             setHasVoted(false);
             setSelectedOption(null);
         }
-    }, [poll, storageKey]);
+    }, [poll, voteMode]);
 
     const totalVotes = currentPoll.options.reduce((sum, opt) => sum + opt.votes, 0);
 
@@ -59,32 +65,39 @@ export function PollWidget({
         setSubmitting(true);
         setError("");
 
+        const optionId = currentPoll.options[optionIndex]?.id || `option-${optionIndex + 1}`;
+        const previousPoll = { ...currentPoll };
+
+        // 1. Optimistic Update
+        const updatedOptions = [...currentPoll.options];
+        updatedOptions[optionIndex] = {
+            ...updatedOptions[optionIndex],
+            votes: updatedOptions[optionIndex].votes + 1,
+        };
+        const activeOptimisticPoll = {
+             ...currentPoll,
+             options: updatedOptions,
+             userVotedOptionId: optionId
+        };
+        setCurrentPoll(activeOptimisticPoll);
+        setHasVoted(true);
+        setSelectedOption(optionIndex);
+
+        // 2. Network Request
         try {
             if (voteMode === "remote" && onVote) {
-                const optionId = currentPoll.options[optionIndex]?.id || `option-${optionIndex + 1}`;
                 const nextPoll = await onVote(optionId, optionIndex);
                 if (nextPoll) {
                     setCurrentPoll(nextPoll);
                 } else {
                     throw new Error("Could not save vote.");
                 }
-            } else {
-                const updatedOptions = [...currentPoll.options];
-                updatedOptions[optionIndex] = {
-                    ...updatedOptions[optionIndex],
-                    votes: updatedOptions[optionIndex].votes + 1,
-                };
-
-                setCurrentPoll({
-                    ...currentPoll,
-                    options: updatedOptions,
-                });
             }
-
-            setHasVoted(true);
-            setSelectedOption(optionIndex);
-            localStorage.setItem(storageKey, optionIndex.toString());
         } catch (voteError: any) {
+            // 3. Revert on failure
+            setCurrentPoll(previousPoll);
+            setHasVoted(false);
+            setSelectedOption(null);
             setError(voteError?.message || "Could not record your vote.");
         } finally {
             setSubmitting(false);

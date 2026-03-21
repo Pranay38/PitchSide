@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, Send, Loader2, CornerDownRight, ThumbsUp, Reply } from "lucide-react";
+import { toast } from "sonner";
+import { getDeviceId } from "../lib/deviceId";
 
 interface ClubBadge {
     name: string;
@@ -13,6 +15,7 @@ interface Comment {
     name: string;
     text: string;
     likes: number;
+    userLiked?: boolean;
     createdAt: string;
     clubBadge?: ClubBadge | null;
 }
@@ -57,6 +60,13 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
             if (res.ok) {
                 const data = await res.json();
                 setComments(data);
+                
+                // Initialize liked state from backend
+                const backendLiked = new Set<string>();
+                data.forEach((c: any) => {
+                    if (c.userLiked) backendLiked.add(c.id);
+                });
+                setLikedComments(backendLiked);
             }
         } catch (e) {
             console.error("Failed to fetch comments:", e);
@@ -88,6 +98,7 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
                     text: content.trim(),
                     clubBadge: userClubBadge || undefined,
                     _hp: "",
+                    deviceId: getDeviceId(),
                 }),
             });
 
@@ -102,6 +113,7 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
             }
         } catch (e) {
             console.error("Failed to post comment:", e);
+            toast.error("Failed to post comment.");
         }
         setSubmitting(false);
     };
@@ -116,13 +128,23 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
         ));
 
         try {
-            await fetch("/api/comments", {
+            const res = await fetch("/api/comments", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "like", commentId })
+                body: JSON.stringify({ action: "like", commentId, deviceId: getDeviceId() })
             });
+            if (!res.ok) throw new Error("Failed");
         } catch (e) {
-            console.error("Failed to like comment:", e);
+            // Revert optimistic update
+            setLikedComments(prev => {
+                const next = new Set(prev);
+                next.delete(commentId);
+                return next;
+            });
+            setComments(prev => prev.map(c => 
+                c.id === commentId ? { ...c, likes: Math.max(0, c.likes - 1) } : c
+            ));
+            toast.error("Could not like comment right now.");
         }
     };
 

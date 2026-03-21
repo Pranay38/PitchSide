@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router";
 import { Bookmark, Heart } from "lucide-react";
 import { SEO } from "../components/SEO";
@@ -6,20 +6,15 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
 import { getPublishedPosts } from "../lib/postStorage";
-import { getSavedPosts, getFollowedClubs } from "../lib/libraryStorage";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { topicPath } from "../lib/contentPaths";
 
 export function SavedPage() {
   const { favoriteClub } = useClubPreference();
   const allPosts = useMemo(() => getPublishedPosts(), []);
-  const [savedPostIds, setSavedPostIds] = useState<string[]>([]);
-  const [followedClubs, setFollowedClubs] = useState<string[]>([]);
-
-  useEffect(() => {
-    setSavedPostIds(getSavedPosts());
-    setFollowedClubs(getFollowedClubs());
-  }, []);
+  
+  const { savedPosts: savedPostIds, followedClubs, loading } = useUserPreferences();
 
   const savedPosts = useMemo(() => {
     return allPosts.filter((post) => savedPostIds.includes(post.id));

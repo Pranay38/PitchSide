@@ -29,6 +29,7 @@ const TransferDossierPage = lazy(() => import("./pages/TransferDossierPage").the
 const TransferTrackerPage = lazy(() => import("./pages/TransferTrackerPage").then(m => ({ default: m.TransferTrackerPage })));
 const ProfilePage = lazy(() => import("./pages/ProfilePage").then(m => ({ default: m.ProfilePage })));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage").then(m => ({ default: m.LeaderboardPage })));
+const POTSPage = lazy(() => import("./pages/POTSPage").then(m => ({ default: m.POTSPage })));
 
 export const router = createBrowserRouter([
   {
@@ -124,6 +125,10 @@ export const router = createBrowserRouter([
       {
         path: "debates",
         Component: DebateCornerPage,
+      },
+      {
+        path: "pots",
+        Component: POTSPage,
       },
       {
         path: "profile",

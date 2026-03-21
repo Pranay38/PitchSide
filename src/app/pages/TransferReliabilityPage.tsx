@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, Filter, Repeat2, Search, ShieldCheck } from "lucide-react";
+import { ArrowRight, Filter, Repeat2, Search, ShieldCheck, Bell } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -14,7 +14,7 @@ import {
   getTransferTierLabel,
   getTransferTopicLabel,
 } from "../lib/transferWatch";
-import { getFollowedTransfers, toggleFollowedTransfer } from "../lib/libraryStorage";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 import { toast } from "sonner";
 
 function getTierClasses(entry: TransferReliabilityEntry): string {
@@ -32,7 +32,9 @@ function getTierClasses(entry: TransferReliabilityEntry): string {
 export function TransferReliabilityPage() {
   const { favoriteClub } = useClubPreference();
   const [entries, setEntries] = useState<TransferReliabilityEntry[]>([]);
-  const [followedTransfers, setFollowedTransfers] = useState<string[]>([]);
+  
+  const { followedTransfers, toggleFollowedTransfer } = useUserPreferences();
+
   const [clubFilter, setClubFilter] = useState("all");
   const [query, setQuery] = useState("");
 
@@ -52,7 +54,6 @@ export function TransferReliabilityPage() {
         if (isMounted) setEntries([]);
       });
 
-    setFollowedTransfers(getFollowedTransfers());
     return () => {
       isMounted = false;
     };
@@ -204,7 +205,6 @@ export function TransferReliabilityPage() {
                       type="button"
                       onClick={() => {
                         const next = toggleFollowedTransfer(entry.topic);
-                        setFollowedTransfers(getFollowedTransfers());
                         toast.success(next ? `Following ${getTransferTopicLabel(entry)} alerts` : "Transfer alert removed");
                       }}
                       className={`rounded-[1.25rem] border px-4 py-3 text-sm font-bold transition-colors ${followed

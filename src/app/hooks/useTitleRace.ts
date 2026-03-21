@@ -11,6 +11,7 @@ interface TitleRaceTeam {
   name: string;
   short: string;
   color: string;
+  logo: string;
   pts: number;
   played: number;
   gd: number;
@@ -28,7 +29,7 @@ export interface TitleRaceData {
   updatedAt: string;
 }
 
-export function useTitleRace(refreshInterval = 60000) {
+export function useTitleRace(league = "premier-league", refreshInterval = 60000) {
   const [data, setData] = useState<TitleRaceData | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,8 +38,9 @@ export function useTitleRace(refreshInterval = 60000) {
     let isMounted = true;
 
     const fetchData = async () => {
+      setIsLoading(true);
       try {
-        const res = await fetch("/api/title-race");
+        const res = await fetch(`/api/title-race?league=${league}`);
         if (!res.ok) throw new Error("Failed to fetch title race data");
         const json = await res.json();
         if (isMounted) {
@@ -61,7 +63,7 @@ export function useTitleRace(refreshInterval = 60000) {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, [refreshInterval]);
+  }, [league, refreshInterval]);
 
   return { data, error, isLoading };
 }

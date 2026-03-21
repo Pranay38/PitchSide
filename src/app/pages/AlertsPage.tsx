@@ -6,15 +6,7 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { getPublishedPosts } from "../lib/postStorage";
-import {
-  getFollowedClubs,
-  getFollowedPlayers,
-  getFollowedTransfers,
-  markAlertsSeen,
-  toggleFollowedClub,
-  toggleFollowedPlayer,
-  toggleFollowedTransfer,
-} from "../lib/libraryStorage";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 import { buildSiteAlerts, type SiteAlert } from "../lib/alertCenter";
 import { getTransferWatchEntriesAsync } from "../lib/siteSettingsStorage";
 import { toast } from "sonner";
@@ -22,19 +14,21 @@ import { toast } from "sonner";
 export function AlertsPage() {
   const { favoriteClub } = useClubPreference();
   const posts = useMemo(() => getPublishedPosts(), []);
-  const [followedClubs, setFollowedClubs] = useState<string[]>([]);
-  const [followedPlayers, setFollowedPlayers] = useState<string[]>([]);
-  const [followedTransfers, setFollowedTransfers] = useState<string[]>([]);
+  
+  const {
+    followedClubs,
+    followedPlayers,
+    followedTransfers,
+    toggleFollowedClub,
+    toggleFollowedPlayer,
+    toggleFollowedTransfer,
+    markAlertsSeen
+  } = useUserPreferences();
+
   const [alerts, setAlerts] = useState<SiteAlert[]>([]);
   const [email, setEmail] = useState("");
   const [clubDraft, setClubDraft] = useState("");
   const [playerDraft, setPlayerDraft] = useState("");
-
-  useEffect(() => {
-    setFollowedClubs(getFollowedClubs());
-    setFollowedPlayers(getFollowedPlayers());
-    setFollowedTransfers(getFollowedTransfers());
-  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -73,14 +67,12 @@ export function AlertsPage() {
   const addClub = () => {
     if (!clubDraft.trim()) return;
     toggleFollowedClub(clubDraft.trim());
-    setFollowedClubs(getFollowedClubs());
     setClubDraft("");
   };
 
   const addPlayer = () => {
     if (!playerDraft.trim()) return;
     toggleFollowedPlayer(playerDraft.trim());
-    setFollowedPlayers(getFollowedPlayers());
     setPlayerDraft("");
   };
 

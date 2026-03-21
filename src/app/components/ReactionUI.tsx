@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { getDeviceId } from "../lib/deviceId";
 
 interface ReactionCounts {
     screamer: number;
@@ -45,10 +46,38 @@ export function ReactionUI({ itemId, itemType, initialReactions }: ReactionUIPro
         return c;
     });
 
-    const storageKey = `reacted_${itemId}`;
-    const [hasReacted, setHasReacted] = useState<boolean>(() => !!localStorage.getItem(storageKey));
+    const [userReaction, setUserReaction] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [animatingKey, setAnimatingKey] = useState<string | null>(null);
+
+    // Fetch up-to-date reactions and the current user's vote
+    useEffect(() => {
+        const fetchReactions = async () => {
+            try {
+                // Ensure cookie is generated
+                getDeviceId();
+                const res = await fetch(`/api/react?itemId=${itemId}&type=${itemType}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.reactions) {
+                        const synced = { ...DEFAULT_COUNTS };
+                        for (const k of REACTION_KEYS) {
+                            if (data.reactions[k]) synced[k] = data.reactions[k];
+                        }
+                        setCounts(synced);
+                    }
+                    if (data.userReaction) {
+                        setUserReaction(data.userReaction);
+                    }
+                }
+            } catch {
+                // Silently fail, stick to initial data
+            }
+        };
+        fetchReactions();
+    }, [itemId, itemType]);
+
+    const hasReacted = userReaction !== null;
 
     const handleReact = async (reactionKey: keyof ReactionCounts) => {
         if (hasReacted || isSubmitting) return;
@@ -58,14 +87,13 @@ export function ReactionUI({ itemId, itemType, initialReactions }: ReactionUIPro
 
         // Optimistic UI update
         setCounts(prev => ({ ...prev, [reactionKey]: prev[reactionKey] + 1 }));
-        setHasReacted(true);
-        localStorage.setItem(storageKey, reactionKey);
+        setUserReaction(reactionKey);
 
         try {
             const res = await fetch("/api/react", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ itemId, type: itemType, reaction: reactionKey }),
+                body: JSON.stringify({ itemId, type: itemType, reaction: reactionKey, deviceId: getDeviceId() }),
             });
 
             if (!res.ok) throw new Error("Failed to save reaction");
@@ -77,12 +105,12 @@ export function ReactionUI({ itemId, itemType, initialReactions }: ReactionUIPro
                     if (data.reactions[k]) synced[k] = data.reactions[k];
                 }
                 setCounts(synced);
+                if (data.userReaction) setUserReaction(data.userReaction);
             }
         } catch {
             // Revert optimistic update
             setCounts(prev => ({ ...prev, [reactionKey]: Math.max(0, prev[reactionKey] - 1) }));
-            setHasReacted(false);
-            localStorage.removeItem(storageKey);
+            setUserReaction(null);
             toast.error("Failed to add reaction");
         } finally {
             setIsSubmitting(false);
@@ -90,7 +118,6 @@ export function ReactionUI({ itemId, itemType, initialReactions }: ReactionUIPro
         }
     };
 
-    const userReaction = localStorage.getItem(storageKey);
     const totalReactions = REACTION_KEYS.reduce((sum, k) => sum + counts[k], 0);
 
     return (
@@ -131,9 +158,9 @@ export function ReactionUI({ itemId, itemType, initialReactions }: ReactionUIPro
                                 style={isSelected ? {
                                     backgroundColor: `${color}15`,
                                     borderColor: `${color}40`,
-                                    ringColor: color,
+                                    "--tw-ring-color": color,
                                     boxShadow: `0 4px 20px ${color}30`,
-                                } : {}}
+                                } as React.CSSProperties : {}}
                             >
                                 <span className={`${
                                     isAnimating ? "animate-bounce" : isSelected ? "" : "group-hover:scale-125 transition-transform"

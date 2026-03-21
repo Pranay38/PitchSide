@@ -7,6 +7,7 @@ import { OfflineIndicator } from "./components/OfflineIndicator";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { BackToTopButton } from "./components/BackToTopButton";
 import { CookieBanner } from "./components/CookieBanner";
+import { UserPreferencesProvider } from "./hooks/useUserPreferences";
 
 const CLERK_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 
@@ -27,7 +28,9 @@ export default function App() {
 
   return (
     <ClerkProvider publishableKey={CLERK_KEY}>
-      {inner}
+      <UserPreferencesProvider>
+        {inner}
+      </UserPreferencesProvider>
     </ClerkProvider>
   );
 }

@@ -66,7 +66,7 @@ function StoryLinkCard({ story }: { story: StoryFeature }) {
   return (
     <Link
       to={`/stories/${story.slug}`}
-      className="group overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800 dark:bg-[#0F172A]"
+      className="group block overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800 dark:bg-[#0F172A]"
     >
       <div className="aspect-[16/10] overflow-hidden">
         <img
@@ -125,21 +125,19 @@ function YourVoiceSection() {
       <div className="flex gap-1 bg-gray-100/50 dark:bg-white/5 rounded-xl p-1 mb-4">
         <button
           onClick={() => setActiveVoiceTab("poll")}
-          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-            activeVoiceTab === "poll"
+          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeVoiceTab === "poll"
               ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
               : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-          }`}
+            }`}
         >
           ⚡ Poll of the Week
         </button>
         <button
           onClick={() => setActiveVoiceTab("debate")}
-          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-            activeVoiceTab === "debate"
+          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeVoiceTab === "debate"
               ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
               : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-          }`}
+            }`}
         >
           🔥 Debate Arena
         </button>
@@ -157,7 +155,7 @@ function TransferSpotlightCard({ entry }: { entry: ReturnType<typeof buildTransf
   return (
     <Link
       to={`/transfers/${entry.dossierSlug}`}
-      className="group section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800"
+      className="group block section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -259,7 +257,7 @@ export function HomePage() {
     const entries = siteSettings?.transferWatch || [];
     // Find the first one with a punchyLine that isn't confirmed
     const entryWithAI = entries.find((e) => e.status === "rumor" && !!e.punchyLine);
-    
+
     if (!entryWithAI) return null;
 
     // Use higher sentiment if it's a reliable tier
@@ -471,17 +469,18 @@ export function HomePage() {
           </div>
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
             {latestPosts.map((post) => (
-              <ArticleCard
-                key={post.id}
-                headline={post.title}
-                excerpt={post.excerpt}
-                cover={post.coverImage}
-                tag={post.club || (post.tags && post.tags[0])}
-                readingTime={post.readTime}
-                writer={post.author || ""}
-                publishedAt={post.date}
-                className="h-full"
-              />
+              <Link key={post.id} to={`/post/${post.id}`} className="block h-full group">
+                <ArticleCard
+                  headline={post.title}
+                  excerpt={post.excerpt}
+                  cover={post.coverImage}
+                  tag={post.club || (post.tags && post.tags[0])}
+                  readingTime={post.readTime}
+                  writer={post.author || ""}
+                  publishedAt={post.date}
+                  className="h-full"
+                />
+              </Link>
             ))}
           </div>
         </section>
@@ -520,7 +519,7 @@ export function HomePage() {
           </div>
 
           <div className="space-y-8">
-              <div className="rounded-[2rem] border border-gray-200 bg-[linear-gradient(180deg,#0f172a,#111f35)] p-6 text-white shadow-xl shadow-[#0F172A]/10 dark:border-gray-800">
+            <div className="rounded-[2rem] border border-gray-200 bg-[linear-gradient(180deg,#0f172a,#111f35)] p-6 text-white shadow-xl shadow-[#0F172A]/10 dark:border-gray-800">
               <div className="mb-5 flex items-center gap-3">
                 <div className="h-6 w-1.5 rounded-full bg-[#16A34A]" />
                 <div>
@@ -587,7 +586,7 @@ export function HomePage() {
               )}
               <Link
                 to="/archive?type=story"
-                className="group section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800"
+                className="group block section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800"
               >
                 <p className="inline-flex items-center gap-2 rounded-full bg-[#0F172A]/5 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:bg-white/5 dark:text-gray-300">
                   <BookOpen className="h-3.5 w-3.5 text-[#16A34A]" />

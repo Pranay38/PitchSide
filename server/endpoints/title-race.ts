@@ -13,6 +13,7 @@ interface TitleRaceTeam {
   name: string;
   short: string;
   color: string;
+  logo: string;
   pts: number;
   played: number;
   gd: number;
@@ -30,9 +31,9 @@ interface TitleRaceData {
   updatedAt: string;
 }
 
-function getDefaultData(): TitleRaceData {
+function getDefaultData(league: string): TitleRaceData {
   return {
-    configId: "default",
+    configId: league,
     updatedAt: new Date().toISOString(),
     teams: []
   };
@@ -50,11 +51,12 @@ export default async function titleRaceHandler(req: VercelRequest, res: VercelRe
   try {
     const { db } = await connectToDatabase();
     const collection = db.collection<TitleRaceData>("title_race");
+    const league = typeof req.query.league === "string" ? req.query.league : "premier-league";
 
     if (req.method === "GET") {
-      const data = await collection.findOne({ configId: "default" });
+      const data = await collection.findOne({ configId: league });
       if (!data) {
-        return res.status(200).json(getDefaultData());
+        return res.status(200).json(getDefaultData(league));
       }
       
       if (data.teams && Array.isArray(data.teams)) {
@@ -72,13 +74,13 @@ export default async function titleRaceHandler(req: VercelRequest, res: VercelRe
       }
 
       const newData: TitleRaceData = {
-        configId: "default",
+        configId: league,
         teams,
         updatedAt: new Date().toISOString(),
       };
 
       await collection.updateOne(
-        { configId: "default" },
+        { configId: league },
         { $set: newData },
         { upsert: true }
       );

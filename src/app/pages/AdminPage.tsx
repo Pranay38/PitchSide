@@ -39,12 +39,7 @@ import {
 from "../lib/transferWatch";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { createDefaultPollOfWeek, normalizePollOfWeek } from "../lib/pollOfWeek";
-import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon,    Mic,
-    MessageSquare,
-    Calendar,
-    BarChart2,
-    PenLine
-} from "lucide-react";
+import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon, Mic, MessageSquare, Calendar, BarChart2, PenLine, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { AdminRunInEditor } from "../components/AdminRunInEditor";
 import { AdminTitleRaceTab } from "../components/admin/AdminTitleRaceTab";
@@ -67,15 +62,16 @@ import { DraftAssistant } from "../components/admin/DraftAssistant";
 import { TweetThreadGenerator } from "../components/admin/TweetThreadGenerator";
 import { AdminCalendarTab } from "../components/admin/AdminCalendarTab";
 import { AdminMatchCenterTab } from "../components/admin/AdminMatchCenterTab";
+import { AdminNotificationsTab } from "../components/admin/AdminNotificationsTab";
 
 type View = "list" | "create" | "edit";
-type Tab = "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
+type Tab = "notifications" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
 
 export function AdminPage() {
     const navigate = useNavigate();
     const [isAuthed, setIsAuthed] = useState(isAdminAuthenticated());
     const [view, setView] = useState<View>("list");
-    const [activeTab, setActiveTab] = useState<Tab>("posts");
+    const [activeTab, setActiveTab] = useState<Tab>("notifications");
     const [targetCarouselText, setTargetCarouselText] = useState("");
     const [showDebateEditor, setShowDebateEditor] = useState(false);
     const [expandedDebateId, setExpandedDebateId] = useState<string | null>(null);
@@ -715,6 +711,12 @@ export function AdminPage() {
                 {/* Tabs Wrapper */}
                 <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 dark:border-gray-800 mb-8 pb-4">
                     <button
+                        onClick={() => setActiveTab("notifications")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "notifications" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <Bell className="w-4 h-4" /> Notifications
+                    </button>
+                    <button
                         onClick={() => setActiveTab("posts")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "posts" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
@@ -1096,6 +1098,11 @@ export function AdminPage() {
                 {/* CALENDAR TAB */}
                 {activeTab === "calendar" && (
                     <AdminCalendarTab posts={posts} />
+                )}
+
+                {/* NOTIFICATIONS TAB */}
+                {activeTab === "notifications" && (
+                    <AdminNotificationsTab />
                 )}
             </main>
         </div>

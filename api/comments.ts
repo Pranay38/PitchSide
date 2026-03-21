@@ -33,6 +33,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 .sort({ timestamp: -1 })
                 .toArray();
 
+            const deviceId = req.cookies?.deviceId;
+
             return res.status(200).json(
                 comments.map((c) => ({
                     id: c._id.toString(),
@@ -41,6 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     name: c.name,
                     text: c.text,
                     likes: c.likes || 0,
+                    userLiked: deviceId && c.voters ? c.voters.includes(deviceId) : false,
                     createdAt: c.createdAt || new Date(c.timestamp).toISOString(),
                     clubBadge: c.clubBadge || null,
                 }))
@@ -65,7 +68,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 } catch {
                     filter = { _id: commentId };
                 }
-                await collection.updateOne(filter, { $inc: { likes: 1 } });
+                
+                const deviceId = req.cookies?.deviceId || req.body?.deviceId;
+                if (deviceId) {
+                    // Check if already liked
+                    const existing = await collection.findOne({ ...filter, voters: deviceId });
+                    if (existing) return res.status(400).json({ error: "Already liked" });
+                    
+                    await collection.updateOne(filter, { 
+                        $inc: { likes: 1 },
+                        $addToSet: { voters: deviceId }
+                    });
+                } else {
+                    await collection.updateOne(filter, { $inc: { likes: 1 } });
+                }
                 return res.status(200).json({ success: true });
             }
 

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { BarChart3, RefreshCw } from "lucide-react";
 import { PollWidget } from "./PollWidget";
-import type { PollOption, PollDocument } from "../../server/endpoints/polls";
+import type { PollOption, PollDocument } from "../../../server/endpoints/polls";
+import { getDeviceId } from "../lib/deviceId";
 
 // Adapt our DB type to the generic PollWidget props
-function adaptPollToWidget(dbPoll: PollDocument | null) {
+function adaptPollToWidget(dbPoll: (PollDocument & { userVotedOptionId?: string | null }) | null) {
   if (!dbPoll) return null;
   return {
     question: dbPoll.question,
@@ -12,17 +13,19 @@ function adaptPollToWidget(dbPoll: PollDocument | null) {
        id: opt.id,
        text: opt.text,
        votes: opt.votes || 0
-    }))
+    })),
+    userVotedOptionId: dbPoll.userVotedOptionId
   };
 }
 
 export function PollOfTheWeekPanel() {
-  const [dbPoll, setDbPoll] = useState<PollDocument | null>(null);
+  const [dbPoll, setDbPoll] = useState<(PollDocument & { userVotedOptionId?: string | null }) | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadPoll = useCallback(async () => {
     setLoading(true);
     try {
+      getDeviceId(); // Ensure cookie exists
       const res = await fetch("/api/polls?active=true");
       if (res.ok) {
          const data = await res.json();
@@ -47,7 +50,7 @@ export function PollOfTheWeekPanel() {
     const response = await fetch(`/api/polls/${dbPoll._id}/vote`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ optionId }),
+      body: JSON.stringify({ optionId, deviceId: getDeviceId() }),
     });
 
     const payload = await response.json().catch(() => ({}));

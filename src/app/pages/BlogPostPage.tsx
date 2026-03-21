@@ -32,16 +32,11 @@ import {
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import type { BlogPost } from "../data/posts";
 import { toast } from "sonner";
-import {
-  isClubFollowed,
-  isPlayerFollowed,
-  isPostSaved,
-  toggleFollowedClub,
-  toggleFollowedPlayer,
-  toggleSavedPost,
-} from "../lib/libraryStorage";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 import { topicPath } from "../lib/contentPaths";
 import { scheduleEmbedHydration } from "../lib/embedHydration";
+import { useReadingTracker } from "../hooks/useReadingTracker";
+import { RecommendedArticles } from "../components/RecommendedArticles";
 
 function sortPosts(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
@@ -56,9 +51,9 @@ export function BlogPostPage() {
   const [posts, setPosts] = useState<BlogPost[]>(() => sortPosts(getPublishedPosts()));
   const [previewPost, setPreviewPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(posts.length === 0 || !!previewToken);
-  const [saved, setSaved] = useState(false);
-  const [followingClub, setFollowingClub] = useState(false);
-  const [followingPlayer, setFollowingPlayer] = useState(false);
+  
+  const { isPostSaved, isClubFollowed, isPlayerFollowed, toggleSavedPost, toggleFollowedClub, toggleFollowedPlayer } = useUserPreferences();
+
   const articleContentRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch preview post by secret token
@@ -108,12 +103,11 @@ export function BlogPostPage() {
   const headings = articleContentModel?.headings || [];
   const quickSummary = post && articleContentModel ? buildQuickSummary(post, articleContentModel) : [];
 
-  useEffect(() => {
-    if (!post) return;
-    setSaved(isPostSaved(post.id));
-    setFollowingClub(isClubFollowed(post.club));
-    setFollowingPlayer(post.playerName ? isPlayerFollowed(post.playerName) : false);
-  }, [post]);
+  const saved = post ? isPostSaved(post.id) : false;
+  const followingClub = post?.club ? isClubFollowed(post.club) : false;
+  const followingPlayer = post?.playerName ? isPlayerFollowed(post.playerName) : false;
+
+  useReadingTracker(post?.id);
 
   useEffect(() => {
     if (!post?.content) return;
@@ -298,7 +292,6 @@ export function BlogPostPage() {
                 type="button"
                 onClick={() => {
                   const nextSaved = toggleSavedPost(post.id);
-                  setSaved(nextSaved);
                   toast.success(nextSaved ? "Saved to your library" : "Removed from saved.");
                 }}
                 className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-bold transition-colors ${
@@ -315,7 +308,6 @@ export function BlogPostPage() {
                 type="button"
                 onClick={() => {
                   const nextFollowing = toggleFollowedClub(post.club);
-                  setFollowingClub(nextFollowing);
                   toast.success(nextFollowing ? `Following ${post.club}` : `Unfollowed ${post.club}`);
                 }}
                 className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-bold transition-colors ${
@@ -333,7 +325,6 @@ export function BlogPostPage() {
                   type="button"
                   onClick={() => {
                     const nextFollowing = toggleFollowedPlayer(post.playerName!);
-                    setFollowingPlayer(nextFollowing);
                     toast.success(nextFollowing ? `Following ${post.playerName}` : `Unfollowed ${post.playerName}`);
                   }}
                   className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-bold transition-colors ${
@@ -458,6 +449,13 @@ export function BlogPostPage() {
             )}
 
             <ReactionUI itemId={post.id} itemType="post" initialReactions={post.reactions} />
+
+            <RecommendedArticles
+              articleId={post.id}
+              limit={5}
+              title="Readers also enjoyed"
+              showSource={true}
+            />
 
             <div className="my-12 border-t border-gray-200 dark:border-gray-800" />
 

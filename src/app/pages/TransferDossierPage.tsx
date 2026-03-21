@@ -25,7 +25,7 @@ import {
   getRelatedTransferStories,
   matchesTransferEntrySlug,
 } from "../lib/transferDossiers";
-import { getFollowedTransfers, toggleFollowedTransfer } from "../lib/libraryStorage";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 import { toast } from "sonner";
 
 export function TransferDossierPage() {
@@ -34,7 +34,8 @@ export function TransferDossierPage() {
   const [posts, setPosts] = useState(() => getPublishedPosts());
   const [stories, setStories] = useState(() => getAllStories());
   const [loading, setLoading] = useState(entries.length === 0);
-  const [followedTransfers, setFollowedTransfers] = useState<string[]>([]);
+  
+  const { followedTransfers, toggleFollowedTransfer } = useUserPreferences();
 
   useEffect(() => {
     let isMounted = true;
@@ -56,7 +57,6 @@ export function TransferDossierPage() {
         setLoading(false);
       });
 
-    setFollowedTransfers(getFollowedTransfers());
     return () => {
       isMounted = false;
     };
@@ -175,7 +175,6 @@ export function TransferDossierPage() {
                 type="button"
                 onClick={() => {
                   const next = toggleFollowedTransfer(dossier.topic);
-                  setFollowedTransfers(getFollowedTransfers());
                   toast.success(next ? `Following ${getTransferTopicLabel(dossier)} alerts` : "Transfer alert removed");
                 }}
                 className={`rounded-2xl border px-4 py-4 text-left text-sm font-bold transition-colors ${followed

@@ -18,6 +18,9 @@ import aiGenerateHandler from "../server/endpoints/ai-generate.js";
 import sitemapHandler from "../server/endpoints/sitemap.js";
 import { getPolls, createPoll, updatePoll, deletePoll, votePoll } from "../server/endpoints/polls.js";
 import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRating, voteMatchRating } from "../server/endpoints/matchRatings.js";
+import { recordArticleView, getRecommendations, getTagBasedFallback } from "./_recommendations-lib";
+import { connectToDatabase } from "./_db";
+import notificationsHandler from "../server/endpoints/notifications.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const route = (req.query.route || req.query.action) as string;
@@ -77,6 +80,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(405).json({ error: "Method not allowed" });
         case "sitemap":
             return sitemapHandler(req, res);
+        case "notifications":
+            return notificationsHandler(req, res);
+        case "recommendations": {
+            const { articleId } = req.query;
+            const limit = Math.min(parseInt(req.query.limit as string) || 5, 10);
+            if (!articleId || typeof articleId !== "string") return res.status(400).json({ error: "Invalid articleId" });
+            try {
+                let recommendations = await getRecommendations({ articleId, limit });
+                if (recommendations.length < 3) {
+                    const { db } = await connectToDatabase();
+                    const article = await db.collection("posts").findOne({ id: articleId });
+                    const tagBased = await getTagBasedFallback({ articleId, tags: article?.tags || [], club: article?.club, limit: limit - recommendations.length });
+                    const seen = new Set(recommendations.map((r: any) => r?.id));
+                    recommendations = [...recommendations, ...tagBased.filter((a: any) => a && !seen.has(a.id))].filter(Boolean);
+                }
+                res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
+                return res.json({ recommendations, source: recommendations.length >= 3 ? "collaborative" : "tag-based" });
+            } catch (err) {
+                console.error("Recommendations error:", err);
+                return res.status(500).json({ error: "Failed to fetch recommendations" });
+            }
+        }
+        case "recommendations-track": {
+            if (req.method !== "POST") return res.status(405).end();
+            const { articleId, sessionId, userId } = req.body;
+            if (!articleId || !sessionId) return res.status(400).json({ error: "articleId and sessionId required" });
+            try {
+                await recordArticleView({ articleId, sessionId, userId });
+                return res.json({ success: true });
+            } catch (err) {
+                console.error("Track error:", err);
+                return res.status(500).json({ error: "Failed to track view" });
+            }
+        }
         default:
             return res.status(404).json({ error: "Route not found: " + route });
     }
