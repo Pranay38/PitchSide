@@ -427,7 +427,7 @@ export function ArticleContentRenderer({
       return (
         <>
           <GlossaryStyles />
-          <div ref={containerRef} className={className} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(model.html || "", { ADD_TAGS: ["iframe", "span"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel", "data-glossary-term", "data-glossary-def", "style"] }) }} />
+          <div ref={containerRef} className={className} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(model.html || "", { ADD_TAGS: ["iframe", "span", "figure", "figcaption"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel", "data-glossary-term", "data-glossary-def", "style", "data-embedded-image"] }) }} />
         </>
       );
     }

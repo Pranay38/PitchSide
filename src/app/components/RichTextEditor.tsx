@@ -5,6 +5,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import { SocialEmbed, detectPlatform } from "./extensions/SocialEmbedExtension";
+import { EmbeddedImage } from "./extensions/EmbeddedImageExtension";
 import type { SocialPlatform } from "./extensions/SocialEmbedExtension";
 import { useEffect, useRef, useState } from "react";
 import type { BlogPost } from "../data/posts";
@@ -157,6 +158,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                 },
             }),
             SocialEmbed,
+            EmbeddedImage,
         ],
         content: content || "",
         onUpdate: ({ editor }) => {
@@ -557,13 +559,21 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                                         if (savedSelection !== null) {
                                             chain = chain.setTextSelection(savedSelection);
                                         }
-                                        chain.setSocialEmbed({
-                                            url: embedSrc.trim(),
-                                            platform: detectedPlatform,
-                                            creditText: embedCreditText.trim(),
-                                            creditUrl: embedCreditUrl.trim(),
-                                            embedHeight: embedHeight,
-                                        }).run();
+                                        if (detectedPlatform === "image") {
+                                            chain.setEmbeddedImage({
+                                                src: embedSrc.trim(),
+                                                creditText: embedCreditText.trim(),
+                                                creditUrl: embedCreditUrl.trim(),
+                                            }).run();
+                                        } else {
+                                            chain.setSocialEmbed({
+                                                url: embedSrc.trim(),
+                                                platform: detectedPlatform,
+                                                creditText: embedCreditText.trim(),
+                                                creditUrl: embedCreditUrl.trim(),
+                                                embedHeight: embedHeight,
+                                            }).run();
+                                        }
                                         setEmbedSrc("");
                                         setEmbedHeight("");
                                         setEmbedCreditText("");
