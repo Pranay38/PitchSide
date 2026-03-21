@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-03-20T05:49:03.818072",
+  "lastUpdated": "2026-03-21T05:37:43.316825",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
@@ -10,20 +10,24 @@
   },
   "managerPressure": [
     {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 89
+    },
+    {
       "name": "Igor Tudor (TOT)",
-      "pressureScore": 98
-    },
-    {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 94
-    },
-    {
-      "name": "Unai Emery (AVL)",
       "pressureScore": 80
     },
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 63
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 79
+    },
+    {
+      "name": "Rob Edwards (WOL)",
+      "pressureScore": 68
+    },
+    {
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 60
     }
   ]
 }
