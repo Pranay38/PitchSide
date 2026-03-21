@@ -13,6 +13,11 @@ import {
   normalizePollOfWeek,
   type PollOfWeek,
 } from "./pollOfWeek";
+import {
+  type POTSSettings,
+  createDefaultPOTSSettings,
+  normalizePOTSSettings,
+} from "./pots";
 
 export interface SupplementalEvent {
   id: string;
@@ -43,6 +48,7 @@ export interface SiteSettings {
   socialWallTitle: string;
   socialWallEmbedCode: string;
   pollOfWeek: PollOfWeek;
+  pots: POTSSettings;
   clubIntelligence: Record<string, ClubIntelligence>;
   transferWatch: TransferWatchEntry[];
   homepageCuration: HomepageCuration;
@@ -59,6 +65,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   socialWallTitle: "Social Wall",
   socialWallEmbedCode: "",
   pollOfWeek: createDefaultPollOfWeek(),
+  pots: createDefaultPOTSSettings(),
   clubIntelligence: {},
   transferWatch: [],
   homepageCuration: {
@@ -157,6 +164,7 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     socialWallTitle: (input?.socialWallTitle || DEFAULT_SETTINGS.socialWallTitle).trim(),
     socialWallEmbedCode: input?.socialWallEmbedCode || DEFAULT_SETTINGS.socialWallEmbedCode,
     pollOfWeek: normalizePollOfWeek(input?.pollOfWeek),
+    pots: normalizePOTSSettings(input?.pots),
     clubIntelligence: normalizeClubIntelligenceMap(input?.clubIntelligence),
     transferWatch: normalizeTransferWatchEntries(input?.transferWatch),
     homepageCuration: normalizeHomepageCuration(input?.homepageCuration),

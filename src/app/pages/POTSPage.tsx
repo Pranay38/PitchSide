@@ -1,23 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Users, BarChart3, TrendingUp, Info, CheckCircle2, Star, ChevronRight, Award, Quote } from "lucide-react";
+import { Trophy, Users, BarChart3, TrendingUp, Info, CheckCircle2, Star, ChevronRight, Award, Quote, Loader2 } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { toast } from "sonner";
+import { getSiteSettingsAsync, updateSiteSettingsAsync } from "../lib/siteSettingsStorage";
+import { type POTSContender } from "../lib/pots";
 
-interface Contender {
-    id: string;
-    name: string;
-    club: string;
-    image: string;
-    votes: number;
-    stats: { label: string; value: string | number }[];
-    verdict: string;
-    highlights: string[];
-}
-
-const POTS_CONTENDERS: Contender[] = [
+const POTS_CONTENDERS: POTSContender[] = [
     {
         id: "saka",
         name: "Bukayo Saka",
@@ -62,77 +53,43 @@ const POTS_CONTENDERS: Contender[] = [
         ],
         verdict: "The most important player in world football. City simply do not lose when he starts. He dictates everything.",
         highlights: ["Unbeaten Streak", "Clutch Goal vs Pool", "Midfield Dominance"]
-    },
-    {
-        id: "salah",
-        name: "Mohamed Salah",
-        club: "Liverpool",
-        image: "https://images.unsplash.com/photo-1543351611-58f69d7c1781?q=80&w=400&h=500&auto=format&fit=crop",
-        votes: 10500,
-        stats: [
-            { label: "Goals", value: 20 },
-            { label: "Assists", value: 12 },
-            { label: "Shot Volume", value: 115 },
-            { label: "Big Chances", value: 15 }
-        ],
-        verdict: "Another season of pure consistency. Salah remains the benchmark for wide forwards in the Premier League.",
-        highlights: ["200th LFC Goal", "Derby Double", "Golden Boot Race"]
-    },
-    {
-        id: "foden",
-        name: "Phil Foden",
-        club: "Man City",
-        image: "https://images.unsplash.com/photo-1511886929837-354d827aae26?q=80&w=400&h=500&auto=format&fit=crop",
-        votes: 9200,
-        stats: [
-            { label: "Goals", value: 17 },
-            { label: "Assists", value: 8 },
-            { label: "Dist. Covered", value: "11km/g" },
-            { label: "Take-ons", value: 55 }
-        ],
-        verdict: "The 'Stockport Iniesta' has taken the mantle as City's main man in De Bruyne's absence. Elegance personified.",
-        highlights: ["Derby Winner", "CL Performance", "Creative Hub"]
-    },
-    {
-        id: "van-dijk",
-        name: "Virgil van Dijk",
-        club: "Liverpool",
-        image: "https://images.unsplash.com/photo-1560272564-c83d66b1ad12?q=80&w=400&h=500&auto=format&fit=crop",
-        votes: 8100,
-        stats: [
-            { label: "Clean Sheets", value: 15 },
-            { label: "Aerial Duels %", value: "75%" },
-            { label: "Int. p/g", value: "2.1" },
-            { label: "Error Leads G", value: 0 }
-        ],
-        verdict: "Back to his imperious best. Van Dijk is the primary reason for Liverpool's defensive solidity this campaign.",
-        highlights: ["Cup Final Header", "Defensive Masterclass", "Captain's Impact"]
     }
 ];
 
 export function POTSPage() {
-    const [contenders, setContenders] = useState(POTS_CONTENDERS);
+    const [contenders, setContenders] = useState<POTSContender[]>([]);
+    const [title, setTitle] = useState("Player of the Season");
+    const [description, setDescription] = useState("Vote for your Player of the Season.");
+    const [loading, setLoading] = useState(true);
     const [hasVoted, setHasVoted] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
-    const [activeContender, setActiveContender] = useState(contenders[0]);
-
-    const totalVotes = contenders.reduce((sum, c) => sum + c.votes, 0);
-
-    const handleVote = (id: string) => {
-        if (hasVoted) return;
-
-        setContenders(prev => prev.map(c => 
-            c.id === id ? { ...c, votes: c.votes + 1 } : c
-        ));
-        setHasVoted(true);
-        setSelectedId(id);
-        toast.success("Vote recorded! Thanks for participating.");
-        
-        // Save to localStorage
-        localStorage.setItem("pots_voted_2026", id);
-    };
+    const [activeContender, setActiveContender] = useState<POTSContender | null>(null);
 
     useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                const settings = await getSiteSettingsAsync();
+                if (settings.pots && settings.pots.contenders.length > 0) {
+                    setContenders(settings.pots.contenders);
+                    setTitle(settings.pots.title);
+                    setDescription(settings.pots.description);
+                    setActiveContender(settings.pots.contenders[0]);
+                } else {
+                    // Fallback to initial sample data if nothing is in DB
+                    setContenders(POTS_CONTENDERS);
+                    setActiveContender(POTS_CONTENDERS[0]);
+                }
+            } catch (err) {
+                console.error("Failed to load POTS settings", err);
+                setContenders(POTS_CONTENDERS);
+                setActiveContender(POTS_CONTENDERS[0]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadSettings();
+
         const savedVote = localStorage.getItem("pots_voted_2026");
         if (savedVote) {
             setHasVoted(true);
@@ -140,11 +97,51 @@ export function POTSPage() {
         }
     }, []);
 
+    const totalVotes = contenders.reduce((sum, c) => sum + c.votes, 0);
+
+    const handleVote = async (id: string) => {
+        if (hasVoted) return;
+
+        const updatedContenders = contenders.map(c => 
+            c.id === id ? { ...c, votes: c.votes + 1 } : c
+        );
+        
+        setContenders(updatedContenders);
+        setHasVoted(true);
+        setSelectedId(id);
+        toast.success("Vote recorded! Thanks for participating.");
+        
+        localStorage.setItem("pots_voted_2026", id);
+
+        // Sync to backend
+        try {
+            const settings = await getSiteSettingsAsync();
+            await updateSiteSettingsAsync({
+                pots: {
+                    ...settings.pots,
+                    contenders: updatedContenders
+                }
+            });
+        } catch (err) {
+            console.error("Failed to sync vote to server", err);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-[#16A34A] animate-spin" />
+            </div>
+        );
+    }
+
+    if (!activeContender) return null;
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-[#0F172A] font-manrope">
             <SEO 
-                title="Premier League Player of the Season 2026: Reader Vote & Key Stats" 
-                description="Vote for your Premier League Player of the Season 2026. Side-by-side stats, expert verdicts, and live results for Saka, Palmer, Rodri, and more."
+                title={`${title} - Fan Vote & Stats`}
+                description={description}
             />
             <Header />
 
@@ -160,17 +157,18 @@ export function POTSPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#16A34A]/20 border border-[#16A34A]/30 text-[#16A34A] text-xs font-black uppercase tracking-widest mb-6"
                     >
-                        <Award className="w-3.5 h-3.5" /> 2025/26 Official Fan Vote
+                        <Award className="w-3.5 h-3.5" /> Official Fan Vote
                     </motion.div>
                     
                     <motion.h1 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-4xl sm:text-7xl font-black font-outfit text-white mb-6 leading-tight"
+                        className="text-4xl sm:text-7xl font-black font-outfit text-white mb-6 leading-tight uppercase"
                     >
-                        WHO IS THE <span className="text-[#16A34A]">PLAYER</span> <br className="hidden sm:block" />
-                        OF THE SEASON?
+                        {title.split(' ').map((word, i) => (
+                            word.toLowerCase() === 'player' ? <span key={i} className="text-[#16A34A]">{word} </span> : word + ' '
+                        ))}
                     </motion.h1>
                     
                     <motion.p 
@@ -179,7 +177,7 @@ export function POTSPage() {
                         transition={{ delay: 0.2 }}
                         className="max-w-2xl text-gray-400 text-lg sm:text-xl font-medium mb-10 leading-relaxed"
                     >
-                        From Saka's creative masterclasses to Rodri's midfield dominance. Compare the top 6 contenders, read our verdict, and cast your vote below.
+                        {description}
                     </motion.p>
                 </div>
             </section>

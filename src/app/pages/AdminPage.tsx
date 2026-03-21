@@ -63,9 +63,10 @@ import { TweetThreadGenerator } from "../components/admin/TweetThreadGenerator";
 import { AdminCalendarTab } from "../components/admin/AdminCalendarTab";
 import { AdminMatchCenterTab } from "../components/admin/AdminMatchCenterTab";
 import { AdminNotificationsTab } from "../components/admin/AdminNotificationsTab";
+import { AdminPOTSTab } from "../components/admin/AdminPOTSTab";
 
 type View = "list" | "create" | "edit";
-type Tab = "notifications" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
+type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
 
 export function AdminPage() {
     const navigate = useNavigate();
@@ -717,6 +718,12 @@ export function AdminPage() {
                         <Bell className="w-4 h-4" /> Notifications
                     </button>
                     <button
+                        onClick={() => setActiveTab("pots")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "pots" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <Trophy className="w-4 h-4" /> POTS Manager
+                    </button>
+                    <button
                         onClick={() => setActiveTab("posts")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "posts" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
@@ -1103,6 +1110,14 @@ export function AdminPage() {
                 {/* NOTIFICATIONS TAB */}
                 {activeTab === "notifications" && (
                     <AdminNotificationsTab />
+                )}
+
+                {/* POTS TAB */}
+                {activeTab === "pots" && (
+                    <AdminPOTSTab 
+                        settings={siteSettings.pots} 
+                        onSave={(pots) => updateSiteSettings({ pots })} 
+                    />
                 )}
             </main>
         </div>

@@ -106,7 +106,7 @@ function StoryLinkCard({ story }: { story: StoryFeature }) {
 }
 
 function YourVoiceSection() {
-  const [activeVoiceTab, setActiveVoiceTab] = useState<"poll" | "debate">("poll");
+  const [activeVoiceTab, setActiveVoiceTab] = useState<"poll" | "debate" | "pots">("poll");
   return (
     <div className="tinted-panel rounded-[2rem] border border-gray-200 p-5 shadow-sm dark:border-gray-800">
       <div className="mb-4 flex items-center gap-3">
@@ -125,27 +125,47 @@ function YourVoiceSection() {
       <div className="flex gap-1 bg-gray-100/50 dark:bg-white/5 rounded-xl p-1 mb-4">
         <button
           onClick={() => setActiveVoiceTab("poll")}
-          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeVoiceTab === "poll"
+          className={`flex-1 py-2 rounded-lg text-[10px] font-bold transition-all ${activeVoiceTab === "poll"
               ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
               : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
         >
-          ⚡ Poll of the Week
+          ⚡ Poll
         </button>
         <button
           onClick={() => setActiveVoiceTab("debate")}
-          className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${activeVoiceTab === "debate"
+          className={`flex-1 py-2 rounded-lg text-[10px] font-bold transition-all ${activeVoiceTab === "debate"
               ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
               : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
         >
-          🔥 Debate Arena
+          🔥 Debate
+        </button>
+        <button
+          onClick={() => setActiveVoiceTab("pots")}
+          className={`flex-1 py-2 rounded-lg text-[10px] font-bold transition-all ${activeVoiceTab === "pots"
+              ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
+              : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
+        >
+          🏆 POTS
         </button>
       </div>
 
       {/* Content */}
       <div>
-        {activeVoiceTab === "poll" ? <PollOfTheWeekPanel /> : <DebateWidget />}
+        {activeVoiceTab === "poll" && <PollOfTheWeekPanel />}
+        {activeVoiceTab === "debate" && <DebateWidget />}
+        {activeVoiceTab === "pots" && (
+            <div className="p-4 text-center">
+                <Trophy className="w-12 h-12 text-[#16A34A] mx-auto mb-4 animate-bounce" />
+                <h3 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white mb-2 uppercase">Who is your POTS?</h3>
+                <p className="text-xs text-gray-500 mb-6">Cast your definitive vote for the Player of the Season 2026.</p>
+                <Link to="/pots" className="inline-block w-full bg-[#16A34A] text-white py-3 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-[#16A34A]/20">
+                    Go to Voting Page
+                </Link>
+            </div>
+        )}
       </div>
     </div>
   );
