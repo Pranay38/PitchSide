@@ -26,7 +26,6 @@ import { PageState } from "../components/PageState";
 import { ArticleAudioPlayer } from "../components/ArticleAudioPlayer";
 import {
   ArticleContentRenderer,
-  buildQuickSummary,
   getArticleContentModel,
 } from "../components/ArticleContentRenderer";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
@@ -101,7 +100,6 @@ export function BlogPostPage() {
     [post],
   );
   const headings = articleContentModel?.headings || [];
-  const quickSummary = post && articleContentModel ? buildQuickSummary(post, articleContentModel) : [];
 
   const saved = post ? isPostSaved(post.id) : false;
   const followingClub = post?.club ? isClubFollowed(post.club) : false;
@@ -346,22 +344,6 @@ export function BlogPostPage() {
                 <Copy className="h-4 w-4" />
                 Copy link
               </button>
-            </div>
-
-            <div className="mb-8 rounded-[2rem] border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-[#0F172A]">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-                Quick Summary
-              </p>
-              <div className="mt-4 grid gap-3">
-                {quickSummary.map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-2xl bg-[#F8FAFC] px-4 py-3 text-sm leading-6 text-[#334155] dark:bg-[#08111f] dark:text-gray-200"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
             </div>
 
             {articleContentModel && (
