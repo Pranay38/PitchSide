@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Users, BarChart3, TrendingUp, Info, CheckCircle2, Star, ChevronRight, Award, Quote, Loader2 } from "lucide-react";
 import { SEO } from "../components/SEO";
@@ -57,39 +58,78 @@ const POTS_CONTENDERS: POTSContender[] = [
 ];
 
 export function POTSPage() {
-    const [contenders, setContenders] = useState<POTSContender[]>([]);
-    const [title, setTitle] = useState("Player of the Season");
-    const [description, setDescription] = useState("Vote for your Player of the Season.");
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [hasVoted, setHasVoted] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [activeContender, setActiveContender] = useState<POTSContender | null>(null);
 
-    useEffect(() => {
-        const loadSettings = async () => {
-            try {
-                const settings = await getSiteSettingsAsync();
-                if (settings.pots && settings.pots.contenders.length > 0) {
-                    setContenders(settings.pots.contenders);
-                    setTitle(settings.pots.title);
-                    setDescription(settings.pots.description);
-                    setActiveContender(settings.pots.contenders[0]);
-                } else {
-                    // Fallback to initial sample data if nothing is in DB
-                    setContenders(POTS_CONTENDERS);
-                    setActiveContender(POTS_CONTENDERS[0]);
-                }
-            } catch (err) {
-                console.error("Failed to load POTS settings", err);
-                setContenders(POTS_CONTENDERS);
-                setActiveContender(POTS_CONTENDERS[0]);
-            } finally {
-                setLoading(false);
+    const { data: potsData, isLoading } = useQuery({
+        queryKey: ['potsSettings'],
+        queryFn: async () => {
+            const settings = await getSiteSettingsAsync();
+            if (settings.pots && settings.pots.contenders.length > 0) {
+                return {
+                    title: settings.pots.title,
+                    description: settings.pots.description,
+                    contenders: settings.pots.contenders
+                };
             }
-        };
+            return {
+                title: "Player of the Season",
+                description: "Vote for your Player of the Season.",
+                contenders: POTS_CONTENDERS
+            };
+        },
+        staleTime: 1000 * 60 * 5, // 5 minutes cache
+    });
 
-        loadSettings();
+    const voteMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const settings = await getSiteSettingsAsync();
+            const updatedContenders = settings.pots.contenders.map(c => 
+                c.id === id ? { ...c, votes: c.votes + 1 } : c
+            );
+            await updateSiteSettingsAsync({
+                pots: {
+                    ...settings.pots,
+                    contenders: updatedContenders
+                }
+            });
+            return updatedContenders;
+        },
+        onMutate: async (id) => {
+            // Optimistic update
+            await queryClient.cancelQueries({ queryKey: ['potsSettings'] });
+            const previousData = queryClient.getQueryData(['potsSettings']) as any;
+            
+            if (previousData) {
+                queryClient.setQueryData(['potsSettings'], {
+                    ...previousData,
+                    contenders: previousData.contenders.map((c: any) => 
+                        c.id === id ? { ...c, votes: c.votes + 1 } : c
+                    )
+                });
+            }
+            return { previousData };
+        },
+        onError: (err, id, context) => {
+            if (context?.previousData) {
+                queryClient.setQueryData(['potsSettings'], context.previousData);
+            }
+            toast.error("Failed to sync vote to server");
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['potsSettings'] });
+        },
+    });
 
+    useEffect(() => {
+        if (potsData && potsData.contenders.length > 0 && !activeContender) {
+            setActiveContender(potsData.contenders[0]);
+        }
+    }, [potsData, activeContender]);
+
+    useEffect(() => {
         const savedVote = localStorage.getItem("pots_voted_2026");
         if (savedVote) {
             setHasVoted(true);
@@ -97,37 +137,24 @@ export function POTSPage() {
         }
     }, []);
 
-    const totalVotes = contenders.reduce((sum, c) => sum + c.votes, 0);
+    const contenders = potsData?.contenders || [];
+    const title = potsData?.title || "";
+    const description = potsData?.description || "";
+    const totalVotes = contenders.reduce((sum: number, c: POTSContender) => sum + c.votes, 0);
 
-    const handleVote = async (id: string) => {
+    const handleVote = (id: string) => {
         if (hasVoted) return;
 
-        const updatedContenders = contenders.map(c => 
-            c.id === id ? { ...c, votes: c.votes + 1 } : c
-        );
-        
-        setContenders(updatedContenders);
         setHasVoted(true);
         setSelectedId(id);
         toast.success("Vote recorded! Thanks for participating.");
         
         localStorage.setItem("pots_voted_2026", id);
-
-        // Sync to backend
-        try {
-            const settings = await getSiteSettingsAsync();
-            await updateSiteSettingsAsync({
-                pots: {
-                    ...settings.pots,
-                    contenders: updatedContenders
-                }
-            });
-        } catch (err) {
-            console.error("Failed to sync vote to server", err);
-        }
+        
+        voteMutation.mutate(id);
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
                 <Loader2 className="w-8 h-8 text-[#16A34A] animate-spin" />

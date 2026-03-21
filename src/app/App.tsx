@@ -1,5 +1,6 @@
 import { RouterProvider } from "react-router";
 import { HelmetProvider } from "react-helmet-async";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { router } from "./routes";
 import { Toaster } from "./components/ui/sonner";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
@@ -11,15 +12,26 @@ import { UserPreferencesProvider } from "./hooks/useUserPreferences";
 
 const CLERK_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 2,
+    },
+  },
+});
+
 export default function App() {
   const inner = (
     <HelmetProvider>
-      <OfflineIndicator />
-      <RouterProvider router={router} />
-      <PWAInstallPrompt />
-      <Toaster />
-      <BackToTopButton />
-      <CookieBanner />
+      <QueryClientProvider client={queryClient}>
+        <OfflineIndicator />
+        <RouterProvider router={router} />
+        <PWAInstallPrompt />
+        <Toaster />
+        <BackToTopButton />
+        <CookieBanner />
+      </QueryClientProvider>
     </HelmetProvider>
   );
 

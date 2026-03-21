@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { ArrowRight, BookOpen, Library, Newspaper, Repeat2, ScrollText } from "lucide-react";
 import { SEO } from "../components/SEO";
@@ -214,57 +215,39 @@ function TransferSpotlightCard({ entry }: { entry: ReturnType<typeof buildTransf
 }
 
 export function HomePage() {
-  const [posts, setPosts] = useState<BlogPost[]>(() => sortPosts(getPublishedPosts()));
-  const [stories, setStories] = useState<StoryFeature[]>(() => sortStories(getAllStories()));
-  const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => getSiteSettings());
-  const [dailyFeatures, setDailyFeatures] = useState<DailyFeaturesData | null>(null);
-  const [loading, setLoading] = useState(posts.length === 0 && stories.length === 0);
-  const [error, setError] = useState("");
+  const { data: posts = [], isLoading: isLoadingPosts, error: postsError } = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => sortPosts(await getPublishedPostsAsync()),
+    initialData: () => sortPosts(getPublishedPosts()),
+    staleTime: 1000 * 60 * 5,
+  });
 
-  useEffect(() => {
-    let isMounted = true;
+  const { data: stories = [], isLoading: isLoadingStories } = useQuery({
+    queryKey: ['stories'],
+    queryFn: async () => sortStories(await getAllStoriesAsync()),
+    initialData: () => sortStories(getAllStories()),
+    staleTime: 1000 * 60 * 5,
+  });
 
-    Promise.all([getPublishedPostsAsync(), getAllStoriesAsync(), getSiteSettingsAsync()])
-      .then(([nextPosts, nextStories, nextSettings]) => {
-        if (!isMounted) return;
-        setPosts(sortPosts(nextPosts));
-        setStories(sortStories(nextStories));
-        setSiteSettings(nextSettings);
-        setError("");
-        setLoading(false);
-      })
-      .catch(() => {
-        if (!isMounted) return;
-        if (posts.length === 0 && stories.length === 0) {
-          setError("Could not load the homepage feed right now.");
-        }
-        setLoading(false);
-      });
+  const { data: siteSettings = getSiteSettings(), isLoading: isLoadingSettings } = useQuery({
+    queryKey: ['siteSettings'],
+    queryFn: getSiteSettingsAsync,
+    initialData: getSiteSettings,
+    staleTime: 1000 * 60 * 5,
+  });
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const { data: dailyFeatures, isLoading: isLoadingDaily } = useQuery({
+    queryKey: ['dailyFeatures'],
+    queryFn: async () => {
+      const res = await fetch("/data/daily_features.json");
+      if (!res.ok) throw new Error("Daily features unavailable");
+      return res.json() as Promise<DailyFeaturesData>;
+    },
+    staleTime: 1000 * 60 * 60,
+  });
 
-  useEffect(() => {
-    let isMounted = true;
-
-    fetch("/data/daily_features.json")
-      .then((res) => {
-        if (!res.ok) throw new Error("Daily features unavailable");
-        return res.json();
-      })
-      .then((data) => {
-        if (isMounted) setDailyFeatures(data);
-      })
-      .catch(() => {
-        if (isMounted) setDailyFeatures(null);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const loading = isLoadingPosts || isLoadingStories || isLoadingSettings || isLoadingDaily;
+  const error = postsError ? "Could not load the homepage feed right now." : "";
 
   const fallbackFeaturedPost = useMemo(() => {
     const mustReads = posts.filter((post) => post.mustRead);
