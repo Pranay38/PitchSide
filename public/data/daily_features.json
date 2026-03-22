@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-03-21T05:37:43.316825",
+  "lastUpdated": "2026-03-22T05:51:03.752312",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd & Real Madrid want Guimaraes - Friday's gossip",
-    "sentimentScore": 44
+    "text": "Arsenal step up Franca interest - Sunday's gossip",
+    "sentimentScore": 65
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 89
-    },
-    {
-      "name": "Igor Tudor (TOT)",
-      "pressureScore": 80
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 97
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 79
+      "pressureScore": 87
     },
     {
-      "name": "Rob Edwards (WOL)",
-      "pressureScore": 68
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 84
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 60
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 69
     }
   ]
 }
