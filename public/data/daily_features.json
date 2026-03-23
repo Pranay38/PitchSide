@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-03-22T05:51:03.752312",
+  "lastUpdated": "2026-03-23T06:08:28.429481",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal step up Franca interest - Sunday's gossip",
-    "sentimentScore": 65
+    "text": "Man Utd eye Arsenal's Lewis-Skelly - Monday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 97
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 87
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 84
-    },
-    {
       "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 69
+      "pressureScore": 96
+    },
+    {
+      "name": "Scott Parker (BUR)",
+      "pressureScore": 85
+    },
+    {
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 82
     }
   ]
 }
