@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-03-23T06:08:28.429481",
+  "lastUpdated": "2026-03-24T05:57:18.273124",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd eye Arsenal's Lewis-Skelly - Monday's gossip",
+    "text": "Sancho in talks with Dortmund - Tuesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 96
-    },
-    {
-      "name": "Scott Parker (BUR)",
-      "pressureScore": 85
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 86
     },
     {
       "name": "Oliver Glasner (CRY)",
-      "pressureScore": 82
+      "pressureScore": 72
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 66
+    },
+    {
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 62
     }
   ]
 }
