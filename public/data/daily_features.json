@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-03-24T05:57:18.273124",
+  "lastUpdated": "2026-03-25T05:57:59.062097",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Sancho in talks with Dortmund - Tuesday's gossip",
+    "text": "Tonali prefers Italy return - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 86
+      "pressureScore": 98
     },
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 72
+      "name": "Igor Tudor (TOT)",
+      "pressureScore": 95
     },
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 66
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 68
     },
     {
       "name": "Andoni Iraola (BOU)",
-      "pressureScore": 62
+      "pressureScore": 65
     }
   ]
 }
