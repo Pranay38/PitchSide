@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-03-26T06:10:59.083102",
+  "lastUpdated": "2026-03-27T06:11:02.859661",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Al-Ittihad revive Salah interest - Thursday's gossip",
-    "sentimentScore": 78
+    "text": "Bayern dismiss \u00c2\u00a3170m Olise link - Friday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Liam Rosenior (CHE)",
-      "pressureScore": 80
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 94
     },
     {
-      "name": "Scott Parker (BUR)",
-      "pressureScore": 78
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 76
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 74
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 70
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 63
     }
   ]
 }
