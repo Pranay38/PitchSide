@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-03-27T06:11:02.859661",
+  "lastUpdated": "2026-03-28T05:54:17.402267",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Bayern dismiss \u00c2\u00a3170m Olise link - Friday's gossip",
+    "text": "Wharton eyes Crystal Palace exit - Saturday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 94
+      "name": "Liam Rosenior (CHE)",
+      "pressureScore": 96
     },
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 76
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 84
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 70
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 82
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 63
+      "pressureScore": 80
+    },
+    {
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 67
     }
   ]
 }
