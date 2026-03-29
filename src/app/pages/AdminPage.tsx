@@ -789,7 +789,7 @@ export function AdminPage() {
 
             <main className="max-w-[1100px] mx-auto px-6 py-8">
                 {/* Tabs Wrapper */}
-                <div className="flex overflow-x-auto whitespace-nowrap flex-nowrap items-center gap-2 border-b border-gray-200 dark:border-gray-800 mb-8 pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 dark:border-gray-800 mb-8 pb-4">
                     <button
                         onClick={() => setActiveTab("notifications")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "notifications" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}

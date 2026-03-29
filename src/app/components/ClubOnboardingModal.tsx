@@ -13,12 +13,17 @@ export function ClubOnboardingModal() {
     const [searchingOnline, setSearchingOnline] = useState(false);
 
     useEffect(() => {
-        // We only show it once per session if they dismiss it
-        const hasDismissed = sessionStorage.getItem("pitchside_dismissed_onboarding");
+        // Persist dismissal across sessions so it doesn't keep popping up
+        const hasDismissed = localStorage.getItem("pitchside_dismissed_onboarding");
         
         // Wait for prefs to load. If it's loaded and fanClub is null, show modal.
+        // But only if user hasn't previously dismissed it.
         if (!loading && fanClub === null && !hasDismissed) {
             setIsOpen(true);
+        }
+        // If user already has a club selected, close modal and clear dismiss flag
+        if (!loading && fanClub !== null) {
+            setIsOpen(false);
         }
     }, [loading, fanClub]);
 
@@ -44,7 +49,7 @@ export function ClubOnboardingModal() {
     }, [searchTerm]);
 
     const handleDismiss = () => {
-        sessionStorage.setItem("pitchside_dismissed_onboarding", "true");
+        localStorage.setItem("pitchside_dismissed_onboarding", "true");
         setIsOpen(false);
     };
 
