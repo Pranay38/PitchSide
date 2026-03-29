@@ -641,98 +641,101 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             <div ref={clubDropdownRef} className="relative mb-3">
                                 <div className="relative">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                    {club && getClubByName(club)?.logo ? (
-                                        <img
-                                            src={getClubByName(club)!.logo}
-                                            alt=""
-                                            className="absolute left-10 top-1/2 -translate-y-1/2 w-5 h-5 object-contain"
-                                        />
-                                    ) : null}
+                                    <img
+                                        src={club ? (getClubByName(club)?.logo || "") : ""}
+                                        alt=""
+                                        className="absolute left-10 top-1/2 -translate-y-1/2 w-5 h-5 object-contain"
+                                        style={{ display: club && getClubByName(club)?.logo ? "block" : "none" }}
+                                    />
                                     <input
                                         type="text"
-                                        key={`club-input-${club ? 'has' : 'no'}-logo-${!!(club && getClubByName(club)?.logo)}`}
                                         value={clubSearch || club}
                                         onChange={(e) => handleClubSearch(e.target.value)}
                                         onFocus={() => { if (clubSearch || club) handleClubSearch(clubSearch || club); }}
                                         placeholder="Search any club in the world..."
                                         className={`w-full ${club && getClubByName(club)?.logo ? 'pl-[4.5rem]' : 'pl-10'} pr-4 py-3 rounded-xl border ${errors.club ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm`}
                                     />
-                                    {searchingClubs && (
-                                        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#16A34A] animate-spin" />
-                                    )}
+                                    <Loader2
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#16A34A] animate-spin"
+                                        style={{ display: searchingClubs ? "block" : "none" }}
+                                    />
                                 </div>
 
                                 {/* Dropdown results */}
-                                {(showClubDropdown && (clubResults.length > 0 || clubSearch.length > 1)) && (
-                                    <div className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-600 shadow-xl max-h-72 overflow-y-auto">
-                                        {clubResults.map((result) => (
-                                            <div
-                                                key={result.name}
-                                                className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700/50 last:border-0 group text-sm"
-                                            >
-                                                <button
-                                                    type="button"
-                                                    onClick={() => selectClub(result)}
-                                                    className="w-full flex items-center gap-3 text-left flex-1"
-                                                >
-                                                    <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                        {result.logo && !brokenLogos.has(result.logo) ? (
-                                                            <img
-                                                                src={result.logo}
-                                                                alt=""
-                                                                className="w-5 h-5 object-contain"
-                                                                onError={() => {
-                                                                    setBrokenLogos(prev => new Set(prev).add(result.logo));
-                                                                }}
-                                                            />
-                                                        ) : (
-                                                            <span className="text-xs font-bold text-[#64748B]">{result.name[0]}</span>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex-1 min-w-0 pr-2">
-                                                        <p className="font-medium text-[#0F172A] dark:text-white truncate">{result.name}</p>
-                                                        <p className="text-xs text-[#94A3B8] dark:text-gray-500 truncate">{result.league}</p>
-                                                    </div>
-                                                </button>
-                                                {isCustomClub(result.name) && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            deleteCustomClub(result.name);
-                                                            handleClubSearch(clubSearch || "");
-                                                            if (club === result.name) {
-                                                                setClub("");
-                                                                setCategory("General");
-                                                            }
-                                                        }}
-                                                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                                                        title="Delete custom team"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))}
-
-                                        {/* Add Custom Club Button */}
-                                        {clubSearch.length > 1 && !clubResults.some(c => c.name.toLowerCase() === clubSearch.toLowerCase()) && (
+                                <div
+                                    className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-600 shadow-xl max-h-72 overflow-y-auto"
+                                    style={{ display: showClubDropdown && (clubResults.length > 0 || clubSearch.length > 1) ? "block" : "none" }}
+                                >
+                                    {clubResults.map((result) => (
+                                        <div
+                                            key={result.name}
+                                            className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700/50 last:border-0 group text-sm"
+                                        >
                                             <button
                                                 type="button"
-                                                onClick={handleAddCustomClub}
-                                                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors text-sm border-t border-gray-100 dark:border-gray-700/50"
+                                                onClick={() => selectClub(result)}
+                                                className="w-full flex items-center gap-3 text-left flex-1"
                                             >
-                                                <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                                                    <Plus className="w-4 h-4 text-green-600 dark:text-green-500" />
+                                                <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                    <img
+                                                        src={result.logo || ""}
+                                                        alt=""
+                                                        className="w-5 h-5 object-contain"
+                                                        style={{ display: result.logo && !brokenLogos.has(result.logo) ? "block" : "none" }}
+                                                        onError={() => {
+                                                            setBrokenLogos(prev => new Set(prev).add(result.logo));
+                                                        }}
+                                                    />
+                                                    <span 
+                                                        className="text-xs font-bold text-[#64748B]"
+                                                        style={{ display: !result.logo || brokenLogos.has(result.logo) ? "block" : "none" }}
+                                                    >
+                                                        {result.name[0]}
+                                                    </span>
                                                 </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-medium text-green-600 dark:text-green-400 truncate">Add "{clubSearch}" as a new team</p>
-                                                    <p className="text-xs text-green-500/70 truncate">Save this custom team for future posts</p>
+                                                <div className="flex-1 min-w-0 pr-2">
+                                                    <p className="font-medium text-[#0F172A] dark:text-white truncate">{result.name}</p>
+                                                    <p className="text-xs text-[#94A3B8] dark:text-gray-500 truncate">{result.league}</p>
                                                 </div>
                                             </button>
-                                        )}
-                                    </div>
-                                )}
+                                            {isCustomClub(result.name) && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        deleteCustomClub(result.name);
+                                                        handleClubSearch(clubSearch || "");
+                                                        if (club === result.name) {
+                                                            setClub("");
+                                                            setCategory("General");
+                                                        }
+                                                    }}
+                                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                                    title="Delete custom team"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+
+                                    {/* Add Custom Club Button */}
+                                    {clubSearch.length > 1 && !clubResults.some(c => c.name.toLowerCase() === clubSearch.toLowerCase()) && (
+                                        <button
+                                            type="button"
+                                            onClick={handleAddCustomClub}
+                                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors text-sm border-t border-gray-100 dark:border-gray-700/50"
+                                        >
+                                            <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                                                <Plus className="w-4 h-4 text-green-600 dark:text-green-500" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-medium text-green-600 dark:text-green-400 truncate">Add "{clubSearch}" as a new team</p>
+                                                <p className="text-xs text-green-500/70 truncate">Save this custom team for future posts</p>
+                                            </div>
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         )}
 
