@@ -1,11 +1,11 @@
 # Robots.txt for The Touchline Dribble
-# https://thetouchlinedribble.com
+# https://thetouchlinedribble.in
 
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://thetouchlinedribble.com/sitemap.xml
+Sitemap: https://thetouchlinedribble.in/sitemap.xml
 
 # Block admin panel
 Disallow: /pitchside-manage-x7k9

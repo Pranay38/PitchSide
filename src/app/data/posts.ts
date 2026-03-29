@@ -10,6 +10,7 @@ export interface BlogPost {
   readTime: string;
   thisWeek?: boolean;
   mustRead?: boolean;
+  editorPick?: boolean;
   mainStory?: boolean;
   mediaUrl?: string;
   sofascoreUrl?: string; // Legacy support
@@ -27,6 +28,7 @@ export interface BlogPost {
     editorRating: number;
   }[];
   reactions?: Record<string, number>;
+  likedBy?: string[];
 }
 
 export const blogPosts: BlogPost[] = [
@@ -40,6 +42,7 @@ export const blogPosts: BlogPost[] = [
     date: "February 25, 2026",
     readTime: "6 min read",
     thisWeek: true,
+    editorPick: true,
     content: `The transformation of Manchester United's tactical approach has been nothing short of remarkable. Under new management, the team has shifted from a reactive 4-2-3-1 formation to a more progressive 4-3-3 system that emphasizes ball retention and high pressing.
 
 ## The Key Changes

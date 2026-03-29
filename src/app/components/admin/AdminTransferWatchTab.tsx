@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Repeat2, Trash2, Sparkles, LoaderCircle } from "lucide-react";
+import { useState, useRef } from "react";
+import { Repeat2, Trash2, Sparkles, LoaderCircle, Edit3, ImagePlus, X, TrendingUp } from "lucide-react";
+import { AdminEmptyState } from "./AdminEmptyState";
 import { toast } from "sonner";
-import { getAllClubNames } from "../../data/clubs";
-const clubOptions = getAllClubNames().sort((left, right) => left.localeCompare(right));
+import { getAllClubNames, getClubByName, addCustomClub } from "../../data/clubs";
 import { getTransferTierLabel, type TransferWatchEntry, type TransferFeeMode, type TransferWatchStatus } from "../../lib/transferWatch";
 
 interface AdminTransferWatchTabProps {
@@ -14,9 +14,12 @@ interface AdminTransferWatchTabProps {
     setTransferDraft: React.Dispatch<React.SetStateAction<any>>;
     setTransferFilterClub: (club: string) => void;
     handleAddTransferWatchEntry: () => void;
+    handleEditTransferWatchEntry: (entry: TransferWatchEntry) => void;
+    handleCancelTransferWatchEdit: () => void;
     handleSaveTransferWatch: () => Promise<void>;
     handleDeleteTransferWatchEntry: (id: string) => void;
     formatTransferWatchAmount: (entry: TransferWatchEntry) => string;
+    transferEditId: string | null;
 }
 
 export function AdminTransferWatchTab({
@@ -28,11 +31,67 @@ export function AdminTransferWatchTab({
     setTransferDraft,
     setTransferFilterClub,
     handleAddTransferWatchEntry,
+    handleEditTransferWatchEntry,
+    handleCancelTransferWatchEdit,
     handleSaveTransferWatch,
     handleDeleteTransferWatchEntry,
-    formatTransferWatchAmount
+    formatTransferWatchAmount,
+    transferEditId
 }: AdminTransferWatchTabProps) {
     const [generatingLine, setGeneratingLine] = useState(false);
+    const [isCustomClub, setIsCustomClub] = useState(false);
+    const [isCustomFromClub, setIsCustomFromClub] = useState(false);
+    const [customClubLogo, setCustomClubLogo] = useState("");
+    const [customFromClubLogo, setCustomFromClubLogo] = useState("");
+    const [uploadingImage, setUploadingImage] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const compressImage = (file: File, maxWidth = 900, quality = 0.75): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new window.Image();
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    let w = img.width;
+                    let h = img.height;
+                    if (w > maxWidth) {
+                        h = (h * maxWidth) / w;
+                        w = maxWidth;
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext("2d");
+                    if (!ctx) return reject(new Error("Canvas not supported"));
+                    ctx.drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL("image/webp", quality));
+                };
+                img.onerror = reject;
+                img.src = e.target?.result as string;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !file.type.startsWith("image/")) return;
+        setUploadingImage(true);
+        try {
+            const dataUrl = await compressImage(file);
+            setTransferDraft((prev: any) => ({ ...prev, playerImageUrl: dataUrl }));
+            toast.success("Image attached successfully!");
+        } catch {
+            toast.error("Failed to process image");
+        } finally {
+            setUploadingImage(false);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+        }
+    };
+
+    const baseClubOptions = getAllClubNames().sort((left, right) => left.localeCompare(right));
+    const clubOptions = [...baseClubOptions, "Other..."];
 
     const handleGeneratePunchyLine = async () => {
         if (!transferDraft.player || !transferDraft.club) {
@@ -66,6 +125,45 @@ export function AdminTransferWatchTab({
         }
     };
 
+    const handleEditClick = (entry: TransferWatchEntry) => {
+        if (!baseClubOptions.includes(entry.club)) {
+            setIsCustomClub(true);
+            setCustomClubLogo(getClubByName(entry.club)?.logo || "");
+        } else {
+            setIsCustomClub(false);
+        }
+        if (entry.fromClub && !baseClubOptions.includes(entry.fromClub)) {
+            setIsCustomFromClub(true);
+            setCustomFromClubLogo(getClubByName(entry.fromClub)?.logo || "");
+        } else {
+            setIsCustomFromClub(false);
+        }
+        handleEditTransferWatchEntry(entry);
+    };
+
+    const handleAddClick = () => {
+        // Validation check for empty clubs
+        if (!transferDraft.club || (!isCustomFromClub && !transferDraft.fromClub && transferDraft.fromClub !== "")) {
+            toast.error("Both 'From Club' and 'Club' are required.");
+            return;
+        }
+        
+        // Persist custom clubs if specified
+        if (isCustomFromClub && transferDraft.fromClub) {
+            addCustomClub({ name: transferDraft.fromClub, league: "Unknown", logo: customFromClubLogo });
+        }
+        if (isCustomClub && transferDraft.club) {
+            addCustomClub({ name: transferDraft.club, league: "Unknown", logo: customClubLogo });
+        }
+
+        handleAddTransferWatchEntry();
+        // Reset custom states after a successful add
+        setIsCustomClub(false);
+        setIsCustomFromClub(false);
+        setCustomClubLogo("");
+        setCustomFromClubLogo("");
+    };
+
     return (
         <div className="space-y-8">
             <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
@@ -86,28 +184,159 @@ export function AdminTransferWatchTab({
                 <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.1fr] gap-8">
                     <div className="space-y-5">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <label className="block md:col-span-2">
-                                <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Player Name</span>
-                                <input
-                                    type="text"
-                                    value={transferDraft.player}
-                                    onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, player: e.target.value }))}
-                                    placeholder="Victor Osimhen"
-                                    className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                                />
+                            <div className="md:col-span-2 flex items-start gap-4">
+                                <label className="block flex-1">
+                                    <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Player Name</span>
+                                    <input
+                                        type="text"
+                                        value={transferDraft.player}
+                                        onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, player: e.target.value }))}
+                                        placeholder="Victor Osimhen"
+                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                    />
+                                </label>
+                                <div className="flex-shrink-0">
+                                    <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Player Photo</label>
+                                    <div className="flex items-center gap-2">
+                                        <div 
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="w-11 h-11 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] flex items-center justify-center cursor-pointer hover:border-[#16A34A] overflow-hidden relative group"
+                                        >
+                                            {uploadingImage ? (
+                                                <LoaderCircle className="w-5 h-5 text-gray-400 animate-spin" />
+                                            ) : transferDraft.playerImageUrl ? (
+                                                <>
+                                                    <img src={transferDraft.playerImageUrl} alt="Player" className="w-full h-full object-cover" />
+                                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <Edit3 className="w-4 h-4 text-white" />
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <ImagePlus className="w-5 h-5 text-gray-400 group-hover:text-[#16A34A] transition-colors" />
+                                            )}
+                                        </div>
+                                        {transferDraft.playerImageUrl && (
+                                            <button 
+                                                onClick={() => {
+                                                    setTransferDraft((prev: any) => ({ ...prev, playerImageUrl: "" }));
+                                                    if (fileInputRef.current) fileInputRef.current.value = "";
+                                                }}
+                                                className="p-1 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        )}
+                                        <input 
+                                            type="file" 
+                                            ref={fileInputRef} 
+                                            onChange={handleImageUpload} 
+                                            accept="image/*" 
+                                            className="hidden" 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <label className="block">
+                                <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">From Club</span>
+                                {!isCustomFromClub ? (
+                                    <select
+                                        value={baseClubOptions.includes(transferDraft.fromClub) ? transferDraft.fromClub : transferDraft.fromClub ? "Other..." : ""}
+                                        onChange={(e) => {
+                                            if (e.target.value === "Other...") {
+                                                setIsCustomFromClub(true);
+                                                setTransferDraft((prev: any) => ({ ...prev, fromClub: "" }));
+                                            } else {
+                                                setTransferDraft((prev: any) => ({ ...prev, fromClub: e.target.value }));
+                                            }
+                                        }}
+                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                    >
+                                        <option value="" disabled>Select club</option>
+                                        {clubOptions.map((club) => (
+                                            <option key={club} value={club}>{club}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <div className="space-y-2 mt-2 flex items-center gap-2">
+                                        <div className="flex-1 space-y-2">
+                                            <input
+                                                type="text"
+                                                value={transferDraft.fromClub}
+                                                onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, fromClub: e.target.value }))}
+                                                placeholder="Custom club name..."
+                                                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                                autoFocus
+                                            />
+                                            <input
+                                                type="text"
+                                                value={customFromClubLogo}
+                                                onChange={(e) => setCustomFromClubLogo(e.target.value)}
+                                                placeholder="Logo URL (optional)..."
+                                                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            {customFromClubLogo && (
+                                                <div className="w-10 h-10 flex-shrink-0 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center p-1">
+                                                    <img src={customFromClubLogo} alt="Preview" className="w-full h-full object-contain" />
+                                                </div>
+                                            )}
+                                            <button onClick={() => { setIsCustomFromClub(false); setTransferDraft((prev: any) => ({ ...prev, fromClub: "" })); setCustomFromClubLogo(""); }} className="text-xs text-gray-500 hover:text-gray-700 self-center">Cancel</button>
+                                        </div>
+                                    </div>
+                                )}
                             </label>
 
                             <label className="block">
-                                <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Club</span>
-                                <select
-                                    value={transferDraft.club}
-                                    onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, club: e.target.value }))}
-                                    className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                                >
-                                    {clubOptions.map((club) => (
-                                        <option key={club} value={club}>{club}</option>
-                                    ))}
-                                </select>
+                                <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">To Club (Destination)</span>
+                                {!isCustomClub ? (
+                                    <select
+                                        value={baseClubOptions.includes(transferDraft.club) ? transferDraft.club : transferDraft.club ? "Other..." : ""}
+                                        onChange={(e) => {
+                                            if (e.target.value === "Other...") {
+                                                setIsCustomClub(true);
+                                                setTransferDraft((prev: any) => ({ ...prev, club: "" }));
+                                            } else {
+                                                setTransferDraft((prev: any) => ({ ...prev, club: e.target.value }));
+                                            }
+                                        }}
+                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                    >
+                                        <option value="" disabled>Select club</option>
+                                        {clubOptions.map((club) => (
+                                            <option key={club} value={club}>{club}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <div className="space-y-2 mt-2 flex items-center gap-2">
+                                        <div className="flex-1 space-y-2">
+                                            <input
+                                                type="text"
+                                                value={transferDraft.club}
+                                                onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, club: e.target.value }))}
+                                                placeholder="Custom club name..."
+                                                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                                autoFocus
+                                            />
+                                            <input
+                                                type="text"
+                                                value={customClubLogo}
+                                                onChange={(e) => setCustomClubLogo(e.target.value)}
+                                                placeholder="Logo URL (optional)..."
+                                                className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            {customClubLogo && (
+                                                <div className="w-10 h-10 flex-shrink-0 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center p-1">
+                                                    <img src={customClubLogo} alt="Preview" className="w-full h-full object-contain" />
+                                                </div>
+                                            )}
+                                            <button onClick={() => { setIsCustomClub(false); setTransferDraft((prev: any) => ({ ...prev, club: "Arsenal" })); setCustomClubLogo(""); }} className="text-xs text-gray-500 hover:text-gray-700 self-center">Cancel</button>
+                                        </div>
+                                    </div>
+                                )}
                             </label>
 
                             <label className="block">
@@ -117,7 +346,7 @@ export function AdminTransferWatchTab({
                                     onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, status: e.target.value as TransferWatchStatus }))}
                                     className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
                                 >
-                                    <option value="rumor">Rumor</option>
+                                    <option value="rumor">Rumour</option>
                                     <option value="confirmed">Confirmed</option>
                                 </select>
                             </label>
@@ -130,6 +359,8 @@ export function AdminTransferWatchTab({
                                     className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
                                 >
                                     <option value="million-usd">Million USD</option>
+                                    <option value="million-eur">Million EUR</option>
+                                    <option value="million-gbp">Million GBP</option>
                                     <option value="not-disclosed">Not disclosed</option>
                                 </select>
                             </label>
@@ -189,13 +420,78 @@ export function AdminTransferWatchTab({
                             </button>
                         </div>
 
+                        {/* My Take / Market Context */}
+                        <div className="border-t border-gray-100 dark:border-gray-800 pt-5 mt-5">
+                            <label className="block">
+                                <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">
+                                    My Take / Market Context
+                                </span>
+                                <textarea
+                                    value={transferDraft.myTake || ""}
+                                    onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, myTake: e.target.value }))}
+                                    placeholder='Write a detailed talk about the transfer, market context, etc...'
+                                    rows={6}
+                                    className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A] resize-y"
+                                />
+                            </label>
+                        </div>
+
+                        {/* AI Dossier Analysis */}
+                        <div className="border-t border-gray-100 dark:border-gray-800 pt-5 mt-5">
+                            <h3 className="text-sm font-medium text-[#0F172A] dark:text-white mb-3">AI Dossier Analysis</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label className="block md:col-span-2">
+                                    <span className="block text-xs font-medium text-[#64748B] dark:text-gray-400 mb-1 flex items-center gap-1">
+                                        <Sparkles className="w-3 h-3 text-purple-500" />
+                                        AI Take
+                                    </span>
+                                    <textarea
+                                        value={transferDraft.aiTake || ""}
+                                        onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, aiTake: e.target.value }))}
+                                        placeholder='e.g. "The AI views this transfer as highly probable due to..."'
+                                        rows={3}
+                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                                    />
+                                </label>
+                                <label className="block">
+                                    <span className="block text-xs font-medium text-[#64748B] dark:text-gray-400 mb-1 flex items-center gap-1">
+                                        <Sparkles className="w-3 h-3 text-purple-500" />
+                                        AI Score (1-100)
+                                    </span>
+                                    <input
+                                        type="number"
+                                        min={1}
+                                        max={100}
+                                        value={transferDraft.aiScore || ""}
+                                        onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, aiScore: e.target.value ? Number(e.target.value) : undefined }))}
+                                        placeholder="85"
+                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+
                         <div className="flex flex-wrap items-center gap-3 mt-5">
                             <button
-                                onClick={handleAddTransferWatchEntry}
+                                onClick={handleAddClick}
                                 className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]"
                             >
-                                Add To Transfer Watch
+                                {transferEditId ? "Update Entry" : "Add To Transfer Watch"}
                             </button>
+                            {transferEditId && (
+                                <button
+                                    onClick={() => {
+                                        handleCancelTransferWatchEdit();
+                                        setIsCustomClub(false);
+                                        setIsCustomFromClub(false);
+                                        setCustomClubLogo("");
+                                        setCustomFromClubLogo("");
+                                    }}
+                                    className="px-4 py-2.5 text-[#64748B] dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-xl font-medium text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
+                                >
+                                    Cancel
+                                </button>
+                            )}
                             <button
                                 onClick={handleSaveTransferWatch}
                                 disabled={savingTransferWatch}
@@ -218,7 +514,7 @@ export function AdminTransferWatchTab({
                                 className="w-full sm:w-[220px] rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
                             >
                                 <option value="all">All clubs</option>
-                                {clubOptions.map((club) => (
+                                {baseClubOptions.map((club) => (
                                     <option key={club} value={club}>{club}</option>
                                 ))}
                             </select>
@@ -226,9 +522,11 @@ export function AdminTransferWatchTab({
 
                         <div className="space-y-3">
                             {filteredTransferWatchEntries.length === 0 ? (
-                                <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 px-4 py-8 text-center text-sm text-[#64748B] dark:text-gray-400">
-                                    No manual transfer watch items yet.
-                                </div>
+                                <AdminEmptyState
+                                    icon={TrendingUp}
+                                    title="No manual transfer watch items yet"
+                                    description="Add items here that will be shown in the transfer watch components."
+                                />
                             ) : (
                                 filteredTransferWatchEntries.map((entry) => (
                                     <div key={entry.id} className="rounded-xl bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-gray-800 p-4">
@@ -236,7 +534,8 @@ export function AdminTransferWatchTab({
                                             <div>
                                                 <p className="text-sm font-bold text-[#0F172A] dark:text-white">{entry.player}</p>
                                                 <p className="text-xs text-[#64748B] dark:text-gray-400 mt-1">
-                                                    {entry.club} · {formatTransferWatchAmount(entry)}
+                                                    {entry.fromClub && <span className="text-rose-500 font-medium">{entry.fromClub} → </span>}
+                                                    {entry.club} · <span className="font-bold text-[#0F172A] dark:text-white">{formatTransferWatchAmount(entry)}</span>
                                                 </p>
                                                 <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[#94A3B8]">
                                                     {getTransferTierLabel(entry.tier, entry.status)}
@@ -249,6 +548,13 @@ export function AdminTransferWatchTab({
                                                     }`}>
                                                     {entry.status}
                                                 </span>
+                                                <button
+                                                    onClick={() => handleEditClick(entry)}
+                                                    className="p-1.5 rounded-lg text-[#64748B] dark:text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                                                    title="Edit entry"
+                                                >
+                                                    <Edit3 className="w-4 h-4" />
+                                                </button>
                                                 <button
                                                     onClick={() => handleDeleteTransferWatchEntry(entry.id)}
                                                     className="p-1.5 rounded-lg text-[#64748B] dark:text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"

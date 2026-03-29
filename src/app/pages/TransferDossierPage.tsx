@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
-import { ArrowLeft, ArrowRight, Bell, Repeat2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bell, Repeat2, ShieldQuestion, Sparkles } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -27,6 +27,7 @@ import {
 } from "../lib/transferDossiers";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { toast } from "sonner";
+import { getClubByName } from "../data/clubs";
 
 export function TransferDossierPage() {
   const { slug = "" } = useParams();
@@ -119,6 +120,9 @@ export function TransferDossierPage() {
 
   const followed = followedTransfers.some((topic) => topic === dossier.topic);
   const title = `${dossier.player} to ${dossier.club} dossier`;
+  
+  const fromClubInfo = dossier.fromClub ? getClubByName(dossier.fromClub) : null;
+  const toClubInfo = getClubByName(dossier.club);
 
   return (
     <div className="page-atmosphere min-h-screen transition-colors duration-300">
@@ -154,12 +158,53 @@ export function TransferDossierPage() {
                 </span>
               </div>
 
-              <h1 className="mt-5 text-4xl font-black font-outfit text-[#0F172A] dark:text-white md:text-5xl">
-                {dossier.player} to {dossier.club}
-              </h1>
-              <p className="mt-4 text-base leading-7 text-[#64748B] dark:text-gray-400">
+              <div className="mt-5 flex items-center gap-4">
+                  {dossier.playerImageUrl && (
+                      <img src={dossier.playerImageUrl} alt={dossier.player} className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover shadow-sm bg-gray-100 dark:bg-gray-800 border-2 border-white dark:border-[#0F172A]" />
+                  )}
+                  <h1 className="text-4xl font-black font-outfit text-[#0F172A] dark:text-white md:text-5xl">
+                    {dossier.player}
+                  </h1>
+              </div>
+              
+              <div className="mt-4 flex items-center gap-3 font-bold text-[#16A34A] bg-white/50 dark:bg-white/5 px-5 py-3 rounded-2xl w-fit border border-gray-200 dark:border-gray-800">
+                {dossier.fromClub && (
+                  <>
+                    <div className="flex items-center gap-2">
+                      {fromClubInfo?.logo ? (
+                          <img src={fromClubInfo.logo} alt={dossier.fromClub} className="w-6 h-6 object-contain" />
+                      ) : (
+                          <ShieldQuestion className="w-6 h-6 text-gray-400" />
+                      )}
+                      <span className="text-rose-500 text-lg">{dossier.fromClub}</span>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-gray-400 mx-1" />
+                  </>
+                )}
+                <div className="flex items-center gap-2">
+                  {toClubInfo?.logo ? (
+                      <img src={toClubInfo.logo} alt={dossier.club} className="w-6 h-6 object-contain" />
+                  ) : (
+                      <ShieldQuestion className="w-6 h-6 text-gray-400" />
+                  )}
+                  <span className="text-emerald-500 text-lg">{dossier.club}</span>
+                </div>
+              </div>
+
+              <p className="mt-5 text-base leading-7 text-[#64748B] dark:text-gray-400">
                 {buildTransferSummary(dossier)}
               </p>
+
+              {dossier.myTake && (
+                <div className="mt-8 rounded-2xl bg-[#16A34A]/5 border border-[#16A34A]/20 p-5 md:p-6">
+                  <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A] mb-3 flex items-center gap-2">
+                    Market Context & My Take
+                  </h3>
+                  <div className="text-base leading-relaxed text-[#0F172A] dark:text-gray-300 font-medium whitespace-pre-wrap">
+                    {dossier.myTake}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[380px]">
@@ -189,27 +234,36 @@ export function TransferDossierPage() {
           </div>
         </section>
 
-        <section className="mt-10 grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-          <div className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">Case file</p>
-            <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
-              Why this rumor has its current read
-            </h2>
-            <div className="mt-6 space-y-3">
-              {dossier.rationale.map((line) => (
-                <div key={line} className="rounded-[1.25rem] bg-[#F8FAFC] px-4 py-3 text-sm leading-6 text-[#334155] dark:bg-[#08111f] dark:text-gray-200">
-                  {line}
-                </div>
-              ))}
-            </div>
-          </div>
-
+        <section className="mt-10">
           <div className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8">
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">Signal timeline</p>
             <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
               The current dossier path
             </h2>
-            <div className="mt-6 grid gap-4">
+
+            {(dossier.aiScore || dossier.aiTake) && (
+              <div className="mt-6 p-5 rounded-[1.5rem] bg-purple-500/5 border border-purple-500/20">
+                 <div className="flex items-start gap-4">
+                    {dossier.aiScore && (
+                        <div className="flex-shrink-0 w-14 h-14 rounded-full bg-purple-100 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 flex items-center justify-center shadow-inner">
+                            <span className="text-xl font-black font-outfit text-purple-600 dark:text-purple-400">{dossier.aiScore}</span>
+                        </div>
+                    )}
+                    <div>
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-purple-600 dark:text-purple-400 mb-1 flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5" /> AI Take
+                        </h3>
+                        {dossier.aiTake && (
+                            <p className="text-sm leading-6 text-[#0F172A] dark:text-gray-300 mt-2">
+                                {dossier.aiTake}
+                            </p>
+                        )}
+                    </div>
+                 </div>
+              </div>
+            )}
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
               {timeline.map((item) => (
                 <div key={`${item.label}-${item.title}`} className="rounded-[1.5rem] border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-[#0F172A]">
                   <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">{item.label}</p>

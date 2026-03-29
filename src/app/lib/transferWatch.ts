@@ -1,21 +1,26 @@
 export type TransferWatchStatus = "confirmed" | "rumor";
-export type TransferFeeMode = "million-usd" | "not-disclosed";
+export type TransferFeeMode = "million-usd" | "million-eur" | "million-gbp" | "not-disclosed";
 export type TransferRumorTier = 1 | 2 | 3 | 4 | 5 | null;
 
 export interface TransferWatchEntry {
   id: string;
   player: string;
+  playerImageUrl?: string;
   club: string;
+  fromClub?: string;
   feeMode: TransferFeeMode;
   feeMillions: number;
   status: TransferWatchStatus;
   tier: TransferRumorTier;
   punchyLine?: string;
+  myTake?: string;
+  aiScore?: number;
+  aiTake?: string;
   updatedAt: string;
 }
 
 const TRANSFER_STATUSES: TransferWatchStatus[] = ["confirmed", "rumor"];
-const TRANSFER_FEE_MODES: TransferFeeMode[] = ["million-usd", "not-disclosed"];
+const TRANSFER_FEE_MODES: TransferFeeMode[] = ["million-usd", "million-eur", "million-gbp", "not-disclosed"];
 
 function normalizeClubName(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
@@ -91,18 +96,23 @@ export function normalizeTransferWatchEntry(
     : "not-disclosed";
   const tier = normalizeRumorTier(input.tier, status);
   const updatedAt = String(input.updatedAt || new Date().toISOString());
-  const feeMillions = feeMode === "million-usd" ? clampFee(input.feeMillions) : 0;
+  const feeMillions = feeMode !== "not-disclosed" ? clampFee(input.feeMillions) : 0;
   const id = String(input.id || buildTransferWatchId(player, club, updatedAt));
 
   return {
     id,
     player,
+    playerImageUrl: input.playerImageUrl ? String(input.playerImageUrl).trim() : undefined,
     club,
+    fromClub: input.fromClub ? String(input.fromClub).trim() : undefined,
     feeMode,
     feeMillions,
     status,
     tier,
     punchyLine: typeof input.punchyLine === "string" ? input.punchyLine.trim() : undefined,
+    myTake: typeof input.myTake === "string" ? input.myTake.trim() : undefined,
+    aiScore: typeof input.aiScore === "number" ? input.aiScore : undefined,
+    aiTake: typeof input.aiTake === "string" ? input.aiTake.trim() : undefined,
     updatedAt,
   };
 }
@@ -131,6 +141,14 @@ export function matchesTransferClub(entry: Pick<TransferWatchEntry, "club">, clu
 export function formatTransferWatchAmount(entry: Pick<TransferWatchEntry, "feeMode" | "feeMillions">): string {
   if (entry.feeMode === "not-disclosed") {
     return "Not disclosed";
+  }
+
+  if (entry.feeMode === "million-eur") {
+    return `€${entry.feeMillions}m`;
+  }
+
+  if (entry.feeMode === "million-gbp") {
+    return `£${entry.feeMillions}m`;
   }
 
   return `$${entry.feeMillions}m`;

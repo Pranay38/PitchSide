@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { Repeat2, CheckCircle2, ArrowRight } from "lucide-react";
+import { Repeat2, CheckCircle2, ArrowRight, ShieldQuestion } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PageState } from "../components/PageState";
+import { Tweet } from "../components/ui/tweet";
 import type { TransferRecord, TransferStatus } from "../components/admin/AdminTransferTrackerTab";
+import { getClubByName } from "../data/clubs";
 
 const STATUS_STAGES: TransferStatus[] = ["rumour", "talks", "medical", "done"];
 const STATUS_LABELS = ["Rumour", "Talks", "Medical", "Done Deal!"];
@@ -84,6 +86,9 @@ export function TransferTrackerPage() {
                             const statusIndex = STATUS_STAGES.indexOf(t.status);
                             const isDone = t.status === "done";
                             
+                            const fromClubInfo = getClubByName(t.fromClub);
+                            const toClubInfo = getClubByName(t.toClub);
+
                             return (
                                 <div 
                                     key={t.id} 
@@ -108,15 +113,34 @@ export function TransferTrackerPage() {
                                             )}
                                         </div>
                                         
-                                        <h2 className="text-3xl font-black font-outfit text-[#0F172A] dark:text-white mb-4">
-                                            {t.player}
-                                        </h2>
+                                        <div className="flex items-center gap-4 mb-4">
+                                            {t.playerImageUrl && (
+                                                <img src={t.playerImageUrl} alt={t.player} className="w-12 h-12 rounded-full object-cover shadow-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700" />
+                                            )}
+                                            <h2 className="text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                                                {t.player}
+                                            </h2>
+                                        </div>
                                         
                                         <div className="flex flex-wrap items-center gap-4 text-sm font-medium">
-                                            <div className="flex items-center gap-2 bg-gray-50 dark:bg-[#0F172A] px-4 py-2 rounded-xl">
-                                                <span className="text-rose-500 whitespace-nowrap">{t.fromClub}</span>
+                                            <div className="flex items-center gap-3 bg-gray-50 dark:bg-[#0F172A] px-4 py-2 rounded-xl">
+                                                <div className="flex items-center gap-2">
+                                                    {fromClubInfo?.logo ? (
+                                                        <img src={fromClubInfo.logo} alt={t.fromClub} className="w-5 h-5 object-contain" />
+                                                    ) : (
+                                                        <ShieldQuestion className="w-5 h-5 text-gray-400" />
+                                                    )}
+                                                    <span className="text-rose-500 whitespace-nowrap">{t.fromClub}</span>
+                                                </div>
                                                 <ArrowRight className="w-4 h-4 text-gray-400" />
-                                                <span className="text-emerald-500 whitespace-nowrap">{t.toClub}</span>
+                                                <div className="flex items-center gap-2">
+                                                    {toClubInfo?.logo ? (
+                                                        <img src={toClubInfo.logo} alt={t.toClub} className="w-5 h-5 object-contain" />
+                                                    ) : (
+                                                        <ShieldQuestion className="w-5 h-5 text-gray-400" />
+                                                    )}
+                                                    <span className="text-emerald-500 whitespace-nowrap">{t.toClub}</span>
+                                                </div>
                                             </div>
                                             
                                             {t.fee && (
@@ -125,11 +149,29 @@ export function TransferTrackerPage() {
                                                 </div>
                                             )}
                                             
-                                            {t.source && (
-                                                <div className="text-gray-400">
-                                                    Reported by {t.source}
-                                                </div>
-                                            )}
+                                            {(() => {
+                                                const extractTweetId = (text: string) => {
+                                                    const match = text.match(/(?:x\.com|twitter\.com)\/(?:[a-zA-Z0-9_]+)\/status\/([0-9]+)/);
+                                                    return match ? match[1] : null;
+                                                };
+                                                const tweetId = t.source ? extractTweetId(t.source) : null;
+                                                
+                                                if (tweetId) {
+                                                    return (
+                                                        <div className="w-full mt-4 flex items-center justify-center">
+                                                            <div className="scale-90 origin-top lg:origin-center bg-white dark:bg-transparent rounded-xl">
+                                                                <Tweet id={tweetId} />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
+
+                                                return t.source ? (
+                                                    <div className="text-gray-400">
+                                                        Reported by {t.source}
+                                                    </div>
+                                                ) : null;
+                                            })()}
                                         </div>
                                     </div>
                                     
@@ -151,6 +193,7 @@ export function TransferTrackerPage() {
                                                     {STATUS_STAGES.map((stage, idx) => {
                                                         const isCompleted = statusIndex >= idx;
                                                         const isCurrent = statusIndex === idx;
+                                                        const label = STATUS_LABELS[idx] || "Unknown";
                                                         
                                                         return (
                                                             <div key={stage} className="flex flex-col items-center">
@@ -164,7 +207,7 @@ export function TransferTrackerPage() {
                                                                 <span className={`absolute -bottom-6 text-[10px] font-bold uppercase tracking-wider transition-colors duration-500 ${
                                                                     isCurrent ? "text-[#16A34A] dark:text-emerald-400" : isCompleted ? "text-gray-600 dark:text-gray-300" : "text-gray-400 dark:text-gray-600"
                                                                 }`}>
-                                                                    {STATUS_LABELS[idx].split(" ")[0]}
+                                                                    {label.split(" ")[0]}
                                                                 </span>
                                                             </div>
                                                         );

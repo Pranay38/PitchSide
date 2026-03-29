@@ -40,8 +40,10 @@ interface SiteSettings {
   transferWatch: Array<{
     id: string;
     player: string;
+    playerImageUrl?: string;
     club: string;
-    feeMode: "million-usd" | "not-disclosed";
+    fromClub?: string;
+    feeMode: "million-usd" | "million-eur" | "million-gbp" | "not-disclosed";
     feeMillions: number;
     status: "confirmed" | "rumor";
     tier: 1 | 2 | 3 | 4 | 5 | null;
@@ -187,9 +189,13 @@ function normalizeTransferWatch(
     acc.push({
       id: String(item.id || `${player}-${club}`),
       player,
+      playerImageUrl: item.playerImageUrl ? String(item.playerImageUrl).trim() : undefined,
       club,
-      feeMode: item.feeMode === "million-usd" ? "million-usd" : "not-disclosed",
-      feeMillions: item.feeMode === "million-usd" ? clampMetric(item.feeMillions) : 0,
+      fromClub: item.fromClub ? String(item.fromClub).trim() : undefined,
+      feeMode: (["million-usd", "million-eur", "million-gbp", "not-disclosed"] as const).includes(item.feeMode) 
+        ? item.feeMode 
+        : "not-disclosed",
+      feeMillions: item.feeMode !== "not-disclosed" ? clampMetric(item.feeMillions) : 0,
       status: item.status === "confirmed" ? "confirmed" : "rumor",
       tier: item.status === "confirmed"
         ? null

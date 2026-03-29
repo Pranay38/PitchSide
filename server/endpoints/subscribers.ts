@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { applyCors, checkRateLimit, requireAuth, checkOrigin, rejectHoneypot, sanitizeString } from "../utils/security.js";
 import { connectToDatabase } from "../_db.js";
-import { sendEmail, isMailerConfigured } from "../_mailer.js";
+import { sendEmail, sendBatchEmails, isMailerConfigured } from "../_mailer.js";
 
 const COLLECTION = "subscribers";
 
@@ -127,14 +127,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(400).json({ error: "No subscribers found." });
             }
 
-            const bccList = subscribers.map(s => s.email);
-
-            await sendEmail({
-                to: "noreply@thetouchlinedribble.com", // Sent *to* ourselves
-                bcc: bccList, // BCC everyone else
+            const batchList = subscribers.map(s => ({
+                to: s.email,
                 subject,
-                html: htmlContent,
-            });
+                html: htmlContent
+            }));
+
+            await sendBatchEmails(batchList);
 
             return res.status(200).json({ message: `Digest sent to ${subscribers.length} subscribers!` });
         }

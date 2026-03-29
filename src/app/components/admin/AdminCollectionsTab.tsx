@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Library } from "lucide-react";
+import { AdminEmptyState } from "./AdminEmptyState";
 import { toast } from "sonner";
 
 interface AdminCollection {
@@ -167,7 +168,15 @@ export function AdminCollectionsTab({ collections, fetchCollections }: AdminColl
             </section>
 
             <div className="grid gap-4 sm:grid-cols-2">
-                {collections.length === 0 && <p className="text-gray-500">No collections created yet.</p>}
+                {collections.length === 0 && (
+                    <div className="sm:col-span-2">
+                        <AdminEmptyState
+                            icon={Library}
+                            title="No collections created yet"
+                            description="Create a reading list collection to guide your users through related articles."
+                        />
+                    </div>
+                )}
                 {collections.map((collection) => (
                     <div key={collection.id} className="rounded-2xl border border-gray-100 bg-white p-6 dark:border-gray-800 dark:bg-[#1E293B]">
                         <div className="flex items-start justify-between gap-4">

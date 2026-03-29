@@ -1,4 +1,5 @@
-import { Plus, Edit3, Trash2, Eye, Copy } from "lucide-react";
+import { Plus, Edit3, Trash2, Eye, Copy, BookOpen } from "lucide-react";
+import { AdminEmptyState } from "./AdminEmptyState";
 import { useNavigate } from "react-router";
 import type { StoryFeature } from "../../data/stories";
 import { StoryEditor } from "../StoryEditor";
@@ -56,19 +57,19 @@ export function AdminStoriesTab({
             </div>
 
             {stories.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800">
-                    <div className="text-5xl mb-4">📖</div>
-                    <h2 className="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">No stories yet</h2>
-                    <p className="text-sm text-[#64748B] dark:text-gray-400 mb-6">
-                        Create your first scrollytelling story with chapters, metrics, and sticky visuals.
-                    </p>
-                    <button
-                        onClick={onCreateStory}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all"
-                    >
-                        <Plus className="w-4 h-4" />Create First Story
-                    </button>
-                </div>
+                <AdminEmptyState
+                    icon={BookOpen}
+                    title="No stories yet"
+                    description="Create your first scrollytelling story with chapters, metrics, and sticky visuals."
+                    action={
+                        <button
+                            onClick={onCreateStory}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all active:scale-95 shadow-sm mt-2"
+                        >
+                            <Plus className="w-4 h-4" />Create First Story
+                        </button>
+                    }
+                />
             ) : (
                 <div className="space-y-4">
                     {stories.map((story) => (

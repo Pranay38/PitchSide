@@ -10,7 +10,8 @@ import type { SocialPlatform } from "./extensions/SocialEmbedExtension";
 import { useEffect, useRef, useState } from "react";
 import type { BlogPost } from "../data/posts";
 import { InternalLinkSuggestion } from "./InternalLinkSuggestion";
-import { EDITORIAL_SNIPPETS } from "../lib/editorialBlocks";
+import { EditorialBlockExtension } from "./extensions/EditorialBlockExtension";
+import type { EditorialBlockKind } from "./extensions/EditorialBlockExtension";
 import {
     Bold,
     Italic,
@@ -159,6 +160,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
             }),
             SocialEmbed,
             EmbeddedImage,
+            EditorialBlockExtension,
         ],
         content: content || "",
         onUpdate: ({ editor }) => {
@@ -180,7 +182,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
     useEffect(() => {
         if (!editor) return;
         if (editor.getHTML() === (content || "")) return;
-        editor.commands.setContent(content || "", false);
+        editor.commands.setContent(content || "", { emitUpdate: false });
     }, [content, editor]);
 
     if (!editor) return null;
@@ -221,8 +223,42 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
         imageInputRef.current?.click();
     };
 
-    const insertEditorialSnippet = (html: string) => {
-        editor.chain().focus().insertContent(html).run();
+    const DEFAULT_ATTRS: Record<EditorialBlockKind, Record<string, string>> = {
+        "timeline": {
+            title: "How the match turned",
+            items: JSON.stringify(["12' | Early overload | Built access down the right side", "37' | Midfield reset | Control improved after the shape changed", "61' | Double substitution | The tempo lift changed the game state"]),
+        },
+        "stats-card": {
+            title: "Match Snapshot",
+            items: JSON.stringify(["Possession | 61% | Territory tilted after minute 20", "Shots | 14 | Sustained pressure from zone 14", "PPDA | 8.4 | Press stayed live for most of the match"]),
+        },
+        "quote-block": {
+            quote: "We had to find a different angle into midfield.",
+            attribution: "Manager Name",
+            role: "Head coach",
+        },
+        "key-takeaways": {
+            title: "Key Takeaways",
+            items: JSON.stringify(["The press worked because the distances stayed short.", "The bench changed the rhythm, not just the personnel.", "Territory mattered more than raw possession."]),
+        },
+        "comparison-table": {
+            title: "Before and After",
+            columns: "Metric|First Half|Second Half",
+            items: JSON.stringify(["Touches in box | 5 | 13", "Progressive passes | 17 | 28", "Shots | 4 | 10"]),
+        },
+        "tactical-board": {
+            title: "Tactical sequence",
+            description: "Optional context for this tactical sequence.",
+            blockId: "",
+        },
+        "match-center": {
+            blockId: "",
+        },
+    };
+
+    const insertEditorialBlock = (kind: EditorialBlockKind) => {
+        const defaults = DEFAULT_ATTRS[kind] || {};
+        editor.chain().focus().insertEditorialBlock({ kind, ...defaults }).run();
         setShowEditorialMenu(false);
     };
 
@@ -370,13 +406,20 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                 }} title="Embed Sofascore Widget">
                     <BarChart2 className="w-4 h-4" />
                 </ToolbarButton>
-                <ToolbarButton
+                {/* Editorial Blocks — prominent labeled button */}
+                <button
+                    type="button"
                     onClick={() => setShowEditorialMenu((current) => !current)}
-                    title="Editorial Blocks"
-                    isActive={showEditorialMenu}
+                    title="Editorial Blocks — insert timelines, stats, quotes and more"
+                    className={`ml-1 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                        showEditorialMenu
+                            ? "bg-[#16A34A] text-white shadow-sm shadow-[#16A34A]/30"
+                            : "border border-[#16A34A]/40 bg-[#16A34A]/8 text-[#16A34A] hover:bg-[#16A34A]/15 dark:border-[#16A34A]/30 dark:bg-[#16A34A]/10 dark:text-[#4ade80]"
+                    }`}
                 >
-                    <Sparkles className="w-4 h-4" />
-                </ToolbarButton>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Editorial Blocks
+                </button>
 
                 <ToolbarDivider />
 
@@ -405,35 +448,49 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
             </div>
 
             {showEditorialMenu && (
-                <div className="border-b border-gray-200 bg-[#F8FAFC] px-3 py-3 dark:border-gray-700 dark:bg-[#08111f]">
-                    <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="border-b border-gray-200 bg-[#F8FAFC] px-4 py-4 dark:border-gray-700 dark:bg-[#08111f]">
+                    <div className="mb-4 flex items-start justify-between gap-3">
                         <div>
-                            <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-                                Editorial Blocks
-                            </p>
-                            <p className="mt-1 text-xs text-[#64748B] dark:text-gray-400">
-                                Insert structured blocks for timelines, stat cards, takeaways, quotes, and comparisons.
+                            <div className="flex items-center gap-2 mb-1">
+                                <Sparkles className="w-3.5 h-3.5 text-[#16A34A]" />
+                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
+                                    Editorial Blocks
+                                </p>
+                            </div>
+                            <p className="text-xs text-[#64748B] dark:text-gray-400">
+                                Click a block to insert it at your cursor. Edit the placeholder text to fill in your content.
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={() => setShowEditorialMenu(false)}
-                            className="rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-[#475569] transition-colors hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-700 dark:text-gray-300"
+                            className="shrink-0 rounded-full border border-gray-200 px-3 py-1.5 text-xs font-semibold text-[#475569] transition-colors hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-700 dark:text-gray-300"
                         >
                             Close
                         </button>
                     </div>
 
-                    <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
-                        {EDITORIAL_SNIPPETS.map((snippet) => (
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                        {([
+                            { id: "timeline",         icon: "⏱", label: "Timeline",         desc: "Add a step-by-step match, transfer, or season sequence." },
+                            { id: "stats-card",       icon: "📊", label: "Stats Card",        desc: "Highlight three or four numbers with quick context." },
+                            { id: "quote-block",      icon: "💬", label: "Quote Block",       desc: "Pull a sharper quote out of the body copy." },
+                            { id: "key-takeaways",    icon: "✅", label: "Key Takeaways",     desc: "Summarize the section in fast, scannable bullets." },
+                            { id: "comparison-table", icon: "⚖️", label: "Comparison Table",  desc: "Compare phases, players, or teams in one block." },
+                            { id: "tactical-board",   icon: "🎯", label: "Tactical Board",    desc: "Embed a saved tactical sequence inside the article." },
+                            { id: "match-center",     icon: "🏟️", label: "Match Center",      desc: "Embed a live or finished broadcast-style match center." },
+                        ] as const).map((block) => (
                             <button
-                                key={snippet.id}
+                                key={block.id}
                                 type="button"
-                                onClick={() => insertEditorialSnippet(snippet.html)}
-                                className="rounded-[1.1rem] border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:border-[#16A34A]/30 hover:bg-[#16A34A]/5 dark:border-gray-700 dark:bg-[#0F172A] dark:hover:bg-[#16A34A]/10"
+                                onClick={() => insertEditorialBlock(block.id)}
+                                className="group flex items-start gap-3 rounded-[1.1rem] border border-gray-200 bg-white px-4 py-3 text-left transition-all hover:border-[#16A34A]/40 hover:bg-[#16A34A]/5 hover:shadow-sm dark:border-gray-700 dark:bg-[#0F172A] dark:hover:border-[#16A34A]/30 dark:hover:bg-[#16A34A]/10"
                             >
-                                <p className="text-sm font-bold text-[#0F172A] dark:text-white">{snippet.label}</p>
-                                <p className="mt-1 text-xs leading-5 text-[#64748B] dark:text-gray-400">{snippet.description}</p>
+                                <span className="mt-0.5 text-lg leading-none shrink-0">{block.icon}</span>
+                                <div className="min-w-0">
+                                    <p className="text-sm font-bold text-[#0F172A] group-hover:text-[#16A34A] dark:text-white dark:group-hover:text-[#4ade80] transition-colors">{block.label}</p>
+                                    <p className="mt-0.5 text-xs leading-5 text-[#64748B] dark:text-gray-400">{block.desc}</p>
+                                </div>
                             </button>
                         ))}
                     </div>

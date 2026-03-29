@@ -1,22 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { MongoClient, ObjectId } from "mongodb";
 
-// Note: To match the structure of other endpoints, we'll accept the db middleware 
-// but since the platform often re-connects on the fly in `api/sys.ts`, we'll ensure
-// we have a robust connection fallback.
+import { connectToDatabase } from "../../api/_db.js";
 
-const uri = process.env.MONGODB_URI || "";
-const dbName = process.env.MONGODB_DB || "pitchsidetest";
-
-let cachedClient: MongoClient | null = null;
-
-async function connectToDatabase() {
-    if (cachedClient) return cachedClient;
-    const client = new MongoClient(uri);
-    await client.connect();
-    cachedClient = client;
-    return client;
-}
 
 export type PollOption = {
     id: string; // e.g., "opt1"
@@ -36,8 +22,8 @@ export type PollDocument = {
 // GET /api/polls - Get all polls (Admin) or just the active one (Public)
 export const getPolls = async (req: VercelRequest, res: VercelResponse) => {
     try {
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection("polls");
+        const { db } = await connectToDatabase();
+        const collection = db.collection("polls");
         
         const activeOnly = req.query.active === 'true';
         const deviceId = req.cookies?.deviceId;
@@ -86,8 +72,8 @@ export const createPoll = async (req: VercelRequest, res: VercelResponse) => {
              return res.status(400).json({ error: "Invalid poll data. Need a question and at least 2 options." });
         }
 
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection("polls");
+        const { db } = await connectToDatabase();
+        const collection = db.collection("polls");
 
         // If setting this to active, deactivate all others first
         if (isActive) {
@@ -126,8 +112,8 @@ export const updatePoll = async (req: VercelRequest, res: VercelResponse) => {
             return res.status(400).json({ error: "Invalid ID" });
         }
 
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection("polls");
+        const { db } = await connectToDatabase();
+        const collection = db.collection("polls");
 
         // If activating this poll, deactivate others
         if (isActive) {
@@ -173,8 +159,8 @@ export const deletePoll = async (req: VercelRequest, res: VercelResponse) => {
             return res.status(400).json({ error: "Invalid ID" });
         }
 
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection("polls");
+        const { db } = await connectToDatabase();
+        const collection = db.collection("polls");
 
         const result = await collection.deleteOne({ _id: new ObjectId(id) });
         
@@ -207,8 +193,8 @@ export const votePoll = async (req: VercelRequest, res: VercelResponse) => {
         const deviceId = req.cookies?.deviceId || req.body?.deviceId;
         if (!deviceId) return res.status(400).json({ error: "Missing deviceId cookie for voting" });
 
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection("polls");
+        const { db } = await connectToDatabase();
+        const collection = db.collection("polls");
 
         // Check if this device already voted on this poll
         const existingPoll = await collection.findOne({

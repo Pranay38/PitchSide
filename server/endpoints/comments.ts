@@ -19,16 +19,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { db } = await connectToDatabase();
         const collection = db.collection(COLLECTION);
 
-        // ─── GET: Fetch comments for a post ───
+        // ─── GET: Fetch comments for a post or user ───
         if (req.method === "GET") {
             const postId = req.query.postId as string;
-            if (!postId) {
-                return res.status(400).json({ error: "Missing postId parameter" });
+            const userId = req.query.userId as string;
+
+            if (!postId && !userId) {
+                return res.status(400).json({ error: "Missing postId or userId parameter" });
             }
 
+            const query: any = {};
+            if (postId) query.postId = postId;
+            if (userId) query.userId = userId;
+
             const comments = await collection
-                .find({ postId })
-                .sort({ createdAt: 1 }) // Older first, so replies follow naturally. Client can sort as needed.
+                .find(query)
+                .sort({ createdAt: userId && !postId ? -1 : 1 }) // Older first for threads, newest first for activity feeds
                 .toArray();
 
             const result = comments.map(c => {
@@ -56,7 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
 
             // Create a comment/reply
-            const { postId, parentId, name, text } = req.body;
+            const { postId, parentId, name, text, clubBadge, userId } = req.body;
             
             if (!postId || !name?.trim() || !text?.trim()) {
                 return res.status(400).json({ error: "postId, name, and text are required" });
@@ -64,9 +70,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             const doc = {
                 postId,
+                userId: userId || null,
                 parentId: parentId || null,
                 name: name.trim().slice(0, 50),
                 text: text.trim().slice(0, 2000),
+                clubBadge: clubBadge || null,
                 likes: 0,
                 createdAt: new Date().toISOString(),
             };

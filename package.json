@@ -9,8 +9,10 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.3",
-    "@emotion/react": "11.14.0",
-    "@emotion/styled": "11.14.1",
+    "@clerk/themes": "^2.4.57",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@icons-pack/react-simple-icons": "^13.13.0",
     "@mui/icons-material": "7.3.5",
     "@mui/material": "7.3.5",
     "@popperjs/core": "2.11.8",
@@ -49,6 +51,8 @@
     "@tiptap/react": "^3.20.0",
     "@tiptap/starter-kit": "^3.20.0",
     "@types/nodemailer": "^7.0.11",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.37.0",
     "@vercel/node": "^5.6.9",
     "@vercel/og": "^0.11.0",
     "class-variance-authority": "0.7.1",
@@ -78,6 +82,7 @@
     "react-responsive-masonry": "2.7.1",
     "react-router": "7.13.0",
     "react-slick": "0.31.0",
+    "react-tweet": "^3.3.0",
     "recharts": "^2.15.2",
     "sonner": "2.0.3",
     "tailwind-merge": "3.2.0",
@@ -85,6 +90,7 @@
     "vaul": "1.1.2",
     "vite-plugin-pwa": "^1.2.0",
     "web-push": "^3.6.7",
+    "web-vitals": "^5.2.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

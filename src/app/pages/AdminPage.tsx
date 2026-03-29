@@ -39,7 +39,7 @@ import {
 from "../lib/transferWatch";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { createDefaultPollOfWeek, normalizePollOfWeek } from "../lib/pollOfWeek";
-import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon, Mic, MessageSquare, Calendar, BarChart2, PenLine, Bell } from "lucide-react";
+import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon, Mic, MessageSquare, Calendar, BarChart2, PenLine, Bell, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { AdminRunInEditor } from "../components/AdminRunInEditor";
 import { AdminTitleRaceTab } from "../components/admin/AdminTitleRaceTab";
@@ -107,11 +107,14 @@ export function AdminPage() {
     const [transferDraft, setTransferDraft] = useState({
         player: "",
         club: "Arsenal",
+        fromClub: "",
         feeMode: "million-usd" as TransferFeeMode,
         feeMillions: "",
         status: "rumor" as TransferWatchStatus,
         tier: 3,
+        punchyLine: "",
     });
+    const [transferEditId, setTransferEditId] = useState<string | null>(null);
     const [transferFilterClub, setTransferFilterClub] = useState("all");
 
     const [eventDraft, setEventDraft] = useState<Partial<SupplementalEvent>>({
@@ -142,7 +145,10 @@ export function AdminPage() {
 
     const fetchSubscriberCount = useCallback(async () => {
         try {
-            const res = await fetch("/api/subscribers");
+            const token = localStorage.getItem("pitchside_admin_auth");
+            const res = await fetch("/api/subscribers", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
             if (res.ok) {
                 const data = await res.json();
                 setSubscriberCount(data.count || 0);
@@ -165,7 +171,7 @@ export function AdminPage() {
     }, []);
     const fetchServerPolls = useCallback(async () => {
         try {
-            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
             const res = await fetch("/api/polls", {
                 headers: { Authorization: `Bearer ${pwd}` }
             });
@@ -175,7 +181,7 @@ export function AdminPage() {
 
     const fetchServerMatchRatings = useCallback(async () => {
         try {
-            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
             const res = await fetch("/api/match-ratings", {
                 headers: { Authorization: `Bearer ${pwd}` }
             });
@@ -329,7 +335,7 @@ export function AdminPage() {
     const handleSavePoll = async () => {
         try {
             setSavingPoll(true);
-            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
             const isEditing = !!editingPoll._id;
             const url = isEditing ? `/api/polls/${editingPoll._id}` : "/api/polls";
             const method = isEditing ? "PUT" : "POST";
@@ -355,7 +361,7 @@ export function AdminPage() {
     const handleDeletePoll = async (id: string) => {
         if (!confirm("Delete this poll?")) return;
         try {
-            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
             const res = await fetch(`/api/polls/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${pwd}` } });
             if (res.ok) {
                 toast.success("Poll deleted");
@@ -369,7 +375,7 @@ export function AdminPage() {
     const handleSaveMatchRating = async () => {
         try {
             setSavingMatchRating(true);
-            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
             const isEditing = !!editingMatchRating._id;
             const url = isEditing ? `/api/match-ratings/${editingMatchRating._id}` : "/api/match-ratings";
             const method = isEditing ? "PUT" : "POST";
@@ -395,7 +401,7 @@ export function AdminPage() {
     const handleDeleteMatchRating = async (id: string) => {
         if (!confirm("Delete these match ratings?")) return;
         try {
-            const pwd = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
             const res = await fetch(`/api/match-ratings/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${pwd}` } });
             if (res.ok) {
                 toast.success("Match Ratings deleted");
@@ -406,11 +412,12 @@ export function AdminPage() {
         }
     };
 
-    const handleAddTransferWatchEntry = () => {
+    const handleAddTransferWatchEntry = async () => {
         const normalized = normalizeTransferWatchEntry({
             ...transferDraft,
             feeMillions: transferDraft.feeMillions,
             updatedAt: new Date().toISOString(),
+            id: transferEditId || undefined, // Use existing ID if editing
         });
 
         if (!normalized) {
@@ -418,19 +425,87 @@ export function AdminPage() {
             return;
         }
 
+        const isNew = !transferEditId;
+
+        const newTransferWatch = [normalized, ...siteSettings.transferWatch.filter((entry) => entry.id !== normalized.id)];
+        
         setSiteSettings((prev) => ({
             ...prev,
-            transferWatch: [normalized, ...prev.transferWatch.filter((entry) => entry.id !== normalized.id)],
+            transferWatch: newTransferWatch,
         }));
+        
         setTransferDraft({
             player: "",
             club: transferDraft.club,
+            fromClub: "",
             feeMode: "million-usd",
             feeMillions: "",
             status: "rumor",
             tier: 3,
+            punchyLine: "",
         });
-        toast.success("Transfer watch item added to the draft feed.");
+        setTransferEditId(null);
+        toast.success(isNew ? "Transfer watch item added to the draft feed." : "Transfer watch item updated.");
+
+        if (isNew) {
+            try {
+                const token = localStorage.getItem("pitchside_admin_auth");
+                const feeString = formatTransferWatchAmount(normalized) || "";
+                await fetch("/api/transfers", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({
+                        player: normalized.player,
+                        fromClub: normalized.fromClub || "Unknown",
+                        toClub: normalized.club,
+                        fee: feeString,
+                        source: `Tier ${normalized.tier} Report`,
+                        status: normalized.status === "confirmed" ? "done" : "rumour"
+                    })
+                });
+            } catch (e) {
+                console.error("Failed to sync to tracker", e);
+            }
+        }
+        
+        // Auto-save the Transfer Watch feed
+        try {
+            const updated = await updateSiteSettingsAsync({
+                transferWatch: newTransferWatch,
+            });
+            setSiteSettings(updated);
+        } catch (error) {
+            toast.error("UI updated, but failed to persist to server. Click Save manually.");
+        }
+    };
+
+    const handleEditTransferWatchEntry = (entry: typeof siteSettings.transferWatch[0]) => {
+        setTransferDraft({
+            player: entry.player,
+            club: entry.club,
+            fromClub: entry.fromClub || "",
+            feeMode: entry.feeMode,
+            feeMillions: String(entry.feeMillions || ""),
+            status: entry.status,
+            tier: entry.tier || 3,
+            punchyLine: entry.punchyLine || "",
+        });
+        setTransferEditId(entry.id);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const handleCancelTransferWatchEdit = () => {
+        setTransferDraft({
+            player: "",
+            club: transferDraft.club,
+            fromClub: "",
+            feeMode: "million-usd",
+            feeMillions: "",
+            status: "rumor",
+            tier: 3,
+            punchyLine: "",
+        });
+        setTransferEditId(null);
     };
 
     const handleDeleteTransferWatchEntry = (id: string) => {
@@ -654,7 +729,11 @@ export function AdminPage() {
         if (!window.confirm("Send weekly digest to all subscribers now?")) return;
         setSendingDigest(true);
         try {
-            const res = await fetch("/api/digest", { method: "POST" });
+            const pwd = localStorage.getItem("admin-password") || "";
+            const res = await fetch("/api/digest", { 
+                method: "POST",
+                headers: { "Authorization": `Bearer ${pwd}` }
+            });
             const data = await res.json();
             if (res.ok) toast.success(data.message || "Digest sent!");
             else toast.error(data.error || "Failed to send digest");
@@ -710,131 +789,131 @@ export function AdminPage() {
 
             <main className="max-w-[1100px] mx-auto px-6 py-8">
                 {/* Tabs Wrapper */}
-                <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 dark:border-gray-800 mb-8 pb-4">
+                <div className="flex overflow-x-auto whitespace-nowrap flex-nowrap items-center gap-2 border-b border-gray-200 dark:border-gray-800 mb-8 pb-4 -mx-6 px-6 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     <button
                         onClick={() => setActiveTab("notifications")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "notifications" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "notifications" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Bell className="w-4 h-4" /> Notifications
                     </button>
                     <button
                         onClick={() => setActiveTab("pots")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "pots" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "pots" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Trophy className="w-4 h-4" /> POTS Manager
                     </button>
                     <button
                         onClick={() => setActiveTab("posts")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "posts" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "posts" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Layout className="w-4 h-4" /> Posts
                     </button>
                     <button
                         onClick={() => setActiveTab("stories")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "stories" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "stories" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <ScanSearch className="w-4 h-4" /> Stories
                     </button>
                     <button
                         onClick={() => setActiveTab("collections")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "collections" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "collections" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Library className="w-4 h-4" /> Collections
                     </button>                    
                     <button
                         onClick={() => setActiveTab("polls")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "polls" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "polls" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <HelpCircle className="w-4 h-4" /> Polls (Server)
                     </button>
                     <button
                         onClick={() => setActiveTab("match-ratings")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "match-ratings" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "match-ratings" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <BarChart3 className="w-4 h-4" /> Fan Ratings
                     </button>
                     <button
                         onClick={() => setActiveTab("debates")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "debates" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "debates" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Flame className="w-4 h-4" /> Debates
                     </button>
                     <button
                         onClick={() => setActiveTab("run-in")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "run-in" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "run-in" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <ArrowUpDown className="w-4 h-4" /> Run-In Tracker
                     </button>
                     <button
                         onClick={() => setActiveTab("title-race")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "title-race" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "title-race" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <ArrowUpDown className="w-4 h-4" /> Title Race
                     </button>
                     <button
                         onClick={() => setActiveTab("match-center")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "match-center" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "match-center" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <BarChart2 className="w-4 h-4" />
                         Match Center
                     </button>
                     <button
                         onClick={() => setActiveTab("transfer-tracker")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "transfer-tracker" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "transfer-tracker" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Repeat2 className="w-4 h-4" /> Transfer Tracker
                     </button>
                     <button
                         onClick={() => setActiveTab("transfer-watch")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "transfer-watch" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "transfer-watch" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Repeat2 className="w-4 h-4" /> Transfer Watch
                     </button>
                     <button
                         onClick={() => setActiveTab("on-this-day")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "on-this-day" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "on-this-day" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <span className="text-base leading-none">📅</span> On This Day
                     </button>
                     <button
                         onClick={() => setActiveTab("settings")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "settings" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "settings" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <RadioTower className="w-4 h-4" /> Settings & Newsletter
                     </button>
                     <button
                         onClick={() => setActiveTab("newsletter")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "newsletter" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "newsletter" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Mail className="w-4 h-4" /> Newsletter
                     </button>
                     <button
                         onClick={() => setActiveTab("analytics")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "analytics" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "analytics" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <LineChart className="w-4 h-4" /> Analytics
                     </button>
                     <button
                         onClick={() => setActiveTab("carousel-generator")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "carousel-generator" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "carousel-generator" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <ImageIcon className="w-4 h-4" /> Carousel Gen
                     </button>
                     <button
                         onClick={() => setActiveTab("draft-assistant")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "draft-assistant" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "draft-assistant" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <PenLine className="w-4 h-4" /> Draft AI
                     </button>
                     <button
                         onClick={() => setActiveTab("tweet-generator")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "tweet-generator" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "tweet-generator" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <MessageSquare className="w-4 h-4" /> Tweet Gen
                     </button>
                     <button
                         onClick={() => setActiveTab("calendar")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${activeTab === "calendar" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "calendar" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <span className="text-base leading-none">📅</span> Calendar
                     </button>
@@ -855,7 +934,7 @@ export function AdminPage() {
                                 <button onClick={() => importFileRef.current?.click()} className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-[#64748B] dark:text-gray-400 rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
                                     <Upload className="w-4 h-4" /><span className="hidden sm:inline">Import</span>
                                 </button>
-                                <button onClick={() => setView("create")} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25">
+                                <button onClick={() => setView("create")} className="flex flex-shrink-0 items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] active:scale-95 transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25">
                                     <Plus className="w-4 h-4" />New Post
                                 </button>
                             </div>
@@ -902,7 +981,7 @@ export function AdminPage() {
                                 <div className="text-5xl mb-4">📝</div>
                                 <h2 className="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">No posts yet</h2>
                                 <p className="text-sm text-[#64748B] dark:text-gray-400 mb-6">Create your first blog post to get started.</p>
-                                <button onClick={() => setView("create")} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all">
+                                <button onClick={() => setView("create")} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] active:scale-95 transition-all">
                                     <Plus className="w-4 h-4" />Write Your First Post
                                 </button>
                             </div>
@@ -1029,12 +1108,15 @@ export function AdminPage() {
                     <AdminTransferWatchTab 
                         siteSettings={siteSettings}
                         transferDraft={transferDraft}
+                        transferEditId={transferEditId}
                         transferFilterClub={transferFilterClub}
                         filteredTransferWatchEntries={filteredTransferWatchEntries}
                         savingTransferWatch={savingTransferWatch}
                         setTransferDraft={setTransferDraft}
                         setTransferFilterClub={setTransferFilterClub}
                         handleAddTransferWatchEntry={handleAddTransferWatchEntry}
+                        handleEditTransferWatchEntry={handleEditTransferWatchEntry}
+                        handleCancelTransferWatchEdit={handleCancelTransferWatchEdit}
                         handleSaveTransferWatch={handleSaveTransferWatch}
                         handleDeleteTransferWatchEntry={handleDeleteTransferWatchEntry}
                         formatTransferWatchAmount={formatTransferWatchAmount}
@@ -1116,7 +1198,7 @@ export function AdminPage() {
                 {activeTab === "pots" && (
                     <AdminPOTSTab 
                         settings={siteSettings.pots} 
-                        onSave={(pots) => updateSiteSettings({ pots })} 
+                        onSave={(pots) => updateSiteSettingsAsync({ pots })} 
                     />
                 )}
             </main>

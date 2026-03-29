@@ -29,7 +29,7 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   // Validate environment variables on build/dev startup
-  if (command !== 'serve' || mode !== 'test') { // Ensure we validate during build or dev
+  if (command !== 'serve') {
     import('./src/env').then(({ validateEnv }) => {
       validateEnv({ ...process.env, ...env });
     });

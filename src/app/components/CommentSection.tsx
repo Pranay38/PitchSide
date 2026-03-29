@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, Send, Loader2, CornerDownRight, ThumbsUp, Reply } from "lucide-react";
 import { toast } from "sonner";
 import { getDeviceId } from "../lib/deviceId";
+import { useUser } from "@clerk/clerk-react";
+import { getAvatarUrl } from "../lib/avatar";
 
 interface ClubBadge {
     name: string;
@@ -18,6 +20,7 @@ interface Comment {
     userLiked?: boolean;
     createdAt: string;
     clubBadge?: ClubBadge | null;
+    userId?: string | null;
 }
 
 interface CommentSectionProps {
@@ -27,6 +30,7 @@ interface CommentSectionProps {
 }
 
 export function CommentSection({ postId, userName, isSignedIn }: CommentSectionProps) {
+    const { user } = useUser();
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(true);
     
@@ -97,6 +101,7 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
                     name: authorName, 
                     text: content.trim(),
                     clubBadge: userClubBadge || undefined,
+                    userId: user?.id || null,
                     _hp: "",
                     deviceId: getDeviceId(),
                 }),
@@ -171,12 +176,8 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
                 )}
                 
                 <div className="group flex gap-3 p-4 rounded-xl bg-white dark:bg-[#1E293B]/30 border border-gray-100 dark:border-gray-800/50 hover:border-[#16A34A]/20 transition-colors">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#16A34A] to-[#4ade80] flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden">
-                        {comment.clubBadge?.logoUrl ? (
-                            <img src={comment.clubBadge.logoUrl} alt={comment.clubBadge.name} className="w-full h-full object-cover" />
-                        ) : (
-                            comment.name.charAt(0).toUpperCase()
-                        )}
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                        <img src={getAvatarUrl(comment.userId, comment.name)} alt={comment.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-baseline gap-2 mb-1">

@@ -25,20 +25,15 @@ export function buildTransferTimeline(entry: TransferReliabilityEntry): Array<{ 
     day: "numeric",
   });
 
-  return [
-    {
-      label: "Case file",
-      title: entry.status === "confirmed" ? "Move entered as confirmed" : `${getTransferTierLabel(entry.tier, entry.status)} rumor entered`,
-      note: `${entry.boardLabel} for ${entry.player} and ${entry.club}.`,
-    },
+  const timeline = [
     {
       label: "Signal strength",
       title: `${entry.reliabilityScore}/99 board score`,
-      note: entry.rationale[0] || "Current signal strength is based on the admin status and freshness of the item.",
+      note: entry.rationale[0] || "Current signal strength is based on the status and freshness of the item.",
     },
     {
       label: "Market context",
-      title: entry.feeMode === "million-usd" ? `${entry.club} linked at ${entry.feeMillions}m USD` : "No fee disclosed yet",
+      title: entry.feeMode !== "not-disclosed" ? `${entry.club} linked at ${formatFee(entry)}` : "No fee disclosed yet",
       note: entry.rationale[1] || "Fee disclosure changes how much weight the board gives the link.",
     },
     {
@@ -47,6 +42,23 @@ export function buildTransferTimeline(entry: TransferReliabilityEntry): Array<{ 
       note: entry.rationale[2] || "This dossier needs a fresh update if the trail moves again.",
     },
   ];
+
+  if (entry.punchyLine) {
+    timeline.push({
+      label: "Editor's Take",
+      title: "TTD Take",
+      note: entry.punchyLine
+    });
+  }
+
+  return timeline;
+}
+
+function formatFee(entry: TransferReliabilityEntry) {
+    if (entry.feeMode === "million-eur") return `€${entry.feeMillions}m`;
+    if (entry.feeMode === "million-gbp") return `£${entry.feeMillions}m`;
+    if (entry.feeMode === "million-usd") return `$${entry.feeMillions}m`;
+    return "Undisclosed";
 }
 
 export function getRelatedTransferPosts(posts: BlogPost[], entry: TransferReliabilityEntry): BlogPost[] {

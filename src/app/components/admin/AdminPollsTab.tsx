@@ -1,4 +1,5 @@
 import { Plus, Edit3, Trash2, HelpCircle } from "lucide-react";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 interface AdminPollsTabProps {
     serverPolls: any[];
@@ -139,10 +140,11 @@ export function AdminPollsTab({
                         </div>
                     ))}
                     {serverPolls.length === 0 && (
-                        <div className="py-12 text-center border-2 border-dashed border-gray-200 dark:border-gray-800 rounded-2xl">
-                            <HelpCircle className="w-8 h-8 mx-auto text-gray-300 mb-2"/>
-                            <p className="text-gray-500 font-medium">No polls found in database.</p>
-                        </div>
+                        <AdminEmptyState
+                            icon={HelpCircle}
+                            title="No polls found"
+                            description="Create a poll to gather opinions from your readers."
+                        />
                     )}
                 </div>
             )}

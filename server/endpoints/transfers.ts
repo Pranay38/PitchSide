@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // ─── POST: Create or Update a Transfer (Admin) ───
         if (req.method === "POST") {
             if (!requireAuth(req, res)) return;
-            const { id, player, fromClub, toClub, fee, source, status } = req.body;
+            const { id, player, playerImageUrl, fromClub, toClub, fee, source, status } = req.body;
 
             const now = new Date().toISOString();
 
@@ -46,6 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 const updateFields: any = { updatedAt: now };
                 if (status) updateFields.status = status;
                 if (player) updateFields.player = player.trim();
+                if (playerImageUrl !== undefined) updateFields.playerImageUrl = playerImageUrl.trim();
                 if (fromClub) updateFields.fromClub = fromClub.trim();
                 if (toClub) updateFields.toClub = toClub.trim();
                 if (fee) updateFields.fee = fee.trim();
@@ -64,6 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             const doc = {
                 player: player.trim(),
+                playerImageUrl: playerImageUrl?.trim() || "",
                 fromClub: fromClub.trim(),
                 toClub: toClub.trim(),
                 fee: fee?.trim() || "Undisclosed",

@@ -1,5 +1,6 @@
 import { useParams } from "react-router";
 import { StadiumMatchCenter } from "../components/StadiumMatchCenter";
+import { MatchPredictorWidget } from "../components/MatchPredictorWidget";
 import { SEO } from "../components/SEO";
 
 export function MatchCenterPage() {
@@ -20,6 +21,12 @@ export function MatchCenterPage() {
       </div>
 
       <StadiumMatchCenter matchId={id} />
+
+      <div className="mt-16 mb-6">
+        <h2 className="text-2xl font-black font-outfit text-[#0F172A] dark:text-white">Predict & Win</h2>
+        <p className="mt-2 text-gray-500 dark:text-gray-400">Test your knowledge against other fans in the predictor gameweek league.</p>
+      </div>
+      <MatchPredictorWidget />
     </div>
   );
 }

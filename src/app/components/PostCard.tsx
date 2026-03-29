@@ -1,7 +1,10 @@
 import { Link } from "react-router";
 import type { BlogPost } from "../data/posts";
 import { getClubByName } from "../data/clubs";
-import { Clock, Star } from "lucide-react";
+import { Clock, Star, ArrowRight, Heart } from "lucide-react";
+import { getCategoryBadgeColor } from "./ui/utils";
+import { useUser } from "@clerk/clerk-react";
+import { useState } from "react";
 
 interface PostCardProps {
   post: BlogPost;
@@ -10,24 +13,44 @@ interface PostCardProps {
 
 export function PostCard({ post, featured = false }: PostCardProps) {
   const clubData = getClubByName(post.club);
+  const { user } = useUser();
+  const [isLiked, setIsLiked] = useState<boolean>(() => post.likedBy?.includes(user?.id || "") || false);
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return; // User must be logged in to like
+
+    setIsLiked(!isLiked);
+    try {
+      await fetch('/api/likes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postId: post.id, userId: user.id })
+      });
+    } catch {
+      setIsLiked(isLiked); // Revert on failure
+    }
+  };
 
   if (featured) {
     return (
-      <Link
-        to={`/post/${post.id}`}
-        className="group block cursor-pointer relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 bg-slate-900 aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5] xl:aspect-[1/1]"
+      <div
+        className="group block relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 bg-slate-900 aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5] xl:aspect-[1/1]"
       >
+        <Link to={`/post/${post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
         <div className="absolute inset-0 overflow-hidden">
           <img
             src={post.coverImage}
             alt={post.title}
+            loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
         </div>
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none z-0" />
         {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-10">
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-0 pointer-events-none">
           {/* Must Read Badge */}
           {post.mustRead && (
             <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-amber-900 bg-amber-400 rounded-full mb-3 animate-pulse-glow">
@@ -35,6 +58,14 @@ export function PostCard({ post, featured = false }: PostCardProps) {
               Must Read
             </div>
           )}
+          
+          <button 
+             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleLike(e); }}
+             className="absolute md:-top-4 -top-8 right-6 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 hover:bg-black/60 transition-colors active:scale-95 pointer-events-auto"
+          >
+             <Heart className={`w-5 h-5 transition-transform duration-300 ${isLiked ? 'fill-emerald-500 text-emerald-500 scale-110' : 'text-white'}`} />
+          </button>
+
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white gradient-accent rounded-full shadow-md">
               {clubData?.logo && <img src={clubData.logo} alt="" className="w-4 h-4 object-contain" />}
@@ -62,71 +93,87 @@ export function PostCard({ post, featured = false }: PostCardProps) {
             <span>{post.date}</span>
             <span>•</span>
             <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {post.readTime}
+               <Clock className="w-3 h-3" />
+               {post.readTime}
             </span>
           </div>
         </div>
-      </Link>
+      </div>
     );
   }
 
   return (
-    <Link
-      to={`/post/${post.id}`}
-      className="group block cursor-pointer glass-card rounded-2xl hover:shadow-xl hover:shadow-[#16A34A]/5 dark:hover:shadow-[#16A34A]/10 transition-all duration-400 hover:-translate-y-1.5 overflow-hidden"
+    <div
+      className="group block relative bg-white dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 rounded-[2rem] hover:border-[#16A34A]/30 hover:shadow-xl hover:shadow-[#16A34A]/5 dark:hover:shadow-[#16A34A]/10 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
     >
-      {/* Gradient accent line at top */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-[#16A34A] via-[#22c55e] to-[#4ade80] opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
-      <div className="aspect-video overflow-hidden relative">
+      <Link to={`/post/${post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
+      <div className="aspect-video overflow-hidden relative pointer-events-none">
         <img
           src={post.coverImage}
           alt={post.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-600"
+          loading="lazy"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
-        {/* Subtle overlay on hover */}
+        <div className="absolute top-4 left-4 flex flex-col items-start gap-2 z-0">
+          {post.mustRead && (
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-amber-900 bg-amber-400 rounded-full shadow-md">
+              <Star className="w-3 h-3 fill-amber-900" />
+              Must Read
+            </div>
+          )}
+          <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-md bg-black/50 border border-white/20 rounded-full shadow-sm">
+              {clubData?.logo && <img src={clubData.logo} alt="" className="w-3.5 h-3.5 object-contain" />}
+              {post.club}
+            </span>
+            {post.tags
+              .filter((t) => t !== post.club)
+              .slice(0, 1)
+              .map((tag) => (
+                <span
+                  key={tag}
+                  className={`inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest backdrop-blur-md rounded-full border ${getCategoryBadgeColor(tag, true)}`}
+                >
+                  {tag}
+                </span>
+              ))}
+          </div>
+          
+          <button 
+             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleLike(e); }}
+             className="absolute -top-1 -right-4 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 hover:bg-black/60 transition-colors active:scale-95 pointer-events-auto"
+          >
+             <Heart className={`w-4 h-4 transition-transform duration-300 ${isLiked ? 'fill-[#4ade80] text-[#4ade80] scale-110' : 'text-white'}`} />
+          </button>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
-      <div className="p-5">
-        {/* Must Read Badge */}
-        {post.mustRead && (
-          <div className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold text-amber-900 bg-amber-400 rounded-full mb-2 shadow-sm">
-            <Star className="w-3 h-3 fill-amber-900" />
-            Must Read
-          </div>
-        )}
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold text-white gradient-accent rounded-full shadow-sm">
-            {clubData?.logo && <img src={clubData.logo} alt="" className="w-3.5 h-3.5 object-contain" />}
-            {post.club}
-          </span>
-          {post.tags
-            .filter((t) => t !== post.club)
-            .slice(0, 1)
-            .map((tag) => (
-              <span
-                key={tag}
-                className="inline-block px-2.5 py-0.5 text-xs font-medium text-[#475569] dark:text-gray-300 bg-gray-100/80 dark:bg-gray-700/50 rounded-full backdrop-blur-sm"
-              >
-                {tag}
-              </span>
-            ))}
-        </div>
-        <h3 className="font-bold font-outfit text-[#0F172A] dark:text-white mb-2 line-clamp-2 group-hover:text-[#16A34A] transition-colors duration-200">
+      <div className="p-5 sm:p-6 pb-6 mt-1 flex flex-col h-full bg-white dark:bg-[#0F172A] pointer-events-none">
+        <h3 className="font-outfit font-black text-xl text-[#0F172A] tracking-tight sm:text-2xl dark:text-white mb-2 line-clamp-2 group-hover:text-[#16A34A] transition-colors duration-200">
           {post.title}
         </h3>
-        <p className="text-sm text-[#64748B] dark:text-gray-400 mb-3 line-clamp-2">
+        <p className="mb-6 text-[#64748B] text-sm leading-relaxed dark:text-gray-400 line-clamp-2">
           {post.excerpt}
         </p>
-        <div className="flex items-center gap-2 text-xs text-[#94A3B8] dark:text-gray-500">
-          <span>{post.date}</span>
-          <span>•</span>
-          <span className="flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            {post.readTime}
+
+        <div className="mt-auto pt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-gray-100 dark:border-gray-800">
+          <div className="relative flex items-center overflow-hidden font-bold text-[#16A34A] text-xs transition-colors">
+            <span className="mr-3 relative overflow-hidden flex items-center justify-center rounded-full bg-[#16A34A]/10 p-2.5 w-9 h-9 transition-colors duration-300 ease-in group-hover:bg-[#16A34A] group-hover:text-white text-[#16A34A]">
+              <ArrowRight className="absolute h-4 w-4 transition-all duration-500 ease-in group-hover:translate-x-8 group-hover:opacity-0" />
+              <ArrowRight className="absolute -left-4 h-4 w-4 transition-all duration-500 ease-in-out group-hover:left-2.5" />
+            </span>
+            Read article
+          </div>
+          <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            {post.date}
+            <span className="w-4 border-t border-gray-200 dark:border-gray-800" />
+            <span className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {post.readTime}
+            </span>
           </span>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

@@ -1,12 +1,17 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useUser } from "@clerk/clerk-react";
+import { safeParse, UserPreferencesSchema } from "../lib/schemas";
 
 interface UserPreferences {
   savedPosts: string[];
   followedClubs: string[];
   followedPlayers: string[];
   followedTransfers: string[];
+  followedTags: string[];
   seenAlerts: string[];
+  fanClub: { name: string; logoUrl: string | null; league?: string } | null;
+  newsletterOptIn: boolean;
+  readingHistory: { postId: string; viewedAt: number }[];
 }
 
 interface UserPreferencesContextType extends UserPreferences {
@@ -14,16 +19,33 @@ interface UserPreferencesContextType extends UserPreferences {
   toggleFollowedClub: (club: string) => boolean;
   toggleFollowedPlayer: (player: string) => boolean;
   toggleFollowedTransfer: (transferTopic: string) => boolean;
+  toggleFollowedTag: (tag: string) => boolean;
   markAlertsSeen: (alertIds: string[]) => void;
+  setFanClub: (club: { name: string; logoUrl: string | null; league?: string } | null) => void;
+  setNewsletterOptIn: (optIn: boolean) => void;
   isPostSaved: (postId: string) => boolean;
   isClubFollowed: (club: string) => boolean;
   isPlayerFollowed: (player: string) => boolean;
   isTransferFollowed: (transferTopic: string) => boolean;
+  isTagFollowed: (tag: string) => boolean;
   hasSeenAlert: (alertId: string) => boolean;
+  addReadPost: (postId: string) => void;
   loading: boolean;
 }
 
 const UserPreferencesContext = createContext<UserPreferencesContextType | null>(null);
+
+const EMPTY_PREFS: UserPreferences = {
+  savedPosts: [],
+  followedClubs: [],
+  followedPlayers: [],
+  followedTransfers: [],
+  followedTags: [],
+  seenAlerts: [],
+  fanClub: null,
+  newsletterOptIn: false,
+  readingHistory: [],
+};
 
 function normalizeValue(value: string): string {
   return value.trim().toLowerCase();
@@ -33,36 +55,35 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
   const { user } = useUser();
   const userId = user?.id;
 
-  const [prefs, setPrefs] = useState<UserPreferences>({
-    savedPosts: [],
-    followedClubs: [],
-    followedPlayers: [],
-    followedTransfers: [],
-    seenAlerts: [],
-  });
+  const [prefs, setPrefs] = useState<UserPreferences>({ ...EMPTY_PREFS });
   const [loading, setLoading] = useState(true);
 
   // Fetch initial preferences on mount/login
   useEffect(() => {
     if (!userId) {
-      setPrefs({ savedPosts: [], followedClubs: [], followedPlayers: [], followedTransfers: [], seenAlerts: [] });
+      setPrefs({ ...EMPTY_PREFS });
       setLoading(false);
       return;
     }
 
     setLoading(true);
-    fetch(`/api/user-prefs?userId=${userId}`)
+    fetch(`/api/user-prefs?userId=${userId}&_t=${Date.now()}`, { cache: "no-store" })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch preferences");
         return res.json();
       })
       .then((data) => {
+        const validated = safeParse(UserPreferencesSchema, data, EMPTY_PREFS);
         setPrefs({
-          savedPosts: data.savedPosts || [],
-          followedClubs: data.followedClubs || [],
-          followedPlayers: data.followedPlayers || [],
-          followedTransfers: data.followedTransfers || [],
-          seenAlerts: data.seenAlerts || [],
+          savedPosts: validated.savedPosts,
+          followedClubs: validated.followedClubs,
+          followedPlayers: validated.followedPlayers,
+          followedTransfers: validated.followedTransfers,
+          followedTags: validated.followedTags,
+          seenAlerts: validated.seenAlerts,
+          fanClub: validated.fanClub,
+          newsletterOptIn: validated.newsletterOptIn,
+          readingHistory: validated.readingHistory,
         });
       })
       .catch(() => {
@@ -132,6 +153,15 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
     return newPrefs.followedTransfers.some((i) => normalizeValue(i) === normalizeValue(topic));
   };
 
+  const toggleFollowedTag = (tag: string) => {
+    if (!userId) return false;
+    const nextTags = toggleArrayItem(prefs.followedTags, tag);
+    const newPrefs = { ...prefs, followedTags: nextTags };
+    setPrefs(newPrefs);
+    updateServer(newPrefs);
+    return newPrefs.followedTags.some((i) => normalizeValue(i) === normalizeValue(tag));
+  };
+
   const markAlertsSeen = (alertIds: string[]) => {
     if (!userId || !alertIds.length) return;
     // merge uniquely
@@ -150,6 +180,20 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const setFanClub = (club: { name: string; logoUrl: string | null; league?: string } | null) => {
+    if (!userId) return;
+    const newPrefs = { ...prefs, fanClub: club };
+    setPrefs(newPrefs);
+    updateServer(newPrefs);
+  };
+
+  const setNewsletterOptIn = (optIn: boolean) => {
+    if (!userId) return;
+    const newPrefs = { ...prefs, newsletterOptIn: optIn };
+    setPrefs(newPrefs);
+    updateServer(newPrefs);
+  };
+
   const isPostSaved = (postId: string) =>
     prefs.savedPosts.some((i) => normalizeValue(i) === normalizeValue(postId));
 
@@ -162,8 +206,30 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
   const isTransferFollowed = (topic: string) =>
     prefs.followedTransfers.some((i) => normalizeValue(i) === normalizeValue(topic));
 
+  const isTagFollowed = (tag: string) =>
+    prefs.followedTags.some((i) => normalizeValue(i) === normalizeValue(tag));
+
   const hasSeenAlert = (alertId: string) =>
     prefs.seenAlerts.includes(alertId);
+
+  const addReadPost = (postId: string) => {
+    if (!userId) return;
+    
+    const current = prefs.readingHistory || [];
+    // If it's the very first item, don't ping server
+    if (current.length > 0 && current[0].postId === postId) return;
+
+    // Filter out previous instances and add to top, cap at 50
+    const filtered = current.filter(item => item.postId !== postId);
+    const updated = [
+      { postId, viewedAt: Date.now() },
+      ...filtered
+    ].slice(0, 50);
+
+    const newPrefs = { ...prefs, readingHistory: updated };
+    setPrefs(newPrefs);
+    updateServer(newPrefs);
+  };
 
   return (
     <UserPreferencesContext.Provider
@@ -173,12 +239,17 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
         toggleFollowedClub,
         toggleFollowedPlayer,
         toggleFollowedTransfer,
+        toggleFollowedTag,
         markAlertsSeen,
+        setFanClub,
+        setNewsletterOptIn,
         isPostSaved,
         isClubFollowed,
         isPlayerFollowed,
         isTransferFollowed,
+        isTagFollowed,
         hasSeenAlert,
+        addReadPost,
         loading,
       }}
     >

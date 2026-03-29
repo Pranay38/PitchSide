@@ -16,15 +16,35 @@ import onThisDayHandler from "../server/endpoints/on-this-day.js";
 import analyticsHandler from "../server/endpoints/analytics.js";
 import aiGenerateHandler from "../server/endpoints/ai-generate.js";
 import sitemapHandler from "../server/endpoints/sitemap.js";
+import transfersHandler from "../server/endpoints/transfers.js";
 import { getPolls, createPoll, updatePoll, deletePoll, votePoll } from "../server/endpoints/polls.js";
 import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRating, voteMatchRating } from "../server/endpoints/matchRatings.js";
-import { recordArticleView, getRecommendations, getTagBasedFallback } from "./_recommendations-lib";
-import { connectToDatabase } from "./_db";
+import { recordArticleView, getRecommendations, getTagBasedFallback } from "./_recommendations-lib.js";
+import { connectToDatabase } from "./_db.js";
 import notificationsHandler from "../server/endpoints/notifications.js";
 import digestHandler from "../server/endpoints/digest.js";
+import userPrefsHandler from "../server/endpoints/user-prefs.js";
+import dailyFeaturesHandler from "../server/endpoints/daily-features.js";
+import errorLogHandler from "../server/endpoints/error-log.js";
+import rssHandler from "../server/endpoints/rss.js";
+import ensureIndexesHandler from "../server/endpoints/ensure-indexes.js";
+import searchHandler from "../server/endpoints/search.js";
+import footballDataHandler from "../server/endpoints/football-data.js";
+import { applyRateLimit, applyStrictRateLimit } from "../server/lib/rateLimit.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const route = (req.query.route || req.query.action) as string;
+
+    // ── Global rate limiting (all public endpoints) ──
+    const blocked = await applyRateLimit(req, res);
+    if (blocked) return; // 429 already sent
+
+    // ── Strict rate limiting for sensitive endpoints ──
+    const strictRoutes = ["error-log", "auth", "subscribers", "notify"];
+    if (strictRoutes.includes(route)) {
+        const strictBlocked = await applyStrictRateLimit(req, res);
+        if (strictBlocked) return;
+    }
 
     switch (route) {
         case "auth":
@@ -63,6 +83,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return ogHandler(req, res);
         case "club-season":
             return clubSeasonHandler(req, res);
+        case "transfers":
+            return transfersHandler(req, res);
+        case "user-prefs":
+            return userPrefsHandler(req, res);
         case "polls":
             if (req.method === "GET") return await getPolls(req as any, res as any);
             if (req.method === "POST") return await createPoll(req as any, res as any);
@@ -117,6 +141,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(500).json({ error: "Failed to track view" });
             }
         }
+        case "daily-features":
+            return dailyFeaturesHandler(req, res);
+        case "error-log":
+            return errorLogHandler(req, res);
+        case "rss":
+            return rssHandler(req, res);
+        case "ensure-indexes":
+            return ensureIndexesHandler(req, res);
+        case "search":
+            return searchHandler(req, res);
+        case "football-data":
+            return footballDataHandler(req, res);
         default:
             return res.status(404).json({ error: "Route not found: " + route });
     }

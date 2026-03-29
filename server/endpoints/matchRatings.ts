@@ -1,18 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { MongoClient, ObjectId } from "mongodb";
 
-const uri = process.env.MONGODB_URI || "";
-const dbName = process.env.MONGODB_DB || "pitchsidetest";
+import { connectToDatabase } from "../../api/_db.js";
 
-let cachedClient: MongoClient | null = null;
-
-async function connectToDatabase() {
-    if (cachedClient) return cachedClient;
-    const client = new MongoClient(uri);
-    await client.connect();
-    cachedClient = client;
-    return client;
-}
 
 export type MatchRatingPlayer = {
     id: string; // e.g., "p1"
@@ -34,8 +24,8 @@ export type MatchRatingDocument = {
 // GET /api/match-ratings - Get all sessions (Admin) or just the active one (Public)
 export const getMatchRatings = async (req: VercelRequest, res: VercelResponse) => {
     try {
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection<MatchRatingDocument>("matchRatings");
+        const { db } = await connectToDatabase();
+        const collection = db.collection<MatchRatingDocument>("matchRatings");
         
         const activeOnly = req.query.active === 'true';
         
@@ -78,8 +68,8 @@ export const createMatchRating = async (req: VercelRequest, res: VercelResponse)
              return res.status(400).json({ error: "Invalid data. Need a title and at least 1 player." });
         }
 
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection<MatchRatingDocument>("matchRatings");
+        const { db } = await connectToDatabase();
+        const collection = db.collection<MatchRatingDocument>("matchRatings");
 
         if (isActive) {
             await collection.updateMany({}, { $set: { isActive: false } });
@@ -124,8 +114,8 @@ export const updateMatchRating = async (req: VercelRequest, res: VercelResponse)
             return res.status(400).json({ error: "Invalid ID" });
         }
 
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection<MatchRatingDocument>("matchRatings");
+        const { db } = await connectToDatabase();
+        const collection = db.collection<MatchRatingDocument>("matchRatings");
 
         if (isActive) {
              await collection.updateMany({ _id: { $ne: new ObjectId(id) } }, { $set: { isActive: false } });
@@ -175,8 +165,8 @@ export const deleteMatchRating = async (req: VercelRequest, res: VercelResponse)
             return res.status(400).json({ error: "Invalid ID" });
         }
 
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection("matchRatings");
+        const { db } = await connectToDatabase();
+        const collection = db.collection("matchRatings");
 
         const result = await collection.deleteOne({ _id: new ObjectId(id) });
         
@@ -205,8 +195,8 @@ export const voteMatchRating = async (req: VercelRequest, res: VercelResponse) =
              return res.status(400).json({ error: "Missing or invalid ratings array" });
         }
 
-        const client = await connectToDatabase();
-        const collection = client.db(dbName).collection<MatchRatingDocument>("matchRatings");
+        const { db } = await connectToDatabase();
+        const collection = db.collection<MatchRatingDocument>("matchRatings");
 
         const session = await collection.findOne({ _id: new ObjectId(id) });
         if (!session) {

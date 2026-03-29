@@ -88,6 +88,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [tags, setTags] = useState<string[]>(post?.tags || []);
     const [thisWeek, setThisWeek] = useState(post?.thisWeek || false);
     const [mustRead, setMustRead] = useState(post?.mustRead || false);
+    const [editorPick, setEditorPick] = useState(post?.editorPick || false);
     const [mainStory, setMainStory] = useState(post?.mainStory || false);
     const [mediaUrl, setMediaUrl] = useState(post?.mediaUrl || "");
     const [playerName, setPlayerName] = useState(post?.playerName || "");
@@ -296,6 +297,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             readTime: calculateReadTime(plainText),
             thisWeek,
             mustRead,
+            editorPick,
             mainStory,
             mediaUrl: mediaUrl.trim() || undefined,
             playerName: playerName.trim() || undefined,
@@ -333,7 +335,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         };
     }, [
         title, excerpt, content, coverImage, club, category, tags,
-        thisWeek, mustRead, mainStory, mediaUrl, playerName, usePoll, poll
+        thisWeek, mustRead, editorPick, mainStory, mediaUrl, playerName, usePoll, poll
     ]);
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -976,55 +978,43 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             Featured Layout
                         </label>
 
-                        {/* This Week Options */}
-                        <div className="mt-4 flex border-t border-gray-100 dark:border-gray-800 pt-6 items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${thisWeek ? 'bg-orange-500/10 text-orange-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
-                                    <Flame className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-[#0F172A] dark:text-white mb-0.5">Feature in "This Week"</p>
-                                    <p className="text-xs text-[#64748B] dark:text-gray-400">Show this post in the dedicated 🔥 section on the homepage.</p>
-                                </div>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" checked={thisWeek} onChange={(e) => setThisWeek(e.target.checked)} />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#16A34A]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#16A34A]"></div>
-                            </label>
-                        </div>
-
-                        {/* Must Read Option */}
-                        <div className="flex border-t border-gray-100 dark:border-gray-800 pt-6 items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${mustRead ? 'bg-amber-500/10 text-amber-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
-                                    <Star className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-[#0F172A] dark:text-white mb-0.5">Must Read Pick</p>
-                                    <p className="text-xs text-[#64748B] dark:text-gray-400">Feature this post in the 📌 Must Read section on the homepage.</p>
-                                </div>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" checked={mustRead} onChange={(e) => setMustRead(e.target.checked)} />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-amber-400/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500" />
-                            </label>
-                        </div>
-
-                        {/* Main Story Option */}
-                        <div className="flex border-t border-gray-100 dark:border-gray-800 pt-6 items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${mainStory ? 'bg-purple-500/10 text-purple-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
-                                    <Crown className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-[#0F172A] dark:text-white mb-0.5">Main Story</p>
-                                    <p className="text-xs text-[#64748B] dark:text-gray-400">Pin as the hero story at the top of the homepage.</p>
-                                </div>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" checked={mainStory} onChange={(e) => setMainStory(e.target.checked)} />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-400/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-500"></div>
-                            </label>
+                        {/* Featured Layout Segmented Controls */}
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            <button
+                                type="button"
+                                onClick={() => setThisWeek(!thisWeek)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all active:scale-95 ${thisWeek ? 'border-orange-500 bg-orange-500/10 text-orange-600 dark:text-orange-400' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-black/20 text-gray-600 dark:text-gray-400 hover:border-orange-300 dark:hover:border-orange-700'}`}
+                            >
+                                <Flame className="w-3.5 h-3.5" />
+                                "This Week"
+                            </button>
+                            
+                            <button
+                                type="button"
+                                onClick={() => setMustRead(!mustRead)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all active:scale-95 ${mustRead ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-black/20 text-gray-600 dark:text-gray-400 hover:border-amber-300 dark:hover:border-amber-700'}`}
+                            >
+                                <Star className="w-3.5 h-3.5" />
+                                Must Read Pick
+                            </button>
+                            
+                            <button
+                                type="button"
+                                onClick={() => setEditorPick(!editorPick)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all active:scale-95 ${editorPick ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-black/20 text-gray-600 dark:text-gray-400 hover:border-indigo-300 dark:hover:border-indigo-700'}`}
+                            >
+                                <Star className="w-3.5 h-3.5" />
+                                Editor Pick
+                            </button>
+                            
+                            <button
+                                type="button"
+                                onClick={() => setMainStory(!mainStory)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all active:scale-95 ${mainStory ? 'border-purple-500 bg-purple-500/10 text-purple-600 dark:text-purple-400' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-black/20 text-gray-600 dark:text-gray-400 hover:border-purple-300 dark:hover:border-purple-700'}`}
+                            >
+                                <Crown className="w-3.5 h-3.5" />
+                                Main Story
+                            </button>
                         </div>
 
                         {/* Schedule Publishing */}
@@ -1084,7 +1074,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             </div>
                         </div>
                         <p className="mb-3 text-xs leading-5 text-[#64748B] dark:text-gray-400">
-                            Use the editorial blocks menu for timelines, stats cards, quote blocks, key takeaways, comparison tables, and tactical board embeds. They render in both preview and published articles.
+                            Use the <span className="inline-flex items-center gap-1 font-semibold text-[#16A34A] dark:text-[#4ade80]">✦ Editorial Blocks</span> button in the toolbar above to insert timelines, stats cards, quote blocks, key takeaways, comparison tables, and tactical board embeds — they render in both preview and published articles.
                         </p>
                         {errors.content && <p className="text-red-500 text-xs mb-2">{errors.content}</p>}
                         <SpellcheckBar

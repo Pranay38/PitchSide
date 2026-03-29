@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
-import { ArrowRight, Search, Tags } from "lucide-react";
+import { ArrowRight, Plus, Check, Search, Tags } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
+import { useUser } from "@clerk/clerk-react";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
 import { PageState } from "../components/PageState";
@@ -32,6 +34,10 @@ export function TopicPage() {
 
   const normalizedSlug = slug.toLowerCase();
   const topicLabel = deslugify(slug);
+
+  const { user } = useUser();
+  const { toggleFollowedTag, isTagFollowed } = useUserPreferences();
+  const isFollowing = user ? isTagFollowed(topicLabel) : false;
 
   useEffect(() => {
     let isMounted = true;
@@ -123,13 +129,35 @@ export function TopicPage() {
                 A focused editorial page for {topicLabel}, with one featured entry, the latest attached coverage, and the related topics that surround it.
               </p>
             </div>
-            <Link
-              to={`/archive?topic=${encodeURIComponent(topicLabel)}`}
-              className="inline-flex items-center gap-2 rounded-full bg-[#16A34A] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#15803d]"
-            >
-              Search this topic in archive
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="flex flex-col gap-3 xl:items-end">
+              {user && (
+                <button
+                  onClick={() => toggleFollowedTag(topicLabel)}
+                  className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition-all ${
+                    isFollowing
+                      ? "bg-[#16A34A]/10 text-[#16A34A] border border-[#16A34A]/30"
+                      : "bg-[#16A34A] text-white hover:bg-[#15803d]"
+                  }`}
+                >
+                  {isFollowing ? (
+                    <>
+                      <Check className="h-4 w-4" /> Following
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4" /> Follow {topicLabel}
+                    </>
+                  )}
+                </button>
+              )}
+              <Link
+                to={`/archive?topic=${encodeURIComponent(topicLabel)}`}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-5 py-3 text-sm font-bold text-[#0F172A] dark:text-white transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                Search this topic in archive
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
 
           <div className="relative mt-7 grid gap-3 sm:grid-cols-3">

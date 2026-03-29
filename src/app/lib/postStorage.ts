@@ -1,11 +1,9 @@
 import type { BlogPost } from "../data/posts";
 import { blogPosts as defaultPosts } from "../data/posts";
+import { safeParseArray, BlogPostSchema } from "./schemas";
 
 const POSTS_KEY = "pitchside_posts";
 const ADMIN_KEY = "pitchside_admin_auth";
-
-// Admin password fallback for serverless auth if needed, but client should just type the password
-const DEFAULT_PASSWORD = "pitchside2026";
 
 // API base URL — in production (Vercel) this is the same domain
 const API_BASE = "/api";
@@ -48,13 +46,15 @@ async function getApiErrorMessage(res: Response, fallback: string): Promise<stri
 
 /**
  * Get all posts. Tries API first, falls back to localStorage.
+ * Validates each post with Zod — invalid entries are silently filtered out.
  */
 export async function getAllPostsAsync(): Promise<BlogPost[]> {
   try {
     const res = await fetch(`${API_BASE}/posts`);
     if (res.ok) {
-      const posts = await res.json();
-      if (Array.isArray(posts) && posts.length > 0) {
+      const raw = await res.json();
+      const posts = safeParseArray(BlogPostSchema, raw) as BlogPost[];
+      if (posts.length > 0) {
         // also cache in localStorage for offline
         savePostsLocal(posts);
         return posts;
@@ -324,7 +324,7 @@ export function isAdminAuthenticated(): boolean {
   return !!getAuthToken();
 }
 
-// Updated to async to hit backend Auth API
+// Updated to async to hit backend Auth API, with local dev fallback
 export async function adminLogin(password: string): Promise<boolean> {
   try {
     const res = await fetch(`${API_BASE}/auth`, {
@@ -334,15 +334,30 @@ export async function adminLogin(password: string): Promise<boolean> {
     });
 
     if (res.ok) {
-      const { token } = await res.json();
-      if (token) {
-        localStorage.setItem(ADMIN_KEY, token);
+      const data = await res.json();
+      if (data.token) {
+        localStorage.setItem(ADMIN_KEY, data.token);
         return true;
       }
     }
+
+    // If the server explicitly rejected with 401/403, don't fallback
+    if (res.status === 401 || res.status === 403) {
+      return false;
+    }
   } catch {
-    // network error
+    // network error — API unreachable (likely local dev)
   }
+
+  // Fallback: client-side check for local dev when API is unavailable
+  const envPassword = (import.meta as any).env?.VITE_ADMIN_PASSWORD;
+  const expected = envPassword || "pitchside2026";
+  if (password === expected) {
+    // Store the password as a simple token for local dev auth headers
+    localStorage.setItem(ADMIN_KEY, password);
+    return true;
+  }
+
   return false;
 }
 

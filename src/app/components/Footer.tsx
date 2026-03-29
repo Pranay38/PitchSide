@@ -3,8 +3,10 @@ import { Link } from "react-router";
 import { Twitter, Instagram, Mail, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { topicPath } from "../lib/contentPaths";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 
 export function Footer() {
+  const { newsletterOptIn } = useUserPreferences();
   const [email, setEmail] = useState("");
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -109,33 +111,41 @@ export function Footer() {
           </div>
 
           {/* Newsletter */}
-          <div>
-            <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-4">Stay Updated</h3>
-            <p className="text-sm text-gray-400 mb-4">
-              Get the latest insights delivered straight to your inbox. No spam, just footy.
-            </p>
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="flex-1 w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all duration-300 backdrop-blur-sm"
-              />
-              <button
-                type="submit"
-                className="w-full sm:w-auto px-5 py-2.5 gradient-accent text-white text-sm font-bold rounded-xl hover:shadow-lg hover:shadow-[#16A34A]/25 transition-all duration-300 flex-shrink-0"
-              >
-                Subscribe
-              </button>
-            </form>
-          </div>
+          {!newsletterOptIn && (
+            <div>
+              <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-4">Stay Updated</h3>
+              <p className="text-sm text-gray-400 mb-4">
+                Get the latest insights delivered straight to your inbox. No spam, just footy.
+              </p>
+              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="flex-1 w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all duration-300 backdrop-blur-sm"
+                />
+                <button
+                  type="submit"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r flex items-center justify-center gap-2 from-[#16A34A] to-[#22c55e] border border-transparent hover:border-white/10 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-lg hover:shadow-[#16A34A]/30 active:scale-95 transition-all duration-300 flex-shrink-0"
+                >
+                  Subscribe
+                </button>
+              </form>
+            </div>
+          )}
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-gray-500">
             &copy; 2026 The Touchline Dribble. All rights reserved.
+          </p>
+          <p className="text-xs text-gray-600 dark:text-gray-500">
+            Enjoyed the writing?{" "}
+            <a href="https://buymeacoffee.com/thetouchlinedribble" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#4ade80] transition-colors duration-200 underline underline-offset-2 decoration-gray-700">
+              Keep it independent.
+            </a>
           </p>
           <p className="text-xs text-gray-500 flex items-center gap-1">
             Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> for the beautiful game

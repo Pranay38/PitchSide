@@ -1,5 +1,6 @@
-import { Trash2 } from "lucide-react";
+import { Trash2, CalendarDays } from "lucide-react";
 import type { SupplementalEvent } from "../../data/supplementalEvents";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 interface AdminOnThisDayTabProps {
     siteSettings: any;
@@ -127,9 +128,11 @@ export function AdminOnThisDayTab({
                         
                         <div className="space-y-3">
                             {(!siteSettings.supplementalEvents || siteSettings.supplementalEvents.length === 0) ? (
-                                <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 px-4 py-8 text-center text-sm text-[#64748B] dark:text-gray-400">
-                                    No manual overrides injected yet.
-                                </div>
+                                <AdminEmptyState
+                                    icon={CalendarDays}
+                                    title="No manual overrides injected yet"
+                                    description="Events added here will override or supplement the automated Wikipedia feed for the specified date."
+                                />
                             ) : (
                                 siteSettings.supplementalEvents.map((evt: any) => (
                                     <div key={evt.id} className="rounded-xl bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-gray-800 p-4">

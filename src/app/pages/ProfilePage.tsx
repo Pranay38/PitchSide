@@ -2,8 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import { Header } from "../components/Header";
 import { SEO } from "../components/SEO";
-import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar, Share, Sparkles, Bell, Search, Shield, X } from "lucide-react";
+import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar, Share, Sparkles, Bell, Search, Shield, X, Mail, Clock } from "lucide-react";
 import { getAllClubs, getClubByName, searchClubsOnline, type Club, type SearchResult } from "../data/clubs";
+import { useUser } from "@clerk/clerk-react";
+import { useUserPreferences } from "../hooks/useUserPreferences";
+import { getAllPosts } from "../lib/postStorage";
+import { getAvatarUrl } from "../lib/avatar";
 
 interface SavedArticle {
     id: string;
@@ -24,12 +28,39 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 export function ProfilePage() {
-    const [activeTab, setActiveTab] = useState<"saved" | "activity" | "settings">("saved");
-    const [savedArticles, setSavedArticles] = useState<SavedArticle[]>([]);
-    const [favoriteClub, setFavoriteClub] = useState<string | null>(null);
-    const [fanClub, setFanClub] = useState<{ name: string; logoUrl: string | null; league?: string } | null>(null);
-    const [followedClubsCount, setFollowedClubsCount] = useState(0);
-    const [votesCount, setVotesCount] = useState(0);
+    const { user } = useUser();
+    const { 
+        savedPosts, 
+        fanClub, 
+        setFanClub, 
+        newsletterOptIn, 
+        setNewsletterOptIn,
+        followedClubs,
+        readingHistory
+    } = useUserPreferences();
+
+    const [activeTab, setActiveTab] = useState<"history" | "saved" | "activity" | "settings" | "ai">("history");
+    const [userComments, setUserComments] = useState<any[]>([]);
+    const [userCommentsLoading, setUserCommentsLoading] = useState(false);
+    const [aiHistory, setAiHistory] = useState<any[]>([]);
+    const [aiHistoryLoading, setAiHistoryLoading] = useState(false);
+    
+    // Derived saved articles
+    const savedArticles = useMemo(() => {
+        const all = getAllPosts();
+        return all.filter(p => savedPosts.includes(p.id));
+    }, [savedPosts]);
+
+    const historyArticles = useMemo(() => {
+        const all = getAllPosts();
+        return readingHistory
+            .map(h => {
+                const post = all.find(p => p.id === h.postId);
+                return post ? { ...post, viewedAt: h.viewedAt } : null;
+            })
+            .filter(Boolean);
+    }, [readingHistory]);
+
     const [wrappedUrl, setWrappedUrl] = useState<string | null>(null);
     const [pushStatus, setPushStatus] = useState<"default" | "granted" | "denied">("default");
 
@@ -43,38 +74,29 @@ export function ProfilePage() {
         if ("Notification" in window) {
             setPushStatus(Notification.permission);
         }
-        // Load saved articles from localStorage
-        try {
-            const saved = JSON.parse(localStorage.getItem("saved-posts") || "[]");
-            setSavedArticles(saved);
-        } catch { /* empty */ }
-
-        setFavoriteClub(localStorage.getItem("favoriteClub") || null);
-
-        // Load fan club badge
-        try {
-            const raw = localStorage.getItem("pitchside_fan_club");
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                if (parsed?.name) setFanClub(parsed);
-            }
-        } catch { /* empty */ }
-
-        try {
-            const clubs = JSON.parse(localStorage.getItem("pitchside_followed_clubs") || "[]");
-            setFollowedClubsCount(clubs.length);
-        } catch { /* empty */ }
-
-        // Count votes by looking at localStorage keys starting with specific patterns if tracked locally
-        let vCount = 0;
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key && (key.startsWith("hasVoted") || key.startsWith("pitchside_voted"))) {
-                vCount++;
-            }
-        }
-        setVotesCount(vCount);
     }, []);
+
+    useEffect(() => {
+        if (user?.id) {
+            setUserCommentsLoading(true);
+            fetch(`/api/comments?userId=${user.id}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (Array.isArray(data)) setUserComments(data);
+                })
+                .catch(console.error)
+                .finally(() => setUserCommentsLoading(false));
+
+            setAiHistoryLoading(true);
+            fetch(`/api/ai-history?userId=${user.id}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (Array.isArray(data)) setAiHistory(data);
+                })
+                .catch(console.error)
+                .finally(() => setAiHistoryLoading(false));
+        }
+    }, [user?.id]);
 
     const subscribeToPush = async () => {
         if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
@@ -89,7 +111,7 @@ export function ProfilePage() {
             }
 
             const registration = await navigator.serviceWorker.ready;
-            const publicVapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+            const publicVapidKey = (import.meta as any).env.VITE_VAPID_PUBLIC_KEY;
             if (!publicVapidKey) throw new Error("VAPID public key missing from env");
             
             const subscription = await registration.pushManager.subscribe({
@@ -111,11 +133,13 @@ export function ProfilePage() {
         }
     };
 
-    const userName = localStorage.getItem("pitchside-username") || "Football Fan";
+    const userName = user?.fullName || user?.firstName || "Football Fan";
 
     const tabs = [
+        { id: "history" as const, label: "History", icon: Clock },
         { id: "saved" as const, label: "Saved", icon: Bookmark, count: savedArticles.length },
-        { id: "activity" as const, label: "Activity", icon: MessageSquare },
+        { id: "activity" as const, label: "Activity", icon: MessageSquare, count: userComments.length },
+        { id: "ai" as const, label: "AI History", icon: Sparkles, count: aiHistory.length },
         { id: "settings" as const, label: "Settings", icon: Settings },
     ];
 
@@ -128,18 +152,18 @@ export function ProfilePage() {
                 {/* Profile header */}
                 <div className="relative rounded-2xl bg-gradient-to-br from-[#16A34A]/10 via-emerald-500/5 to-transparent border border-[#16A34A]/10 p-6 mb-6">
                     <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#16A34A] to-[#4ade80] flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-[#16A34A]/20">
-                            {userName.charAt(0).toUpperCase()}
+                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden shadow-lg shadow-[#16A34A]/20 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                            <img src={getAvatarUrl(user?.id, userName)} alt={userName} className="w-full h-full object-cover" />
                         </div>
                         <div>
                             <h1 className="text-xl font-black text-[#0F172A] dark:text-white">{userName}</h1>
                             <div className="flex items-center gap-3 mt-1">
-                            {(fanClub || favoriteClub) && (
-                                    <span className="text-xs font-semibold text-[#16A34A] bg-[#16A34A]/10 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
-                                        {fanClub?.logoUrl && (
+                            {fanClub && (
+                                    <span className="text-xs font-semibold text-[#16A34A] bg-[#16A34A]/10 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 inline-flex">
+                                        {fanClub.logoUrl && (
                                             <img src={fanClub.logoUrl} alt="" className="w-4 h-4 object-contain" />
                                         )}
-                                        ⚽ {fanClub?.name || favoriteClub}
+                                        ⚽ {fanClub.name}
                                     </span>
                                 )}
                                 <span className="text-xs text-gray-500 flex items-center gap-1">
@@ -149,19 +173,22 @@ export function ProfilePage() {
                         </div>
                     </div>
 
-                    {/* Stats row */}
                     <div className="flex gap-6 mt-6 pt-4 border-t border-[#16A34A]/10">
+                        <div className="text-center">
+                            <p className="text-lg font-black text-[#0F172A] dark:text-white">{historyArticles.length}</p>
+                            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">History</p>
+                        </div>
                         <div className="text-center">
                             <p className="text-lg font-black text-[#0F172A] dark:text-white">{savedArticles.length}</p>
                             <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Saved</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-lg font-black text-[#0F172A] dark:text-white">0</p>
+                            <p className="text-lg font-black text-[#0F172A] dark:text-white">{userComments.length}</p>
                             <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Comments</p>
                         </div>
                         <div className="text-center">
-                            <p className="text-lg font-black text-[#0F172A] dark:text-white">{votesCount}</p>
-                            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Votes</p>
+                            <p className="text-lg font-black text-[#0F172A] dark:text-white">{followedClubs.length}</p>
+                            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Followed</p>
                         </div>
                     </div>
                 </div>
@@ -181,7 +208,7 @@ export function ProfilePage() {
                             </div>
                             <button 
                                 onClick={() => {
-                                    const url = `/api/wrapped?username=${encodeURIComponent(userName)}&saved=${savedArticles.length}&clubs=${followedClubsCount}&debates=${votesCount}&year=${new Date().getFullYear()}`;
+                                    const url = `/api/wrapped?username=${encodeURIComponent(userName)}&saved=${savedArticles.length}&clubs=${followedClubs.length}&debates=${userComments.length}&year=${new Date().getFullYear()}`;
                                     setWrappedUrl(url);
                                 }}
                                 className="bg-[#16A34A] hover:bg-[#15803d] text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-[#16A34A]/30 transition-all active:scale-95 whitespace-nowrap"
@@ -242,6 +269,41 @@ export function ProfilePage() {
                 </div>
 
                 {/* Tab content */}
+                {activeTab === "history" && (
+                    <div>
+                        {historyArticles.length === 0 ? (
+                            <div className="text-center py-16">
+                                <Clock className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-700 mb-3" />
+                                <p className="text-gray-400 font-medium">No recently read articles</p>
+                                <p className="text-gray-500 text-sm mt-1">Articles you read will securely appear here.</p>
+                                <Link to="/" className="inline-flex items-center gap-2 mt-4 text-sm font-semibold text-[#16A34A] hover:underline">
+                                    <ArrowLeft className="w-4 h-4" /> Browse articles
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {historyArticles.map((article: any) => (
+                                    <Link
+                                        key={`${article.id}-${article.viewedAt}`}
+                                        to={`/post/${article.id}`}
+                                        className="block p-4 rounded-xl bg-white dark:bg-[#1E293B]/50 border border-gray-100 dark:border-gray-800/50 hover:border-[#16A34A]/30 transition-all group"
+                                    >
+                                        <h3 className="font-semibold text-[#0F172A] dark:text-white group-hover:text-[#16A34A] transition-colors">
+                                            {article.title}
+                                        </h3>
+                                        {article.excerpt && (
+                                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{article.excerpt}</p>
+                                        )}
+                                        <p className="text-[10px] text-gray-400 mt-2">
+                                            Viewed {new Date(article.viewedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                                        </p>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {activeTab === "saved" && (
                     <div>
                         {savedArticles.length === 0 ? (
@@ -268,7 +330,7 @@ export function ProfilePage() {
                                             <p className="text-sm text-gray-500 mt-1 line-clamp-2">{article.excerpt}</p>
                                         )}
                                         <p className="text-[10px] text-gray-400 mt-2">
-                                            Saved {new Date(article.savedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                                            Published {new Date(article.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                                         </p>
                                     </Link>
                                 ))}
@@ -285,6 +347,44 @@ export function ProfilePage() {
                     </div>
                 )}
 
+                {activeTab === "ai" && (
+                    <div>
+                        {aiHistoryLoading ? (
+                            <div className="text-center py-16 flex justify-center">
+                                <Sparkles className="w-6 h-6 animate-spin text-[#16A34A] mb-3" />
+                            </div>
+                        ) : aiHistory.length === 0 ? (
+                            <div className="text-center py-16">
+                                <Sparkles className="w-12 h-12 mx-auto text-gray-300 dark:text-gray-700 mb-3" />
+                                <p className="text-gray-400 font-medium">No AI History yet</p>
+                                <p className="text-gray-500 text-sm mt-1">Interact with AI features like the Rumor Mill to generate insights.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {aiHistory.map((item) => (
+                                    <div key={item.id} className="p-5 rounded-2xl bg-white dark:bg-[#1E293B]/50 border border-gray-100 dark:border-gray-800/50 shadow-sm">
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Sparkles className="w-4 h-4 text-purple-500" />
+                                            <span className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                                {item.type === "rumour-rater" ? "Rumor Analysis" : item.type}
+                                            </span>
+                                            <span className="text-[10px] text-gray-400 ml-auto">
+                                                {new Date(item.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm font-medium text-[#0F172A] dark:text-gray-300 mb-3 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+                                            "{item.prompt}"
+                                        </p>
+                                        <div className="bg-purple-50 dark:bg-purple-500/10 rounded-xl p-4 text-sm text-purple-800 dark:text-purple-300 whitespace-pre-wrap">
+                                            {typeof item.response === 'string' ? item.response : JSON.stringify(item.response)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {activeTab === "settings" && (
                     <div className="space-y-4">
                         {/* Username */}
@@ -295,7 +395,7 @@ export function ProfilePage() {
                                 defaultValue={userName}
                                 onBlur={(e) => {
                                     const val = e.target.value.trim();
-                                    if (val) localStorage.setItem("pitchside-username", val);
+                                    if (val && user) user.update({ firstName: val, lastName: "" }).catch(console.error);
                                 }}
                                 maxLength={30}
                                 className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 transition-all text-sm"
@@ -438,6 +538,24 @@ export function ProfilePage() {
                                     <Bell className="w-4 h-4" /> Enable Web Push
                                 </button>
                             )}
+                        </div>
+
+                        {/* Newsletter Preference */}
+                        <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B]/50 border border-gray-100 dark:border-gray-800/50">
+                            <label className="block text-sm font-semibold text-[#0F172A] dark:text-gray-300 mb-2 flex items-center gap-2">
+                                <Mail className="w-4 h-4 text-[#16A34A]" /> Email Newsletter
+                            </label>
+                            <div className="flex items-center justify-between mt-2">
+                                <p className="text-sm text-gray-500 pr-4">
+                                    Receive our weekly roundup of the biggest stories, transfers, and fan debates directly in your inbox.
+                                </p>
+                                <button 
+                                    onClick={() => setNewsletterOptIn(!newsletterOptIn)}
+                                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${newsletterOptIn ? 'bg-[#16A34A]' : 'bg-gray-200 dark:bg-gray-700'}`}
+                                >
+                                    <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${newsletterOptIn ? 'translate-x-5' : 'translate-x-0'}`} />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}

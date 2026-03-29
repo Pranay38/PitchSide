@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Edit2, Code, Copy, Check } from "lucide-react";
+import { Plus, Trash2, Edit2, Code, Copy, Check, Activity } from "lucide-react";
+import { AdminEmptyState } from "./AdminEmptyState";
 import type { StadiumMatchData } from "../StadiumMatchCenter";
 
 const DEFAULT_JSON = `{
@@ -209,9 +210,11 @@ export function AdminMatchCenterTab() {
       ) : (
         <div className="grid gap-4">
           {cards.length === 0 ? (
-            <div className="rounded-2xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-gray-800 dark:bg-[#0F172A]">
-              <p className="text-gray-500">No match centers yet.</p>
-            </div>
+            <AdminEmptyState
+              icon={Activity}
+              title="No match centers yet"
+              description="Create your first match center to embed live scoreboards and events into your articles."
+            />
           ) : (
             cards.map(card => (
               <div key={card.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-[#0F172A] shadow-sm">

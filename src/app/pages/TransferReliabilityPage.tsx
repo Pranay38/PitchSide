@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, Filter, Repeat2, Search, ShieldCheck, Bell } from "lucide-react";
+import { ArrowRight, Filter, Repeat2, Search, ShieldCheck, Bell, ShieldQuestion } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -16,6 +16,7 @@ import {
 } from "../lib/transferWatch";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { toast } from "sonner";
+import { getClubByName } from "../data/clubs";
 
 function getTierClasses(entry: TransferReliabilityEntry): string {
   if (entry.status === "confirmed") {
@@ -79,7 +80,7 @@ export function TransferReliabilityPage() {
       <SEO
         title="Transfer Reliability Board"
         description="Tiered rumor signals, dossier pages, and a cleaner market board for tracking the strongest football links."
-        url="https://pitchside-orcin.vercel.app/transfers"
+        url="https://thetouchlinedribble.in/transfers"
       />
       <Header favoriteClub={favoriteClub} />
 
@@ -162,6 +163,8 @@ export function TransferReliabilityPage() {
         <section className="mt-10 space-y-5">
           {visibleEntries.length > 0 ? visibleEntries.map((entry) => {
             const followed = followedTransfers.some((topic) => topic === entry.topic);
+            const fromClubInfo = entry.fromClub ? getClubByName(entry.fromClub) : null;
+            const toClubInfo = getClubByName(entry.club);
 
             return (
               <article key={entry.id} className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-7">
@@ -179,11 +182,40 @@ export function TransferReliabilityPage() {
                       </span>
                     </div>
 
-                    <h2 className="mt-4 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
-                      {entry.player}
-                    </h2>
-                    <p className="mt-2 text-base font-bold text-[#16A34A]">{entry.club}</p>
-                    <p className="mt-3 text-sm leading-6 text-[#64748B] dark:text-gray-400">
+                    <div className="mt-4 flex items-center gap-4">
+                        {entry.playerImageUrl && (
+                            <img src={entry.playerImageUrl} alt={entry.player} className="w-16 h-16 rounded-full object-cover shadow-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700" />
+                        )}
+                        <h2 className="text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                          {entry.player}
+                        </h2>
+                    </div>
+                    
+                    <div className="mt-3 flex items-center gap-3 font-bold text-[#16A34A] bg-[#0F172A]/5 dark:bg-white/5 px-4 py-2.5 rounded-xl w-fit">
+                      {entry.fromClub && (
+                        <>
+                          <div className="flex items-center gap-2">
+                            {fromClubInfo?.logo ? (
+                                <img src={fromClubInfo.logo} alt={entry.fromClub} className="w-5 h-5 object-contain" />
+                            ) : (
+                                <ShieldQuestion className="w-5 h-5 text-gray-400" />
+                            )}
+                            <span className="text-rose-500">{entry.fromClub}</span>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-gray-400" />
+                        </>
+                      )}
+                      <div className="flex items-center gap-2">
+                        {toClubInfo?.logo ? (
+                            <img src={toClubInfo.logo} alt={entry.club} className="w-5 h-5 object-contain" />
+                        ) : (
+                            <ShieldQuestion className="w-5 h-5 text-gray-400" />
+                        )}
+                        <span className="text-emerald-500">{entry.club}</span>
+                      </div>
+                    </div>
+
+                    <p className="mt-4 text-sm leading-6 text-[#64748B] dark:text-gray-400">
                       {entry.boardLabel} · {formatTransferWatchAmount(entry)} · Last updated {new Date(entry.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     </p>
 

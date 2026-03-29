@@ -57,6 +57,45 @@
 
 <body>
   <div id="root"></div>
+
+  <!-- SEO: Noscript fallback for bots that don't execute JS -->
+  <noscript>
+    <div style="max-width:800px;margin:0 auto;padding:2rem;font-family:system-ui,sans-serif;color:#fff;background:#0B1120;">
+      <h1>The Touchline Dribble — Football Analysis &amp; Opinion</h1>
+      <p>From the touchline to your timeline — sharp football analysis, tactical breakdowns, transfer dossiers, and bold opinions for die-hard fans.</p>
+      <nav>
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/daily-fix">Daily Fix</a></li>
+          <li><a href="/transfers">Transfer Watch</a></li>
+          <li><a href="/stories">Stories</a></li>
+          <li><a href="/debates">Debates</a></li>
+          <li><a href="/collections">Collections</a></li>
+          <li><a href="/archive">Archive</a></li>
+          <li><a href="/about">About</a></li>
+        </ul>
+      </nav>
+      <p>Enable JavaScript for the full interactive experience, or subscribe to our <a href="/api/rss">RSS feed</a>.</p>
+    </div>
+  </noscript>
+
+  <!-- JSON-LD for rich search results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "The Touchline Dribble",
+    "alternateName": "PitchSide",
+    "url": "https://thetouchlinedribble.in",
+    "description": "From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://thetouchlinedribble.in/archive?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

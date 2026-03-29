@@ -8,7 +8,7 @@ export function applyCors(req: VercelRequest, res: VercelResponse): void {
     const origin = req.headers.origin;
     const allowedOrigins = process.env.ALLOWED_ORIGINS 
         ? process.env.ALLOWED_ORIGINS.split(",") 
-        : ["http://localhost:5173", "https://pitchside-orcin.vercel.app"];
+        : ["http://localhost:5173", "https://pitchside-orcin.vercel.app", "https://thetouchlinedribble.in", "https://www.thetouchlinedribble.in"];
 
     // If no origin (e.g., server-to-server or same-origin), we allow it through or safely ignore CORS headers
     if (!origin) return;
@@ -108,7 +108,7 @@ export function checkOrigin(req: VercelRequest, res: VercelResponse): boolean {
 
     const allowedOrigins = process.env.ALLOWED_ORIGINS
         ? process.env.ALLOWED_ORIGINS.split(",")
-        : ["http://localhost:5173", "https://pitchside-orcin.vercel.app"];
+        : ["http://localhost:5173", "https://pitchside-orcin.vercel.app", "https://thetouchlinedribble.in", "https://www.thetouchlinedribble.in"];
 
     if (allowedOrigins.includes(origin)) return true;
 

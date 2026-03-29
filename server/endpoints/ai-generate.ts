@@ -234,6 +234,22 @@ export default async function aiGenerateHandler(req: VercelRequest, res: VercelR
             }
         }
 
+        // Save to user's AI history
+        if (req.body.userId) {
+            try {
+                const { db } = await connectToDatabase();
+                await db.collection("ai_history").insertOne({
+                    userId: req.body.userId,
+                    type: type,
+                    prompt: userContent,
+                    response: finalData,
+                    createdAt: new Date().toISOString()
+                });
+            } catch (e) {
+                console.warn("User AI history write failed:", e);
+            }
+        }
+
         return res.status(200).json({ data: finalData });
 
     } catch (error: any) {

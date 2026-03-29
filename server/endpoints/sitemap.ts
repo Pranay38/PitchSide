@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "../../api/_db.js";
+import { connectToDatabase } from "../_db.js";
 
-const SITE_URL = "https://thetouchlinedribble.com";
+const SITE_URL = "https://thetouchlinedribble.in";
 
 const STATIC_ROUTES = [
   { path: "/", priority: "1.0", changefreq: "daily" },

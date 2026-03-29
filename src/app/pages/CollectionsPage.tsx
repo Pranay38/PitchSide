@@ -273,7 +273,8 @@ export function CollectionsPage() {
           title={`${collection.title} | Reading Lists`}
           description={collection.description || `A curated collection of ${collection.posts.length} articles on The Touchline Dribble.`}
           type="website"
-          url="https://pitchside-orcin.vercel.app/collections"
+          url={`https://thetouchlinedribble.in/collections`}
+          image={`https://thetouchlinedribble.in/api/og?title=${encodeURIComponent(collection.title)}&subtitle=${encodeURIComponent(`${collection.postCount} articles · Reading List`)}`}
         />
         <Header />
 
@@ -409,39 +410,57 @@ export function CollectionsPage() {
                     </div>
 
                     <div className="space-y-4">
-                      {followOnPosts.map((post, index) => (
-                        <Link
-                          key={post.id}
-                          to={`/post/${post.id}`}
-                          className="group block rounded-[1.5rem] border border-gray-200 bg-white p-5 transition-colors hover:border-[#16A34A]/30 hover:bg-[#16A34A]/5 dark:border-gray-800 dark:bg-[#0F172A]"
-                        >
-                          <div className="flex gap-4">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#16A34A]/10 text-sm font-black text-[#16A34A]">
-                              {index + 2}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#94A3B8]">
-                                {post.readTime && <span>{post.readTime}</span>}
-                                {post.date && (
-                                  <>
-                                    <span>•</span>
-                                    <span>{post.date}</span>
-                                  </>
-                                )}
+                      {followOnPosts.map((post, index) => {
+                        const prevPost = index === 0 ? startHere : followOnPosts[index - 1];
+                        const nextPost = followOnPosts[index + 1];
+                        return (
+                          <div key={post.id} className="space-y-3">
+                            <Link
+                              to={`/post/${post.id}`}
+                              className="group block rounded-[1.5rem] border border-gray-200 bg-white p-5 transition-colors hover:border-[#16A34A]/30 hover:bg-[#16A34A]/5 dark:border-gray-800 dark:bg-[#0F172A]"
+                            >
+                              <div className="flex gap-4">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#16A34A]/10 text-sm font-black text-[#16A34A]">
+                                  {index + 2}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-[#94A3B8]">
+                                    {post.readTime && <span>{post.readTime}</span>}
+                                    {post.date && (
+                                      <>
+                                        <span>•</span>
+                                        <span>{post.date}</span>
+                                      </>
+                                    )}
+                                  </div>
+                                  <h3 className="mt-2 text-xl font-black font-outfit text-[#0F172A] transition-colors group-hover:text-[#16A34A] dark:text-white">
+                                    {post.title}
+                                  </h3>
+                                  {post.excerpt && (
+                                    <p className="mt-2 text-sm leading-6 text-[#64748B] dark:text-gray-400">
+                                      {post.excerpt}
+                                    </p>
+                                  )}
+                                </div>
+                                <ArrowRight className="mt-1 h-5 w-5 shrink-0 text-[#16A34A] transition-transform group-hover:translate-x-1" />
                               </div>
-                              <h3 className="mt-2 text-xl font-black font-outfit text-[#0F172A] transition-colors group-hover:text-[#16A34A] dark:text-white">
-                                {post.title}
-                              </h3>
-                              {post.excerpt && (
-                                <p className="mt-2 text-sm leading-6 text-[#64748B] dark:text-gray-400">
-                                  {post.excerpt}
-                                </p>
-                              )}
+                            </Link>
+                            {/* Internal links: prev/next within collection */}
+                            <div className="flex items-center justify-between px-4 text-xs font-semibold text-[#94A3B8]">
+                              {prevPost ? (
+                                <Link to={`/post/${prevPost.id}`} className="flex items-center gap-1 hover:text-[#16A34A] transition-colors">
+                                  <ArrowLeft className="h-3 w-3" /> {prevPost.title.length > 30 ? prevPost.title.slice(0, 30) + "…" : prevPost.title}
+                                </Link>
+                              ) : <span />}
+                              {nextPost ? (
+                                <Link to={`/post/${nextPost.id}`} className="flex items-center gap-1 hover:text-[#16A34A] transition-colors">
+                                  {nextPost.title.length > 30 ? nextPost.title.slice(0, 30) + "…" : nextPost.title} <ArrowRight className="h-3 w-3" />
+                                </Link>
+                              ) : <span />}
                             </div>
-                            <ArrowRight className="mt-1 h-5 w-5 shrink-0 text-[#16A34A] transition-transform group-hover:translate-x-1" />
                           </div>
-                        </Link>
-                      ))}
+                        );
+                      })}
                     </div>
                   </section>
                 )}

@@ -1,24 +1,30 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "../server/_db";
-import { sendEmail, isMailerConfigured } from "../server/_mailer";
+import { connectToDatabase } from "../_db.js";
+import { sendBatchEmails, isMailerConfigured } from "../_mailer.js";
+import { requireAuth } from "../utils/security.js";
 
-const SITE_URL = "https://pitchside-orcin.vercel.app";
+const SITE_URL = "https://thetouchlinedribble.in";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-    // Only allow GET requests for the Cron job
-    if (req.method !== 'GET') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
-    }
-
-    // Security Check: Ensure this is called by Vercel Cron or an authorized admin
-    // Vercel sends an authorization header for cron jobs. If you run it manually for testing, 
-    // you need to pass a secret token.
+    // 1. Authentication Check
+    // We allow GET (from Cron) or POST (from Admin dashboard)
     const authHeader = req.headers.authorization;
-    if (
-        authHeader !== `Bearer ${process.env.CRON_SECRET}` && 
-        req.query.secret !== process.env.CRON_SECRET
-    ) {
-        return res.status(401).json({ error: 'Unauthorized' });
+    const isCron = req.method === 'GET' && (
+        authHeader === `Bearer ${process.env.CRON_SECRET}` || 
+        req.query.secret === process.env.CRON_SECRET
+    );
+
+    const isAdmin = req.method === 'POST' && requireAuth(req, res);
+
+    if (!isCron && !isAdmin) {
+        // requireAuth already sends 401/403 if it fails and returns false
+        if (req.method !== 'POST' && req.method !== 'GET') {
+            return res.status(405).json({ error: 'Method Not Allowed' });
+        }
+        if (!isCron && req.method === 'GET') {
+            return res.status(401).json({ error: 'Unauthorized: Invalid Cron Secret' });
+        }
+        return; // requireAuth handled the response
     }
 
     if (!isMailerConfigured()) {
@@ -46,6 +52,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const recentPosts = await db.collection("posts")
             .find({ 
                 date: { $gte: sevenDaysAgo.toISOString() },
+                isDraft: { $ne: true },
                 status: { $ne: "draft" }
             })
             .sort({ "reactions.fire": -1, "reactions.mindblown": -1, date: -1 }) // Sort by popularity then date
@@ -58,20 +65,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // 3. Build the Email HTML
         const postsHtml = recentPosts.map(post => `
-            <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
-                ${post.coverImage ? `<img src="${post.coverImage}" alt="${post.title}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;" />` : ''}
-                <div style="font-size: 11px; font-weight: bold; color: #16A34A; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px;">
+            <div style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid #e2e8f0;">
+                ${post.coverImage ? `<img src="${post.coverImage}" alt="${post.title}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-bottom: 20px;" />` : ''}
+                <div style="font-size: 11px; font-weight: bold; color: #16A34A; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;">
                     ${post.club || "Football"} • ${post.readTime || "5 min read"}
                 </div>
-                <h3 style="margin: 0 0 10px 0; font-size: 20px; color: #0f172a; font-family: 'Segoe UI', Arial, sans-serif;">
+                <h3 style="margin: 0 0 15px 0; font-size: 24px; color: #0f172a; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.3;">
                     <a href="${SITE_URL}/post/${post.id}" style="color: #0f172a; text-decoration: none;">${post.title}</a>
                 </h3>
-                <p style="margin: 0 0 15px 0; font-size: 15px; color: #475569; line-height: 1.6;">
-                    ${post.excerpt}
-                </p>
-                <a href="${SITE_URL}/post/${post.id}" style="display: inline-block; padding: 8px 16px; background-color: #16A34A; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold;">
-                    Read Article →
-                </a>
+                <div style="margin: 0 0 20px 0; font-size: 16px; color: #334155; line-height: 1.7; font-family: 'Segoe UI', Arial, sans-serif;">
+                    ${post.content || post.excerpt}
+                </div>
+                <div style="text-align: center;">
+                    <a href="${SITE_URL}/post/${post.id}" style="display: inline-block; padding: 12px 24px; background-color: #16A34A; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: bold; letter-spacing: 0.5px;">
+                        Read Full Article Online →
+                    </a>
+                </div>
             </div>
         `).join('');
 
@@ -97,12 +106,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // 4. Send the Email
         const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        await sendEmail({
-            to: process.env.GMAIL_USER as string, // Send to self
-            bcc: bccList, // Hidden recipients
-            subject: `The Touchline Dribble: Weekly Digest (${dateStr})`,
+        const subject = `The Touchline Dribble: Weekly Digest (${dateStr})`;
+
+        const batchList = subscribers.map(sub => ({
+            to: sub.email,
+            subject: subject,
             html: emailHtml
-        });
+        }));
+
+        await sendBatchEmails(batchList);
 
         return res.status(200).json({ 
             message: "Weekly digest sent successfully", 

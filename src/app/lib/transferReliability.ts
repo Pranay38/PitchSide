@@ -35,8 +35,7 @@ export function scoreTransferReliability(entry: TransferWatchEntry): TransferRel
           : entry.tier === 4
             ? 56
             : 46;
-
-  if (entry.feeMode === "million-usd") score += 8;
+  if (entry.feeMode !== "not-disclosed") score += 8;
   if (ageHours <= 24) score += 8;
   else if (ageHours <= 72) score += 4;
   else if (ageHours >= 14 * 24) score -= 6;
@@ -61,9 +60,9 @@ export function scoreTransferReliability(entry: TransferWatchEntry): TransferRel
 
   const rationale = [
     entry.status === "confirmed"
-      ? "Marked as confirmed in admin."
-      : `${getTransferTierLabel(entry.tier, entry.status)} rumor currently set in admin.`,
-    entry.feeMode === "million-usd" ? "A fee is attached, which makes the signal stronger." : "Fee not disclosed, so the signal is softer.",
+      ? "Confirmed move."
+      : `${getTransferTierLabel(entry.tier, entry.status)} rumor.`,
+    entry.feeMode !== "not-disclosed" ? "Fee is already mentioned, giving this link more substance." : "Fee not disclosed, so the signal is softer.",
     ageHours <= 72 ? "Updated recently." : "This item is getting older and needs refreshing.",
   ];
 

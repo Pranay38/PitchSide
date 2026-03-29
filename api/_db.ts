@@ -1,27 +1,32 @@
-import { MongoClient, Db } from "mongodb";
+import { MongoClient, Db, MongoClientOptions } from "mongodb";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
 const MONGODB_DB = process.env.MONGODB_DB || "pitchside";
 
-let cachedClient: MongoClient | null = null;
-let cachedDb: Db | null = null;
+declare global {
+    var _mongoClientPromise: Promise<{ client: MongoClient; db: Db }> | undefined;
+}
 
 export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db }> {
-    if (cachedClient && cachedDb) {
-        return { client: cachedClient, db: cachedDb };
-    }
-
     if (!MONGODB_URI) {
         throw new Error(
             "Please define the MONGODB_URI environment variable inside .env.local"
         );
     }
 
-    const client = await MongoClient.connect(MONGODB_URI);
-    const db = client.db(MONGODB_DB);
+    if (global._mongoClientPromise) {
+        return global._mongoClientPromise;
+    }
 
-    cachedClient = client;
-    cachedDb = db;
+    const options: MongoClientOptions = {
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+    };
 
-    return { client, db };
+    global._mongoClientPromise = MongoClient.connect(MONGODB_URI, options).then((client) => {
+        return { client, db: client.db(MONGODB_DB) };
+    });
+
+    return global._mongoClientPromise;
 }

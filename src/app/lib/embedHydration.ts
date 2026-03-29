@@ -107,26 +107,39 @@ function reactivateInlineScripts(container: HTMLElement) {
   });
 }
 
+const SOFASCORE_OBSERVER = typeof window !== "undefined" && "IntersectionObserver" in window
+  ? new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const iframe = entry.target as HTMLIFrameElement;
+            const lazySrc = iframe.getAttribute("data-lazy-src");
+            if (lazySrc && iframe.getAttribute("src") !== lazySrc) {
+              iframe.setAttribute("src", lazySrc);
+            }
+            SOFASCORE_OBSERVER?.unobserve(iframe);
+          }
+        });
+      },
+      { rootMargin: "800px 0px" } // Load right before it comes into view
+    )
+  : null;
+
 function normalizeSofascoreEmbeds(container: HTMLElement) {
   const sofascoreIframes = Array.from(
-    container.querySelectorAll<HTMLIFrameElement>(
-      'iframe[src*="sofascore.com"], iframe[src*="widgets.sofascore.com"]',
-    ),
+    container.querySelectorAll<HTMLIFrameElement>(".lazy-embed-iframe")
   );
 
   sofascoreIframes.forEach((iframe, index) => {
-    const src = iframe.getAttribute("src");
+    const src = iframe.getAttribute("data-lazy-src");
     if (!src) return;
     const wrapper = iframe.closest<HTMLElement>("[data-social-embed='sofascore']");
 
     const parsedHeight = Number.parseInt(iframe.getAttribute("height") || "", 10);
     const safeHeight = Number.isFinite(parsedHeight) && parsedHeight > 0 ? parsedHeight : 760;
-    const eager = isNearViewport(iframe);
 
-    iframe.dataset.embedSrc = src;
     iframe.removeAttribute("sandbox");
-    iframe.setAttribute("loading", eager ? "eager" : "lazy");
-    iframe.setAttribute("fetchpriority", eager ? "high" : "auto");
+    iframe.setAttribute("loading", "lazy");
     iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
     iframe.setAttribute("title", iframe.getAttribute("title") || `Sofascore embed ${index + 1}`);
     iframe.setAttribute("height", String(safeHeight));
@@ -144,51 +157,22 @@ function normalizeSofascoreEmbeds(container: HTMLElement) {
 
     const handleLoad = () => {
       iframe.style.opacity = "1";
+      iframe.classList.remove("lazy-embed-iframe");
       markEmbedReady(wrapper, true);
     };
 
     iframe.addEventListener("load", handleLoad, { once: true });
-    window.setTimeout(handleLoad, eager ? 800 : 1400);
+    
+    // Fallback if load event fails or observer fails
+    window.setTimeout(() => handleLoad(), 5000);
 
-    if (iframe.src !== src) {
-      iframe.src = src;
-      return;
+    if (SOFASCORE_OBSERVER) {
+      SOFASCORE_OBSERVER?.observe(iframe);
+    } else {
+      // Fallback for older browsers
+      iframe.setAttribute("src", src);
     }
   });
-}
-
-function observeTwitterEmbed(wrapper: HTMLElement) {
-  if (wrapper.dataset.twitterObserved === "true") return;
-  wrapper.dataset.twitterObserved = "true";
-  markEmbedReady(wrapper, false);
-
-  const finishIfReady = () => {
-    const hasIframe = !!wrapper.querySelector("iframe");
-    const renderedTweet = wrapper.querySelector(".twitter-tweet");
-    if (!hasIframe && !(renderedTweet instanceof HTMLElement && renderedTweet.classList.contains("twitter-tweet-rendered"))) {
-      return false;
-    }
-
-    markEmbedReady(wrapper, true);
-    return true;
-  };
-
-  if (finishIfReady()) return;
-
-  const observer = new MutationObserver(() => {
-    if (finishIfReady()) {
-      observer.disconnect();
-      delete wrapper.dataset.twitterObserved;
-    }
-  });
-
-  observer.observe(wrapper, { childList: true, subtree: true, attributes: true, attributeFilter: ["class"] });
-
-  window.setTimeout(() => {
-    markEmbedReady(wrapper, true);
-    observer.disconnect();
-    delete wrapper.dataset.twitterObserved;
-  }, 3000);
 }
 
 function hydrateTacticalEmbeds(container: HTMLElement) {
@@ -220,21 +204,6 @@ function hydrateTacticalEmbeds(container: HTMLElement) {
   });
 }
 
-async function hydrateTwitterEmbeds(container: HTMLElement) {
-  const wrappers = Array.from(container.querySelectorAll<HTMLElement>("[data-social-embed='twitter']"));
-  if (wrappers.length === 0 && !container.querySelector(".twitter-tweet")) return;
-
-  wrappers.forEach(observeTwitterEmbed);
-
-  const twitterWindow = window as TwitterWindow;
-  if (!twitterWindow.twttr?.widgets?.load) {
-    await ensureScript("twitter-wjs", "https://platform.twitter.com/widgets.js");
-  }
-
-  twitterWindow.twttr?.widgets?.load?.(container);
-  window.setTimeout(() => twitterWindow.twttr?.widgets?.load?.(container), 600);
-}
-
 async function hydrateInstagramEmbeds(container: HTMLElement) {
   const hasInstagram = !!container.querySelector(".instagram-media, [data-social-embed='instagram']");
   if (!hasInstagram) return;
@@ -254,7 +223,6 @@ async function hydrateEmbeds(container: HTMLElement) {
   hydrateTacticalEmbeds(container);
 
   await Promise.allSettled([
-    hydrateTwitterEmbeds(container),
     hydrateInstagramEmbeds(container),
   ]);
 }

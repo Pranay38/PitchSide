@@ -16,7 +16,7 @@ function buildOgImageUrl(title: string, club?: string, date?: string): string {
     const params = new URLSearchParams({ title });
     if (club) params.set("club", club);
     if (date) params.set("date", date);
-    return `https://pitchside-orcin.vercel.app/api/og?${params.toString()}`;
+    return `https://thetouchlinedribble.in/api/og?${params.toString()}`;
 }
 
 export function SEO({
@@ -30,8 +30,18 @@ export function SEO({
     date,
 }: SEOProps) {
 
-    // Auto-detect canonical URL from window.location if not explicitly provided
-    const canonicalUrl = url || (typeof window !== "undefined" ? window.location.href : "https://pitchside-orcin.vercel.app");
+    // Auto-detect canonical URL from window.location if not explicitly provided, but enforce primary domain
+    const getCanonical = () => {
+        if (url) return url;
+        if (typeof window !== "undefined") {
+            // Replace any vercel or localhost domains with the production domain
+            const currentPath = window.location.pathname + window.location.search;
+            return `https://thetouchlinedribble.in${currentPath}`;
+        }
+        return "https://thetouchlinedribble.in/";
+    };
+
+    const canonicalUrl = getCanonical();
 
     // Ensure title suffix is present unless it's already the default
     const formattedTitle = title === "The Touchline Dribble | Football Analysis & News"
@@ -47,9 +57,15 @@ export function SEO({
             <title>{formattedTitle}</title>
             <meta name="title" content={formattedTitle} />
             <meta name="description" content={description} />
+            
+            {/* Browser theme color matching brand */}
+            <meta name="theme-color" content="#16A34A" />
 
             {/* Canonical URL */}
             <link rel="canonical" href={canonicalUrl} />
+
+            {/* RSS Feed autodiscovery */}
+            <link rel="alternate" type="application/rss+xml" title="PitchSide RSS Feed" href="/api/rss" />
 
             {/* Open Graph / Facebook */}
             <meta property="og:type" content={type} />
@@ -57,6 +73,8 @@ export function SEO({
             <meta property="og:title" content={formattedTitle} />
             <meta property="og:description" content={description} />
             <meta property="og:image" content={ogImage} />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
             <meta property="og:site_name" content="The Touchline Dribble" />
 
             {/* Twitter */}
@@ -66,6 +84,7 @@ export function SEO({
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={ogImage} />
             <meta name="twitter:site" content="@TouchlineDribbl" />
+            <meta name="twitter:creator" content="@TouchlineDribbl" />
 
             {/* Schema / JSON-LD structured data */}
             {schema && (

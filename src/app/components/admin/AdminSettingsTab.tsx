@@ -220,10 +220,7 @@ export function AdminSettingsTab({
                                     <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Latest Analysis</p>
                                     <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.latestPostIds.length}</p>
                                 </div>
-                                <div className="rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Editor Picks</p>
-                                    <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.editorPickIds.length}</p>
-                                </div>
+
                                 <div className="rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
                                     <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Featured Stories</p>
                                     <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.featuredStoryIds.length}</p>
@@ -273,48 +270,10 @@ export function AdminSettingsTab({
                                 ))}
                             </div>
                         </div>
-
                         <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
                             <div className="flex items-center justify-between gap-4 mb-4">
                                 <div>
                                     <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane Two</p>
-                                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Editor Picks</h3>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setSiteSettings((prev) => ({
-                                        ...prev,
-                                        homepageCuration: { ...prev.homepageCuration, editorPickIds: [] },
-                                    }))}
-                                    className="text-sm font-medium text-[#64748B] hover:text-[#16A34A]"
-                                >
-                                    Clear
-                                </button>
-                            </div>
-                            <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1 md:grid-cols-2">
-                                {publishedPosts.map((post) => (
-                                    <SelectionCard
-                                        key={post.id}
-                                        title={post.title}
-                                        meta={`${post.mustRead ? "Must Read" : "Article"} · ${post.club}`}
-                                        description={post.excerpt}
-                                        selectedIndex={siteSettings.homepageCuration.editorPickIds.indexOf(post.id)}
-                                        onClick={() => setSiteSettings((prev) => ({
-                                            ...prev,
-                                            homepageCuration: {
-                                                ...prev.homepageCuration,
-                                                editorPickIds: toggleSelection(prev.homepageCuration.editorPickIds, post.id, 4),
-                                            },
-                                        }))}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
-                            <div className="flex items-center justify-between gap-4 mb-4">
-                                <div>
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane Three</p>
                                     <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Featured Stories</h3>
                                 </div>
                                 <button
@@ -351,7 +310,7 @@ export function AdminSettingsTab({
                         <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
                             <div className="flex items-center justify-between gap-4 mb-4">
                                 <div>
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane Four</p>
+                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane Three</p>
                                     <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Transfer Spotlights</h3>
                                 </div>
                                 <button
@@ -630,15 +589,15 @@ export function AdminSettingsTab({
                                     { key: "tacklesWonPer90", label: "Tackles Won / 90", step: "0.01" },
                                     { key: "interceptionsPer90", label: "Interceptions / 90", step: "0.01" },
                                     { key: "aerialWinPct", label: "Aerial Duel Win %", step: "0.1" },
-                                ].map((field: { key: keyof ClubIntelligence; label: string; step: string }) => (
+                                ].map((field: any) => (
                                     <label key={field.key} className="block">
                                         <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">{field.label}</span>
                                         <input
                                             type="number"
                                             min={0}
                                             step={field.step}
-                                            value={selectedClubInsight[field.key] as number}
-                                            onChange={(e) => handleClubInsightChange(field.key, e.target.value)}
+                                            value={selectedClubInsight[field.key as keyof ClubIntelligence] as number}
+                                            onChange={(e) => handleClubInsightChange(field.key as keyof ClubIntelligence, e.target.value)}
                                             className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
                                         />
                                     </label>

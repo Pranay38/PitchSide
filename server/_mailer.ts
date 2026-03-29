@@ -1,31 +1,10 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const GMAIL_USER = process.env.GMAIL_USER || "";
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || "";
-
-/**
- * Create a reusable transporter using Gmail SMTP.
- * Requires GMAIL_USER and GMAIL_APP_PASSWORD env vars.
- */
-function createTransporter() {
-    if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
-        throw new Error(
-            "GMAIL_USER and GMAIL_APP_PASSWORD environment variables are required. " +
-            "Go to Vercel → Settings → Environment Variables to add them."
-        );
-    }
-
-    return nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: GMAIL_USER,
-            pass: GMAIL_APP_PASSWORD,
-        },
-    });
-}
+const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
+const resend = new Resend(RESEND_API_KEY);
 
 /**
- * Send an email using Gmail SMTP.
+ * Send an email asynchronously using Resend.
  */
 export async function sendEmail(options: {
     to: string | string[];
@@ -33,20 +12,50 @@ export async function sendEmail(options: {
     subject: string;
     html: string;
 }): Promise<void> {
-    const transporter = createTransporter();
+    if (!isMailerConfigured()) {
+        console.warn("Mailer not configured. Skipping email send.");
+        return;
+    }
 
-    await transporter.sendMail({
-        from: `"The Touchline Dribble" <${GMAIL_USER}>`,
-        to: Array.isArray(options.to) ? options.to.join(", ") : options.to,
-        bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc.join(", ") : options.bcc) : undefined,
+    await resend.emails.send({
+        from: "The Touchline Dribble <noreply@thetouchlinedribble.in>",
+        to: Array.isArray(options.to) ? options.to : [options.to],
+        bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc : [options.bcc]) : undefined,
         subject: options.subject,
         html: options.html,
     });
 }
 
 /**
- * Check if Gmail credentials are configured.
+ * Send individual emails in bulk using Resend's batch API to prevent BBC exposure.
+ */
+export async function sendBatchEmails(optionsList: Array<{
+    to: string;
+    subject: string;
+    html: string;
+}>): Promise<void> {
+    if (!isMailerConfigured()) {
+        console.warn("Mailer not configured. Skipping batch email send.");
+        return;
+    }
+
+    const batchData = optionsList.map(opt => ({
+        from: "The Touchline Dribble <noreply@thetouchlinedribble.in>",
+        to: [opt.to],
+        subject: opt.subject,
+        html: opt.html,
+    }));
+
+    // Resend batch API accepts up to 100 emails at a time
+    for (let i = 0; i < batchData.length; i += 100) {
+        const chunk = batchData.slice(i, i + 100);
+        await resend.batch.send(chunk);
+    }
+}
+
+/**
+ * Check if Resend credentials are configured.
  */
 export function isMailerConfigured(): boolean {
-    return !!(GMAIL_USER && GMAIL_APP_PASSWORD);
+    return !!RESEND_API_KEY;
 }

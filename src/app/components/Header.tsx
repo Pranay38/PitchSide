@@ -6,46 +6,87 @@ import { NotificationBell } from "./NotificationBell";
 import { DesktopCommandPalette } from "./DesktopCommandPalette";
 import { SearchModal } from "./SearchModal";
 import { getClubByName } from "../data/clubs";
-import { Heart, House, Menu, Search, X, LogIn } from "lucide-react";
+import { Heart, House, Menu, Search, X, LogIn, ShieldAlert, User } from "lucide-react";
 import { PillNav } from "./PillNav";
 import {
   SignInButton,
   UserButton,
   useUser,
 } from "@clerk/clerk-react";
+import { ClubOnboardingModal } from "./ClubOnboardingModal";
 
-/** Returns true if Clerk is loaded and available */
+/** Returns true if Clerk string is configured */
 function useClerkAvailable(): boolean {
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useUser();
-    return true;
-  } catch {
-    return false;
-  }
+  // @ts-ignore
+  const key = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  return typeof key === "string" && key.length > 0;
 }
 
-function AuthButton() {
+function AuthButton({ compact = false }: { compact?: boolean }) {
   const clerkAvailable = useClerkAvailable();
-  if (!clerkAvailable) return null;
-  return <AuthButtonInner />;
+  if (!clerkAvailable) {
+    return (
+      <Link to="/admin" className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#16A34A]/10 hover:bg-[#16A34A]/20 text-[#16A34A] text-sm font-bold transition-colors duration-200">
+        <ShieldAlert className="w-3.5 h-3.5" />
+        Admin
+      </Link>
+    );
+  }
+  return <AuthButtonInner compact={compact} />;
 }
 
-function AuthButtonInner() {
+function AuthButtonInner({ compact = false }: { compact?: boolean }) {
   const { isSignedIn, isLoaded } = useUser();
-  if (!isLoaded) return null;
 
-  if (isSignedIn) {
-    return <UserButton afterSignOutUrl="/" />;
+  if (isLoaded && isSignedIn) {
+    return (
+      <div className="flex items-center gap-2">
+        {!compact && (
+          <Link to="/profile" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#16A34A]/10 text-[#16A34A] hover:bg-[#16A34A]/20 transition-colors font-bold text-sm">
+            <User className="w-4 h-4" />
+            <span>Profile</span>
+          </Link>
+        )}
+        <UserButton afterSignOutUrl="/">
+          <UserButton.MenuItems>
+            <UserButton.Link
+              label="My Profile"
+              labelIcon={<User className="w-4 h-4" />}
+              href="/profile"
+            />
+          </UserButton.MenuItems>
+        </UserButton>
+      </div>
+    );
+  }
+
+  if (compact) {
+    return (
+      <Link to="/sign-in">
+        <button
+          className="group relative inline-flex h-8 w-24 items-center justify-center overflow-hidden rounded-full bg-[#0F172A] p-[1px] text-[11px] font-black uppercase tracking-wider text-white shadow-md active:scale-95 transition-transform"
+          aria-label="Log in"
+        >
+          <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#0F172A_0%,#16A34A_50%,#0F172A_100%)]" />
+          <span className="inline-flex h-full w-full items-center justify-center gap-1.5 rounded-full bg-[#0F172A] px-3 py-1 backdrop-blur-3xl transition-colors group-hover:bg-[#0F172A]/80">
+            <LogIn className="h-3 w-3 text-[#16A34A] transition-transform duration-300 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" />
+            Log in
+          </span>
+        </button>
+      </Link>
+    );
   }
 
   return (
-    <SignInButton mode="modal">
-      <button className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#16A34A]/10 hover:bg-[#16A34A]/20 text-[#16A34A] text-sm font-bold transition-colors duration-200">
-        <LogIn className="w-3.5 h-3.5" />
-        Sign In
+    <Link to="/sign-in">
+      <button className="group relative inline-flex h-10 w-28 sm:h-11 sm:w-32 items-center justify-center overflow-hidden rounded-full bg-[#0F172A] p-[1px] font-black uppercase tracking-widest text-[#F8FAFC] shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[#16A34A]/20">
+        <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#0F172A_0%,#16A34A_50%,#0F172A_100%)] opacity-80 group-hover:opacity-100 transition-opacity" />
+        <span className="inline-flex h-full w-full items-center justify-center gap-2 rounded-full bg-[#0F172A] px-4 py-1 text-xs sm:text-sm backdrop-blur-3xl transition-colors group-hover:bg-[#0F172A]/90">
+          <LogIn className="h-3.5 w-3.5 text-[#16A34A] transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:scale-110" />
+          Log in
+        </span>
       </button>
-    </SignInButton>
+    </Link>
   );
 }
 
@@ -87,7 +128,6 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Shrink and blur when scrolled down 100px
       if (window.scrollY > 100) {
         setIsScrolled(true);
       } else {
@@ -110,12 +150,13 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
   return (
     <>
+      <ClubOnboardingModal />
       {/* Animated gradient accent line at the very top */}
       <div className="gradient-accent-line w-full" />
       <header className={`sticky top-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
         isScrolled 
           ? "glass shadow-sm dark:shadow-none bg-white/70 dark:bg-[#0F172A]/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/5" 
-          : "bg-transparent border-b border-transparent"
+          : "bg-white/60 dark:bg-[#0F172A]/60 md:bg-transparent md:dark:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-b border-gray-200/30 dark:border-white/5 md:border-transparent"
       }`}>
         <div className={`w-full max-w-7xl mx-auto px-4 lg:px-6 flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
           isScrolled ? "py-2" : "py-3.5"
@@ -134,11 +175,11 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           {/* Desktop Nav - Centered with PillNav */}
           <div className="hidden lg:flex flex-1 justify-center px-4 2xl:px-8"
             style={{
-              "--pill-base": "rgba(22, 163, 74, 0.1)", // #16A34A with 10% opacity for hover circle
+              "--pill-base": "rgba(22, 163, 74, 0.1)",
               "--pill-bg": "transparent",
               "--pill-hover-text": "#16A34A",
               "--pill-text": "currentColor",
-              "--pill-pad-x": "12px", // Decrease inner padding to save space
+              "--pill-pad-x": "12px",
             } as React.CSSProperties}
           >
             <PillNav 
@@ -148,8 +189,9 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             />
           </div>
 
-          {/* Desktop Right side */}
-          <div className="hidden sm:flex items-center justify-end gap-2 lg:gap-3 flex-shrink-0 relative z-10 min-w-max">
+          {/* Desktop Right side — Login right after nav, then utilities */}
+          <div className="hidden sm:flex items-center justify-end gap-2 lg:gap-3 flex-shrink-0 relative z-10">
+            <AuthButton />
             <DesktopCommandPalette />
 
             {/* Club badge */}
@@ -176,26 +218,17 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
               </button>
             )}
 
-            <div className="flex items-center gap-2 lg:gap-3">
-              <button
-                onClick={() => setSearchOpen(true)}
-                className="p-2 text-gray-500 hover:text-[#16A34A] dark:text-gray-400 dark:hover:text-[#4ade80] transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-[#1E293B]"
-                aria-label="Search"
-              >
-                <Search className="w-5 h-5" />
-              </button>
+            <div className="flex items-center gap-2">
               <ThemeToggle />
               <NotificationBell />
-              <AuthButton />
             </div>
           </div>
 
-          {/* Mobile: club badge + hamburger */}
+          {/* Mobile: hamburger + login */}
           <div className="flex sm:hidden items-center gap-2 relative z-10">
             {favoriteClub && club?.logo && (
               <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />
             )}
-            <ThemeToggle />
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-full transition-colors duration-200"
@@ -203,6 +236,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
+            <AuthButton compact />
           </div>
         </div>
 
@@ -247,7 +281,10 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                 </button>
               )}
 
-              <AuthButton />
+              <div className="flex items-center gap-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+                <ThemeToggle />
+                <NotificationBell />
+              </div>
             </div>
           )}
         </header>

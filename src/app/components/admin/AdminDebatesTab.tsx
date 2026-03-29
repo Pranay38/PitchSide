@@ -1,5 +1,6 @@
 import { Plus, Trash2, MessageSquare } from "lucide-react";
 import { DebateEditor } from "../DebateEditor";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 interface AdminDebatesTabProps {
     debates: any[];
@@ -38,7 +39,13 @@ export function AdminDebatesTab({
                 <DebateEditor onSave={onSaveDebate} onCancel={() => onShowDebateEditor(false)} />
             )}
             <div className="space-y-3">
-                {debates.length === 0 && <p className="text-gray-500">No debates created yet.</p>}
+                {debates.length === 0 && (
+                    <AdminEmptyState
+                        icon={MessageSquare}
+                        title="No debates created yet"
+                        description="Start a new debate to boost community engagement!"
+                    />
+                )}
                 {debates.map((deb) => (
                     <div key={deb.id} className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left transition-all">
                         <div className="p-5 flex items-center justify-between">
@@ -99,8 +106,14 @@ export function AdminDebatesTab({
                             </div>
                         )}
                         {expandedDebateId === deb.id && (!deb.arguments || deb.arguments.length === 0) && (
-                            <div className="bg-gray-50 dark:bg-[#0F172A] p-4 border-t border-gray-100 dark:border-gray-800 text-center text-sm text-gray-500">
-                                No comments on this debate yet.
+                            <div className="bg-gray-50 dark:bg-[#0F172A] p-8 border-t border-gray-100 dark:border-gray-800">
+                                <AdminEmptyState
+                                    icon={MessageSquare}
+                                    title="No comments yet"
+                                    description="This debate doesn't have any arguments yet."
+                                    iconColor="text-gray-400 dark:text-gray-500"
+                                    iconBgColor="bg-gray-100 dark:bg-gray-800"
+                                />
                             </div>
                         )}
                     </div>

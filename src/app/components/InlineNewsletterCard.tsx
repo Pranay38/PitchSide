@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Mail, Send } from "lucide-react";
 import { toast } from "sonner";
+import { useUserPreferences } from "../hooks/useUserPreferences";
+import { useUser } from "@clerk/clerk-react";
 
 interface InlineNewsletterCardProps {
   title?: string;
@@ -13,8 +15,15 @@ export function InlineNewsletterCard({
   description = "A concise football briefing with the strongest analysis, long reads, and standout stories from the site.",
   className = "",
 }: InlineNewsletterCardProps) {
+  const { newsletterOptIn } = useUserPreferences();
+  const { isSignedIn } = useUser();
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Hide entirely if already opted in or user is signed in
+  if (newsletterOptIn || isSignedIn) {
+    return null;
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -86,7 +95,7 @@ export function InlineNewsletterCard({
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-[#16A34A] px-5 text-sm font-bold text-white transition-colors hover:bg-[#15803d] disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#16A34A] to-[#22c55e] border border-transparent hover:border-white/10 px-6 text-sm font-bold text-white shadow-md hover:shadow-lg hover:shadow-[#16A34A]/30 active:scale-95 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100"
         >
           <Send className="h-4 w-4" />
           {submitting ? "Saving..." : "Subscribe"}

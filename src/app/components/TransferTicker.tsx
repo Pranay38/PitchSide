@@ -21,7 +21,7 @@ export function TransferTicker() {
 
     const fetchTicker = useCallback(async () => {
         try {
-            const res = await fetch(`/api/transfers?t=${Date.now()}`);
+            const res = await fetch(`/api/transfers-ticker?t=${Date.now()}`);
             if (!res.ok) return;
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0) {

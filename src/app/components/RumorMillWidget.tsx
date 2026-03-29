@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { MessageSquareQuote, ThumbsUp, ThumbsDown, Sparkles } from "lucide-react";
+import { useUser } from "@clerk/clerk-react";
 
 export interface RumorMill {
     text: string;
@@ -12,6 +13,7 @@ interface RumorMillWidgetProps {
 }
 
 export function RumorMillWidget({ data }: RumorMillWidgetProps) {
+    const { user } = useUser();
     const [punchyLine, setPunchyLine] = useState<string | null>(null);
     const [loadingLine, setLoadingLine] = useState(false);
 
@@ -26,8 +28,9 @@ export function RumorMillWidget({ data }: RumorMillWidgetProps) {
         // Replace btoa which crashes on non-Latin1 characters (emojis, curly quotes)
         const safeHash = data.text.slice(0, 50).replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
         const cacheKey = `rumour-ai-${safeHash}`;
+        // Only load from cache if there is no user logged in to ensure history generates.
         const cached = sessionStorage.getItem(cacheKey);
-        if (cached) {
+        if (cached && !user) {
             setPunchyLine(cached);
             return;
         }
@@ -40,6 +43,7 @@ export function RumorMillWidget({ data }: RumorMillWidgetProps) {
             body: JSON.stringify({
                 type: "rumour-rater",
                 text: data.text, // Pass raw rumor text for AI analysis
+                userId: user?.id, // Send userId for AI History Tracking
             }),
         })
             .then(res => res.json())

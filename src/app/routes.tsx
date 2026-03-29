@@ -8,6 +8,7 @@ import { MobileBottomNav } from "./components/MobileBottomNav";
 // Lazy-loaded below-fold pages (code-splitting)
 const BlogPostPage = lazy(() => import("./pages/BlogPostPage").then(m => ({ default: m.BlogPostPage })));
 const AdminPage = lazy(() => import("./pages/AdminPage").then(m => ({ default: m.AdminPage })));
+const AdminGuard = lazy(() => import("./components/AdminGuard").then(m => ({ default: m.AdminGuard })));
 const AboutPage = lazy(() => import("./pages/AboutPage").then(m => ({ default: m.AboutPage })));
 const TacticalBoardPage = lazy(() => import("./pages/TacticalBoardPage").then(m => ({ default: m.TacticalBoardPage })));
 const TacticalEmbedPage = lazy(() => import("./pages/TacticalEmbedPage").then(m => ({ default: m.TacticalEmbedPage })));
@@ -30,10 +31,14 @@ const TransferTrackerPage = lazy(() => import("./pages/TransferTrackerPage").the
 const ProfilePage = lazy(() => import("./pages/ProfilePage").then(m => ({ default: m.ProfilePage })));
 const LeaderboardPage = lazy(() => import("./pages/LeaderboardPage").then(m => ({ default: m.LeaderboardPage })));
 const POTSPage = lazy(() => import("./pages/POTSPage").then(m => ({ default: m.POTSPage })));
+const GlossaryPage = lazy(() => import("./pages/GlossaryPage").then(m => ({ default: m.GlossaryPage })));
+const SignInPage = lazy(() => import("./components/ui/login-1").then(m => ({ default: m.default })));
+import { RouteErrorBoundary } from "./components/RouteErrorBoundary";
 
 export const router = createBrowserRouter([
   {
     path: "/",
+    errorElement: <RouteErrorBoundary />,
     element: (
       <>
         <ScrollRestoration />
@@ -127,6 +132,10 @@ export const router = createBrowserRouter([
         Component: DebateCornerPage,
       },
       {
+        path: "glossary",
+        Component: GlossaryPage,
+      },
+      {
         path: "pots",
         Component: POTSPage,
       },
@@ -136,7 +145,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "pitchside-manage-x7k9",
-        Component: AdminPage,
+        Component: AdminGuard,
+      },
+      {
+        path: "sign-in/*",
+        Component: SignInPage,
+      },
+      {
+        path: "sign-up/*",
+        Component: SignInPage,
       },
       // Programmatic SEO pages
       {

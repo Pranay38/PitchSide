@@ -8,6 +8,7 @@ import {
   RefreshCw,
   ExternalLink,
 } from "lucide-react";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 type NotificationType = "comment" | "subscriber" | "poll_milestone" | "prediction";
 
@@ -259,10 +260,11 @@ export function AdminNotificationsTab() {
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => <NotificationSkeleton key={i} />)
         ) : filtered.length === 0 ? (
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-800 py-12 text-center">
-            <Bell className="h-8 w-8 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm font-medium text-gray-400">No notifications in the selected range</p>
-          </div>
+          <AdminEmptyState
+            icon={Bell}
+            title="No notifications in the selected range"
+            description="You will see notifications here when events match your active filters."
+          />
         ) : (
           filtered.map(n => <NotificationCard key={n.id} notification={n} />)
         )}

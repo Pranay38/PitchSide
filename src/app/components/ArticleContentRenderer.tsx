@@ -26,9 +26,14 @@ type PlainBlock =
   | { type: "ordered-list"; items: string[] }
   | { type: "editorial"; block: EditorialBlock };
 
+type RichBlock =
+  | { type: "html"; content: string }
+  | { type: "tweet"; id: string };
+
 export interface ArticleContentModel {
   isRich: boolean;
   html?: string;
+  richBlocks?: RichBlock[];
   blocks?: PlainBlock[];
   headings: ContentHeading[];
   editorialKinds: EditorialBlock["kind"][];
@@ -77,6 +82,54 @@ function buildHtmlEditorialModel(content: string): ArticleContentModel {
 
   while (node) {
     const nextNode = node.nextElementSibling;
+
+    // ── New WYSIWYG node format: <div data-editorial-block="kind" data-title="..." ...> ──
+    if (node.tagName === "DIV" && node.hasAttribute("data-editorial-block")) {
+      const kind = node.getAttribute("data-editorial-block") as EditorialBlock["kind"];
+      const rawTitle = node.getAttribute("data-title") || "";
+      const rawItems = node.getAttribute("data-items") || "[]";
+      const rawColumns = node.getAttribute("data-columns") || "";
+      const rawQuote = node.getAttribute("data-quote") || "";
+      const rawAttribution = node.getAttribute("data-attribution") || "";
+      const rawRole = node.getAttribute("data-role") || "";
+      const rawBlockId = node.getAttribute("data-block-id") || "";
+      const rawDescription = node.getAttribute("data-description") || "";
+
+      let items: string[] = [];
+      try { items = JSON.parse(rawItems); } catch { /* ignore */ }
+
+      let block: EditorialBlock | null = null;
+
+      if (kind === "timeline") {
+        block = { kind, title: rawTitle || "Timeline", items: items.map(row => { const [label, title2, note] = row.split("|").map((s: string) => s.trim()); return { label: label || "", title: title2 || row, note: note || "" }; }) };
+      } else if (kind === "stats-card") {
+        block = { kind, title: rawTitle || "Stats Card", items: items.map(row => { const [label, value, hint] = row.split("|").map((s: string) => s.trim()); return { label: label || "", value: value || "", hint: hint || "" }; }) };
+      } else if (kind === "quote-block") {
+        block = { kind, data: { quote: rawQuote, attribution: rawAttribution, role: rawRole } };
+      } else if (kind === "key-takeaways") {
+        block = { kind, data: { title: rawTitle || "Key Takeaways", items: items.map((s: string) => s.replace(/^[-*]\s*/, "").trim()).filter(Boolean) } };
+      } else if (kind === "comparison-table") {
+        const columns = rawColumns ? rawColumns.split("|").map((s: string) => s.trim()) : ["Metric", "Option A", "Option B"];
+        block = { kind, data: { title: rawTitle || "Comparison Table", columns, rows: items.map(row => { const cells = row.split("|").map((s: string) => s.trim()); while (cells.length < columns.length) cells.push(""); return cells.slice(0, columns.length); }) } };
+      } else if (kind === "tactical-board") {
+        block = { kind, data: { id: rawBlockId, title: rawTitle || "Tactical Board", description: rawDescription } };
+      } else if (kind === "match-center") {
+        block = { kind, data: { id: rawBlockId } };
+      }
+
+      if (block) {
+        editorialKinds.push(block.kind);
+        const fragment = doc.createRange().createContextualFragment(renderEditorialBlockHtml(block));
+        node.replaceWith(fragment);
+      } else {
+        node.remove();
+      }
+
+      node = nextNode;
+      continue;
+    }
+
+    // ── Legacy [marker] paragraph format ──
     const marker = node.tagName === "P" ? parseEditorialOpenMarker(getTopLevelText(node)) : null;
 
     if (!marker) {
@@ -149,12 +202,62 @@ function buildHtmlEditorialModel(content: string): ArticleContentModel {
     });
   });
 
-  // Annotate glossary terms in the HTML
-  const annotatedHtml = annotateHtmlWithGlossary(doc.body.innerHTML);
+  // Break the body down into chunks of HTML and actionable React components (like Tweet)
+  const richBlocks: RichBlock[] = [];
+  let currentHtmlChunk = "";
+
+  const pushHtmlChunk = () => {
+    if (currentHtmlChunk.trim()) {
+      richBlocks.push({ type: "html", content: annotateHtmlWithGlossary(currentHtmlChunk) });
+      currentHtmlChunk = "";
+    }
+  };
+
+  Array.from(doc.body.children).forEach((child) => {
+    // Check for Sofascore lazy loading
+    if (child.tagName === "IFRAME" && child.getAttribute("src")?.includes("sofascore.com")) {
+      child.setAttribute("data-lazy-src", child.getAttribute("src")!);
+      child.setAttribute("src", "");
+      child.classList.add("lazy-embed-iframe");
+      currentHtmlChunk += child.outerHTML;
+      return;
+    }
+
+    const sofascoreChildIframes = Array.from(child.querySelectorAll('iframe[src*="sofascore.com"]'));
+    sofascoreChildIframes.forEach((iframe) => {
+      iframe.setAttribute("data-lazy-src", iframe.getAttribute("src")!);
+      iframe.setAttribute("src", "");
+      iframe.classList.add("lazy-embed-iframe");
+    });
+
+    // Check for Twitter embed to swap with react-tweet
+    let tweetNode = child.tagName === "BLOCKQUOTE" && child.classList.contains("twitter-tweet") ? child : null;
+    if (!tweetNode && child.getAttribute("data-social-embed") === "twitter") {
+      tweetNode = child.querySelector(".twitter-tweet");
+    }
+
+    if (tweetNode) {
+      const links = Array.from(tweetNode.querySelectorAll("a"));
+      const lastLink = links[links.length - 1];
+      if (lastLink && lastLink.href.includes("status/")) {
+        const idMatch = lastLink.href.match(/status\/(\d+)/);
+        if (idMatch && idMatch[1]) {
+          pushHtmlChunk();
+          richBlocks.push({ type: "tweet", id: idMatch[1] });
+          return;
+        }
+      }
+    }
+
+    currentHtmlChunk += child.outerHTML;
+  });
+
+  pushHtmlChunk();
 
   return {
     isRich: true,
-    html: annotatedHtml,
+    html: doc.body.innerHTML, // Keep for legacy
+    richBlocks,
     headings,
     editorialKinds,
   };
@@ -376,9 +479,11 @@ export function buildQuickSummary(post: BlogPost, model: ArticleContentModel): s
   return bullets;
 }
 
+import { Tweet } from "./ui/tweet"; // Import custom styled react-tweet component
+
 function EditorialBlockView({ block }: { block: EditorialBlock }) {
   return (
-    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderEditorialBlockHtml(block), { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel"] }) }} />
+    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderEditorialBlockHtml(block), { ADD_TAGS: ["iframe", "svg", "path", "circle", "rect", "line"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel", "style"] }) }} />
   );
 }
 
@@ -424,10 +529,54 @@ export function ArticleContentRenderer({
 
   const content = useMemo(() => {
     if (model.isRich) {
+      if (model.richBlocks && model.richBlocks.length > 0) {
+        return (
+          <>
+            <GlossaryStyles />
+            <div ref={containerRef} className={className}>
+              {model.richBlocks.map((block, i) => {
+                if (block.type === "tweet") {
+                  return (
+                    <div key={`tweet-${i}`} className="my-8 flex justify-center">
+                      <div className="w-full max-w-lg dark:text-neutral-200">
+                        <Tweet id={block.id} />
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    key={`html-${i}`}
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(block.content, {
+                        ADD_TAGS: ["iframe", "span", "figure", "figcaption", "svg", "path", "circle", "rect", "line"],
+                        ADD_ATTR: [
+                          "allow",
+                          "allowfullscreen",
+                          "frameborder",
+                          "scrolling",
+                          "target",
+                          "rel",
+                          "data-glossary-term",
+                          "data-glossary-def",
+                          "style",
+                          "data-embedded-image",
+                          "data-lazy-src",
+                        ],
+                      }),
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </>
+        );
+      }
+
       return (
         <>
           <GlossaryStyles />
-          <div ref={containerRef} className={className} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(model.html || "", { ADD_TAGS: ["iframe", "span", "figure", "figcaption"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel", "data-glossary-term", "data-glossary-def", "style", "data-embedded-image"] }) }} />
+          <div ref={containerRef} className={className} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(model.html || "", { ADD_TAGS: ["iframe", "span", "figure", "figcaption", "svg", "path", "circle", "rect", "line"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel", "data-glossary-term", "data-glossary-def", "style", "data-embedded-image", "data-lazy-src"] }) }} />
         </>
       );
     }

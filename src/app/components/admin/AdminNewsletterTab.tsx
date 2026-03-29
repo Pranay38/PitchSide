@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Mail, Send, Users, LoaderCircle, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { AdminEmptyState } from "./AdminEmptyState";
 
 function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("pitchside_admin_token");
+  return localStorage.getItem("pitchside_admin_auth");
 }
 
 export function AdminNewsletterTab() {
@@ -101,7 +102,7 @@ export function AdminNewsletterTab() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white dark:bg-[#111827] rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-[#0F172A] rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <h3 className="font-semibold text-[#0F172A] dark:text-white mb-4">Compose Digest</h3>
             
             <div className="space-y-4">
@@ -114,7 +115,7 @@ export function AdminNewsletterTab() {
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   placeholder="e.g. This Week's Top Tactics & Transfers"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-black/50 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white mb-4"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white mb-4"
                 />
               </div>
 
@@ -126,7 +127,7 @@ export function AdminNewsletterTab() {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   rows={15}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-black/50 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white font-mono text-sm leading-relaxed"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white font-mono text-sm leading-relaxed"
                 />
                 <p className="text-xs text-gray-500 mt-2">
                   You can use HTML tags (e.g., &lt;strong&gt;, &lt;h1&gt;, &lt;a href="..."&gt;) for formatting.
@@ -137,7 +138,7 @@ export function AdminNewsletterTab() {
                 <button
                   onClick={handleSendDigest}
                   disabled={sending || subscribers.length === 0}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-lg font-medium transition-all disabled:opacity-50"
                 >
                   {sending ? <LoaderCircle className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   {sending ? "Sending..." : "Blast Digest"}
@@ -148,21 +149,33 @@ export function AdminNewsletterTab() {
         </div>
 
         <div className="space-y-4">
-          <div className="bg-white dark:bg-[#111827] rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+          <div className="bg-white dark:bg-[#0F172A] rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
             <h3 className="font-semibold text-[#0F172A] dark:text-white mb-4 flex items-center justify-between">
               Subscribers
               <span className="text-xs font-normal text-gray-500">{subscribers.length} total</span>
             </h3>
             
             {subscribers.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <Users className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                <p className="text-sm">No subscribers yet</p>
-              </div>
+              <AdminEmptyState
+                icon={Users}
+                title="No subscribers yet"
+                description="Share your site link to start building your audience!"
+                action={
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.origin);
+                      toast.success("Site link copied to clipboard!");
+                    }}
+                    className="text-sm font-semibold px-5 py-2.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 active:scale-95 text-gray-700 dark:text-gray-200 rounded-lg transition-all shadow-sm"
+                  >
+                    Copy Website Link
+                  </button>
+                }
+              />
             ) : (
               <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                 {subscribers.map((sub, i) => (
-                  <div key={i} className="flex flex-col p-3 rounded-lg bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10">
+                  <div key={i} className="flex flex-col p-3 rounded-lg bg-gray-50 dark:bg-black/20 border border-gray-100 dark:border-gray-800">
                     <span className="text-sm font-medium text-[#0F172A] dark:text-gray-200 truncate">
                       {sub.email}
                     </span>
