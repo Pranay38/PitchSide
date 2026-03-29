@@ -641,15 +641,16 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             <div ref={clubDropdownRef} className="relative mb-3">
                                 <div className="relative">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                    {club && getClubByName(club)?.logo && (
+                                    {club && getClubByName(club)?.logo ? (
                                         <img
                                             src={getClubByName(club)!.logo}
                                             alt=""
                                             className="absolute left-10 top-1/2 -translate-y-1/2 w-5 h-5 object-contain"
                                         />
-                                    )}
+                                    ) : null}
                                     <input
                                         type="text"
+                                        key={`club-input-${club ? 'has' : 'no'}-logo-${!!(club && getClubByName(club)?.logo)}`}
                                         value={clubSearch || club}
                                         onChange={(e) => handleClubSearch(e.target.value)}
                                         onFocus={() => { if (clubSearch || club) handleClubSearch(clubSearch || club); }}

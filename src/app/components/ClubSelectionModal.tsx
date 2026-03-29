@@ -11,6 +11,7 @@ interface ClubSelectionModalProps {
 
 export function ClubSelectionModal({ isOpen, onSelectClub, onSkip }: ClubSelectionModalProps) {
     const [searchQuery, setSearchQuery] = useState("");
+    const [brokenLogos, setBrokenLogos] = useState<Set<string>>(new Set());
     const groupedClubs = useMemo(() => clubsByLeague(), []);
 
     if (!isOpen) return null;
@@ -101,16 +102,18 @@ export function ClubSelectionModal({ isOpen, onSelectClub, onSkip }: ClubSelecti
                                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group text-left"
                                     >
                                         <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                            <img
-                                                src={club.logo}
-                                                alt={club.name}
-                                                className="w-6 h-6 object-contain"
-                                                onError={(e) => {
-                                                    // Fallback to first letter if logo fails
-                                                    e.currentTarget.style.display = "none";
-                                                    e.currentTarget.parentElement!.textContent = club.name[0];
-                                                }}
-                                            />
+                                            {club.logo && !brokenLogos.has(club.logo) ? (
+                                                <img
+                                                    src={club.logo}
+                                                    alt={club.name}
+                                                    className="w-6 h-6 object-contain"
+                                                    onError={() => {
+                                                        setBrokenLogos(prev => new Set(prev).add(club.logo));
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span className="text-xs font-bold text-[#64748B]">{club.name[0]}</span>
+                                            )}
                                         </div>
                                         <span className="text-sm font-medium text-[#0F172A] dark:text-white group-hover:text-[#16A34A] transition-colors">
                                             {club.name}
@@ -144,3 +147,4 @@ export function ClubSelectionModal({ isOpen, onSelectClub, onSkip }: ClubSelecti
         </div>
     );
 }
+
