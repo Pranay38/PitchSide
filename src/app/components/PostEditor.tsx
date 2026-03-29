@@ -58,7 +58,7 @@ function compressImage(file: File, maxWidth = 1200, quality = 0.8): Promise<stri
 
 interface PostEditorProps {
     post?: BlogPost | null;
-    onSave: (post: Omit<BlogPost, "id">) => void;
+    onSave: (post: Omit<BlogPost, "id">, isLeaving?: boolean) => void;
     onCancel: () => void;
 }
 
@@ -273,15 +273,23 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
 
     const validate = (): boolean => {
         const errs: Record<string, string> = {};
+        const cleanContent = content.replace(/<[^>]*>/g, '').trim();
+        
         if (!title.trim()) errs.title = "Title is required";
         if (!excerpt.trim()) errs.excerpt = "Excerpt is required";
-        if (!content.trim() && content.length < 10) errs.content = "Content is required";
+        if (!cleanContent && content.length < 10) errs.content = "Content is required";
         if (category === "club" && !club) errs.club = "Select a club";
+        
         setErrors(errs);
+        
+        if (Object.keys(errs).length > 0) {
+            toast.error("Please fill in all required fields to publish.", { id: "validation-error" });
+        }
+        
         return Object.keys(errs).length === 0;
     };
 
-    const handleStandardSave = (isAutoSave: boolean) => {
+    const handleStandardSave = (isAutoSave: boolean, isLeaving = false) => {
         const plainText = content.replace(/<[^>]*>/g, " ").trim();
         const finalTitle = title.trim() || "Untitled Draft";
 
@@ -306,9 +314,9 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             poll: usePoll && poll.question.trim() ? poll : undefined,
             matchRatings: useMatchRatings && matchRatings.filter(r => r.playerName.trim()).length > 0 ? matchRatings.filter(r => r.playerName.trim()) : undefined,
             publishAt: publishAt || undefined,
-        });
+        }, isLeaving);
 
-        if (isAutoSave) {
+        if (isAutoSave && !isLeaving) {
             setSaveStatus("saved");
             setLastSaved(new Date());
             setTimeout(() => setSaveStatus("idle"), 3000);
@@ -347,6 +355,19 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         handleStandardSave(false);
     };
 
+    const handleBack = () => {
+        // If content and title are completely empty, just cancel
+        const cleanContent = content.replace(/<[^>]*>/g, '').trim();
+        if (!title.trim() && !cleanContent) {
+            onCancel();
+            return;
+        }
+
+        // Otherwise, flush draft before unmounting
+        if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+        handleStandardSave(true, true);
+    };
+
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
             {/* Top Bar */}
@@ -354,7 +375,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                 <div className="max-w-[900px] mx-auto px-6 py-3 flex items-center justify-between">
                     <button
                         type="button"
-                        onClick={onCancel}
+                        onClick={handleBack}
                         className="flex items-center gap-2 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4" />

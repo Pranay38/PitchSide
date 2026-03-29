@@ -219,12 +219,15 @@ export function AdminPage() {
     const handleLogout = () => { adminLogout(); setIsAuthed(false); };
 
     // Post Handlers
-    const handleCreatePost = async (postData: Omit<BlogPost, "id">) => {
+    const handleCreatePost = async (postData: Omit<BlogPost, "id">, isLeaving?: boolean) => {
         try {
             const updated = await addPostAsync(postData);
             setPosts(updated);
 
-            if (postData.isDraft) {
+            if (isLeaving) {
+                setView("list");
+                setEditingPost(null);
+            } else if (postData.isDraft) {
                 // It was an auto-save, stay in the editor but switch to edit mode
                 // The newly created post is the first one in the returned array from addPostAsync
                 const newPost = updated[0];
@@ -245,13 +248,16 @@ export function AdminPage() {
         setView("edit");
     };
 
-    const handleUpdatePost = async (postData: Omit<BlogPost, "id">) => {
+    const handleUpdatePost = async (postData: Omit<BlogPost, "id">, isLeaving?: boolean) => {
         if (editingPost) {
             try {
                 const updated = await updatePostAsync(editingPost.id, postData);
                 setPosts(updated);
 
-                if (postData.isDraft) {
+                if (isLeaving) {
+                    setView("list");
+                    setEditingPost(null);
+                } else if (postData.isDraft) {
                     // It was an auto-save, just update the currently editing post quietly
                     const updatedPost = updated.find(p => p.id === editingPost.id);
                     if (updatedPost) setEditingPost(updatedPost);
