@@ -390,15 +390,15 @@ export function StoryPage() {
                     </div>
 
                     {chapter.image?.src && (
-                      <figure className="mt-8 rounded-[1.5rem] overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-white/5">
+                      <figure className="mt-10 mb-8 w-full">
                         <img
                           src={chapter.image.src}
                           alt={chapter.image.alt || chapter.title}
-                          className="w-full max-h-[520px] object-cover"
+                          className="w-full max-h-[520px] object-cover rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.06)]"
                         />
                         {chapter.image.caption && (
-                          <figcaption className="px-5 py-4 text-sm text-[#64748B] dark:text-gray-400">
-                            {chapter.image.caption}
+                          <figcaption className="mt-3 pr-2 text-right flex items-center justify-end gap-1.5 text-xs text-[#94A3B8] font-medium italic">
+                            <span className="opacity-70 text-[10px] not-italic">📷</span> {chapter.image.caption}
                           </figcaption>
                         )}
                       </figure>
