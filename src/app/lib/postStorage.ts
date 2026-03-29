@@ -130,6 +130,10 @@ export async function addPostAsync(
   });
 
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      adminLogout();
+      if (typeof window !== "undefined") window.location.reload();
+    }
     throw new Error(await getApiErrorMessage(res, "Failed to publish post"));
   }
 
@@ -185,6 +189,10 @@ export async function updatePostAsync(
   });
 
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      adminLogout();
+      if (typeof window !== "undefined") window.location.reload();
+    }
     throw new Error(await getApiErrorMessage(res, "Failed to update post"));
   }
 
@@ -233,6 +241,10 @@ export async function deletePostAsync(id: string): Promise<BlogPost[]> {
   });
 
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      adminLogout();
+      if (typeof window !== "undefined") window.location.reload();
+    }
     throw new Error(await getApiErrorMessage(res, "Failed to delete post"));
   }
 
@@ -321,7 +333,19 @@ export async function initializePosts(): Promise<void> {
 // ──────────────────────────────────────────
 
 export function isAdminAuthenticated(): boolean {
-  return !!getAuthToken();
+  const token = getAuthToken();
+  if (!token) return false;
+  
+  // On production, tokens MUST be a valid JWT (three parts separated by dots)
+  // If the user has a legacy fallback raw password stored, reject it and clear it.
+  if (typeof window !== "undefined" && window.location.hostname !== "localhost") {
+    if (token.split(".").length !== 3) {
+      adminLogout();
+      return false;
+    }
+  }
+  
+  return true;
 }
 
 // Updated to async to hit backend Auth API, with local dev fallback

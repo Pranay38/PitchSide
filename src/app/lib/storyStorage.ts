@@ -313,6 +313,10 @@ export async function addStoryAsync(story: StoryFeature): Promise<StoryFeature[]
   });
 
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      try { localStorage.removeItem(ADMIN_KEY); } catch {}
+      if (typeof window !== "undefined") window.location.reload();
+    }
     throw new Error(await getApiErrorMessage(res, "Failed to create story"));
   }
 
@@ -347,6 +351,10 @@ export async function updateStoryAsync(story: StoryFeature): Promise<StoryFeatur
   });
 
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      try { localStorage.removeItem(ADMIN_KEY); } catch {}
+      if (typeof window !== "undefined") window.location.reload();
+    }
     throw new Error(await getApiErrorMessage(res, "Failed to update story"));
   }
 
@@ -373,6 +381,10 @@ export async function deleteStoryAsync(id: string): Promise<StoryFeature[]> {
   });
 
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      try { localStorage.removeItem(ADMIN_KEY); } catch {}
+      if (typeof window !== "undefined") window.location.reload();
+    }
     throw new Error(await getApiErrorMessage(res, "Failed to delete story"));
   }
 
