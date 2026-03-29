@@ -82,6 +82,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [clubResults, setClubResults] = useState<SearchResult[]>([]);
     const [searchingClubs, setSearchingClubs] = useState(false);
     const [showClubDropdown, setShowClubDropdown] = useState(false);
+    const [brokenLogos, setBrokenLogos] = useState<Set<string>>(new Set());
     const clubSearchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const clubDropdownRef = useRef<HTMLDivElement>(null);
     const [tagInput, setTagInput] = useState("");
@@ -674,14 +675,13 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                                     className="w-full flex items-center gap-3 text-left flex-1"
                                                 >
                                                     <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                        {result.logo ? (
+                                                        {result.logo && !brokenLogos.has(result.logo) ? (
                                                             <img
                                                                 src={result.logo}
                                                                 alt=""
                                                                 className="w-5 h-5 object-contain"
-                                                                onError={(e) => {
-                                                                    e.currentTarget.style.display = "none";
-                                                                    e.currentTarget.parentElement!.textContent = result.name[0];
+                                                                onError={() => {
+                                                                    setBrokenLogos(prev => new Set(prev).add(result.logo));
                                                                 }}
                                                             />
                                                         ) : (
