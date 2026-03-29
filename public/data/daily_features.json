@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-03-28T05:54:17.402267",
+  "lastUpdated": "2026-03-29T06:10:25.158627",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Wharton eyes Crystal Palace exit - Saturday's gossip",
-    "sentimentScore": 41
+    "text": "Newcastle still keen on Trafford - Sunday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
-      "name": "Liam Rosenior (CHE)",
-      "pressureScore": 96
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 97
     },
     {
-      "name": "Pep Guardiola (MCI)",
-      "pressureScore": 84
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 92
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 82
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 89
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 80
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 81
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 67
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 69
     }
   ]
 }
