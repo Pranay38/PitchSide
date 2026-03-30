@@ -1,13 +1,6 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 
-const clerkSecretKey = process.env.CLERK_SECRET_KEY;
-
-export default function middleware(request: any, event: any) {
-  if (!clerkSecretKey) {
-    return;
-  }
-  return clerkMiddleware()(request, event);
-}
+export default clerkMiddleware();
 
 export const config = {
   matcher: [
