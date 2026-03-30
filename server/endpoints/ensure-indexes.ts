@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "../../api/_db";
+import { connectToDatabase } from "../../_api/_db";
 
 /**
  * GET /api/ensure-indexes

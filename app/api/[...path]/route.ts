@@ -18,18 +18,20 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { IncomingMessage, ServerResponse } from "http";
 
 // Import existing handlers
-import postsHandler from "../../../api/posts";
-import commentsHandler from "../../../api/comments";
-import likesHandler from "../../../api/likes";
-import fixturesHandler from "../../../api/fixtures";
-import newsHandler from "../../../api/news";
-import pushHandler from "../../../api/push";
-import reactHandler from "../../../api/react";
-import standingsHandler from "../../../api/standings";
-import storiesHandler from "../../../api/stories";
-import sysHandler from "../../../api/sys";
-import seasonTransfersHandler from "../../../api/season-transfers";
-import transfersTickerHandler from "../../../api/transfers-ticker";
+// NOTE: Directory renamed from api/ to _api/ to prevent Vercel from
+// auto-detecting these files as standalone Serverless Functions.
+import postsHandler from "../../../_api/posts";
+import commentsHandler from "../../../_api/comments";
+import likesHandler from "../../../_api/likes";
+import fixturesHandler from "../../../_api/fixtures";
+import newsHandler from "../../../_api/news";
+import pushHandler from "../../../_api/push";
+import reactHandler from "../../../_api/react";
+import standingsHandler from "../../../_api/standings";
+import storiesHandler from "../../../_api/stories";
+import sysHandler from "../../../_api/sys";
+import seasonTransfersHandler from "../../../_api/season-transfers";
+import transfersTickerHandler from "../../../_api/transfers-ticker";
 
 // Map of direct API routes to their handlers
 const DIRECT_HANDLERS: Record<string, (req: any, res: any) => Promise<any>> = {

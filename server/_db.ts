@@ -1,1 +1,1 @@
-export { connectToDatabase } from "../api/_db";
+export { connectToDatabase } from "../_api/_db";

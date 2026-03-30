@@ -12,6 +12,16 @@ const nextConfig = {
     },
   },
 
+  webpack: (config, { isServer, nextRuntime }) => {
+    if (nextRuntime === 'edge') {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        crypto: false,
+      };
+    }
+    return config;
+  },
+
   // Image optimization - allow external image domains
   images: {
     remotePatterns: [

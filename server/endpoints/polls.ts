@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { MongoClient, ObjectId } from "mongodb";
 
-import { connectToDatabase } from "../../api/_db";
+import { connectToDatabase } from "../../_api/_db";
 
 
 export type PollOption = {
