@@ -182,23 +182,25 @@ async function handleRequest(
   }
 
   // Sys consolidated handler (auth, settings, subscribers, etc.)
-  if (SYS_ROUTES.has(route)) {
+  if (route === "sys" || SYS_ROUTES.has(route)) {
     // Inject the route as a query parameter (matching vercel.json rewrite pattern)
     const url = new URL(request.url);
     
-    // Handle special cases with sub-routes
-    if (route === "polls-vote" || route === "match-ratings-vote") {
-      url.searchParams.set("action", route);
-      const id = pathSegments[1];
-      if (id) url.searchParams.set("id", id);
-    } else if ((route === "polls" || route === "match-ratings") && pathSegments.length > 1) {
-      url.searchParams.set("action", route);
-      url.searchParams.set("id", pathSegments[1]);
-      if (pathSegments[2] === "vote") {
-        url.searchParams.set("action", `${route}-vote`);
+    if (route !== "sys") {
+      // Handle special cases with sub-routes
+      if (route === "polls-vote" || route === "match-ratings-vote") {
+        url.searchParams.set("action", route);
+        const id = pathSegments[1];
+        if (id) url.searchParams.set("id", id);
+      } else if ((route === "polls" || route === "match-ratings") && pathSegments.length > 1) {
+        url.searchParams.set("action", route);
+        url.searchParams.set("id", pathSegments[1]);
+        if (pathSegments[2] === "vote") {
+          url.searchParams.set("action", `${route}-vote`);
+        }
+      } else {
+        url.searchParams.set("route", route);
       }
-    } else {
-      url.searchParams.set("route", route);
     }
 
     const adaptedRequest = new NextRequest(url, {

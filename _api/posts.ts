@@ -150,11 +150,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 }
             }
 
-            if (existing && !existing.slug && !setUpdates.slug) {
+            const wasDraft = existing?.isDraft !== false;
+            const isPublishingNow = setUpdates.isDraft === false;
+
+            // Constantly update the slug while in draft form or during the exact moment of publishing.
+            // Never update it after it's been published to avoid breaking SEO/links.
+            if (existing && (!existing.slug || wasDraft || isPublishingNow)) {
                 const titleToSlugify = setUpdates.title || existing.title;
-                if (titleToSlugify) {
+                if (titleToSlugify && titleToSlugify !== "Untitled Draft") {
                     const baseSlug = titleToSlugify.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                    setUpdates.slug = `${baseSlug}-${id.slice(-5)}`;
+                    if (baseSlug) {
+                        setUpdates.slug = `${baseSlug}-${id.slice(-5)}`;
+                    }
                 }
             }
 
