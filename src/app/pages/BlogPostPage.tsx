@@ -241,7 +241,7 @@ export function BlogPostPage() {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://thetouchlinedribble.com/post/${post.id}`,
+      "@id": `https://thetouchlinedribble.com/post/${post.slug || post.id}`,
     },
   });
 
@@ -493,7 +493,7 @@ export function BlogPostPage() {
               {previousPost ? (
                 <button
                   type="button"
-                  onClick={() => navigate(`/post/${previousPost.id}`)}
+                  onClick={() => navigate(`/post/${previousPost.slug || previousPost.id}`)}
                   className="rounded-[1.75rem] border border-gray-200 bg-white p-5 text-left shadow-sm transition-colors hover:border-[#16A34A]/30 dark:border-gray-800 dark:bg-[#0F172A]"
                 >
                   <div className="flex items-center gap-2 text-sm font-bold text-[#16A34A]">
@@ -509,7 +509,7 @@ export function BlogPostPage() {
               {nextPost ? (
                 <button
                   type="button"
-                  onClick={() => navigate(`/post/${nextPost.id}`)}
+                  onClick={() => navigate(`/post/${nextPost.slug || nextPost.id}`)}
                   className="rounded-[1.75rem] border border-gray-200 bg-white p-5 text-left shadow-sm transition-colors hover:border-[#16A34A]/30 dark:border-gray-800 dark:bg-[#0F172A]"
                 >
                   <div className="flex items-center justify-end gap-2 text-sm font-bold text-[#16A34A]">

@@ -267,7 +267,7 @@ export function AdminPage() {
     const handleViewPost = (post: BlogPost) => {
         if (post.isDraft) {
             if (post.previewToken) {
-                navigate(`/post/${post.id}?preview=${encodeURIComponent(post.previewToken)}`);
+                navigate(`/post/${post.slug || post.id}?preview=${encodeURIComponent(post.previewToken)}`);
                 return;
             }
 
@@ -276,7 +276,7 @@ export function AdminPage() {
             return;
         }
 
-        navigate(`/post/${post.id}`);
+        navigate(`/post/${post.slug || post.id}`);
     };
 
     const handleUpdatePost = async (postData: Omit<BlogPost, "id">, isLeaving?: boolean) => {

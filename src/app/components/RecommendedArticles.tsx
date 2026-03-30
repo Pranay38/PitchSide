@@ -29,7 +29,7 @@ function RecommendationCard({ article, index }: { article: Partial<BlogPost>; in
 
   return (
     <Link
-      to={`/post/${article.id}`}
+      to={`/post/${article.slug || article.id}`}
       className="flex gap-3 py-3 border-b border-gray-100 dark:border-gray-800 transition-opacity hover:opacity-75 group"
     >
       {/* Thumbnail */}

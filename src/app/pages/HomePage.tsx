@@ -392,7 +392,7 @@ export function HomePage() {
     description: post.excerpt,
     image: post.coverImage,
     publishDate: post.readTime || "",
-    readMoreLink: `/post/${post.id}`,
+    readMoreLink: `/post/${post.slug || post.id}`,
     title: post.title,
   })), [editorsPicks]);
 
@@ -544,7 +544,7 @@ export function HomePage() {
                       {thisWeekPosts.map((post) => (
                         <Link
                           key={post.id}
-                          to={`/post/${post.id}`}
+                          to={`/post/${post.slug || post.id}`}
                           className="group relative flex-shrink-0 w-[280px] sm:w-[320px] snap-start rounded-[1.5rem] overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                         >
                           <div className="relative h-40 overflow-hidden">
@@ -605,7 +605,7 @@ export function HomePage() {
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2">
                   {latestPosts.map((post) => (
-                    <Link key={post.id} to={`/post/${post.id}`} className="block h-full group">
+                    <Link key={post.id} to={`/post/${post.slug || post.id}`} className="block h-full group">
                       <ArticleCard
                         headline={post.title}
                         excerpt={post.excerpt}
@@ -704,7 +704,7 @@ export function HomePage() {
                 {editorsPicks.map((post) => (
                   <Link
                     key={post.id}
-                    to={`/post/${post.id}`}
+                    to={`/post/${post.slug || post.id}`}
                     className="group flex gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 transition-colors hover:border-[#16A34A]/30 hover:bg-white/[0.08]"
                   >
                     <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl">

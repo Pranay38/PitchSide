@@ -501,7 +501,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             <button
                                 type="button"
                                 onClick={() => {
-                                    const previewUrl = `${window.location.origin}/post/${post.id}?preview=${post.previewToken}`;
+                                    const previewUrl = `${window.location.origin}/post/${post.slug || post.id}?preview=${post.previewToken}`;
                                     navigator.clipboard.writeText(previewUrl);
                                     toast.success("Preview link copied! Share it for feedback.");
                                 }}

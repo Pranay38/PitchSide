@@ -123,7 +123,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {results.map((post) => (
                 <Link
                   key={post.id}
-                  to={`/post/${post.id}`}
+                  to={`/post/${post.slug || post.id}`}
                   onClick={onClose}
                   className="flex flex-col gap-1 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#0F172A] group transition-colors"
                 >

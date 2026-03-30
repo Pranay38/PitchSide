@@ -38,7 +38,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
       <div
         className="group block relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 bg-slate-900 aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5] xl:aspect-[1/1]"
       >
-        <Link to={`/post/${post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
+        <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
         <div className="absolute inset-0 overflow-hidden">
           <img
             src={post.coverImage}
@@ -106,7 +106,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
     <div
       className="group block relative bg-white dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 rounded-[2rem] hover:border-[#16A34A]/30 hover:shadow-xl hover:shadow-[#16A34A]/5 dark:hover:shadow-[#16A34A]/10 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
     >
-      <Link to={`/post/${post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
+      <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
       <div className="aspect-video overflow-hidden relative pointer-events-none">
         <img
           src={post.coverImage}

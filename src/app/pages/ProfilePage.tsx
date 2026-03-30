@@ -323,7 +323,7 @@ export function ProfilePage() {
                                 {historyArticles.map((article: any) => (
                                     <Link
                                         key={`${article.id}-${article.viewedAt}`}
-                                        to={`/post/${article.id}`}
+                                        to={`/post/${article.slug || article.id}`}
                                         className="block p-4 rounded-xl bg-white dark:bg-[#1E293B]/50 border border-gray-100 dark:border-gray-800/50 hover:border-[#16A34A]/30 transition-all group"
                                     >
                                         <h3 className="font-semibold text-[#0F172A] dark:text-white group-hover:text-[#16A34A] transition-colors">
@@ -358,7 +358,7 @@ export function ProfilePage() {
                                 {savedArticles.map((article) => (
                                     <Link
                                         key={article.id}
-                                        to={`/post/${article.id}`}
+                                        to={`/post/${article.slug || article.id}`}
                                         className="block p-4 rounded-xl bg-white dark:bg-[#1E293B]/50 border border-gray-100 dark:border-gray-800/50 hover:border-[#16A34A]/30 transition-all group"
                                     >
                                         <h3 className="font-semibold text-[#0F172A] dark:text-white group-hover:text-[#16A34A] transition-colors">

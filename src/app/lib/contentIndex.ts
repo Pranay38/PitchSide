@@ -79,7 +79,7 @@ export function buildArchiveEntries(posts: BlogPost[], stories: StoryFeature[]):
   const postEntries = posts.map((post) => ({
     id: post.id,
     type: "article" as const,
-    href: `/post/${post.id}`,
+    href: `/post/${post.slug || post.id}`,
     title: post.title,
     excerpt: post.excerpt,
     coverImage: post.coverImage,

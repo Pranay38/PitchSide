@@ -45,7 +45,7 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
           
           <div className="mt-auto space-y-7 shrink-0">
             <div className="flex w-fit gap-6 lg:mt-auto pt-8">
-              <Link to={'slug' in post ? `/stories/${post.slug}` : `/post/${post.id}`}>
+              <Link to={'slug' in post ? `/stories/${post.slug}` : `/post/${post.slug || post.id}`}>
                 <div className="group/btn relative flex items-center overflow-hidden font-bold text-white transition-colors cursor-pointer pt-4">
                   <span className="mr-4 relative overflow-hidden flex items-center justify-center rounded-full bg-[#16A34A] p-3 w-12 h-12 transition-colors duration-300 ease-in group-hover/btn:bg-white group-hover/btn:text-[#0F172A] text-white shadow-lg shadow-[#16A34A]/20">
                     <ArrowRight className="absolute h-5 w-5 transition-all duration-500 ease-in group-hover/btn:translate-x-8 group-hover/btn:opacity-0" />

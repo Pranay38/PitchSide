@@ -106,7 +106,7 @@ export async function buildSiteAlerts(input: {
         entity: club,
         title: `New ${club} read`,
         summary: post.title,
-        href: `/post/${post.id}`,
+        href: `/post/${post.slug || post.id}`,
         date: post.date,
         priority: 3,
       });
@@ -136,7 +136,7 @@ export async function buildSiteAlerts(input: {
         entity: player,
         title: `New ${player} story`,
         summary: post.title,
-        href: `/post/${post.id}`,
+        href: `/post/${post.slug || post.id}`,
         date: post.date,
         priority: 3,
       });

@@ -349,7 +349,7 @@ export function CollectionsPage() {
                       </h2>
                     </div>
                     <Link
-                      to={`/post/${startHere.id}`}
+                      to={`/post/${startHere.slug || startHere.id}`}
                       className="inline-flex items-center gap-2 rounded-full bg-[#16A34A] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#15803d]"
                     >
                       Open first article
@@ -416,7 +416,7 @@ export function CollectionsPage() {
                         return (
                           <div key={post.id} className="space-y-3">
                             <Link
-                              to={`/post/${post.id}`}
+                              to={`/post/${post.slug || post.id}`}
                               className="group block rounded-[1.5rem] border border-gray-200 bg-white p-5 transition-colors hover:border-[#16A34A]/30 hover:bg-[#16A34A]/5 dark:border-gray-800 dark:bg-[#0F172A]"
                             >
                               <div className="flex gap-4">
@@ -448,12 +448,12 @@ export function CollectionsPage() {
                             {/* Internal links: prev/next within collection */}
                             <div className="flex items-center justify-between px-4 text-xs font-semibold text-[#94A3B8]">
                               {prevPost ? (
-                                <Link to={`/post/${prevPost.id}`} className="flex items-center gap-1 hover:text-[#16A34A] transition-colors">
+                                <Link to={`/post/${prevPost.slug || prevPost.id}`} className="flex items-center gap-1 hover:text-[#16A34A] transition-colors">
                                   <ArrowLeft className="h-3 w-3" /> {prevPost.title.length > 30 ? prevPost.title.slice(0, 30) + "…" : prevPost.title}
                                 </Link>
                               ) : <span />}
                               {nextPost ? (
-                                <Link to={`/post/${nextPost.id}`} className="flex items-center gap-1 hover:text-[#16A34A] transition-colors">
+                                <Link to={`/post/${nextPost.slug || nextPost.id}`} className="flex items-center gap-1 hover:text-[#16A34A] transition-colors">
                                   {nextPost.title.length > 30 ? nextPost.title.slice(0, 30) + "…" : nextPost.title} <ArrowRight className="h-3 w-3" />
                                 </Link>
                               ) : <span />}

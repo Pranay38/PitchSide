@@ -82,7 +82,7 @@ export function InternalLinkSuggestion({ editor, posts }: InternalLinkSuggestion
     }, [editor, checkForSuggestions]);
 
     const handleInsertLink = (post: BlogPost) => {
-        const url = `/post/${post.id}`;
+        const url = `/post/${post.slug || post.id}`;
         editor
             .chain()
             .focus()
