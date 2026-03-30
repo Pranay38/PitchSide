@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "../_db.js";
-import { applyCors, checkRateLimit, requireAuth } from "../utils/security.js";
+import { connectToDatabase } from "../_db";
+import { applyCors, checkRateLimit, requireAuth } from "../utils/security";
 
 /**
  * Interface for a remaining fixture

@@ -9,7 +9,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router';
+import { Link, useLocation } from '@/lib/router-compat';
 import { gsap } from 'gsap';
 import { Menu, X } from 'lucide-react';
 

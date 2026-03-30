@@ -5,14 +5,15 @@
  * own password gate, which is the primary security layer.
  */
 import { useAuth } from "@clerk/clerk-react";
-import { Navigate } from "react-router";
+import { Navigate } from "@/lib/router-compat";
 import { lazy, Suspense } from "react";
+import { isAdminAuthenticated } from "../lib/postStorage";
 
 const AdminPage = lazy(() =>
   import("../pages/AdminPage").then((m) => ({ default: m.AdminPage }))
 );
 
-const CLERK_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
+const CLERK_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY as string | undefined;
 
 const AdminSpinner = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
@@ -27,12 +28,16 @@ const LazyAdmin = () => (
 );
 
 export function AdminGuard() {
+  if (isAdminAuthenticated()) return <LazyAdmin />;
+
   // If Clerk isn't configured, skip auth — rely on password gate
   if (!CLERK_KEY) return <LazyAdmin />;
   return <ClerkGuardedAdmin />;
 }
 
 function ClerkGuardedAdmin() {
+  if (isAdminAuthenticated()) return <LazyAdmin />;
+
   let isSignedIn = false;
   let isLoaded = true;
 

@@ -1,36 +1,36 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import collectionsHandler from "../server/endpoints/collections.js";
-import debatesHandler from "../server/endpoints/debates.js";
-import notifyHandler from "../server/endpoints/notify.js";
-import settingsHandler from "../server/endpoints/settings.js";
-import subscribersHandler from "../server/endpoints/subscribers.js";
-import tacticsHandler from "../server/endpoints/tactics.js";
-import ogHandler from "../server/endpoints/og.js";
-import clubSeasonHandler from "../server/endpoints/club-season.js";
-import authHandler from "../server/endpoints/auth.js";
-import predictionsHandler from "../server/endpoints/predictions.js";
-import runInHandler from "../server/endpoints/run-in.js";
-import titleRaceHandler from "../server/endpoints/title-race.js";
-import pollOfWeekHandler from "../server/endpoints/poll-of-week.js";
-import onThisDayHandler from "../server/endpoints/on-this-day.js";
-import analyticsHandler from "../server/endpoints/analytics.js";
-import aiGenerateHandler from "../server/endpoints/ai-generate.js";
-import sitemapHandler from "../server/endpoints/sitemap.js";
-import transfersHandler from "../server/endpoints/transfers.js";
-import { getPolls, createPoll, updatePoll, deletePoll, votePoll } from "../server/endpoints/polls.js";
-import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRating, voteMatchRating } from "../server/endpoints/matchRatings.js";
-import { recordArticleView, getRecommendations, getTagBasedFallback } from "./_recommendations-lib.js";
-import { connectToDatabase } from "./_db.js";
-import notificationsHandler from "../server/endpoints/notifications.js";
-import digestHandler from "../server/endpoints/digest.js";
-import userPrefsHandler from "../server/endpoints/user-prefs.js";
-import dailyFeaturesHandler from "../server/endpoints/daily-features.js";
-import errorLogHandler from "../server/endpoints/error-log.js";
-import rssHandler from "../server/endpoints/rss.js";
-import ensureIndexesHandler from "../server/endpoints/ensure-indexes.js";
-import searchHandler from "../server/endpoints/search.js";
-import footballDataHandler from "../server/endpoints/football-data.js";
-import { applyRateLimit, applyStrictRateLimit } from "../server/lib/rateLimit.js";
+import collectionsHandler from "../server/endpoints/collections";
+import debatesHandler from "../server/endpoints/debates";
+import notifyHandler from "../server/endpoints/notify";
+import settingsHandler from "../server/endpoints/settings";
+import subscribersHandler from "../server/endpoints/subscribers";
+import tacticsHandler from "../server/endpoints/tactics";
+import ogHandler from "../server/endpoints/og";
+import clubSeasonHandler from "../server/endpoints/club-season";
+import authHandler from "../server/endpoints/auth";
+import predictionsHandler from "../server/endpoints/predictions";
+import runInHandler from "../server/endpoints/run-in";
+import titleRaceHandler from "../server/endpoints/title-race";
+import pollOfWeekHandler from "../server/endpoints/poll-of-week";
+import onThisDayHandler from "../server/endpoints/on-this-day";
+import analyticsHandler from "../server/endpoints/analytics";
+import aiGenerateHandler from "../server/endpoints/ai-generate";
+import sitemapHandler from "../server/endpoints/sitemap";
+import transfersHandler from "../server/endpoints/transfers";
+import { getPolls, createPoll, updatePoll, deletePoll, votePoll } from "../server/endpoints/polls";
+import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRating, voteMatchRating } from "../server/endpoints/matchRatings";
+import { recordArticleView, getRecommendations, getTagBasedFallback } from "./_recommendations-lib";
+import { connectToDatabase } from "./_db";
+import notificationsHandler from "../server/endpoints/notifications";
+import digestHandler from "../server/endpoints/digest";
+import userPrefsHandler from "../server/endpoints/user-prefs";
+import dailyFeaturesHandler from "../server/endpoints/daily-features";
+import errorLogHandler from "../server/endpoints/error-log";
+import rssHandler from "../server/endpoints/rss";
+import ensureIndexesHandler from "../server/endpoints/ensure-indexes";
+import searchHandler from "../server/endpoints/search";
+import footballDataHandler from "../server/endpoints/football-data";
+import { applyRateLimit, applyStrictRateLimit } from "../server/lib/rateLimit";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     const route = (req.query.route || req.query.action) as string;
@@ -40,8 +40,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (blocked) return; // 429 already sent
 
     // ── Strict rate limiting for sensitive endpoints ──
-    const strictRoutes = ["error-log", "auth", "subscribers", "notify"];
-    if (strictRoutes.includes(route)) {
+    const shouldApplyStrictRateLimit =
+        route === "error-log" ||
+        route === "auth" ||
+        route === "notify" ||
+        (route === "subscribers" && req.method !== "GET");
+
+    if (shouldApplyStrictRateLimit) {
         const strictBlocked = await applyStrictRateLimit(req, res);
         if (strictBlocked) return;
     }

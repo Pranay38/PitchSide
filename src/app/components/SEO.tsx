@@ -1,4 +1,12 @@
-import { Helmet } from "react-helmet-async";
+/**
+ * SEO component — now a no-op wrapper for Next.js migration.
+ * 
+ * In Next.js, SEO metadata is handled by the `generateMetadata` function
+ * in each page's server component (app/post/[id]/page.tsx, etc.).
+ * 
+ * This component is kept as a no-op so existing page components don't break
+ * when they render <SEO ... />. It simply renders nothing.
+ */
 
 interface SEOProps {
     title?: string;
@@ -11,88 +19,8 @@ interface SEOProps {
     date?: string;
 }
 
-/** Build a dynamic OG image URL using the /api/og edge function */
-function buildOgImageUrl(title: string, club?: string, date?: string): string {
-    const params = new URLSearchParams({ title });
-    if (club) params.set("club", club);
-    if (date) params.set("date", date);
-    return `https://thetouchlinedribble.in/api/og?${params.toString()}`;
+export function SEO(_props: SEOProps) {
+    // In Next.js, metadata is set via generateMetadata() in server components.
+    // This client-side component is now a no-op.
+    return null;
 }
-
-export function SEO({
-    title = "The Touchline Dribble | Football Analysis & News",
-    description = "A modern football blog featuring data-driven tactical analysis, rumors, manager pressure indices, and the latest news for die-hard fans.",
-    image,
-    url,
-    type = "website",
-    schema,
-    club,
-    date,
-}: SEOProps) {
-
-    // Auto-detect canonical URL from window.location if not explicitly provided, but enforce primary domain
-    const getCanonical = () => {
-        if (url) return url;
-        if (typeof window !== "undefined") {
-            // Replace any vercel or localhost domains with the production domain
-            const currentPath = window.location.pathname + window.location.search;
-            return `https://thetouchlinedribble.in${currentPath}`;
-        }
-        return "https://thetouchlinedribble.in/";
-    };
-
-    const canonicalUrl = getCanonical();
-
-    // Ensure title suffix is present unless it's already the default
-    const formattedTitle = title === "The Touchline Dribble | Football Analysis & News"
-        ? title
-        : `${title} | The Touchline Dribble`;
-
-    // Use dynamic OG image if no custom image provided, or if it's an article
-    const ogImage = image || buildOgImageUrl(title, club, date);
-
-    return (
-        <Helmet>
-            {/* Primary Meta Tags */}
-            <title>{formattedTitle}</title>
-            <meta name="title" content={formattedTitle} />
-            <meta name="description" content={description} />
-            
-            {/* Browser theme color matching brand */}
-            <meta name="theme-color" content="#16A34A" />
-
-            {/* Canonical URL */}
-            <link rel="canonical" href={canonicalUrl} />
-
-            {/* RSS Feed autodiscovery */}
-            <link rel="alternate" type="application/rss+xml" title="PitchSide RSS Feed" href="/api/rss" />
-
-            {/* Open Graph / Facebook */}
-            <meta property="og:type" content={type} />
-            <meta property="og:url" content={canonicalUrl} />
-            <meta property="og:title" content={formattedTitle} />
-            <meta property="og:description" content={description} />
-            <meta property="og:image" content={ogImage} />
-            <meta property="og:image:width" content="1200" />
-            <meta property="og:image:height" content="630" />
-            <meta property="og:site_name" content="The Touchline Dribble" />
-
-            {/* Twitter */}
-            <meta property="twitter:card" content="summary_large_image" />
-            <meta property="twitter:url" content={canonicalUrl} />
-            <meta name="twitter:title" content={title} />
-            <meta name="twitter:description" content={description} />
-            <meta name="twitter:image" content={ogImage} />
-            <meta name="twitter:site" content="@TouchlineDribbl" />
-            <meta name="twitter:creator" content="@TouchlineDribbl" />
-
-            {/* Schema / JSON-LD structured data */}
-            {schema && (
-                <script type="application/ld+json">
-                    {schema}
-                </script>
-            )}
-        </Helmet>
-    );
-}
-

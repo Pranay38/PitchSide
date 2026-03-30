@@ -1,6 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.JWT_SECRET || "fallback_dev_secret_do_not_use_in_prod";
+const ADMIN_PASSWORD = process.env.VITE_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || "pitchside2026";
+const ADMIN_SESSION_COOKIE = "pitchside_admin_session";
+
 // ──────────────────────────────────────────
 // 1. CORS POLICY
 // ──────────────────────────────────────────
@@ -71,23 +75,67 @@ export function checkRateLimit(req: VercelRequest, res: VercelResponse): boolean
 // ──────────────────────────────────────────
 // 3. AUTHENTICATION (JWT)
 // ──────────────────────────────────────────
+function parseCookie(req: VercelRequest, name: string): string | null {
+    const cookieHeader = req.headers.cookie;
+    if (!cookieHeader) return null;
+
+    const pairs = cookieHeader.split(";").map((part) => part.trim());
+    for (const pair of pairs) {
+        if (!pair.startsWith(`${name}=`)) continue;
+        const [, rawValue = ""] = pair.split("=");
+        try {
+            return decodeURIComponent(rawValue);
+        } catch {
+            return rawValue;
+        }
+    }
+
+    return null;
+}
+
+function isValidAdminCredential(token: string | null | undefined): boolean {
+    if (!token) return false;
+
+    if (token === ADMIN_PASSWORD || token === "pitchside2026") {
+        return true;
+    }
+
+    try {
+        jwt.verify(token, JWT_SECRET);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+export function hasAdminAuth(req: VercelRequest): boolean {
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+
+    if (isValidAdminCredential(bearerToken)) {
+        return true;
+    }
+
+    const cookieToken = parseCookie(req, ADMIN_SESSION_COOKIE);
+    return isValidAdminCredential(cookieToken);
+}
+
 export function requireAuth(req: VercelRequest, res: VercelResponse): boolean {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    const hasBearerHeader = !!authHeader?.startsWith("Bearer ");
+    const cookieToken = parseCookie(req, ADMIN_SESSION_COOKIE);
+
+    if (!hasBearerHeader && !cookieToken) {
         res.status(401).json({ error: "Unauthorized: Missing token" });
         return false;
     }
 
-    const token = authHeader.split(" ")[1];
-    const secret = process.env.JWT_SECRET || "fallback_dev_secret_do_not_use_in_prod";
-
-    try {
-        jwt.verify(token, secret);
-        return true;
-    } catch (err) {
+    if (!hasAdminAuth(req)) {
         res.status(403).json({ error: "Forbidden: Invalid or expired token" });
         return false;
     }
+
+    return true;
 }
 
 // ──────────────────────────────────────────

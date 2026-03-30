@@ -58,11 +58,12 @@ function compressImage(file: File, maxWidth = 1200, quality = 0.8): Promise<stri
 
 interface PostEditorProps {
     post?: BlogPost | null;
-    onSave: (post: Omit<BlogPost, "id">, isLeaving?: boolean) => void;
+    onSave: (post: Omit<BlogPost, "id">, isLeaving?: boolean) => Promise<void>;
     onCancel: () => void;
 }
 
 export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
+    type SubmitAction = "draft" | "publish" | "back";
     const [title, setTitle] = useState(post?.title || "");
     const [excerpt, setExcerpt] = useState(post?.excerpt || "");
     const [content, setContent] = useState(post?.content || "");
@@ -110,7 +111,9 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     // Auto-save state
     const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [submitAction, setSubmitAction] = useState<SubmitAction | null>(null);
     const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const saveFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const previewArticleModel = useMemo(() => getArticleContentModel(content), [content]);
 
     // Derive the effective "club" field based on category
@@ -289,11 +292,11 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         return Object.keys(errs).length === 0;
     };
 
-    const handleStandardSave = (isAutoSave: boolean, isLeaving = false) => {
+    const buildPostPayload = (isDraft: boolean): Omit<BlogPost, "id"> => {
         const plainText = content.replace(/<[^>]*>/g, " ").trim();
         const finalTitle = title.trim() || "Untitled Draft";
 
-        onSave({
+        return {
             title: finalTitle,
             excerpt: excerpt.trim(),
             content: content,
@@ -310,16 +313,63 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             mainStory,
             mediaUrl: mediaUrl.trim() || undefined,
             playerName: playerName.trim() || undefined,
-            isDraft: isAutoSave, // If auto-save, it's a draft. Click 'Publish' makes it false.
+            isDraft,
             poll: usePoll && poll.question.trim() ? poll : undefined,
             matchRatings: useMatchRatings && matchRatings.filter(r => r.playerName.trim()).length > 0 ? matchRatings.filter(r => r.playerName.trim()) : undefined,
             publishAt: publishAt || undefined,
-        }, isLeaving);
+        };
+    };
 
-        if (isAutoSave && !isLeaving) {
-            setSaveStatus("saved");
-            setLastSaved(new Date());
-            setTimeout(() => setSaveStatus("idle"), 3000);
+    const clearPendingAutoSave = () => {
+        if (autoSaveTimerRef.current) {
+            clearTimeout(autoSaveTimerRef.current);
+            autoSaveTimerRef.current = null;
+        }
+    };
+
+    const showSavedIndicator = () => {
+        setSaveStatus("saved");
+        setLastSaved(new Date());
+        if (saveFeedbackTimerRef.current) clearTimeout(saveFeedbackTimerRef.current);
+        saveFeedbackTimerRef.current = setTimeout(() => setSaveStatus("idle"), 3000);
+    };
+
+    const persistPost = async (mode: "draft" | "publish", isLeaving = false) => {
+        await onSave(buildPostPayload(mode === "draft"), isLeaving);
+    };
+
+    const handleDraftSave = async (isLeaving = false) => {
+        if (submitAction || saveStatus === "saving") return;
+
+        clearPendingAutoSave();
+        setSubmitAction(isLeaving ? "back" : "draft");
+
+        try {
+            await persistPost("draft", isLeaving);
+
+            if (!isLeaving) {
+                showSavedIndicator();
+                toast.success(post?.isDraft ? "Draft updated." : "Saved as draft.");
+            }
+        } catch {
+            setSaveStatus("error");
+        } finally {
+            setSubmitAction(null);
+        }
+    };
+
+    const handlePublish = async () => {
+        if (submitAction || saveStatus === "saving") return;
+        if (!validate()) return;
+
+        clearPendingAutoSave();
+        setSubmitAction("publish");
+
+        try {
+            await persistPost("publish");
+        } catch {
+            setSaveStatus("error");
+            setSubmitAction(null);
         }
     };
 
@@ -327,35 +377,49 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     useEffect(() => {
         // Don't auto-save immediately on mount or if completely empty
         if (!title.trim() && !content.trim()) return;
+        if (submitAction || saveStatus === "saving") return;
 
         setSaveStatus("idle");
 
-        if (autoSaveTimerRef.current) {
-            clearTimeout(autoSaveTimerRef.current);
-        }
+        clearPendingAutoSave();
 
         autoSaveTimerRef.current = setTimeout(() => {
-            setSaveStatus("saving");
-            handleStandardSave(true);
+            void (async () => {
+                setSaveStatus("saving");
+
+                try {
+                    await persistPost("draft");
+                    showSavedIndicator();
+                } catch {
+                    setSaveStatus("error");
+                }
+            })();
         }, 3000); // 3 seconds debounce
 
         return () => {
-            if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+            clearPendingAutoSave();
         };
     }, [
         title, excerpt, content, coverImage, club, category, tags,
-        thisWeek, mustRead, editorPick, mainStory, mediaUrl, playerName, usePoll, poll
+        thisWeek, mustRead, editorPick, mainStory, mediaUrl, playerName,
+        usePoll, poll, useMatchRatings, matchRatings, publishAt, submitAction
     ]);
+
+    useEffect(() => {
+        return () => {
+            if (saveFeedbackTimerRef.current) clearTimeout(saveFeedbackTimerRef.current);
+            clearPendingAutoSave();
+        };
+    }, []);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validate()) return;
-
-        if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
-        handleStandardSave(false);
+        void handlePublish();
     };
 
-    const handleBack = () => {
+    const handleBack = async () => {
+        if (submitAction) return;
+
         // If content and title are completely empty, just cancel
         const cleanContent = content.replace(/<[^>]*>/g, '').trim();
         if (!title.trim() && !cleanContent) {
@@ -364,9 +428,24 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         }
 
         // Otherwise, flush draft before unmounting
-        if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
-        handleStandardSave(true, true);
+        await handleDraftSave(true);
     };
+
+    const draftButtonLabel = post?.isDraft ? "Update Draft" : "Save as Draft";
+    const publishButtonLabel = post && !post.isDraft ? "Update Published" : "Publish Post";
+    const draftSubmitLabel = submitAction === "back"
+        ? "Saving draft..."
+        : submitAction === "draft"
+            ? "Saving draft..."
+            : "";
+    const publishSubmitLabel = submitAction === "publish"
+        ? post && !post.isDraft
+            ? "Updating post..."
+            : "Publishing post..."
+        : "";
+    const actionInFlightLabel = draftSubmitLabel || publishSubmitLabel;
+    const isSubmitting = submitAction !== null;
+    const isBusy = isSubmitting || saveStatus === "saving";
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
@@ -375,7 +454,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                 <div className="max-w-[900px] mx-auto px-6 py-3 flex items-center justify-between">
                     <button
                         type="button"
-                        onClick={handleBack}
+                        onClick={() => void handleBack()}
+                        disabled={isBusy}
                         className="flex items-center gap-2 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
                     >
                         <ArrowLeft className="w-4 h-4" />
@@ -384,7 +464,13 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
 
                     {/* Auto-save indicator */}
                     <div className="flex items-center justify-center flex-1 mx-4">
-                        {saveStatus === "saving" && (
+                        {isSubmitting && (
+                            <span className="flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-md">
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                {actionInFlightLabel}
+                            </span>
+                        )}
+                        {!isSubmitting && saveStatus === "saving" && (
                             <span className="flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-md">
                                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                 Saving draft...
@@ -428,16 +514,27 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                         <button
                             type="button"
                             onClick={() => setShowPreview(true)}
+                            disabled={isBusy}
                             className="flex items-center gap-2 px-4 py-1.5 border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white rounded-lg font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200"
                         >
                             <Eye className="w-4 h-4" />
                             Preview
                         </button>
                         <button
-                            onClick={handleSubmit}
-                            className="px-5 py-1.5 bg-[#16A34A] text-white rounded-lg font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
+                            type="button"
+                            onClick={() => void handleDraftSave()}
+                            disabled={isBusy}
+                            className="px-5 py-1.5 border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white rounded-lg font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            {post ? "Update Post" : "Publish Post"}
+                            {submitAction === "draft" ? "Saving..." : draftButtonLabel}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => void handlePublish()}
+                            disabled={isBusy}
+                            className="px-5 py-1.5 bg-[#16A34A] text-white rounded-lg font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            {submitAction === "publish" ? "Working..." : publishButtonLabel}
                         </button>
                     </div>
                 </div >
@@ -1118,15 +1215,25 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                         <button
                             type="button"
                             onClick={onCancel}
+                            disabled={isBusy}
                             className="px-6 py-2.5 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white border border-gray-200 dark:border-gray-700 rounded-xl transition-colors"
                         >
                             Cancel
                         </button>
                         <button
-                            type="submit"
-                            className="px-8 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
+                            type="button"
+                            onClick={() => void handleDraftSave()}
+                            disabled={isBusy}
+                            className="px-6 py-2.5 border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                            {post ? "Update Post" : "Publish Post"}
+                            {submitAction === "draft" ? "Saving..." : draftButtonLabel}
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isBusy}
+                            className="px-8 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            {submitAction === "publish" ? "Working..." : publishButtonLabel}
                         </button>
                     </div>
                 </form>
@@ -1181,6 +1288,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 <div className="flex items-center gap-3">
                                     <button
                                         onClick={() => setShowPreview(false)}
+                                        disabled={isBusy}
                                         className="flex items-center gap-2 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
                                     >
                                         <ArrowLeft className="w-4 h-4" />
@@ -1190,12 +1298,24 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                         Preview Mode
                                     </span>
                                 </div>
-                                <button
-                                    onClick={handleSubmit}
-                                    className="px-5 py-1.5 bg-[#16A34A] text-white rounded-lg font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
-                                >
-                                    {post ? "Update Post" : "Publish Post"}
-                                </button>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => void handleDraftSave()}
+                                        disabled={isBusy}
+                                        className="px-5 py-1.5 border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white rounded-lg font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                                    >
+                                        {submitAction === "draft" ? "Saving..." : draftButtonLabel}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => void handlePublish()}
+                                        disabled={isBusy}
+                                        className="px-5 py-1.5 bg-[#16A34A] text-white rounded-lg font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25 disabled:opacity-60 disabled:cursor-not-allowed"
+                                    >
+                                        {submitAction === "publish" ? "Working..." : publishButtonLabel}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

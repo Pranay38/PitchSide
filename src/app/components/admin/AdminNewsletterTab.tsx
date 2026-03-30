@@ -8,6 +8,11 @@ function getAuthToken(): string | null {
   return localStorage.getItem("pitchside_admin_auth");
 }
 
+function getAuthHeaders(): HeadersInit {
+  const token = getAuthToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export function AdminNewsletterTab() {
   const [subscribers, setSubscribers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,18 +21,22 @@ export function AdminNewsletterTab() {
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    fetchSubscribers();
+    void fetchSubscribers();
   }, []);
 
   const fetchSubscribers = async () => {
     try {
       const res = await fetch("/api/subscribers", {
-        headers: { Authorization: `Bearer ${getAuthToken()}` }
+        headers: getAuthHeaders(),
+        cache: "no-store",
+        credentials: "same-origin",
       });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        const data = await res.json();
         setSubscribers(data.subscribers || []);
+        return;
       }
+      throw new Error(data.error || "Failed to load subscribers");
     } catch (e) {
       console.error(e);
       toast.error("Failed to load subscribers");
@@ -50,7 +59,7 @@ export function AdminNewsletterTab() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${getAuthToken()}`
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({
           subject,

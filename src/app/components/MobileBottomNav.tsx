@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation } from "@/lib/router-compat";
 import { Home, Newspaper, ArrowLeftRight, Flame, User } from "lucide-react";
 
 const tabs = [

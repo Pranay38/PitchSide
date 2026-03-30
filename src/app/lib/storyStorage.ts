@@ -178,17 +178,21 @@ function saveStoriesLocal(stories: StoryFeature[]): void {
 
 function getAllStoriesLocal(): StoryFeature[] {
   try {
-    const stored = localStorage.getItem(STORIES_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored) as Array<Partial<StoryFeature>>;
-      if (Array.isArray(parsed) && parsed.length > 0) return normalizeStories(parsed);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORIES_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as Array<Partial<StoryFeature>>;
+        if (Array.isArray(parsed) && parsed.length > 0) return normalizeStories(parsed);
+      }
     }
   } catch {
     // ignore
   }
 
   const defaults = normalizeStories(defaultStories);
-  saveStoriesLocal(defaults);
+  if (typeof window !== 'undefined') {
+    saveStoriesLocal(defaults);
+  }
   return defaults;
 }
 

@@ -128,7 +128,7 @@ export function AdminNotificationsTab() {
   const [typeFilter, setTypeFilter] = useState<"all" | NotificationType>("all");
   const [pollingEnabled, setPollingEnabled] = useState(true);
 
-  const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || (typeof localStorage !== "undefined" ? localStorage.getItem("pitchside_pwd") : "");
+  const pwd = typeof localStorage !== "undefined" ? (localStorage.getItem("pitchside_admin_auth") || "") : "";
 
   const fetchNotifications = useCallback(async () => {
     try {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "@/lib/router-compat";
 import {
   ArrowLeft,
   ArrowRight,
@@ -56,6 +56,11 @@ export function BlogPostPage() {
   const { isPostSaved, isClubFollowed, isPlayerFollowed, toggleSavedPost, toggleFollowedClub, toggleFollowedPlayer, addReadPost } = useUserPreferences();
   const { user } = useUser();
   const [isLiked, setIsLiked] = useState<boolean>(false);
+  const currentIndex = posts.findIndex((post) => post.id === id);
+  const post = previewPost || (currentIndex >= 0 ? posts[currentIndex] : null);
+  const isPreview = !!previewPost;
+  const previousPost = !isPreview && currentIndex > 0 ? posts[currentIndex - 1] : null;
+  const nextPost = !isPreview && currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
 
   // Sync like state when post loads
   useEffect(() => {
@@ -115,12 +120,6 @@ export function BlogPostPage() {
       isMounted = false;
     };
   }, []);
-
-  const currentIndex = posts.findIndex((post) => post.id === id);
-  const post = previewPost || (currentIndex >= 0 ? posts[currentIndex] : null);
-  const isPreview = !!previewPost;
-  const previousPost = !isPreview && currentIndex > 0 ? posts[currentIndex - 1] : null;
-  const nextPost = !isPreview && currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
 
   const articleContentModel = useMemo(
     () => (post ? getArticleContentModel(post.content) : null),

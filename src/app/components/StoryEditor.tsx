@@ -590,8 +590,9 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
                 onChange={(e) => updateChapter(chapter.id, (current) => ({
                   ...current,
                   image: {
-                    ...current.image,
                     src: e.target.value,
+                    alt: current.image?.alt || "",
+                    caption: current.image?.caption,
                   },
                 }))}
                 placeholder="Image URL"
@@ -604,8 +605,9 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
                   onChange={(e) => updateChapter(chapter.id, (current) => ({
                     ...current,
                     image: {
-                      ...current.image,
+                      src: current.image?.src || "",
                       alt: e.target.value,
+                      caption: current.image?.caption,
                     },
                   }))}
                   placeholder="Alt text"
@@ -617,7 +619,8 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
                   onChange={(e) => updateChapter(chapter.id, (current) => ({
                     ...current,
                     image: {
-                      ...current.image,
+                      src: current.image?.src || "",
+                      alt: current.image?.alt || "",
                       caption: e.target.value,
                     },
                   }))}

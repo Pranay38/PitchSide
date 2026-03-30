@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { Bell, Mail, Plus, Repeat2, ShieldAlert, UserRound, X } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
@@ -22,7 +22,8 @@ export function AlertsPage() {
     toggleFollowedClub,
     toggleFollowedPlayer,
     toggleFollowedTransfer,
-    markAlertsSeen
+    markAlertsSeen,
+    setNewsletterOptIn,
   } = useUserPreferences();
 
   const [alerts, setAlerts] = useState<SiteAlert[]>([]);
@@ -99,6 +100,7 @@ export function AlertsPage() {
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || "Failed to save preferences");
+      setNewsletterOptIn(true);
       toast.success(payload.alreadySubscribed ? "Alert preferences updated." : "Email alerts saved.");
       setEmail("");
     } catch (error) {

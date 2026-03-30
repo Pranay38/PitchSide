@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import type { BlogPost } from "../data/posts";
 import { getClubByName } from "../data/clubs";
 import { Clock, Star, ArrowRight, Heart } from "lucide-react";

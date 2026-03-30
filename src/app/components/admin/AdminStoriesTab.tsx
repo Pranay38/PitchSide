@@ -1,6 +1,6 @@
 import { Plus, Edit3, Trash2, Eye, Copy, BookOpen } from "lucide-react";
 import { AdminEmptyState } from "./AdminEmptyState";
-import { useNavigate } from "react-router";
+import { useNavigate } from "@/lib/router-compat";
 import type { StoryFeature } from "../../data/stories";
 import { StoryEditor } from "../StoryEditor";
 

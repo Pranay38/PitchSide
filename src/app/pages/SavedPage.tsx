@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { Bookmark, Heart } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";

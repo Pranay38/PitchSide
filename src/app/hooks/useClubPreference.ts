@@ -6,7 +6,7 @@ const ONBOARDED_KEY = "pitchside_onboarded";
 export function useClubPreference() {
     const [favoriteClub, setFavoriteClubState] = useState<string | null>(() => {
         try {
-            return localStorage.getItem(CLUB_KEY);
+            return typeof window !== 'undefined' ? localStorage.getItem(CLUB_KEY) : null;
         } catch {
             return null;
         }
@@ -14,7 +14,7 @@ export function useClubPreference() {
 
     const [isOnboarded, setIsOnboardedState] = useState<boolean>(() => {
         try {
-            return localStorage.getItem(ONBOARDED_KEY) === "true";
+            return typeof window !== 'undefined' ? localStorage.getItem(ONBOARDED_KEY) === "true" : false;
         } catch {
             return false;
         }

@@ -15,10 +15,11 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        if (await adminLogin(password)) {
+        const result = await adminLogin(password);
+        if (result.ok) {
             onLogin();
         } else {
-            setError("Incorrect password");
+            setError(result.error || "Incorrect password");
             setPassword("");
         }
         setIsLoading(false);

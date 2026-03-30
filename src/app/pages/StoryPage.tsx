@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import DOMPurify from "dompurify";
-import { Link, useParams, useSearchParams } from "react-router";
+import { Link, useParams, useSearchParams } from "@/lib/router-compat";
 import { ArrowLeft, ArrowRight, Quote, Sparkles, BookOpen } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";

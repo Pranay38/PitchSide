@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { Flag, Home, Library } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";

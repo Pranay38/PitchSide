@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "../_db.js";
-import { applyCors, checkRateLimit } from "../utils/security.js";
-import { CURATED_HISTORY } from "../data/on-this-day-history.js";
+import { connectToDatabase } from "../_db";
+import { applyCors, checkRateLimit } from "../utils/security";
+import { CURATED_HISTORY } from "../data/on-this-day-history";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */

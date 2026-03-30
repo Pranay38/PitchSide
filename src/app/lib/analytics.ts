@@ -15,7 +15,7 @@ declare global {
   }
 }
 
-const GA_ID = import.meta.env.VITE_GA4_MEASUREMENT_ID as string | undefined;
+const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID as string | undefined;
 
 /** Send a GA4 page_view event for the current URL. */
 export function trackPageView(url?: string) {

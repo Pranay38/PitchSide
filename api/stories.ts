@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { ObjectId } from "mongodb";
-import { applyCors, checkRateLimit, requireAuth } from "../server/utils/security.js";
-import { connectToDatabase } from "./_db.js";
-import { storyFeatures as defaultStories } from "../src/app/data/stories.js";
+import { applyCors, checkRateLimit, requireAuth } from "../server/utils/security";
+import { connectToDatabase } from "./_db";
+import { storyFeatures as defaultStories } from "../src/app/data/stories";
 
 const COLLECTION = "stories";
 

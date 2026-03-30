@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { Header } from "../components/Header";
 import { SEO } from "../components/SEO";
 import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar, Share, Sparkles, Bell, Search, Shield, X, Mail, Clock } from "lucide-react";
 import { getAllClubs, getClubByName, searchClubsOnline, type Club, type SearchResult } from "../data/clubs";
 import { useUser } from "@clerk/clerk-react";
+import { toast } from "sonner";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { getAllPosts } from "../lib/postStorage";
 import { getAvatarUrl } from "../lib/avatar";
@@ -35,6 +36,7 @@ export function ProfilePage() {
         setFanClub, 
         newsletterOptIn, 
         setNewsletterOptIn,
+        loading: preferencesLoading,
         followedClubs,
         readingHistory
     } = useUserPreferences();
@@ -63,6 +65,7 @@ export function ProfilePage() {
 
     const [wrappedUrl, setWrappedUrl] = useState<string | null>(null);
     const [pushStatus, setPushStatus] = useState<"default" | "granted" | "denied">("default");
+    const [newsletterSubmitting, setNewsletterSubmitting] = useState(false);
 
     // Club selector state
     const [clubSearchTerm, setClubSearchTerm] = useState("");
@@ -111,7 +114,7 @@ export function ProfilePage() {
             }
 
             const registration = await navigator.serviceWorker.ready;
-            const publicVapidKey = (import.meta as any).env.VITE_VAPID_PUBLIC_KEY;
+            const publicVapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
             if (!publicVapidKey) throw new Error("VAPID public key missing from env");
             
             const subscription = await registration.pushManager.subscribe({
@@ -134,6 +137,41 @@ export function ProfilePage() {
     };
 
     const userName = user?.fullName || user?.firstName || "Football Fan";
+    const newsletterEmail = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || "";
+
+    const subscribeToNewsletter = async () => {
+        if (!newsletterEmail) {
+            toast.error("We could not find an email address on your account.");
+            return;
+        }
+        if (preferencesLoading || newsletterOptIn || newsletterSubmitting) {
+            return;
+        }
+
+        setNewsletterSubmitting(true);
+        try {
+            const res = await fetch("/api/subscribers", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: newsletterEmail }),
+                credentials: "same-origin",
+            });
+            const payload = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                throw new Error(
+                    typeof payload.error === "string" ? payload.error : "Could not save your subscription.",
+                );
+            }
+
+            setNewsletterOptIn(true);
+            toast.success(payload.alreadySubscribed ? "You're already subscribed." : "Subscribed to the newsletter.");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Could not save your subscription.");
+        } finally {
+            setNewsletterSubmitting(false);
+        }
+    };
 
     const tabs = [
         { id: "history" as const, label: "History", icon: Clock },
@@ -194,7 +232,7 @@ export function ProfilePage() {
                 </div>
 
                 {/* The Touchline Dribble Wrapped Banner (Only from June 16th onwards each year) */}
-                {(new Date().getMonth() > 5 || (new Date().getMonth() === 5 && new Date().getDate() >= 16) || localStorage.getItem("dev_force_wrapped") === "true") && (
+                {(new Date().getMonth() > 5 || (new Date().getMonth() === 5 && new Date().getDate() >= 16) || (typeof window !== 'undefined' && localStorage.getItem("dev_force_wrapped") === "true")) && (
                     <div className="mb-6 p-6 rounded-2xl bg-gradient-to-r from-gray-900 via-[#0F172A] to-[#1E293B] border border-gray-800 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#16A34A] opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
                         
@@ -545,16 +583,39 @@ export function ProfilePage() {
                             <label className="block text-sm font-semibold text-[#0F172A] dark:text-gray-300 mb-2 flex items-center gap-2">
                                 <Mail className="w-4 h-4 text-[#16A34A]" /> Email Newsletter
                             </label>
-                            <div className="flex items-center justify-between mt-2">
-                                <p className="text-sm text-gray-500 pr-4">
+                            <div className="mt-2 space-y-4">
+                                <p className="text-sm text-gray-500">
                                     Receive our weekly roundup of the biggest stories, transfers, and fan debates directly in your inbox.
                                 </p>
-                                <button 
-                                    onClick={() => setNewsletterOptIn(!newsletterOptIn)}
-                                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${newsletterOptIn ? 'bg-[#16A34A]' : 'bg-gray-200 dark:bg-gray-700'}`}
-                                >
-                                    <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${newsletterOptIn ? 'translate-x-5' : 'translate-x-0'}`} />
-                                </button>
+                                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                    <div className="min-w-0">
+                                        <p className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                            Delivery Email
+                                        </p>
+                                        <p className="mt-1 text-sm font-semibold text-[#0F172A] dark:text-white break-all">
+                                            {newsletterEmail || "No email found on your account"}
+                                        </p>
+                                    </div>
+
+                                    {preferencesLoading ? (
+                                        <span className="inline-flex items-center justify-center rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-semibold text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                                            Checking status...
+                                        </span>
+                                    ) : newsletterOptIn ? (
+                                        <span className="inline-flex items-center justify-center rounded-xl bg-[#16A34A]/10 px-4 py-2.5 text-sm font-bold text-[#16A34A]">
+                                            Newsletter Active
+                                        </span>
+                                    ) : (
+                                        <button
+                                            onClick={subscribeToNewsletter}
+                                            disabled={newsletterSubmitting || !newsletterEmail}
+                                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#16A34A] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#16A34A]/20 transition-all hover:bg-[#15803d] disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
+                                        >
+                                            <Mail className="w-4 h-4" />
+                                            {newsletterSubmitting ? "Subscribing..." : "Subscribe"}
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

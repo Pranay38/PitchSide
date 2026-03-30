@@ -41,7 +41,7 @@ export function AdminCollectionsTab({ collections, fetchCollections }: AdminColl
 
         setSaving(true);
         try {
-            const password = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const password = localStorage.getItem("pitchside_admin_auth") || "";
             const res = await fetch("/api/collections", {
                 method: "POST",
                 headers: {
@@ -81,7 +81,7 @@ export function AdminCollectionsTab({ collections, fetchCollections }: AdminColl
 
         setDeletingId(id);
         try {
-            const password = import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const password = localStorage.getItem("pitchside_admin_auth") || "";
             const res = await fetch(`/api/collections?id=${id}`, {
                 method: "DELETE",
                 headers: {

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { Search, BookOpen, ArrowRight, Hash } from "lucide-react";
-import { Helmet } from "react-helmet-async";
+// Helmet removed — metadata handled by Next.js generateMetadata
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import {
@@ -76,24 +76,12 @@ export function GlossaryPage() {
 
   return (
     <div className="page-atmosphere min-h-screen transition-colors duration-300">
-      <Helmet>
-        <title>Football Tactical Glossary | The Touchline Dribble</title>
-        <meta
-          name="description"
-          content="Gegenpressing, False Nine, Half-Space, xG — every tactical football term explained in plain English. The definitive football glossary."
-        />
-        <meta property="og:title" content="Football Tactical Glossary" />
-        <meta
-          property="og:description"
-          content="Every tactical football term explained — from Gegenpressing to xG. Your dictionary for the beautiful game."
-        />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://thetouchlinedribble.in/glossary" />
-        <link rel="canonical" href="https://thetouchlinedribble.in/glossary" />
-        <script type="application/ld+json">
-          {JSON.stringify(buildFaqJsonLd())}
-        </script>
-      </Helmet>
+      {/* SEO metadata handled by Next.js generateMetadata in app/glossary/page.tsx */}
+      {/* JSON-LD for glossary FAQPage */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqJsonLd()) }}
+      />
 
       <Header />
 

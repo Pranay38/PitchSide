@@ -1,6 +1,6 @@
 import { MatchCardEmbed } from "../components/MatchCard";
 import { StadiumMatchCenter } from "../components/StadiumMatchCenter";
-import { useParams } from "react-router";
+import { useParams } from "@/lib/router-compat";
 
 export function MatchCenterEmbedPage() {
   const { id } = useParams();

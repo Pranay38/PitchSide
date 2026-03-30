@@ -25,3 +25,9 @@ Thumbs.db
 npm-debug.log*
 .vercel
 .env*.local
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+

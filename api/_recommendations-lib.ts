@@ -1,4 +1,4 @@
-import { connectToDatabase } from "./_db.js";
+import { connectToDatabase } from "./_db";
 import { ObjectId } from "mongodb";
 
 // Record a view and update co-view counts

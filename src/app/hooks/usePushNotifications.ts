@@ -39,7 +39,7 @@ export function usePushNotifications() {
   }, []);
 
   const subscribe = useCallback(async () => {
-    const vapidKey = (import.meta as any).env?.VITE_VAPID_PUBLIC_KEY as string | undefined;
+    const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY as string | undefined;
     if (!vapidKey) {
       console.warn("[Push] VITE_VAPID_PUBLIC_KEY not set");
       return;

@@ -1,5 +1,5 @@
 import { ArrowRight, ArrowUpRight, Star, Clock } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { Avatar, AvatarFallback, AvatarImage } from "./aero-avatar";
 import { Button } from "./aero-button";
 import type { BlogPost } from "../../data/posts";

@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors, checkRateLimit, requireAuth } from "../utils/security.js";
-import { connectToDatabase } from "../_db.js";
+import { applyCors, checkRateLimit, requireAuth } from "../utils/security";
+import { connectToDatabase } from "../_db";
 
 // Notification types
 export type NotificationType = "comment" | "subscriber" | "poll_milestone" | "prediction";

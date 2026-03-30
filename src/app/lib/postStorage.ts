@@ -17,6 +17,31 @@ function getAuthToken(): string | null {
   }
 }
 
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  const [, payload] = token.split(".");
+  if (!payload) return null;
+
+  try {
+    const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+    return JSON.parse(atob(padded)) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function generateDraftPreviewToken(): string {
+  try {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+      return crypto.randomUUID().replace(/-/g, "");
+    }
+  } catch {
+    // Fall back to a time/random token below.
+  }
+
+  return `${Date.now().toString(16)}${Math.random().toString(16).slice(2)}`;
+}
+
 // ──────────────────────────────────────────
 // POSTS: API-first with localStorage fallback
 // ──────────────────────────────────────────
@@ -44,16 +69,33 @@ async function getApiErrorMessage(res: Response, fallback: string): Promise<stri
   return fallback;
 }
 
+function normalizePostRecord(raw: unknown): unknown {
+  if (!raw || typeof raw !== "object") return raw;
+
+  const normalized = { ...(raw as Record<string, unknown>) };
+  for (const key of ["previewToken", "publishAt", "mediaUrl", "sofascoreUrl", "playerName", "isDraft", "thisWeek", "mustRead", "editorPick", "mainStory"]) {
+    if (normalized[key] === null) {
+      delete normalized[key];
+    }
+  }
+
+  return normalized;
+}
+
 /**
  * Get all posts. Tries API first, falls back to localStorage.
  * Validates each post with Zod — invalid entries are silently filtered out.
  */
 export async function getAllPostsAsync(): Promise<BlogPost[]> {
   try {
-    const res = await fetch(`${API_BASE}/posts`);
+    const token = getAuthToken();
+    const res = await fetch(`${API_BASE}/posts`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
     if (res.ok) {
       const raw = await res.json();
-      const posts = safeParseArray(BlogPostSchema, raw) as BlogPost[];
+      const normalized = Array.isArray(raw) ? raw.map(normalizePostRecord) : raw;
+      const posts = safeParseArray(BlogPostSchema, normalized) as BlogPost[];
       if (posts.length > 0) {
         // also cache in localStorage for offline
         savePostsLocal(posts);
@@ -90,15 +132,19 @@ export async function getPublishedPostsAsync(): Promise<BlogPost[]> {
 
 function getAllPostsLocal(): BlogPost[] {
   try {
-    const stored = localStorage.getItem(POSTS_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored) as BlogPost[];
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(POSTS_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as BlogPost[];
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     }
   } catch {
     // ignore
   }
-  savePostsLocal(defaultPosts);
+  if (typeof window !== 'undefined') {
+    savePostsLocal(defaultPosts);
+  }
   return defaultPosts;
 }
 
@@ -162,7 +208,11 @@ export function addPost(post: Omit<BlogPost, "id">): BlogPost[] {
 
 function addPostLocal(post: Omit<BlogPost, "id">): BlogPost[] {
   const posts = getAllPostsLocal();
-  const newPost: BlogPost = { ...post, id: Date.now().toString() };
+  const newPost: BlogPost = {
+    ...post,
+    id: Date.now().toString(),
+    previewToken: post.isDraft ? (post.previewToken || generateDraftPreviewToken()) : undefined,
+  };
   const updated = [newPost, ...posts];
   savePostsLocal(updated);
   return updated;
@@ -220,7 +270,17 @@ export function updatePost(id: string, updates: Partial<BlogPost>): BlogPost[] {
 
 function updatePostLocal(id: string, updates: Partial<BlogPost>): BlogPost[] {
   const posts = getAllPostsLocal();
-  const updated = posts.map((p) => (p.id === id ? { ...p, ...updates } : p));
+  const updated = posts.map((p) => {
+    if (p.id !== id) return p;
+
+    const next = { ...p, ...updates };
+    if (next.isDraft) {
+      next.previewToken = next.previewToken || generateDraftPreviewToken();
+    } else if (updates.isDraft === false) {
+      next.previewToken = undefined;
+    }
+    return next;
+  });
   savePostsLocal(updated);
   return updated;
 }
@@ -335,54 +395,90 @@ export async function initializePosts(): Promise<void> {
 export function isAdminAuthenticated(): boolean {
   const token = getAuthToken();
   if (!token) return false;
-  
-  // On production, tokens MUST be a valid JWT (three parts separated by dots)
-  // If the user has a legacy fallback raw password stored, reject it and clear it.
-  if (typeof window !== "undefined" && window.location.hostname !== "localhost") {
-    if (token.split(".").length !== 3) {
+
+  const isJwt = token.split(".").length === 3;
+  const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
+
+  // Outside localhost we only trust JWTs, not legacy raw-password fallback tokens.
+  if (!isJwt) {
+    if (!isLocalhost) {
       adminLogout();
       return false;
     }
+    return true;
   }
-  
+
+  const payload = decodeJwtPayload(token);
+  const exp = typeof payload?.exp === "number" ? payload.exp : Number(payload?.exp);
+
+  if (!Number.isFinite(exp)) {
+    adminLogout();
+    return false;
+  }
+
+  if (exp * 1000 <= Date.now()) {
+    adminLogout();
+    return false;
+  }
+
   return true;
 }
 
 // Updated to async to hit backend Auth API, with local dev fallback
-export async function adminLogin(password: string): Promise<boolean> {
+export type AdminLoginResult = {
+  ok: boolean;
+  error?: string;
+};
+
+export async function adminLogin(password: string): Promise<AdminLoginResult> {
   try {
     const res = await fetch(`${API_BASE}/auth`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password })
+      body: JSON.stringify({ password }),
+      cache: "no-store",
+      credentials: "same-origin",
     });
 
     if (res.ok) {
       const data = await res.json();
       if (data.token) {
         localStorage.setItem(ADMIN_KEY, data.token);
-        return true;
+        return { ok: true };
       }
+      return { ok: false, error: "Could not sign in right now." };
     }
 
-    // If the server explicitly rejected with 401/403, don't fallback
-    if (res.status === 401 || res.status === 403) {
-      return false;
-    }
+    const fallbackMessage =
+      res.status === 429
+        ? "Too many login attempts. Please wait a minute and try again."
+        : res.status === 401 || res.status === 403
+          ? "Incorrect password"
+          : "Could not sign in right now.";
+
+    return { ok: false, error: await getApiErrorMessage(res, fallbackMessage) };
   } catch {
     // network error — API unreachable (likely local dev)
   }
 
+  const isLocalDev =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+
+  if (!isLocalDev) {
+    return { ok: false, error: "Could not reach the admin login service." };
+  }
+
   // Fallback: client-side check for local dev when API is unavailable
-  const envPassword = (import.meta as any).env?.VITE_ADMIN_PASSWORD;
+  const envPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
   const expected = envPassword || "pitchside2026";
   if (password === expected) {
     // Store the password as a simple token for local dev auth headers
     localStorage.setItem(ADMIN_KEY, password);
-    return true;
+    return { ok: true };
   }
 
-  return false;
+  return { ok: false, error: "Incorrect password" };
 }
 
 export function adminLogout(): void {
@@ -390,6 +486,16 @@ export function adminLogout(): void {
     localStorage.removeItem(ADMIN_KEY);
   } catch {
     // ignore
+  }
+
+  if (typeof window !== "undefined") {
+    void fetch(`${API_BASE}/auth`, {
+      method: "DELETE",
+      cache: "no-store",
+      credentials: "same-origin",
+    }).catch(() => {
+      // Best-effort server logout for the admin session cookie.
+    });
   }
 }
 

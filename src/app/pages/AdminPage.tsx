@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
-import { useNavigate, Link } from "react-router";
+import { useNavigate, Link } from "@/lib/router-compat";
 import type { BlogPost } from "../data/posts";
 import { AdminLogin } from "../components/AdminLogin";
 import { PostEditor } from "../components/PostEditor";
@@ -143,18 +143,28 @@ export function AdminPage() {
         return siteSettings.transferWatch.filter((entry) => entry.club === transferFilterClub);
     }, [siteSettings.transferWatch, transferFilterClub]);
 
+    const getAdminAuthHeaders = useCallback((): HeadersInit => {
+        const token = localStorage.getItem("pitchside_admin_auth");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    }, []);
+
     const fetchSubscriberCount = useCallback(async () => {
         try {
-            const token = localStorage.getItem("pitchside_admin_auth");
             const res = await fetch("/api/subscribers", {
-                headers: { "Authorization": `Bearer ${token}` }
+                headers: getAdminAuthHeaders(),
+                cache: "no-store",
+                credentials: "same-origin",
             });
+            const data = await res.json().catch(() => ({}));
             if (res.ok) {
-                const data = await res.json();
-                setSubscriberCount(data.count || 0);
+                setSubscriberCount(data.count ?? data.subscribers?.length ?? 0);
+                return;
             }
-        } catch { }
-    }, []);
+            throw new Error(data.error || "Failed to load subscribers");
+        } catch (error) {
+            console.error("Failed to load subscriber count:", error);
+        }
+    }, [getAdminAuthHeaders]);
 
     const fetchCollections = useCallback(async () => {
         try {
@@ -171,7 +181,7 @@ export function AdminPage() {
     }, []);
     const fetchServerPolls = useCallback(async () => {
         try {
-            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
             const res = await fetch("/api/polls", {
                 headers: { Authorization: `Bearer ${pwd}` }
             });
@@ -181,7 +191,7 @@ export function AdminPage() {
 
     const fetchServerMatchRatings = useCallback(async () => {
         try {
-            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
             const res = await fetch("/api/match-ratings", {
                 headers: { Authorization: `Bearer ${pwd}` }
             });
@@ -202,16 +212,18 @@ export function AdminPage() {
 
     useEffect(() => {
         if (isAuthed) {
-            refreshPosts();
-            refreshStories();
-            fetchSubscriberCount();
-            fetchCollections();
-            fetchDebates();
-            fetchServerPolls();
-            fetchServerMatchRatings();
-            getSiteSettingsAsync()
-                .then((settings) => setSiteSettings(settings))
-                .catch(() => { });
+            void (async () => {
+                refreshPosts();
+                refreshStories();
+                fetchSubscriberCount();
+                fetchCollections();
+                fetchDebates();
+                fetchServerPolls();
+                fetchServerMatchRatings();
+                getSiteSettingsAsync()
+                    .then((settings) => setSiteSettings(settings))
+                    .catch(() => { });
+            })();
         }
     }, [isAuthed, refreshPosts, refreshStories, fetchSubscriberCount, fetchCollections, fetchDebates, fetchServerPolls, fetchServerMatchRatings]);
 
@@ -221,6 +233,7 @@ export function AdminPage() {
     // Post Handlers
     const handleCreatePost = async (postData: Omit<BlogPost, "id">, isLeaving?: boolean) => {
         try {
+            const previousPostIds = new Set(posts.map((item) => item.id));
             const updated = await addPostAsync(postData);
             setPosts(updated);
 
@@ -228,10 +241,12 @@ export function AdminPage() {
                 setView("list");
                 setEditingPost(null);
             } else if (postData.isDraft) {
-                // It was an auto-save, stay in the editor but switch to edit mode
-                // The newly created post is the first one in the returned array from addPostAsync
-                const newPost = updated[0];
-                setEditingPost(newPost);
+                // It was an auto-save. Find the newly created draft by id instead
+                // of assuming the API returns it first.
+                const newPost = updated.find((item) => !previousPostIds.has(item.id));
+                if (newPost) {
+                    setEditingPost(newPost);
+                }
                 setView("edit");
             } else {
                 // Explicit publish click
@@ -240,12 +255,28 @@ export function AdminPage() {
             }
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Failed to save post.");
+            throw error;
         }
     };
 
     const handleEditPost = (post: BlogPost) => {
         setEditingPost(post);
         setView("edit");
+    };
+
+    const handleViewPost = (post: BlogPost) => {
+        if (post.isDraft) {
+            if (post.previewToken) {
+                navigate(`/post/${post.id}?preview=${encodeURIComponent(post.previewToken)}`);
+                return;
+            }
+
+            toast.info("This draft does not have a preview link yet, so the editor was opened instead.");
+            handleEditPost(post);
+            return;
+        }
+
+        navigate(`/post/${post.id}`);
     };
 
     const handleUpdatePost = async (postData: Omit<BlogPost, "id">, isLeaving?: boolean) => {
@@ -269,6 +300,7 @@ export function AdminPage() {
                 }
             } catch (error) {
                 toast.error(error instanceof Error ? error.message : "Failed to update post.");
+                throw error;
             }
         }
     };
@@ -293,7 +325,10 @@ export function AdminPage() {
         try {
             const res = await fetch("/api/notify", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    ...getAdminAuthHeaders(),
+                },
                 body: JSON.stringify({ title: post.title, excerpt: post.excerpt, postId: post.id }),
             });
             const data = await res.json();
@@ -341,7 +376,7 @@ export function AdminPage() {
     const handleSavePoll = async () => {
         try {
             setSavingPoll(true);
-            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
             const isEditing = !!editingPoll._id;
             const url = isEditing ? `/api/polls/${editingPoll._id}` : "/api/polls";
             const method = isEditing ? "PUT" : "POST";
@@ -367,7 +402,7 @@ export function AdminPage() {
     const handleDeletePoll = async (id: string) => {
         if (!confirm("Delete this poll?")) return;
         try {
-            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
             const res = await fetch(`/api/polls/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${pwd}` } });
             if (res.ok) {
                 toast.success("Poll deleted");
@@ -381,7 +416,7 @@ export function AdminPage() {
     const handleSaveMatchRating = async () => {
         try {
             setSavingMatchRating(true);
-            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
             const isEditing = !!editingMatchRating._id;
             const url = isEditing ? `/api/match-ratings/${editingMatchRating._id}` : "/api/match-ratings";
             const method = isEditing ? "PUT" : "POST";
@@ -407,7 +442,7 @@ export function AdminPage() {
     const handleDeleteMatchRating = async (id: string) => {
         if (!confirm("Delete these match ratings?")) return;
         try {
-            const pwd = (import.meta as any).env?.VITE_ADMIN_PASSWORD || localStorage.getItem("pitchside_pwd");
+            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
             const res = await fetch(`/api/match-ratings/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${pwd}` } });
             if (res.ok) {
                 toast.success("Match Ratings deleted");
@@ -421,7 +456,7 @@ export function AdminPage() {
     const handleAddTransferWatchEntry = async () => {
         const normalized = normalizeTransferWatchEntry({
             ...transferDraft,
-            feeMillions: transferDraft.feeMillions,
+            feeMillions: Number(transferDraft.feeMillions) || 0,
             updatedAt: new Date().toISOString(),
             id: transferEditId || undefined, // Use existing ID if editing
         });
@@ -735,7 +770,7 @@ export function AdminPage() {
         if (!window.confirm("Send weekly digest to all subscribers now?")) return;
         setSendingDigest(true);
         try {
-            const pwd = localStorage.getItem("admin-password") || "";
+            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
             const res = await fetch("/api/digest", { 
                 method: "POST",
                 headers: { "Authorization": `Bearer ${pwd}` }
@@ -1022,7 +1057,7 @@ export function AdminPage() {
                                             }} className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-green-600 transition-colors" title="Create Carousel">
                                                 <ImageIcon className="w-4 h-4" />
                                             </button>
-                                            <button onClick={() => navigate(`/post/${post.id}`)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
+                                            <button onClick={() => handleViewPost(post)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
                                             <button onClick={() => handleEditPost(post)} className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-[#64748B] dark:text-gray-400 hover:text-blue-600 transition-colors" title="Edit"><Edit3 className="w-4 h-4" /></button>
                                             <button onClick={() => handleDeletePost(post.id)} className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#64748B] dark:text-gray-400 hover:text-red-600 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
                                         </div>

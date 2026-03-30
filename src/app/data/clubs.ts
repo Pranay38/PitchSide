@@ -47,8 +47,10 @@ const CUSTOM_CLUBS_KEY = "pitchside_custom_clubs";
 
 function getCustomClubs(): Club[] {
   try {
-    const stored = localStorage.getItem(CUSTOM_CLUBS_KEY);
-    if (stored) return JSON.parse(stored);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(CUSTOM_CLUBS_KEY);
+      if (stored) return JSON.parse(stored);
+    }
   } catch {
     // ignore
   }

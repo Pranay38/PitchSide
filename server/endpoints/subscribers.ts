@@ -1,9 +1,91 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors, checkRateLimit, requireAuth, checkOrigin, rejectHoneypot, sanitizeString } from "../utils/security.js";
-import { connectToDatabase } from "../_db.js";
-import { sendEmail, sendBatchEmails, isMailerConfigured } from "../_mailer.js";
+import { applyCors, checkRateLimit, requireAuth, checkOrigin, rejectHoneypot, sanitizeString } from "../utils/security";
+import { connectToDatabase } from "../_db";
+import { sendEmail, sendBatchEmails, isMailerConfigured } from "../_mailer";
+import { createHash, randomBytes } from "crypto";
 
 const COLLECTION = "subscribers";
+const SUBSCRIBER_COOKIE_NAME = "ttd_newsletter";
+const SUBSCRIBER_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+function isValidEmail(email: string): boolean {
+    return email.includes("@") && email.includes(".");
+}
+
+function parseCookie(req: VercelRequest, name: string): string | null {
+    const cookieHeader = req.headers.cookie;
+    if (!cookieHeader) return null;
+
+    const pairs = cookieHeader.split(";").map((part) => part.trim());
+    for (const pair of pairs) {
+        if (!pair.startsWith(`${name}=`)) continue;
+        const [, rawValue = ""] = pair.split("=");
+        try {
+            return decodeURIComponent(rawValue);
+        } catch {
+            return rawValue;
+        }
+    }
+
+    return null;
+}
+
+function hashSubscriberToken(token: string): string {
+    const secret = process.env.JWT_SECRET || "fallback_dev_secret_do_not_use_in_prod";
+    return createHash("sha256").update(`${secret}:${token}`).digest("hex");
+}
+
+function getSubscriberTokenHashes(subscriber: any): string[] {
+    const hashes = Array.isArray(subscriber?.bannerTokenHashes)
+        ? subscriber.bannerTokenHashes.filter((value: unknown): value is string => typeof value === "string" && value.length > 0)
+        : [];
+
+    if (typeof subscriber?.bannerTokenHash === "string" && subscriber.bannerTokenHash.length > 0) {
+        hashes.push(subscriber.bannerTokenHash);
+    }
+
+    return Array.from(new Set(hashes));
+}
+
+function buildSubscriberCookie(req: VercelRequest, token: string): string {
+    const forwardedProto = (req.headers["x-forwarded-proto"] as string | undefined)?.split(",")[0]?.trim();
+    const host = req.headers.host || "";
+    const secure = forwardedProto === "https" || !host.includes("localhost");
+    return [
+        `${SUBSCRIBER_COOKIE_NAME}=${encodeURIComponent(token)}`,
+        `Max-Age=${SUBSCRIBER_COOKIE_MAX_AGE}`,
+        "Path=/",
+        "HttpOnly",
+        "SameSite=Lax",
+        secure ? "Secure" : "",
+    ]
+        .filter(Boolean)
+        .join("; ");
+}
+
+async function issueSubscriberCookie(
+    req: VercelRequest,
+    res: VercelResponse,
+    collection: any,
+    subscriber: any,
+): Promise<void> {
+    const rawToken = randomBytes(24).toString("hex");
+    const hashedToken = hashSubscriberToken(rawToken);
+    const nextTokenHashes = [...getSubscriberTokenHashes(subscriber), hashedToken].slice(-5);
+
+    await collection.updateOne(
+        { _id: subscriber._id },
+        {
+            $set: {
+                bannerTokenHashes: nextTokenHashes,
+                updatedAt: new Date().toISOString(),
+            },
+            $unset: { bannerTokenHash: "" },
+        },
+    );
+
+    res.setHeader("Set-Cookie", buildSubscriberCookie(req, rawToken));
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     // CORS headers
@@ -18,6 +100,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { db } = await connectToDatabase();
         const collection = db.collection(COLLECTION);
 
+        // ─── GET: Public subscribe status ───
+        if (req.method === "GET" && req.query.action === "status") {
+            res.setHeader("Cache-Control", "private, no-store, max-age=0, must-revalidate");
+            const email = sanitizeString(req.query.email);
+            const normalizedEmail = email && isValidEmail(email) ? email.trim().toLowerCase() : null;
+            const cookieToken = parseCookie(req, SUBSCRIBER_COOKIE_NAME);
+            const cookieHash = cookieToken ? hashSubscriberToken(cookieToken) : null;
+
+            let subscriber =
+                normalizedEmail
+                    ? await collection.findOne({ email: normalizedEmail })
+                    : null;
+
+            if (!subscriber && cookieHash) {
+                subscriber = await collection.findOne({
+                    $or: [
+                        { bannerTokenHashes: cookieHash },
+                        { bannerTokenHash: cookieHash },
+                    ],
+                });
+            }
+
+            if (!subscriber) {
+                return res.status(200).json({ subscribed: false });
+            }
+
+            const tokenHashes = getSubscriberTokenHashes(subscriber);
+            const hasCurrentCookie = cookieHash ? tokenHashes.includes(cookieHash) : false;
+
+            if (!hasCurrentCookie) {
+                await issueSubscriberCookie(req, res, collection, subscriber);
+            }
+
+            return res.status(200).json({ subscribed: true });
+        }
+
         // ─── POST: Subscribe a new email ───
         if (req.method === "POST" && !req.query.action) {
             // CSRF + honeypot
@@ -28,7 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             const alertPreferences = req.body?.alertPreferences;
 
-            if (!email || !email.includes("@") || !email.includes(".")) {
+            if (!email || !isValidEmail(email)) {
                 return res.status(400).json({ error: "Please enter a valid email address." });
             }
 
@@ -46,14 +164,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         },
                     },
                 );
+                await issueSubscriberCookie(req, res, collection, existing);
                 return res.status(200).json({ message: "You're already subscribed! 🎉", alreadySubscribed: true });
             }
 
             // Save subscriber
-            await collection.insertOne({
+            const insertedSubscriber = {
                 email: normalizedEmail,
                 subscribedAt: new Date().toISOString(),
                 ...(alertPreferences ? { alertPreferences } : {}),
+            };
+            const insertResult = await collection.insertOne(insertedSubscriber);
+            await issueSubscriberCookie(req, res, collection, {
+                ...insertedSubscriber,
+                _id: insertResult.insertedId,
             });
 
             // Send welcome email (non-blocking, don't fail the request if email fails)
@@ -97,6 +221,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // ─── GET: List all subscribers (for admin) ───
         if (req.method === "GET") {
             if (!requireAuth(req, res)) return;
+            res.setHeader("Cache-Control", "private, no-store, max-age=0, must-revalidate");
             const subscribers = await collection.find({}).sort({ subscribedAt: -1 }).toArray();
             return res.status(200).json({
                 count: subscribers.length,

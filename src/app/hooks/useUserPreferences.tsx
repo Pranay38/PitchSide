@@ -54,26 +54,75 @@ function normalizeValue(value: string): string {
 export function UserPreferencesProvider({ children }: { children: ReactNode }) {
   const { user } = useUser();
   const userId = user?.id;
+  const userEmail = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || "";
 
   const [prefs, setPrefs] = useState<UserPreferences>({ ...EMPTY_PREFS });
   const [loading, setLoading] = useState(true);
 
-  // Fetch initial preferences on mount/login
-  useEffect(() => {
-    if (!userId) {
-      setPrefs({ ...EMPTY_PREFS });
-      setLoading(false);
-      return;
+  const fetchNewsletterOptIn = async (email?: string): Promise<boolean> => {
+    const params = new URLSearchParams({ action: "status" });
+    if (email) {
+      params.set("email", email);
     }
 
-    setLoading(true);
-    fetch(`/api/user-prefs?userId=${userId}&_t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch preferences");
-        return res.json();
-      })
-      .then((data) => {
-        const validated = safeParse(UserPreferencesSchema, data, EMPTY_PREFS);
+    const res = await fetch(`/api/subscribers?${params.toString()}`, {
+      cache: "no-store",
+      credentials: "same-origin",
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch subscriber status");
+    }
+
+    const data = await res.json().catch(() => ({}));
+    return data.subscribed === true;
+  };
+
+  // Fetch initial preferences on mount/login
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadPreferences = async () => {
+      setLoading(true);
+
+      if (!userId) {
+        try {
+          const subscribed = await fetchNewsletterOptIn();
+          if (!cancelled) {
+            setPrefs({ ...EMPTY_PREFS, newsletterOptIn: subscribed });
+          }
+        } catch {
+          if (!cancelled) {
+            setPrefs({ ...EMPTY_PREFS });
+          }
+        } finally {
+          if (!cancelled) {
+            setLoading(false);
+          }
+        }
+        return;
+      }
+
+      const [prefsResult, newsletterResult] = await Promise.allSettled([
+        fetch(`/api/user-prefs?userId=${userId}&_t=${Date.now()}`, {
+          cache: "no-store",
+          credentials: "same-origin",
+        }).then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch preferences");
+          return res.json();
+        }),
+        fetchNewsletterOptIn(userEmail || undefined),
+      ]);
+
+      const validated =
+        prefsResult.status === "fulfilled"
+          ? safeParse(UserPreferencesSchema, prefsResult.value, EMPTY_PREFS)
+          : EMPTY_PREFS;
+      const newsletterOptIn =
+        validated.newsletterOptIn ||
+        (newsletterResult.status === "fulfilled" ? newsletterResult.value : false);
+
+      if (!cancelled) {
         setPrefs({
           savedPosts: validated.savedPosts,
           followedClubs: validated.followedClubs,
@@ -82,17 +131,19 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
           followedTags: validated.followedTags,
           seenAlerts: validated.seenAlerts,
           fanClub: validated.fanClub,
-          newsletterOptIn: validated.newsletterOptIn,
+          newsletterOptIn,
           readingHistory: validated.readingHistory,
         });
-      })
-      .catch(() => {
-        // Silently fail if api call fails
-      })
-      .finally(() => {
         setLoading(false);
-      });
-  }, [userId]);
+      }
+    };
+
+    void loadPreferences();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userEmail, userId]);
 
   const toggleArrayItem = (arr: string[], item: string) => {
     const normalized = normalizeValue(item);
@@ -188,10 +239,11 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
   };
 
   const setNewsletterOptIn = (optIn: boolean) => {
-    if (!userId) return;
     const newPrefs = { ...prefs, newsletterOptIn: optIn };
     setPrefs(newPrefs);
-    updateServer(newPrefs);
+    if (userId) {
+      updateServer(newPrefs);
+    }
   };
 
   const isPostSaved = (postId: string) =>

@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams } from "@/lib/router-compat";
 import { StadiumMatchCenter } from "../components/StadiumMatchCenter";
 import { MatchPredictorWidget } from "../components/MatchPredictorWidget";
 import { SEO } from "../components/SEO";

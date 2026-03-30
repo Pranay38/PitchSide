@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors, checkRateLimit, requireAuth } from "../server/utils/security.js";
-import { connectToDatabase } from "../server/_db.js";
+import { applyCors, checkRateLimit, requireAuth } from "../server/utils/security";
+import { connectToDatabase } from "../server/_db";
 
 const COLLECTION = "push_subscriptions";
 

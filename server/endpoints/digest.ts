@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "../_db.js";
-import { sendBatchEmails, isMailerConfigured } from "../_mailer.js";
-import { requireAuth } from "../utils/security.js";
+import { connectToDatabase } from "../_db";
+import { sendBatchEmails, isMailerConfigured } from "../_mailer";
+import { requireAuth } from "../utils/security";
 
 const SITE_URL = "https://thetouchlinedribble.in";
 

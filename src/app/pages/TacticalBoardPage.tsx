@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import {
     ArrowLeft, RotateCcw, Download, Palette, Users, Pencil, Eraser,
     ChevronDown, Trash2, Play, Pause, Plus, Save, FolderOpen

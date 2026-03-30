@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useUserPreferences } from "../hooks/useUserPreferences";
-import { useUser } from "@clerk/clerk-react";
 
 interface InlineNewsletterCardProps {
   title?: string;
@@ -15,13 +14,11 @@ export function InlineNewsletterCard({
   description = "A concise football briefing with the strongest analysis, long reads, and standout stories from the site.",
   className = "",
 }: InlineNewsletterCardProps) {
-  const { newsletterOptIn } = useUserPreferences();
-  const { isSignedIn } = useUser();
+  const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Hide entirely if already opted in or user is signed in
-  if (newsletterOptIn || isSignedIn) {
+  if (loading || newsletterOptIn) {
     return null;
   }
 
@@ -39,6 +36,7 @@ export function InlineNewsletterCard({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim() }),
+        credentials: "same-origin",
       });
       const payload = await res.json().catch(() => ({}));
 
@@ -48,22 +46,11 @@ export function InlineNewsletterCard({
         );
       }
 
+      setNewsletterOptIn(true);
       toast.success(payload.alreadySubscribed ? "You're already subscribed." : "Subscribed.");
       setEmail("");
     } catch (error) {
-      try {
-        const subscribers = JSON.parse(localStorage.getItem("pitchside_subscribers") || "[]");
-        if (Array.isArray(subscribers) && subscribers.includes(email.trim())) {
-          toast.info("You're already subscribed.");
-        } else {
-          const next = Array.isArray(subscribers) ? [...subscribers, email.trim()] : [email.trim()];
-          localStorage.setItem("pitchside_subscribers", JSON.stringify(next));
-          toast.success("Subscribed.");
-        }
-        setEmail("");
-      } catch {
-        toast.error(error instanceof Error ? error.message : "Could not save your subscription.");
-      }
+      toast.error(error instanceof Error ? error.message : "Could not save your subscription.");
     } finally {
       setSubmitting(false);
     }

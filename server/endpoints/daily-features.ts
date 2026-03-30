@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "../_db.js";
+import { connectToDatabase } from "../_db";
 
 // ── RSS feed sources for real football gossip & transfer news ─────────────
 

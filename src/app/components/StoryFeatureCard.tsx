@@ -1,5 +1,5 @@
 import { ArrowRight, BookOpen, Layers3 } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import type { StoryFeature } from "../data/stories";
 
 interface StoryFeatureCardProps {

@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors, checkRateLimit } from "../utils/security.js";
-import { connectToDatabase } from "../_db.js";
+import { applyCors, checkRateLimit } from "../utils/security";
+import { connectToDatabase } from "../_db";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     applyCors(req, res);

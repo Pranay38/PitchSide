@@ -1,0 +1,210 @@
+import type { Metadata, Viewport } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import Script from "next/script";
+import { Providers } from "./providers";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: {
+    default: "The Touchline Dribble — Football Analysis & Opinion",
+    template: "%s | The Touchline Dribble",
+  },
+  description:
+    "From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions. Your go-to pitch for the beautiful game. ⚽",
+  metadataBase: new URL("https://thetouchlinedribble.in"),
+  alternates: {
+    types: {
+      "application/rss+xml": "/api/rss",
+    },
+  },
+  openGraph: {
+    type: "website",
+    siteName: "The Touchline Dribble",
+    title: "The Touchline Dribble — Football Analysis & Opinion",
+    description:
+      "From the touchline to your timeline — sharp football analysis, tactical breakdowns & bold opinions. ⚽🔥",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@TouchlineDribbl",
+    creator: "@TouchlineDribbl",
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Touchline Dribble",
+  },
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#16A34A",
+  width: "device-width",
+  initialScale: 1,
+};
+
+const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Google Fonts: Inter, Newsreader, Outfit */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
+
+        {/* Inline theme script to prevent FOUC */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('pitchside_theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
+          }}
+        />
+
+        {/* JSON-LD for WebSite */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "The Touchline Dribble",
+              alternateName: "PitchSide",
+              url: "https://thetouchlinedribble.in",
+              description:
+                "From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions.",
+              potentialAction: {
+                "@type": "SearchAction",
+                target:
+                  "https://thetouchlinedribble.in/archive?q={search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
+      </head>
+
+      <body>
+        {/* GA4 */}
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}',{send_page_view:false});`}
+            </Script>
+          </>
+        )}
+
+        {process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? (
+          <ClerkProvider
+            publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+            signInUrl="/sign-in"
+            signUpUrl="/sign-up"
+            appearance={{
+              baseTheme: undefined,
+              variables: {
+                colorPrimary: "#16A34A",
+                borderRadius: "0.75rem",
+              },
+              elements: {
+                card: "bg-white dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 shadow-xl",
+                headerTitle:
+                  "font-outfit font-black text-2xl text-slate-900 dark:text-white",
+                headerSubtitle:
+                  "text-slate-500 dark:text-gray-400 font-medium",
+                socialButtonsBlockButton:
+                  "border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A]/50 hover:bg-gray-50 dark:hover:bg-[#1e293b] text-slate-900 dark:text-white",
+                socialButtonsBlockButtonText:
+                  "text-slate-900 dark:text-white font-semibold flex-1 text-center",
+                formButtonPrimary:
+                  "bg-[#16A34A] hover:bg-[#15803d] text-white font-bold h-11",
+                formFieldInput:
+                  "bg-gray-50 dark:bg-[#08111f] border-gray-200 dark:border-gray-700 text-slate-900 dark:text-white focus:border-[#16A34A] h-11",
+                formFieldLabel:
+                  "text-slate-700 dark:text-gray-300 font-medium",
+                footerActionText: "text-slate-500 dark:text-gray-400",
+                footerActionLink:
+                  "text-[#16A34A] hover:text-[#15803d] font-semibold",
+                dividerLine: "bg-gray-200 dark:bg-gray-800",
+                dividerText: "text-slate-400 dark:text-gray-500",
+                identityPreview:
+                  "bg-gray-50 dark:bg-[#08111f] border border-gray-200 dark:border-gray-700",
+                identityPreviewText: "text-slate-900 dark:text-white",
+                identityPreviewEditButton:
+                  "text-[#16A34A] hover:text-[#15803d]",
+              },
+            }}
+          >
+            <Providers>{children}</Providers>
+          </ClerkProvider>
+        ) : (
+          <Providers>{children}</Providers>
+        )}
+
+        {/* SEO: Noscript fallback for bots that don't execute JS */}
+        <noscript>
+          <div
+            style={{
+              maxWidth: 800,
+              margin: "0 auto",
+              padding: "2rem",
+              fontFamily: "system-ui,sans-serif",
+              color: "#fff",
+              background: "#0B1120",
+            }}
+          >
+            <h1>
+              The Touchline Dribble — Football Analysis &amp; Opinion
+            </h1>
+            <p>
+              From the touchline to your timeline — sharp football
+              analysis, tactical breakdowns, transfer dossiers, and bold
+              opinions for die-hard fans.
+            </p>
+            <nav>
+              <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/daily-fix">Daily Fix</a></li>
+                <li><a href="/transfers">Transfer Watch</a></li>
+                <li><a href="/stories">Stories</a></li>
+                <li><a href="/debates">Debates</a></li>
+                <li><a href="/collections">Collections</a></li>
+                <li><a href="/archive">Archive</a></li>
+                <li><a href="/about">About</a></li>
+              </ul>
+            </nav>
+            <p>
+              Enable JavaScript for the full interactive experience, or
+              subscribe to our <a href="/api/rss">RSS feed</a>.
+            </p>
+          </div>
+        </noscript>
+      </body>
+    </html>
+  );
+}

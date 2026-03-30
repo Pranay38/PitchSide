@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Plus, Edit3, Trash2, Eye, Download, Upload, Send, Filter, Layout } from "lucide-react";
 import { AdminEmptyState } from "./AdminEmptyState";
-import { useNavigate } from "react-router";
+import { useNavigate } from "@/lib/router-compat";
 import { toast } from "sonner";
 import type { BlogPost } from "../../data/posts";
 
@@ -47,6 +47,22 @@ export function AdminPostsTab({
             if (postSort === "z-a") return b.title.localeCompare(a.title);
             return 0;
         });
+
+    const handleViewPost = (post: BlogPost) => {
+        if (post.isDraft) {
+            if (post.previewToken) {
+                navigate(`/post/${post.id}?preview=${encodeURIComponent(post.previewToken)}`);
+                return;
+            }
+
+            toast.info("This draft does not have a preview link yet, so the editor was opened instead.");
+            setEditingPost(post);
+            setView("edit");
+            return;
+        }
+
+        navigate(`/post/${post.id}`);
+    };
 
     return (
         <>
@@ -141,7 +157,7 @@ export function AdminPostsTab({
                                 <button onClick={() => onNotifySubscribers(post)} disabled={notifyingPostId === post.id || post.isDraft} className={`p-2 rounded-lg ${post.isDraft ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors'}`} title="Notify Subscribers">
                                     <Send className={`w-4 h-4 ${notifyingPostId === post.id ? 'animate-pulse' : ''}`} />
                                 </button>
-                                <button onClick={() => navigate(`/post/${post.id}`)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
+                                <button onClick={() => handleViewPost(post)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
                                 <button onClick={() => { setEditingPost(post); setView("edit"); }} className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-[#64748B] dark:text-gray-400 hover:text-blue-600 transition-colors" title="Edit"><Edit3 className="w-4 h-4" /></button>
                                 <button onClick={() => onDeletePost(post.id)} className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#64748B] dark:text-gray-400 hover:text-red-600 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
                             </div>

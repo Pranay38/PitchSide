@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { topicPath } from "../lib/contentPaths";
 import type { BlogPost } from "../data/posts";
 

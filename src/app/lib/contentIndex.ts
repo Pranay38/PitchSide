@@ -146,7 +146,7 @@ export function filterArchiveEntries(
     if (filters.club && filters.club !== "all" && normalize(entry.club) !== normalize(filters.club)) return false;
     if (filters.league && filters.league !== "all" && normalize(entry.league) !== normalize(filters.league)) return false;
     if (filters.format && filters.format !== "all" && normalize(entry.format) !== normalize(filters.format)) return false;
-    if (filters.topic && filters.topic !== "all" && !entry.topics.some((topic) => normalize(topic) === normalize(filters.topic))) return false;
+    if (filters.topic && filters.topic !== "all" && !entry.topics.some((topic) => normalize(topic) === normalize(filters.topic || ""))) return false;
     if (!searchArchiveEntry(entry, filters.query || "")) return false;
     return true;
   });

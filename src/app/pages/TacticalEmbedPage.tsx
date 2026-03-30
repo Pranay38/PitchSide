@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router";
+import { useParams } from "@/lib/router-compat";
 import { LoaderCircle, Pause, Play, Square } from "lucide-react";
 
 interface Player {

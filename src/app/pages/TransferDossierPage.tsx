@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useParams } from "@/lib/router-compat";
 import { ArrowLeft, ArrowRight, Bell, Repeat2, ShieldQuestion, Sparkles } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";

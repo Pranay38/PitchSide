@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { BookOpen, Repeat2, Activity, Newspaper, Search } from "lucide-react";
 import { GlowingEffect } from "./ui/glowing-effect";
 import { cn } from "./ui/utils";

@@ -1,10 +1,11 @@
-import { useRouteError } from "react-router";
+"use client";
 
-export function RouteErrorBoundary() {
-  const error = useRouteError() as Error;
-  
+/**
+ * RouteErrorBoundary — now a standalone error UI component.
+ * In Next.js, this is used by app/error.tsx (not useRouteError).
+ */
+export function RouteErrorBoundary({ error, reset }: { error?: Error; reset?: () => void }) {
   // If it's a dynamic import error (chunk load error), automatically refresh the page
-  // This happens when a new version is deployed but the user is still on an old tab
   const isChunkLoadError = error?.name === "TypeError" && error?.message?.includes("Failed to fetch dynamically imported module");
   
   if (isChunkLoadError) {
@@ -32,10 +33,10 @@ export function RouteErrorBoundary() {
         )}
         <div className="flex gap-3 justify-center">
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => reset ? reset() : window.location.reload()}
             className="px-6 py-3 bg-[#16A34A] rounded-xl font-bold text-sm hover:bg-[#15803d] transition-colors"
           >
-            Refresh Page
+            Try Again
           </button>
           <button
             onClick={() => window.location.href = "/"}

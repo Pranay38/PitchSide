@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { Twitter, Instagram, Mail, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { topicPath } from "../lib/contentPaths";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 
 export function Footer() {
-  const { newsletterOptIn } = useUserPreferences();
+  const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
   const [email, setEmail] = useState("");
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -20,9 +20,11 @@ export function Footer() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim() }),
+        credentials: "same-origin",
       });
       const data = await res.json();
       if (res.ok) {
+        setNewsletterOptIn(true);
         if (data.alreadySubscribed) {
           toast.info("You're already subscribed! 🎉");
         } else {
@@ -32,19 +34,7 @@ export function Footer() {
         toast.error(data.error || "Something went wrong. Please try again.");
       }
     } catch {
-      // Fallback to localStorage if API is not available
-      try {
-        const subscribers = JSON.parse(localStorage.getItem("pitchside_subscribers") || "[]");
-        if (subscribers.includes(email.trim())) {
-          toast.info("You're already subscribed! 🎉");
-        } else {
-          subscribers.push(email.trim());
-          localStorage.setItem("pitchside_subscribers", JSON.stringify(subscribers));
-          toast.success("Subscribed! You'll hear from us soon ⚽");
-        }
-      } catch {
-        toast.success("Subscribed! You'll hear from us soon ⚽");
-      }
+      toast.error("Could not save your subscription. Please try again.");
     }
     setEmail("");
   };
@@ -111,7 +101,7 @@ export function Footer() {
           </div>
 
           {/* Newsletter */}
-          {!newsletterOptIn && (
+          {!loading && !newsletterOptIn && (
             <div>
               <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-4">Stay Updated</h3>
               <p className="text-sm text-gray-400 mb-4">

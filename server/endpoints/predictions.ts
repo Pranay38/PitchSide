@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors, checkRateLimit, requireAuth } from "../utils/security.js";
-import { connectToDatabase } from "../_db.js";
+import { applyCors, checkRateLimit, requireAuth } from "../utils/security";
+import { connectToDatabase } from "../_db";
 
 const FIXTURES_COLLECTION = "predictions_fixtures";
 const PICKS_COLLECTION = "predictions_user_picks";

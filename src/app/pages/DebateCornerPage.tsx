@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import {
     ArrowLeft, Flame, ThumbsUp, ThumbsDown, Send, MessageSquare, Share2, Clock,
     Loader2, Heart, ChevronDown, ChevronUp, Download, Timer,

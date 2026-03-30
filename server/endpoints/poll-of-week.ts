@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "../_db.js";
-import { applyCors, checkRateLimit } from "../utils/security.js";
+import { connectToDatabase } from "../_db";
+import { applyCors, checkRateLimit } from "../utils/security";
 
 const COLLECTION = "settings";
 const SETTINGS_ID = "site-settings";

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useUser, SignInButton } from "@clerk/clerk-react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { ArrowRight, BookOpen, Library, Newspaper, Repeat2, ScrollText, Trophy, ShieldQuestion, Flame, ChevronLeft, ChevronRight } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
@@ -44,6 +44,18 @@ interface DailyFeaturesData {
 
 function sortPosts(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
+}
+
+function dedupePostsByTitle(posts: BlogPost[]): BlogPost[] {
+  const seenTitles = new Set<string>();
+
+  return posts.filter((post) => {
+    const normalizedTitle = post.title.trim().toLowerCase();
+    if (!normalizedTitle) return true;
+    if (seenTitles.has(normalizedTitle)) return false;
+    seenTitles.add(normalizedTitle);
+    return true;
+  });
 }
 
 function sortStories(stories: StoryFeature[]): StoryFeature[] {
@@ -248,7 +260,7 @@ function TransferSpotlightCard({ entry }: { entry: ReturnType<typeof buildTransf
 
 export function HomePage() {
   const { isSignedIn, isLoaded: clLoaded } = useUser();
-  const clerkAvailable = typeof import.meta.env.VITE_CLERK_PUBLISHABLE_KEY === "string" && import.meta.env.VITE_CLERK_PUBLISHABLE_KEY.length > 0;
+  const clerkAvailable = typeof process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY === "string" && process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.length > 0;
   const { data: posts = [], isLoading: isLoadingPosts, error: postsError } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => sortPosts(await getPublishedPostsAsync()),
@@ -358,9 +370,8 @@ export function HomePage() {
     }
     
     // Explicitly selected items from Post Editor
-    const manuallySelected = posts.filter(
-      (p) => p.editorPick && !excludedIds.has(p.id)
-    );
+    // Bypass the hero exclusion if the author explicitly marked it as an Editor Pick
+    const manuallySelected = posts.filter((p) => p.editorPick);
       
     if (manuallySelected.length >= 3) {
       return manuallySelected.slice(0, 3);
@@ -404,7 +415,7 @@ export function HomePage() {
   ), [dailyFeatures?.lastUpdated]);
 
   const thisWeekPosts = useMemo(() => {
-    return posts.filter((p) => p.thisWeek);
+    return dedupePostsByTitle(posts.filter((p) => p.thisWeek));
   }, [posts]);
 
   const hasContent = posts.length > 0 || stories.length > 0;

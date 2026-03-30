@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "@/lib/router-compat";
 import { useTheme } from "../hooks/useTheme";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationBell } from "./NotificationBell";
@@ -18,7 +18,7 @@ import { ClubOnboardingModal } from "./ClubOnboardingModal";
 /** Returns true if Clerk string is configured */
 function useClerkAvailable(): boolean {
   // @ts-ignore
-  const key = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
   return typeof key === "string" && key.length > 0;
 }
 

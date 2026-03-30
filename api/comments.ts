@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectToDatabase } from "./_db.js";
-import { checkOrigin, rejectHoneypot, sanitizeString } from "../server/utils/security.js";
+import { connectToDatabase } from "./_db";
+import { checkOrigin, rejectHoneypot, sanitizeString } from "../server/utils/security";
 
 const COLLECTION = "comments";
 

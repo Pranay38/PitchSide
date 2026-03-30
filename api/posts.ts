@@ -1,11 +1,12 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors, checkRateLimit, requireAuth } from "../server/utils/security.js";
+import { applyCors, checkRateLimit, requireAuth, hasAdminAuth } from "../server/utils/security";
 import { ObjectId } from "mongodb";
 import { randomBytes } from "crypto";
-import { connectToDatabase } from "./_db.js";
+import { connectToDatabase } from "./_db";
+import { isPostLive, notifySubscribersAboutPost } from "../server/lib/postNotifications";
 
 // Default seed posts (used when DB is empty on first run)
-import { blogPosts as defaultPosts } from "../src/app/data/posts.js";
+import { blogPosts as defaultPosts } from "../src/app/data/posts";
 
 const COLLECTION = "posts";
 
@@ -17,6 +18,19 @@ function buildIdFilter(id: string) {
     return { $or: filters };
 }
 
+function sanitizePostResponse(post: Record<string, any>) {
+    const { _id, ...rest } = post;
+    const normalized: Record<string, any> = { ...rest, id: rest.id || String(_id) };
+
+    for (const [key, value] of Object.entries(normalized)) {
+        if (value === null) {
+            delete normalized[key];
+        }
+    }
+
+    return normalized;
+}
+
 async function promoteLatestPostToMainStory(collection: any): Promise<string | null> {
     const latestPost = await collection.find({}).sort({ _id: -1 }).limit(1).next();
     if (!latestPost) return null;
@@ -25,6 +39,12 @@ async function promoteLatestPostToMainStory(collection: any): Promise<string | n
     await collection.updateOne({ _id: latestPost._id }, { $set: { mainStory: true } });
 
     return (latestPost.id as string | undefined) || String(latestPost._id);
+}
+
+async function markPostSubscribersNotified(collection: any, id: string) {
+    await collection.updateOne(buildIdFilter(id), {
+        $set: { notifiedSubscribersAt: new Date().toISOString() },
+    });
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -47,8 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (previewToken) {
                 const draft = await collection.findOne({ previewToken });
                 if (!draft) return res.status(404).json({ error: "Preview not found or token expired" });
-                const { _id, ...rest } = draft;
-                return res.status(200).json({ ...rest, id: rest.id || String(_id) });
+                return res.status(200).json(sanitizePostResponse(draft));
             }
 
             let posts = await collection.find({}).sort({ _id: -1 }).toArray();
@@ -62,17 +81,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
 
             // Map _id → id for client compatibility
-            let result = posts.map((p) => {
-                const { _id, ...rest } = p;
-                return { ...rest, id: rest.id || String(_id) };
-            });
+            let result = posts.map((p) => sanitizePostResponse(p));
 
-            // For public users, filter out posts scheduled for the future
-            const authHeader = req.headers.authorization;
-            const isAdmin = authHeader && authHeader.startsWith("Bearer ") && authHeader.split(" ")[1] === process.env.ADMIN_TOKEN;
+            // Admin-authenticated requests can see everything. Public requests
+            // should not receive drafts or future-scheduled posts.
+            const isAdmin = hasAdminAuth(req);
             if (!isAdmin) {
                 const now = new Date();
                 result = result.filter((p: any) => {
+                    if (p.isDraft) return false;
                     if (!p.publishAt) return true; // No schedule = visible immediately
                     return new Date(p.publishAt) <= now;
                 });
@@ -85,16 +102,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // ─── POST: Create a new post ───
         if (req.method === "POST") {
             if (!requireAuth(req, res)) return;
-            const postData = req.body;
+            const postData = { ...req.body };
             const id = Date.now().toString();
+            if (postData.previewToken == null) delete postData.previewToken;
+            if (postData.publishAt == null) delete postData.publishAt;
             // Auto-generate preview token for drafts
             if (postData.isDraft && !postData.previewToken) {
                 postData.previewToken = randomBytes(12).toString("hex");
             }
             const newPost = { ...postData, id, _id: id as any };
             await collection.insertOne(newPost);
-            const { _id, ...result } = newPost;
-            return res.status(201).json(result);
+
+            if (isPostLive(newPost) && !newPost.notifiedSubscribersAt) {
+                try {
+                    const result = await notifySubscribersAboutPost(db, newPost);
+                    if (result.sent > 0) {
+                        await markPostSubscribersNotified(collection, id);
+                    }
+                } catch (notificationError) {
+                    console.error("Failed to auto-notify subscribers for new post:", notificationError);
+                }
+            }
+
+            return res.status(201).json(sanitizePostResponse(newPost));
         }
 
         // ─── PUT: Update a post ───
@@ -103,21 +133,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const { id, ...updates } = req.body;
             if (!id) return res.status(400).json({ error: "Missing post id" });
 
+            const existing = await collection.findOne(buildIdFilter(id));
+            const setUpdates = { ...updates } as Record<string, any>;
+            const unsetUpdates: Record<string, "" | 1> = {};
+
             // Auto-generate preview token for drafts that don't have one
-            if (updates.isDraft && !updates.previewToken) {
-                const existing = await collection.findOne(buildIdFilter(id));
+            if (setUpdates.isDraft && !setUpdates.previewToken) {
                 if (existing && !existing.previewToken) {
-                    updates.previewToken = randomBytes(12).toString("hex");
+                    setUpdates.previewToken = randomBytes(12).toString("hex");
                 }
             }
-            // Clear preview token when publishing (no longer a draft)
-            if (updates.isDraft === false) {
-                updates.previewToken = null;
+
+            if (Object.prototype.hasOwnProperty.call(setUpdates, "publishAt") && (setUpdates.publishAt == null || setUpdates.publishAt === "")) {
+                delete setUpdates.publishAt;
+                unsetUpdates.publishAt = "";
             }
 
-            const result = await collection.updateOne(buildIdFilter(id), { $set: updates });
+            // Clear preview token when publishing or when null sneaks into the payload.
+            if (setUpdates.isDraft === false || setUpdates.previewToken == null) {
+                delete setUpdates.previewToken;
+                unsetUpdates.previewToken = "";
+            }
+
+            const updateOperation: Record<string, any> = {};
+            if (Object.keys(setUpdates).length > 0) {
+                updateOperation.$set = setUpdates;
+            }
+            if (Object.keys(unsetUpdates).length > 0) {
+                updateOperation.$unset = unsetUpdates;
+            }
+
+            const result = await collection.updateOne(buildIdFilter(id), updateOperation);
             if (result.matchedCount === 0) {
-                if (updates.mainStory === true) {
+                if (setUpdates.mainStory === true) {
                     const fallbackMainStoryId = await promoteLatestPostToMainStory(collection);
                     if (fallbackMainStoryId) {
                         return res.status(200).json({
@@ -131,6 +179,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 }
                 return res.status(404).json({ error: "Post not found" });
             }
+
+            if (existing) {
+                const mergedPost = {
+                    ...existing,
+                    ...setUpdates,
+                    id: existing.id || id,
+                } as Record<string, any>;
+
+                if (unsetUpdates.previewToken) delete mergedPost.previewToken;
+                if (unsetUpdates.publishAt) delete mergedPost.publishAt;
+
+                const shouldNotifyNow =
+                    !existing.notifiedSubscribersAt &&
+                    !isPostLive(existing as { isDraft?: boolean | null; publishAt?: string | null }) &&
+                    isPostLive(mergedPost);
+
+                if (shouldNotifyNow) {
+                    try {
+                        const notificationResult = await notifySubscribersAboutPost(db, mergedPost as any);
+                        if (notificationResult.sent > 0) {
+                            await markPostSubscribersNotified(collection, id);
+                        }
+                    } catch (notificationError) {
+                        console.error("Failed to auto-notify subscribers for published post:", notificationError);
+                    }
+                }
+            }
+
             return res.status(200).json({ success: true });
         }
 

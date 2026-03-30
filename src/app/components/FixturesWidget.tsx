@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { Trophy, Calendar, Loader2, ChevronLeft, ChevronRight, TableProperties, Swords, Target } from "lucide-react";
 
 /* ── Types ── */
@@ -75,6 +75,8 @@ function StatusBadge({ status }: { status: string }) {
 function MatchRow({ match, competition }: { match: Match; competition: string }) {
     const hasScore = ["FINISHED", "IN_PLAY", "PAUSED"].includes(match.status);
     const matchDate = match.utcDate ? match.utcDate.split("T")[0] : "";
+    
+    const matchUrl = `/match-center?competition=${competition}&date=${matchDate}`;
     
     return (
         <Link to={matchUrl} className="block px-4 py-3 hover:bg-[#16A34A]/5 dark:hover:bg-[#16A34A]/10 transition-colors cursor-pointer">

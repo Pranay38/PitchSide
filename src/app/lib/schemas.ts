@@ -5,6 +5,9 @@
  */
 import { z } from "zod";
 
+const nullableOptionalString = z.string().nullable().optional().transform((value) => value ?? undefined);
+const nullableOptionalBoolean = z.boolean().nullable().optional().transform((value) => value ?? undefined);
+
 // ── Daily Features (homepage sidebar) ──────────────────────────
 
 export const OnThisDaySchema = z.object({
@@ -45,17 +48,17 @@ export const BlogPostSchema = z.object({
   tags: z.array(z.string()).default([]),
   date: z.string().default(""),
   readTime: z.string().default(""),
-  thisWeek: z.boolean().optional(),
-  mustRead: z.boolean().optional(),
-  editorPick: z.boolean().optional(),
-  mainStory: z.boolean().optional(),
-  mediaUrl: z.string().optional(),
-  sofascoreUrl: z.string().optional(),
+  thisWeek: nullableOptionalBoolean,
+  mustRead: nullableOptionalBoolean,
+  editorPick: nullableOptionalBoolean,
+  mainStory: nullableOptionalBoolean,
+  mediaUrl: nullableOptionalString,
+  sofascoreUrl: nullableOptionalString,
   sofascoreWidget: z.any().optional(),
-  playerName: z.string().optional(),
-  isDraft: z.boolean().optional(),
-  previewToken: z.string().optional(),
-  publishAt: z.string().optional(),
+  playerName: nullableOptionalString,
+  isDraft: nullableOptionalBoolean,
+  previewToken: nullableOptionalString,
+  publishAt: nullableOptionalString,
   poll: z.object({
     question: z.string(),
     options: z.array(z.object({ text: z.string(), votes: z.number() })),

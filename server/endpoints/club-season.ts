@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors, checkRateLimit, requireAuth } from "../utils/security.js";
+import { applyCors, checkRateLimit, requireAuth } from "../utils/security";
 
 const API_KEY = process.env.FOOTBALL_DATA_KEY || "";
 const BASE_URL = "https://api.football-data.org/v4";

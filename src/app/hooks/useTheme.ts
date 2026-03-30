@@ -23,7 +23,7 @@ function applyTheme(theme: Theme) {
 export function useTheme() {
     const [theme, setThemeState] = useState<Theme>(() => {
         try {
-            const stored = localStorage.getItem(THEME_KEY) as Theme | null;
+            const stored = typeof window !== 'undefined' ? localStorage.getItem(THEME_KEY) as Theme | null : null;
             if (stored === "dark" || stored === "light") return stored;
         } catch {
             // ignore

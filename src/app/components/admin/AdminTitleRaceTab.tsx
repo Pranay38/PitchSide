@@ -59,7 +59,7 @@ export function AdminTitleRaceTab() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${import.meta.env.VITE_ADMIN_PASSWORD || localStorage.getItem(ADMIN_KEY) || ""}`,
+                    "Authorization": `Bearer ${process.env.NEXT_PUBLIC_ADMIN_PASSWORD || localStorage.getItem(ADMIN_KEY) || ""}`,
                 },
                 body: JSON.stringify({ teams }),
             });

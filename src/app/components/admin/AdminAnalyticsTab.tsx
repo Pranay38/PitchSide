@@ -41,7 +41,7 @@ export function AdminAnalyticsTab() {
         setLoading(true);
         setError(null);
         try {
-            const pwd = localStorage.getItem("admin-password") || "";
+            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
             const res = await fetch("/api/sys?route=analytics", {
                 headers: { Authorization: `Bearer ${pwd}` }
             });

@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router";
+import { Link } from "@/lib/router-compat";
 import { getCategoryBadgeColor } from "./utils";
 
 export interface BlogArticleData {
