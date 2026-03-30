@@ -9,4 +9,8 @@ export const config = {
     // Always run for API routes
     "/(api|trpc)(.*)",
   ],
+  unstable_allowDynamic: [
+    "**/node_modules/@clerk/**/*.js",
+    "**/node_modules/@clerk/nextjs/**/*.js"
+  ],
 };
