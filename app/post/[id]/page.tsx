@@ -47,8 +47,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
       ],
       siteName: "The Touchline Dribble",
-      publishedTime: post.date ? new Date(post.date).toISOString() : undefined,
-      authors: ["Pranay Agrawal"],
+      publishedTime: post.publishAt || post.date ? new Date(post.publishAt || post.date).toISOString() : undefined,
+      authors: [post.author || "Pranay Agrawal"],
     },
     twitter: {
       card: "summary_large_image",
@@ -89,20 +89,20 @@ export default async function BlogPostPage({ params }: Props) {
     headline: post.title,
     description: post.excerpt || "",
     image: [post.coverImage],
-    datePublished: post.date
-      ? new Date(post.date).toISOString()
+    datePublished: post.publishAt || post.date
+      ? new Date(post.publishAt || post.date).toISOString()
       : undefined,
     dateModified: post.updatedAt
       ? new Date(post.updatedAt).toISOString()
-      : post.date
-        ? new Date(post.date).toISOString()
+      : post.publishAt || post.date
+        ? new Date(post.publishAt || post.date).toISOString()
         : undefined,
     articleSection: post.club || "Football",
     wordCount: post.content?.split(/\s+/).length || 0,
     author: [
       {
         "@type": "Person",
-        name: "Pranay Agrawal",
+        name: post.author || "Pranay Agrawal",
         url: "https://x.com/TouchlineDribbl",
       },
     ],
