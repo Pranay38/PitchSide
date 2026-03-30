@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getPostByIdServer, getPublishedPostsServer } from "@/lib/server-data";
 import { Header } from "@/app/components/Header";
 import { Footer } from "@/app/components/Footer";
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: post.title,
       description: post.excerpt || "",
       type: "article",
-      url: `https://thetouchlinedribble.in/post/${id}`,
+      url: `https://thetouchlinedribble.in/post/${post.slug || post.id}`,
       images: [
         {
           url: post.coverImage || ogImageUrl,
@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       creator: "@TouchlineDribbl",
     },
     alternates: {
-      canonical: `https://thetouchlinedribble.in/post/${id}`,
+      canonical: `https://thetouchlinedribble.in/post/${post.slug || post.id}`,
     },
   };
 }
@@ -75,6 +75,11 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) {
     notFound();
+  }
+
+  // 2. Redirect to canonical slug if accessed via classic ID
+  if (post.slug && id !== post.slug) {
+    permanentRedirect(`/post/${post.slug}`);
   }
 
 
@@ -118,7 +123,7 @@ export default async function BlogPostPage({ params }: Props) {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://thetouchlinedribble.in/post/${post.id}`,
+      "@id": `https://thetouchlinedribble.in/post/${post.slug || post.id}`,
     },
   };
 

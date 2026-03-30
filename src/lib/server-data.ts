@@ -70,7 +70,7 @@ export async function getPostByIdServer(id: string) {
   const collection = db.collection("posts");
 
   const post = await collection.findOne({
-    $or: [{ id }, { _id: id as any }],
+    $or: [{ id }, { _id: id as any }, { slug: id }],
   });
 
   if (!post) return null;

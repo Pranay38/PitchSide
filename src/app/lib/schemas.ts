@@ -57,6 +57,7 @@ export const BlogPostSchema = z.object({
   sofascoreWidget: z.any().optional(),
   playerName: nullableOptionalString,
   isDraft: nullableOptionalBoolean,
+  slug: nullableOptionalString,
   previewToken: nullableOptionalString,
   publishAt: nullableOptionalString,
   poll: z.object({

@@ -110,6 +110,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (postData.isDraft && !postData.previewToken) {
                 postData.previewToken = randomBytes(12).toString("hex");
             }
+
+            if (!postData.slug && postData.title) {
+                const baseSlug = postData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                postData.slug = `${baseSlug}-${id.slice(-5)}`;
+            }
+
             const newPost = { ...postData, id, _id: id as any };
             await collection.insertOne(newPost);
 
@@ -141,6 +147,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (setUpdates.isDraft && !setUpdates.previewToken) {
                 if (existing && !existing.previewToken) {
                     setUpdates.previewToken = randomBytes(12).toString("hex");
+                }
+            }
+
+            if (existing && !existing.slug && !setUpdates.slug) {
+                const titleToSlugify = setUpdates.title || existing.title;
+                if (titleToSlugify) {
+                    const baseSlug = titleToSlugify.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                    setUpdates.slug = `${baseSlug}-${id.slice(-5)}`;
                 }
             }
 

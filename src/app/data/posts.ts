@@ -17,6 +17,7 @@ export interface BlogPost {
   sofascoreWidget?: any; // Structured WidgetConfig
   playerName?: string;
   isDraft?: boolean;
+  slug?: string;
   previewToken?: string; // Secret token for sharing draft previews
   publishAt?: string; // ISO date string for scheduled publishing
   poll?: {

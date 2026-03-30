@@ -18,3 +18,7 @@ export function deslugify(value: string): string {
 export function topicPath(topic: string): string {
   return `/topic/${slugify(topic)}`;
 }
+
+export function postPath(post: { id: string; slug?: string }): string {
+  return `/post/${post.slug || post.id}`;
+}
