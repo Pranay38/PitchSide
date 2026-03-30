@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "@/lib/router-compat";
 import { ArrowRight, Plus, Check, Search, Tags } from "lucide-react";
@@ -25,21 +27,23 @@ function sortPosts(posts: BlogPost[], sort: string): BlogPost[] {
   return ordered.sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
 }
 
-export function TopicPage() {
+export function TopicPage({ initialPosts }: { initialPosts?: BlogPost[] }) {
   const { slug = "" } = useParams();
-  const [posts, setPosts] = useState<BlogPost[]>(() => getPublishedPosts());
-  const [loading, setLoading] = useState(posts.length === 0);
+  const [posts, setPosts] = useState<BlogPost[]>(() => initialPosts || getPublishedPosts());
+  const [loading, setLoading] = useState(!initialPosts && posts.length === 0);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("newest");
 
-  const normalizedSlug = slug.toLowerCase();
-  const topicLabel = deslugify(slug);
+  const slugString = Array.isArray(slug) ? slug[0] : (slug || "");
+  const normalizedSlug = slugString.toLowerCase();
+  const topicLabel = deslugify(slugString);
 
   const { user } = useUser();
   const { toggleFollowedTag, isTagFollowed } = useUserPreferences();
   const isFollowing = user ? isTagFollowed(topicLabel) : false;
 
   useEffect(() => {
+    if (initialPosts) return; // Skip if we have server data
     let isMounted = true;
 
     getPublishedPostsAsync()
@@ -56,7 +60,7 @@ export function TopicPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [initialPosts]);
 
   const matchingPosts = useMemo(() => {
     const topicMatches = posts.filter((post) => {

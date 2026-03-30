@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useCallback, useEffect } from "react";
 
 const CLUB_KEY = "pitchside_favorite_club";

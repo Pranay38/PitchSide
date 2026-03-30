@@ -1,7 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getPostByIdServer, getPublishedPostsServer } from "@/lib/server-data";
-import { BlogPostPageClient } from "./BlogPostPageClient";
+import { Header } from "@/app/components/Header";
+import { Footer } from "@/app/components/Footer";
+import { Breadcrumbs } from "@/app/components/Breadcrumbs";
+import { Clock, Tag } from "lucide-react";
+import Link from "next/link";
+import { topicPath } from "@/app/lib/contentPaths";
+import { ArticleContentRenderer, getArticleContentModel } from "@/app/components/ArticleContentRenderer";
+import { ArticleAudioPlayer } from "@/app/components/ArticleAudioPlayer";
+import { InlineNewsletterCard } from "@/app/components/InlineNewsletterCard";
+import { RecommendedArticles } from "@/app/components/RecommendedArticles";
+import { PostActionsClient } from "./PostActionsClient";
+import { PostTrackersClient } from "./PostTrackersClient";
+import { PostEmbedHydrationClient } from "./PostEmbedHydrationClient";
 
 export const revalidate = 60;
 
@@ -49,19 +61,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: `https://thetouchlinedribble.in/post/${id}`,
     },
-    other: {
-      // JSON-LD will be added in the page component
-    },
   };
 }
 
 export default async function BlogPostPage({ params }: Props) {
   const { id } = await params;
-  const post = await getPostByIdServer(id);
+  
+  // 1. Fetch data on the Server
+  const [post, allPosts] = await Promise.all([
+    getPostByIdServer(id),
+    getPublishedPostsServer()
+  ]);
 
   if (!post) {
     notFound();
   }
+
+
+
+  // 3. Prepare content models
+  const articleContentModel = post.content ? getArticleContentModel(post.content) : null;
 
   // JSON-LD structured data for the article
   const jsonLd = {
@@ -102,13 +121,111 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   return (
-    <>
+    <div className="min-h-screen bg-[#F8FAFC] transition-colors duration-300 dark:bg-[#0B1120]">
+      {/* Invisible trackers for reading history and saving progress */}
+      <PostTrackersClient postId={post.id} />
+      
       {/* Server-rendered JSON-LD — Google sees this immediately */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <BlogPostPageClient postId={id} initialPost={post} />
-    </>
+      
+      <Header />
+
+      <main>
+        <section className="relative overflow-hidden">
+          <div className="absolute inset-0">
+            <img src={post.coverImage} alt={post.title} className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.3),rgba(15,23,42,0.82))]" />
+          </div>
+
+          <div className="relative mx-auto flex min-h-[420px] w-full max-w-[1180px] items-end px-4 py-10 sm:px-6 md:min-h-[520px]">
+            <div className="max-w-4xl">
+              <Breadcrumbs
+                items={[
+                  { label: post.tags[0] || post.club, href: topicPath(post.tags[0] || post.club) },
+                  { label: post.title },
+                ]}
+              />
+
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                {post.tags.map((tag: string) => (
+                  <Link
+                    href={topicPath(tag)}
+                    key={tag}
+                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
+                      tag === post.club
+                        ? "bg-[#16A34A] text-white"
+                        : "bg-white/12 text-white backdrop-blur-sm"
+                    }`}
+                  >
+                    <Tag className="h-3 w-3" />
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+
+              <h1 className="mt-6 text-4xl font-black font-outfit leading-[0.95] text-white md:text-6xl">
+                {post.title}
+              </h1>
+              <p className="mt-4 max-w-3xl text-lg leading-8 text-white/78 md:text-xl">
+                {post.excerpt}
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-white/70">
+                <span>{post.date}</span>
+                <span className="flex items-center gap-1">
+                  <Clock className="h-4 w-4" />
+                  {post.readTime}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto grid w-full max-w-[1180px] gap-10 px-4 py-10 sm:px-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+          <article className="min-w-0">
+            {/* Interactive actions block (Like, Bookmark, Follow) */}
+            <PostActionsClient 
+              post={{
+                id: post.id,
+                title: post.title,
+                club: post.club,
+                playerName: post.playerName,
+                likedBy: post.likedBy || []
+              }} 
+            />
+
+            {articleContentModel && (
+              <ArticleAudioPlayer
+                title={post.title}
+                excerpt={post.excerpt}
+                model={articleContentModel}
+              />
+            )}
+
+            {/* Content Renderer (Renders static HTML for crawlers, hydrating glossary on mount) */}
+            <PostEmbedHydrationClient>
+              {articleContentModel && (
+                 <ArticleContentRenderer model={articleContentModel} />
+              )}
+            </PostEmbedHydrationClient>
+
+            <div className="mt-12">
+              <InlineNewsletterCard
+                title="Get the strongest Touchline Dribble reads in one email"
+                description="Use the newsletter as the low-noise way to keep up with new analysis and longform pieces."
+              />
+            </div>
+          </article>
+          
+          <aside className="w-full xl:w-[280px] hidden xl:block space-y-8">
+            <RecommendedArticles articleId={post.id} />
+          </aside>
+        </section>
+      </main>
+      
+      <Footer />
+    </div>
   );
 }

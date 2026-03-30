@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { Twitter, Instagram, Mail, Heart } from "lucide-react";

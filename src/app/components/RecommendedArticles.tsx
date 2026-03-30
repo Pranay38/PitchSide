@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Link } from "@/lib/router-compat";
 import { topicPath } from "../lib/contentPaths";
