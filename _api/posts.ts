@@ -113,7 +113,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             if (!postData.slug && postData.title) {
                 const baseSlug = postData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                postData.slug = `${baseSlug}-${id.slice(-5)}`;
+                if (baseSlug) {
+                    let finalSlug = baseSlug;
+                    let counter = 1;
+                    while (await collection.findOne({ slug: finalSlug })) {
+                        finalSlug = `${baseSlug}-${counter}`;
+                        counter++;
+                    }
+                    postData.slug = finalSlug;
+                }
             }
 
             const newPost = { ...postData, id, _id: id as any };
@@ -160,7 +168,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 if (titleToSlugify && titleToSlugify !== "Untitled Draft") {
                     const baseSlug = titleToSlugify.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
                     if (baseSlug) {
-                        setUpdates.slug = `${baseSlug}-${id.slice(-5)}`;
+                        let finalSlug = baseSlug;
+                        let counter = 1;
+                        // Avoid colliding with other posts, ignoring THIS post
+                        while (await collection.findOne({ slug: finalSlug, ...({ $nor: [buildIdFilter(id)] }) })) {
+                            finalSlug = `${baseSlug}-${counter}`;
+                            counter++;
+                        }
+                        setUpdates.slug = finalSlug;
                     }
                 }
             }

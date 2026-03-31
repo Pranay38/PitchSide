@@ -265,6 +265,7 @@ export function HomePage() {
     queryKey: ['posts'],
     queryFn: async () => sortPosts(await getPublishedPostsAsync()),
     initialData: () => sortPosts(getPublishedPosts()),
+    initialDataUpdatedAt: 0,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -272,6 +273,7 @@ export function HomePage() {
     queryKey: ['stories'],
     queryFn: async () => sortStories(await getAllStoriesAsync()),
     initialData: () => sortStories(getAllStories()),
+    initialDataUpdatedAt: 0,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -279,6 +281,7 @@ export function HomePage() {
     queryKey: ['siteSettings'],
     queryFn: getSiteSettingsAsync,
     initialData: getSiteSettings,
+    initialDataUpdatedAt: 0,
     staleTime: 1000 * 60 * 5,
   });
 

@@ -4,7 +4,8 @@ import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName, delet
 import type { SearchResult } from "../data/clubs";
 import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
-import { ArticleContentRenderer, getArticleContentModel } from "./ArticleContentRenderer";
+import { ArticleContentRenderer } from "./ArticleContentRenderer";
+import { getArticleContentModel } from "../lib/articleModel";
 import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2, MessageSquare, CalendarDays } from "lucide-react";
 import { PollWidget } from "./PollWidget";
 import { scheduleEmbedHydration } from "../lib/embedHydration";

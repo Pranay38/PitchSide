@@ -12,14 +12,43 @@ import { forwardRef } from "react";
 
 export {
   useParams,
-  useSearchParams,
   usePathname,
   useRouter,
   notFound,
   redirect,
 } from "next/navigation";
 
-import { useRouter as useNextRouter } from "next/navigation";
+import { useRouter as useNextRouter, useSearchParams as useNextSearchParams, usePathname as useNextPathname } from "next/navigation";
+
+/**
+ * Drop-in replacement for react-router's useSearchParams.
+ * React Router's hook returns [searchParams, setSearchParams].
+ * Next.js's native useSearchParams returns searchParams directly.
+ */
+export function useSearchParams() {
+  const searchParams = useNextSearchParams();
+  const router = useNextRouter();
+  const pathname = useNextPathname();
+
+  const setSearchParams = (updater: Record<string, string> | URLSearchParams) => {
+    let current = new URLSearchParams(searchParams?.toString() || "");
+    if (updater instanceof URLSearchParams) {
+      current = updater;
+    } else {
+      Object.entries(updater).forEach(([key, value]) => {
+        if (value === null || value === undefined) {
+           current.delete(key);
+        } else {
+           current.set(key, String(value));
+        }
+      });
+    }
+    router.push(`${pathname}?${current.toString()}`);
+  };
+
+  const safeSearchParams = searchParams || new URLSearchParams();
+  return [safeSearchParams, setSearchParams] as const;
+}
 
 /**
  * Drop-in replacement for react-router's <Link>.

@@ -7,7 +7,11 @@ import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { Clock, Tag } from "lucide-react";
 import Link from "next/link";
 import { topicPath } from "@/app/lib/contentPaths";
-import { ArticleContentRenderer, getArticleContentModel } from "@/app/components/ArticleContentRenderer";
+import { 
+  getArticleContentModel, 
+  buildQuickSummary 
+} from "@/app/lib/articleModel";
+import { ArticleContentRenderer } from "@/app/components/ArticleContentRenderer";
 import { ArticleAudioPlayer } from "@/app/components/ArticleAudioPlayer";
 import { InlineNewsletterCard } from "@/app/components/InlineNewsletterCard";
 import { RecommendedArticles } from "@/app/components/RecommendedArticles";

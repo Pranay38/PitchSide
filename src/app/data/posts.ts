@@ -36,6 +36,7 @@ export const blogPosts: BlogPost[] = [
   {
     id: "1",
     title: "Manchester United's Tactical Evolution Under New Management",
+    slug: "manchester-united-s-tactical-evolution-under-new-management-00001",
     excerpt: "Analyzing the shift in formation and playing style that has revitalized the Red Devils' season.",
     coverImage: "https://images.unsplash.com/photo-1549923015-badf41b04831?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmb290YmFsbCUyMHN0YWRpdW0lMjBtYXRjaHxlbnwxfHx8fDE3NzIyOTU0ODJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
     club: "Manchester United",
@@ -77,6 +78,7 @@ As the season progresses, we can expect further refinement of these tactical pri
   {
     id: "2",
     title: "Arsenal's Title Challenge: Can They Finally Go All the Way?",
+    slug: "arsenal-s-title-challenge-can-they-finally-go-all-the-way-00002",
     excerpt: "The Gunners are mounting their strongest title bid in years. We examine whether they have what it takes.",
     coverImage: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Arsenal",
@@ -110,6 +112,7 @@ With 12 games remaining, Arsenal sit two points clear at the top. The fixture li
   {
     id: "3",
     title: "Liverpool's Midfield Revolution: A New Era at Anfield",
+    slug: "liverpool-s-midfield-revolution-a-new-era-at-anfield-00003",
     excerpt: "How Liverpool's complete midfield overhaul has created one of Europe's most dynamic engine rooms.",
     coverImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Liverpool",
@@ -142,6 +145,7 @@ This has resulted in Liverpool's best attacking output in three seasons, with go
   {
     id: "4",
     title: "Chelsea's Youth Development: Betting Big on the Future",
+    slug: "chelsea-s-youth-development-betting-big-on-the-future-00004",
     excerpt: "Inside Chelsea's ambitious strategy of investing in young talent and its long-term implications.",
     coverImage: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Chelsea",
@@ -176,6 +180,7 @@ Chelsea are not just building a team; they're building an asset. The squad's com
   {
     id: "5",
     title: "Real Madrid's Galácticos 3.0: A New Generation of Stars",
+    slug: "real-madrid-s-gal-cticos-3-0-a-new-generation-of-stars-00005",
     excerpt: "How Real Madrid are assembling another world-class squad that could dominate European football.",
     coverImage: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Real Madrid",
@@ -208,6 +213,7 @@ The blend of youth and experience, of individual brilliance and collective disci
   {
     id: "6",
     title: "Barcelona's Financial Recovery and Sporting Renaissance",
+    slug: "barcelona-s-financial-recovery-and-sporting-renaissance-00006",
     excerpt: "From the brink of financial collapse to competitive resurgence — Barcelona's remarkable recovery story.",
     coverImage: "https://images.unsplash.com/photo-1551958219-acbc608c6377?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Barcelona",
@@ -241,6 +247,7 @@ Challenges remain. The financial constraints still limit transfer activity, and 
   {
     id: "7",
     title: "The Importance of Set Pieces in Modern Football",
+    slug: "the-importance-of-set-pieces-in-modern-football-00007",
     excerpt: "Statistical analysis reveals how dead-ball situations are becoming increasingly decisive in elite competition.",
     coverImage: "https://images.unsplash.com/photo-1616778551732-6dd1289f567d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmb290YmFsbCUyMHRhY3RpY2FsJTIwYm9hcmR8ZW58MXx8fHwxNzcyMjU0Nzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
     club: "Manchester United",
@@ -270,6 +277,7 @@ The investment in set-piece specialization is paying dividends across the league
   {
     id: "8",
     title: "Bayern Munich's Bundesliga Dominance Under Threat",
+    slug: "bayern-munich-s-bundesliga-dominance-under-threat-00008",
     excerpt: "For the first time in years, Bayern face a genuine challenge to their domestic supremacy.",
     coverImage: "https://images.unsplash.com/photo-1629977007371-0ba395424741?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Bayern Munich",
@@ -295,6 +303,7 @@ A competitive Bundesliga benefits everyone. TV revenues increase, player quality
   {
     id: "9",
     title: "The Psychology of Derby Matches: Inside the Mind of a Player",
+    slug: "the-psychology-of-derby-matches-inside-the-mind-of-a-player-00009",
     excerpt: "Understanding the mental preparation required for football's most intense rivalries.",
     coverImage: "https://images.unsplash.com/photo-1695713503375-e8458c3e1d5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Liverpool",
@@ -324,6 +333,7 @@ Modern clubs use visualization, controlled breathing exercises, and scenario pla
   {
     id: "10",
     title: "Transfer Window Review: Premier League Hits and Misses",
+    slug: "transfer-window-review-premier-league-hits-and-misses-00010",
     excerpt: "An honest assessment of the January transfer window's biggest winners and losers across the league.",
     coverImage: "https://images.unsplash.com/photo-1638029851126-8f56dee1dbe6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Arsenal",
@@ -355,6 +365,7 @@ Several clubs have already begun planning for the summer window, with the lesson
   {
     id: "11",
     title: "Data Analysis: Pressing Intensity Across Europe's Top Leagues",
+    slug: "data-analysis-pressing-intensity-across-europe-s-top-leagues-00011",
     excerpt: "Deep dive into the numbers behind modern pressing and which teams do it best.",
     coverImage: "https://images.unsplash.com/photo-1622460132742-d218ff93958d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Manchester City",
@@ -391,6 +402,7 @@ As teams develop increasingly sophisticated pressing triggers and pressing traps
   {
     id: "12",
     title: "Inter Milan's Serie A Supremacy: Built to Last?",
+    slug: "inter-milan-s-serie-a-supremacy-built-to-last-00012",
     excerpt: "Examining whether Inter's domestic dominance can translate into European success.",
     coverImage: "https://images.unsplash.com/photo-1607417307259-afd87bdf92a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Inter Milan",
@@ -420,6 +432,7 @@ The blend of domestic consistency and European hunger makes Inter one of the mos
   {
     id: "13",
     title: "Youth Academy Stars Ready to Make First Team Impact",
+    slug: "youth-academy-stars-ready-to-make-first-team-impact-00013",
     excerpt: "Three promising talents from the academy are knocking on the door of regular first-team selection.",
     coverImage: "https://images.unsplash.com/photo-1766934824997-f99bbcad64f3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Manchester United",
@@ -449,6 +462,7 @@ Leadership, reading of the game, and aerial dominance — this 20-year-old defen
   {
     id: "14",
     title: "Borussia Dortmund's Signal Iduna Park: The Yellow Wall Experience",
+    slug: "borussia-dortmund-s-signal-iduna-park-the-yellow-wall-experience-00014",
     excerpt: "Inside the most atmospheric stadium in world football and what makes it so special.",
     coverImage: "https://images.unsplash.com/photo-1625187538367-6a8483a79cc2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Borussia Dortmund",
@@ -478,6 +492,7 @@ This accessibility is central to Dortmund's identity and is something other majo
   {
     id: "15",
     title: "Paris Saint-Germain's Post-Superstar Era: Finding a New Identity",
+    slug: "paris-saint-germain-s-post-superstar-era-finding-a-new-identity-00015",
     excerpt: "How PSG are redefining themselves as a team rather than a collection of individual stars.",
     coverImage: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Paris Saint-Germain",
