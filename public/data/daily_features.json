@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-03-30T06:28:05.908448",
+  "lastUpdated": "2026-03-31T06:14:55.017677",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Bayern wary of Saudi interest in Kane - Monday's gossip",
-    "sentimentScore": 65
+    "text": "Fernandez on Real Madrid shortlist - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Liam Rosenior (CHE)",
-      "pressureScore": 89
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 88
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 89
+      "name": "Rob Edwards (WOL)",
+      "pressureScore": 72
     },
     {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 82
-    },
-    {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 74
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 63
     }
   ]
 }
