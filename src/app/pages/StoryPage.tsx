@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import DOMPurify from "dompurify";
 import { Link, useParams, useSearchParams } from "@/lib/router-compat";
 import { ArrowLeft, ArrowRight, Quote, Sparkles, BookOpen } from "lucide-react";
 import { SEO } from "../components/SEO";
@@ -377,7 +376,7 @@ export function StoryPage() {
                       {chapter.body.length === 1 && chapter.body[0].trim().startsWith("<") ? (
                         <div
                           className="pitchside-article-content text-base md:text-lg leading-8 text-[#334155] dark:text-gray-200"
-                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(chapter.body[0], { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel"] }) }}
+                          dangerouslySetInnerHTML={{ __html: chapter.body[0] }}
                         />
                       ) : (
                         chapter.body.map((paragraph) => (

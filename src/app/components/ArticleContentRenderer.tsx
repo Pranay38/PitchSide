@@ -3,7 +3,6 @@
 import { useMemo, useEffect, useRef } from "react";
 import { renderEditorialBlockHtml, type EditorialBlock } from "../lib/editorialBlocks";
 import { GlossaryTooltip, GlossaryStyles } from "./GlossaryTooltip";
-import DOMPurify from "dompurify";
 import { Tweet } from "./ui/tweet";
 import {
   type ArticleContentModel,
@@ -12,7 +11,7 @@ import {
 
 function EditorialBlockView({ block }: { block: EditorialBlock }) {
   return (
-    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderEditorialBlockHtml(block), { ADD_TAGS: ["iframe", "svg", "path", "circle", "rect", "line"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel", "style"] }) }} />
+    <div dangerouslySetInnerHTML={{ __html: renderEditorialBlockHtml(block) }} />
   );
 }
 
@@ -99,24 +98,8 @@ export function ArticleContentRenderer({
                 return (
                   <div
                     key={`html-${i}`}
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(block.content, {
-                        ADD_TAGS: ["iframe", "span", "figure", "figcaption", "svg", "path", "circle", "rect", "line"],
-                        ADD_ATTR: [
-                          "allow",
-                          "allowfullscreen",
-                          "frameborder",
-                          "scrolling",
-                          "target",
-                          "rel",
-                          "data-glossary-term",
-                          "data-glossary-def",
-                          "style",
-                          "data-embedded-image",
-                          "data-lazy-src",
-                        ],
-                      }),
-                    }}
+                    className="text-[#334155] dark:text-gray-200"
+                    dangerouslySetInnerHTML={{ __html: block.content || "" }}
                   />
                 );
               })}
@@ -128,7 +111,11 @@ export function ArticleContentRenderer({
       return (
         <>
           <GlossaryStyles />
-          <div ref={containerRef} className={className} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(model.html || "", { ADD_TAGS: ["iframe", "span", "figure", "figcaption", "svg", "path", "circle", "rect", "line"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "target", "rel", "data-glossary-term", "data-glossary-def", "style", "data-embedded-image", "data-lazy-src"] }) }} />
+          <div
+            ref={containerRef}
+            className={`text-[#334155] dark:text-gray-200 html-blob leading-8 ${className}`}
+            dangerouslySetInnerHTML={{ __html: model.html || "" }}
+          />
         </>
       );
     }
