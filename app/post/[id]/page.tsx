@@ -67,20 +67,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPostPage({ params }: Props) {
   const { id } = await params;
   
-  // 1. Fetch data on the Server
-  const [post, allPosts] = await Promise.all([
-    getPostByIdServer(id),
-    getPublishedPostsServer()
-  ]);
+  // 1. Quick lookup for redirect check FIRST (before expensive allPosts fetch)
+  const post = await getPostByIdServer(id);
 
   if (!post) {
     notFound();
   }
 
-  // 2. Redirect to canonical slug if accessed via classic ID
+  // 2. Redirect to canonical slug if accessed via numeric ID  
   if (post.slug && id !== post.slug) {
     permanentRedirect(`/post/${post.slug}`);
   }
+
+  // 3. Only fetch supplementary data after redirect check passes
+  const allPosts = await getPublishedPostsServer();
 
 
 
