@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next';
-import { getPublishedPostsServer } from '@/lib/server-data';
+import { getPublishedPostsServer, getStoriesServer } from '@/lib/server-data';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getPublishedPostsServer();
+  const stories = await getStoriesServer();
   const baseUrl = 'https://thetouchlinedribble.in';
 
   // Base routes
@@ -47,5 +48,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  return [...routes, ...postRoutes];
+  // Story pages
+  const storyRoutes = stories.map((story: any) => ({
+    url: `${baseUrl}/stories/${story.slug}`,
+    lastModified: story.updatedAt ? new Date(story.updatedAt) : new Date(story.date),
+    changeFrequency: 'daily' as const,
+    priority: 0.9,
+  }));
+
+  return [...routes, ...postRoutes, ...storyRoutes];
 }

@@ -1,4 +1,5 @@
 import { ArrowRight, BookOpen, Layers3 } from "lucide-react";
+import Image from "next/image";
 import { Link } from "@/lib/router-compat";
 import type { StoryFeature } from "../data/stories";
 
@@ -23,10 +24,12 @@ export function StoryFeatureCard({
       >
         <div className="grid gap-0 md:grid-cols-[220px_minmax(0,1fr)]">
           <div className="relative min-h-[200px] overflow-hidden">
-            <img
+            <Image
               src={story.coverImage}
               alt={story.title}
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div
               className="absolute inset-0 opacity-80"
@@ -65,10 +68,12 @@ export function StoryFeatureCard({
       >
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="relative min-h-[320px] overflow-hidden lg:min-h-full">
-            <img
+            <Image
               src={story.coverImage}
               alt={story.title}
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
             />
             <div
               className="absolute inset-0"
@@ -139,10 +144,12 @@ export function StoryFeatureCard({
       className="group cursor-pointer overflow-hidden rounded-[1.9rem] border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800 dark:bg-[#0F172A]"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
-        <img
+        <Image
           src={story.coverImage}
           alt={story.title}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
         />
         <div
           className="absolute inset-0"

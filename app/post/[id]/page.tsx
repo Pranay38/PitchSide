@@ -25,6 +25,13 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
+export async function generateStaticParams() {
+  const posts = await getPublishedPostsServer();
+  return posts.map((post: any) => ({
+    id: post.slug || post.id,
+  }));
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const post = await getPostByIdServer(id);

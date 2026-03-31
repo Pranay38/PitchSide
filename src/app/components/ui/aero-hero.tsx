@@ -1,4 +1,5 @@
 import { ArrowRight, ArrowUpRight, Star, Clock } from "lucide-react";
+import Image from "next/image";
 import { Link } from "@/lib/router-compat";
 import { Avatar, AvatarFallback, AvatarImage } from "./aero-avatar";
 import { Button } from "./aero-button";
@@ -10,13 +11,14 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
 
   return (
     <section className="relative flex min-h-[75vh] w-full items-end justify-center">
-      <div
-        className="absolute inset-0 h-full bg-cover"
-        style={{
-          backgroundImage: `url(${post.coverImage})`,
-          backgroundPosition: "center 20%",
-        }}
-      >
+      <div className="absolute inset-0 h-full">
+        <Image 
+          src={post.coverImage} 
+          alt={post.title} 
+          fill
+          priority
+          style={{ objectFit: "cover", objectPosition: "center 20%" }} 
+        />
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/10" />
       </div>
 

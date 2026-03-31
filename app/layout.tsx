@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -54,7 +56,7 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export default function RootLayout({
   children,
@@ -204,6 +206,8 @@ export default function RootLayout({
             </p>
           </div>
         </noscript>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

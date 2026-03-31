@@ -25,12 +25,8 @@ const nextConfig = {
   // Image optimization - allow external image domains
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: '**.unsplash.com' },
-      { protocol: 'https', hostname: 'upload.wikimedia.org' },
-      { protocol: 'https', hostname: '**.wikimedia.org' },
-      { protocol: 'https', hostname: 'img.clerk.com' },
-      { protocol: 'https', hostname: '**.sofascore.com' },
+      { protocol: 'https', hostname: '**' },
+      { protocol: 'http', hostname: '**' },
     ],
     unoptimized: false,
   },

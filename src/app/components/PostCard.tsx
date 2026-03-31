@@ -1,4 +1,5 @@
 import { Link } from "@/lib/router-compat";
+import Image from "next/image";
 import type { BlogPost } from "../data/posts";
 import { getClubByName } from "../data/clubs";
 import { Clock, Star, ArrowRight, Heart } from "lucide-react";
@@ -40,11 +41,12 @@ export function PostCard({ post, featured = false }: PostCardProps) {
       >
         <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
         <div className="absolute inset-0 overflow-hidden">
-          <img
+          <Image
             src={post.coverImage}
             alt={post.title}
-            loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-700"
           />
         </div>
         {/* Gradient Overlay */}
@@ -108,11 +110,12 @@ export function PostCard({ post, featured = false }: PostCardProps) {
     >
       <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
       <div className="aspect-video overflow-hidden relative pointer-events-none">
-        <img
+        <Image
           src={post.coverImage}
           alt={post.title}
-          loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover group-hover:scale-105 transition-transform duration-700"
         />
         <div className="absolute top-4 left-4 flex flex-col items-start gap-2 z-0">
           {post.mustRead && (
