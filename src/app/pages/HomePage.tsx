@@ -34,7 +34,7 @@ const PlatformFeaturesBento = lazy(() => import("../components/PlatformFeaturesB
 const InlineNewsletterCard = lazy(() => import("../components/InlineNewsletterCard").then(m => ({ default: m.InlineNewsletterCard })));
 const TitleRaceTracker = lazy(() => import("../components/TitleRaceTracker").then(m => ({ default: m.TitleRaceTracker })));
 const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m => ({ default: m.BlogPostsGrid })));
-const TransferTicker = lazy(() => import("../components/TransferTicker").then(m => ({ default: m.TransferTicker })));
+import { TransferTicker } from "../components/TransferTicker";
 
 interface DailyFeaturesData {
   lastUpdated: string;
@@ -493,6 +493,9 @@ export function HomePage() {
         })}
       />
       <Header />
+      {siteSettings.transferWatch && siteSettings.transferWatch.length > 0 && (
+          <TransferTicker entries={siteSettings.transferWatch} />
+      )}
 
       {/* NEW FULL WIDTH HERO */}
       {(heroSelection?.type === "post" || heroSelection?.type === "story") ? (

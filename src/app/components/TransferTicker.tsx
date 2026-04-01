@@ -1,49 +1,18 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import { ArrowRightLeft } from "lucide-react";
+import type { TransferWatchEntry } from "../lib/transferWatch";
+import { formatTransferWatchAmount, getTransferTierLabel } from "../lib/transferWatch";
 
-interface TickerItem {
-    type: "transfer" | "rumor";
-    player?: string;
-    move?: string;
-    fee?: string;
-    performance?: string;
-    window?: string;
-    text?: string;
-    link?: string;
-    tm_url?: string;
+interface TransferTickerProps {
+    entries: TransferWatchEntry[];
 }
 
-export function TransferTicker() {
-    const [items, setItems] = useState<TickerItem[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    const fetchTicker = useCallback(async () => {
-        try {
-            const res = await fetch(`/api/transfers-ticker?t=${Date.now()}`);
-            if (!res.ok) return;
-            const data = await res.json();
-            if (Array.isArray(data) && data.length > 0) {
-                setItems(data);
-            }
-        } catch {
-            // Keep previous items on transient fetch errors.
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchTicker();
-        const interval = setInterval(fetchTicker, 3 * 60 * 1000); // Refresh every 3 minutes
-        return () => clearInterval(interval);
-    }, [fetchTicker]);
-
-    if (loading || items.length === 0) return null;
+export function TransferTicker({ entries }: TransferTickerProps) {
+    if (!entries || entries.length === 0) return null;
 
     // Duplicate items to create infinite scroll effect
-    const scrollItems = [...items, ...items, ...items];
+    const scrollItems = [...entries, ...entries, ...entries];
 
     return (
         <div className="w-full bg-[#0F172A] border-y border-gray-800 text-white overflow-hidden flex items-center h-10 select-none">
@@ -62,28 +31,27 @@ export function TransferTicker() {
 
                 <div className="flex items-center h-full animate-marquee whitespace-nowrap will-change-transform">
                     {scrollItems.map((item, i) => (
-                        <div key={i} className="flex items-center shrink-0 pr-8 group">
-                            {item.type === "transfer" ? (
+                        <div key={`${item.id}-${i}`} className="flex items-center shrink-0 pr-8 group">
+                            {item.status === "confirmed" ? (
                                 <>
-                                    {item.tm_url ? (
-                                        <a href={item.tm_url} target="_blank" rel="noreferrer" className="text-[#38BDF8] hover:text-white transition-colors font-bold text-xs underline decoration-transparent hover:decoration-[#38BDF8] underline-offset-4">
-                                            {item.player}
-                                        </a>
-                                    ) : (
-                                        <span className="text-[#38BDF8] font-bold text-xs">{item.player}</span>
+                                    <span className="text-[#38BDF8] font-bold text-xs">{item.player}</span>
+                                    <span className="mx-2 text-gray-500 text-[10px]">|</span>
+                                    <span className="text-gray-300 text-xs font-medium">{item.fromClub ? `${item.fromClub} -> ` : ""}{item.club}</span>
+                                    <span className="mx-2 text-gray-500 text-[10px]">|</span>
+                                    <span className="text-[#FBBF24] text-[11px] font-bold bg-[#FBBF24]/10 px-1.5 py-0.5 rounded">{formatTransferWatchAmount(item)}</span>
+                                    {item.punchyLine && (
+                                        <>
+                                           <span className="mx-2 text-gray-600 text-xs">•</span>
+                                           <span className="text-gray-400 text-[11px] italic transition-colors group-hover:text-white">{item.punchyLine}</span>
+                                        </>
                                     )}
-                                    <span className="mx-2 text-gray-500 text-[10px]">|</span>
-                                    <span className="text-gray-300 text-xs font-medium">{item.move}</span>
-                                    <span className="mx-2 text-gray-500 text-[10px]">|</span>
-                                    <span className="text-[#FBBF24] text-[11px] font-bold bg-[#FBBF24]/10 px-1.5 py-0.5 rounded">{item.fee}</span>
-                                    <span className="mx-2 text-gray-600 text-xs">•</span>
-                                    <span className="text-gray-400 text-[11px] italic transition-colors group-hover:text-white">{item.performance}</span>
                                 </>
                             ) : (
-                                <a href={item.link} target="_blank" rel="noreferrer" className="flex items-center">
-                                    <span className="text-rose-500 font-black text-[10px] tracking-widest bg-rose-500/10 px-1.5 py-0.5 rounded mr-2 uppercase">Rumor</span>
-                                    <span className="text-gray-300 text-xs hover:text-white hover:underline transition-colors">{item.text}</span>
-                                </a>
+                                <div className="flex items-center">
+                                    <span className="text-rose-500 font-black text-[10px] tracking-widest bg-rose-500/10 px-1.5 py-0.5 rounded mr-2 uppercase">{getTransferTierLabel(item.tier)}</span>
+                                    <span className="text-gray-300 text-xs"><span className="font-bold text-white">{item.player}</span> to {item.club}</span>
+                                    {item.feeMillions > 0 && <span className="ml-2 text-[#FBBF24] text-[11px] font-bold bg-[#FBBF24]/10 px-1.5 py-0.5 rounded mr-2">{formatTransferWatchAmount(item)}</span>}
+                                </div>
                             )}
                             <span className="ml-8 text-[#16A34A]/50">♦</span>
                         </div>

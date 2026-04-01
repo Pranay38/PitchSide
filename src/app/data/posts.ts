@@ -28,8 +28,12 @@ export interface BlogPost {
     playerName: string;
     editorRating: number;
   }[];
+  matchRating?: number;
+  seriesName?: string;
+  seriesOrder?: number;
   reactions?: Record<string, number>;
   likedBy?: string[];
+  author?: string;
 }
 
 export const blogPosts: BlogPost[] = [

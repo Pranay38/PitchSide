@@ -12,6 +12,7 @@ import {
   Tag,
   UserRound,
   Shield,
+  Star,
 } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Breadcrumbs } from "../components/Breadcrumbs";
@@ -23,12 +24,13 @@ import { CommentSection } from "../components/CommentSection";
 import { PollWidget } from "../components/PollWidget";
 import { ReactionUI } from "../components/ReactionUI";
 import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
+import { SeriesNavigator } from "../components/SeriesNavigator";
 import { PageState } from "../components/PageState";
 import { ArticleAudioPlayer } from "../components/ArticleAudioPlayer";
 import {
   ArticleContentRenderer,
-  getArticleContentModel,
 } from "../components/ArticleContentRenderer";
+import { getArticleContentModel } from "../lib/articleModel";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import type { BlogPost } from "../data/posts";
 import { toast } from "sonner";
@@ -153,6 +155,13 @@ export function BlogPostPage() {
         && (candidate.club === post.club || candidate.tags.some((tag) => post.tags.includes(tag)))
       ))
       .slice(0, 3);
+  }, [post, posts]);
+
+  const seriesPosts = useMemo(() => {
+    if (!post?.seriesName) return [];
+    return posts
+      .filter((candidate) => candidate.seriesName === post.seriesName)
+      .sort((a, b) => (a.seriesOrder ?? 0) - (b.seriesOrder ?? 0) || new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [post, posts]);
 
   const handleShare = (platform: "whatsapp" | "twitter" | "reddit" | "copy") => {
@@ -296,6 +305,12 @@ export function BlogPostPage() {
                     {tag}
                   </Link>
                 ))}
+                {post.matchRating !== undefined && post.matchRating > 0 && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold bg-[#4ade80] text-[#0F172A] shadow-md">
+                    <Star className="h-3 w-3 fill-[#0F172A]" />
+                    {post.matchRating}/10 Match Rating
+                  </span>
+                )}
               </div>
 
               <h1 className="mt-6 text-4xl font-black font-outfit leading-[0.95] text-white md:text-6xl">
@@ -401,6 +416,11 @@ export function BlogPostPage() {
 
             <div
               ref={articleContentRef}>
+              
+              {post.seriesName && seriesPosts.length > 1 && (
+                <SeriesNavigator currentPost={post} seriesPosts={seriesPosts} />
+              )}
+              
               {articleContentModel && (
                 <ArticleContentRenderer model={articleContentModel} />
               )}

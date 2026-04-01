@@ -6,7 +6,7 @@ import { calculateReadTime, formatDate, getAllPosts } from "../lib/postStorage";
 import { RichTextEditor } from "./RichTextEditor";
 import { ArticleContentRenderer } from "./ArticleContentRenderer";
 import { getArticleContentModel } from "../lib/articleModel";
-import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2, MessageSquare, CalendarDays } from "lucide-react";
+import { ArrowLeft, Image, Tag, FileText, Upload, Link, X, Search, Loader2, Flame, Star, Crown, Activity, User, BarChart3, Users, Eye, Clock, Cloud, CloudOff, CheckCircle2, Plus, Trash2, MessageSquare, CalendarDays, Library } from "lucide-react";
 import { PollWidget } from "./PollWidget";
 import { scheduleEmbedHydration } from "../lib/embedHydration";
 import { toast } from "sonner";
@@ -99,6 +99,9 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [usePoll, setUsePoll] = useState(!!post?.poll);
     const [matchRatings, setMatchRatings] = useState<{playerName: string, editorRating: number}[]>(post?.matchRatings || []);
     const [useMatchRatings, setUseMatchRatings] = useState(!!post?.matchRatings && post.matchRatings.length > 0);
+    const [matchRating, setMatchRating] = useState<number | "">(post?.matchRating ?? "");
+    const [seriesName, setSeriesName] = useState(post?.seriesName || "");
+    const [seriesOrder, setSeriesOrder] = useState<number | "">(post?.seriesOrder ?? "");
     const [publishAt, setPublishAt] = useState(post?.publishAt || "");
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
@@ -317,6 +320,9 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             isDraft,
             poll: usePoll && poll.question.trim() ? poll : undefined,
             matchRatings: useMatchRatings && matchRatings.filter(r => r.playerName.trim()).length > 0 ? matchRatings.filter(r => r.playerName.trim()) : undefined,
+            matchRating: matchRating === "" ? undefined : matchRating,
+            seriesName: seriesName.trim() || undefined,
+            seriesOrder: seriesOrder === "" ? undefined : seriesOrder,
             publishAt: publishAt || undefined,
         };
     };
@@ -403,7 +409,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     }, [
         title, excerpt, content, coverImage, club, category, tags,
         thisWeek, mustRead, editorPick, mainStory, mediaUrl, playerName,
-        usePoll, poll, useMatchRatings, matchRatings, publishAt, submitAction
+        usePoll, poll, useMatchRatings, matchRatings, matchRating, seriesName, seriesOrder, publishAt, submitAction
     ]);
 
     useEffect(() => {
@@ -1092,6 +1098,54 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                 </div>
                             </div>
                         )}
+                    </div>
+
+                    {/* Overall Match & Series Info */}
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
+                            <Library className="w-4 h-4 text-[#16A34A]" />
+                            Meta: Match Rating & Article Series
+                        </label>
+                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
+                            Optionally provide an overall rating for this match and link this post to an ongoing series.
+                        </p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Overall Match Rating (0-10)</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="10"
+                                    step="0.5"
+                                    value={matchRating}
+                                    onChange={(e) => setMatchRating(e.target.value ? Number(e.target.value) : "")}
+                                    placeholder="e.g. 8.5"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Series Name</label>
+                                <input
+                                    type="text"
+                                    value={seriesName}
+                                    onChange={(e) => setSeriesName(e.target.value)}
+                                    placeholder="e.g. The EPL in Europe"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Series Part (Order)</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={seriesOrder}
+                                    onChange={(e) => setSeriesOrder(e.target.value ? Number(e.target.value) : "")}
+                                    placeholder="e.g. 1"
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Featured Layout Options */}

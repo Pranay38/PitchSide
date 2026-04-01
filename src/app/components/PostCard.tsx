@@ -53,13 +53,20 @@ export function PostCard({ post, featured = false }: PostCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none z-0" />
         {/* Content */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 z-0 pointer-events-none">
-          {/* Must Read Badge */}
-          {post.mustRead && (
-            <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-amber-900 bg-amber-400 rounded-full mb-3 animate-pulse-glow">
-              <Star className="w-3 h-3 fill-amber-900" />
-              Must Read
-            </div>
-          )}
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+             {post.mustRead && (
+               <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-amber-900 bg-amber-400 rounded-full animate-pulse-glow">
+                 <Star className="w-3 h-3 fill-amber-900" />
+                 Must Read
+               </div>
+             )}
+             {post.matchRating !== undefined && post.matchRating > 0 && (
+               <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-[#0F172A] bg-[#4ade80] rounded-full shadow-md">
+                 <Star className="w-3 h-3 fill-[#0F172A]" />
+                 {post.matchRating}/10 Rating
+               </div>
+             )}
+          </div>
           
           <button 
              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleLike(e); }}
@@ -122,6 +129,12 @@ export function PostCard({ post, featured = false }: PostCardProps) {
             <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-amber-900 bg-amber-400 rounded-full shadow-md">
               <Star className="w-3 h-3 fill-amber-900" />
               Must Read
+            </div>
+          )}
+          {post.matchRating !== undefined && post.matchRating > 0 && (
+            <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-[#0F172A] bg-[#4ade80] rounded-full shadow-md">
+              <Star className="w-3 h-3 fill-[#0F172A]" />
+              {post.matchRating}/10 Rating
             </div>
           )}
           <div className="flex flex-wrap items-center gap-2">

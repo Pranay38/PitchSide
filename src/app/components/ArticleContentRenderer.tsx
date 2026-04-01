@@ -9,6 +9,7 @@ import {
   type ArticleContentModel,
   glossaryRegex
 } from "../lib/articleModel";
+import { useScrollytelling } from "../hooks/useScrollytelling";
 
 function EditorialBlockView({ block }: { block: EditorialBlock }) {
   return (
@@ -78,6 +79,7 @@ export function ArticleContentRenderer({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   useGlossaryHydration(containerRef);
+  useScrollytelling(containerRef);
 
   const content = useMemo(() => {
     if (model.isRich) {
