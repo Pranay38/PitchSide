@@ -32,7 +32,6 @@ const RumorMillWidget = lazy(() => import("../components/RumorMillWidget").then(
 const ManagerPressureWidget = lazy(() => import("../components/ManagerPressureWidget").then(m => ({ default: m.ManagerPressureWidget })));
 const PlatformFeaturesBento = lazy(() => import("../components/PlatformFeaturesBento").then(m => ({ default: m.PlatformFeaturesBento })));
 const InlineNewsletterCard = lazy(() => import("../components/InlineNewsletterCard").then(m => ({ default: m.InlineNewsletterCard })));
-const TitleRaceTracker = lazy(() => import("../components/TitleRaceTracker").then(m => ({ default: m.TitleRaceTracker })));
 const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m => ({ default: m.BlogPostsGrid })));
 import { TransferTicker } from "../components/TransferTicker";
 
@@ -514,9 +513,6 @@ export function HomePage() {
       {mappedEditorPicks.length > 0 && <Blogs articles={mappedEditorPicks} />}
 
       <main className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 md:py-12">
-        <section className="mb-12">
-          <TitleRaceTracker />
-        </section>
 
         <section className="mb-24">
           <div className="grid gap-8 lg:gap-16 lg:grid-cols-[8fr_4fr] items-start">
