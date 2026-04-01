@@ -52,6 +52,8 @@ function ClerkGuardedAdmin() {
   }
 
   if (!isLoaded) return <AdminSpinner />;
-  if (!isSignedIn) return <Navigate to="/sign-in" replace />;
+  
+  // We no longer redirect to /sign-in immediately.
+  // Instead, passing through to AdminPage allows AdminLogin.tsx to display and handle the Clerk SignIn component.
   return <LazyAdmin />;
 }

@@ -430,12 +430,12 @@ export type AdminLoginResult = {
   error?: string;
 };
 
-export async function adminLogin(password: string): Promise<AdminLoginResult> {
+export async function adminLogin(clerkToken: string): Promise<AdminLoginResult> {
   try {
     const res = await fetch(`${API_BASE}/auth`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ clerkToken }),
       cache: "no-store",
       credentials: "same-origin",
     });
@@ -453,32 +453,14 @@ export async function adminLogin(password: string): Promise<AdminLoginResult> {
       res.status === 429
         ? "Too many login attempts. Please wait a minute and try again."
         : res.status === 401 || res.status === 403
-          ? "Incorrect password"
+          ? "Unauthorized email."
           : "Could not sign in right now.";
 
     return { ok: false, error: await getApiErrorMessage(res, fallbackMessage) };
   } catch {
-    // network error — API unreachable (likely local dev)
-  }
-
-  const isLocalDev =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-
-  if (!isLocalDev) {
+    // network error — API unreachable
     return { ok: false, error: "Could not reach the admin login service." };
   }
-
-  // Fallback: client-side check for local dev when API is unavailable
-  const envPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
-  const expected = envPassword || "pitchside2026";
-  if (password === expected) {
-    // Store the password as a simple token for local dev auth headers
-    localStorage.setItem(ADMIN_KEY, password);
-    return { ok: true };
-  }
-
-  return { ok: false, error: "Incorrect password" };
 }
 
 export function adminLogout(): void {

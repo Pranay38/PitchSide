@@ -96,10 +96,6 @@ function parseCookie(req: VercelRequest, name: string): string | null {
 function isValidAdminCredential(token: string | null | undefined): boolean {
     if (!token) return false;
 
-    if (token === ADMIN_PASSWORD || token === "pitchside2026") {
-        return true;
-    }
-
     try {
         jwt.verify(token, JWT_SECRET);
         return true;

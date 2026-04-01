@@ -1,90 +1,86 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { SignIn, useAuth, useUser } from "@clerk/clerk-react";
 import { adminLogin } from "../lib/postStorage";
-import { Lock, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
+import { Lock } from "lucide-react";
 
 interface AdminLoginProps {
     onLogin: () => void;
 }
 
 export function AdminLogin({ onLogin }: AdminLoginProps) {
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const { isLoaded, isSignedIn, signOut, getToken } = useAuth();
+    const { user } = useUser();
+    const [verifying, setVerifying] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        const result = await adminLogin(password);
-        if (result.ok) {
-            onLogin();
-        } else {
-            setError(result.error || "Incorrect password");
-            setPassword("");
+    useEffect(() => {
+        if (isLoaded && isSignedIn && user) {
+            const checkAdmin = async () => {
+                const primaryEmail = user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId);
+                const emailAddress = primaryEmail?.emailAddress?.toLowerCase() || "";
+                
+                if (emailAddress !== "pranayagarwal382@gmail.com") {
+                    toast.error("Unauthorized: Admin access is restricted to Pranay's email.");
+                    await signOut();
+                    return;
+                }
+                
+                setVerifying(true);
+                try {
+                    const token = await getToken();
+                    if (!token) throw new Error("No token");
+                    
+                    const result = await adminLogin(token);
+                    if (result.ok) {
+                        onLogin();
+                    } else {
+                        toast.error(result.error || "Failed to authenticate with backend.");
+                        await signOut();
+                    }
+                } catch {
+                    toast.error("Authentication server error");
+                    await signOut();
+                }
+                setVerifying(false); // will unmount if successful via onLogin() but catch needed
+            };
+            checkAdmin();
         }
-        setIsLoading(false);
-    };
+    }, [isLoaded, isSignedIn, user, signOut, getToken, onLogin]);
 
-    return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] flex items-center justify-center p-4 transition-colors duration-300">
-            <div className="w-full max-w-sm">
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-xl p-8 transition-colors duration-300">
-                    {/* Logo */}
-                    <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#16A34A] to-[#15803d] mb-4 shadow-lg shadow-[#16A34A]/20">
-                            <Lock className="w-7 h-7 text-white" />
-                        </div>
-                        <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">
-                            The Touchline Dribble Admin
-                        </h1>
-                        <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
-                            Enter your password to manage posts
-                        </p>
-                    </div>
-
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">
-                                Password
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    value={password}
-                                    onChange={(e) => {
-                                        setPassword(e.target.value);
-                                        setError("");
-                                    }}
-                                    placeholder="Enter admin password"
-                                    className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                                    autoFocus
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                                >
-                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                </button>
-                            </div>
-                            {error && (
-                                <p className="text-red-500 text-xs mt-2">{error}</p>
-                            )}
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="w-full py-3 bg-[#16A34A] text-white rounded-xl font-medium hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25 text-sm"
-                        >
-                            Sign In
-                        </button>
-                    </form>
-
-                    <p className="text-xs text-center text-[#94A3B8] dark:text-gray-500 mt-6">
-                        Default password: <code className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-[#16A34A]">pitchside2026</code>
+    if (!isLoaded || verifying || (isSignedIn && !verifying)) {
+        return (
+            <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] flex items-center justify-center p-4">
+                <div className="flex flex-col items-center">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#16A34A] border-t-transparent mb-4" />
+                    <p className="text-[#64748B] dark:text-gray-400 font-medium tracking-wide">
+                        {verifying ? "Verifying admin credentials..." : "Loading authentication..."}
                     </p>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
+
+    if (!isSignedIn) {
+        return (
+            <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] flex flex-col items-center justify-center p-4 transition-colors duration-300">
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#16A34A] to-[#15803d] mb-4 shadow-lg shadow-[#16A34A]/20">
+                        <Lock className="w-7 h-7 text-white" />
+                    </div>
+                    <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">
+                        The Touchline Dribble Admin
+                    </h1>
+                    <p className="text-sm text-[#64748B] dark:text-gray-400 mt-2">
+                        Admin access is restricted to authenticated staff.
+                    </p>
+                </div>
+                
+                <div className="w-full max-w-sm flex justify-center">
+                    <SignIn routing="hash" />
+                </div>
+            </div>
+        );
+    }
+
+    return null;
 }

@@ -1,9 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import jwt from "jsonwebtoken";
 import { applyCors } from "../utils/security";
+import { createClerkClient } from "@clerk/backend";
 
-const ADMIN_PASSWORD = process.env.VITE_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || "pitchside2026";
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_dev_secret_do_not_use_in_prod";
+const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 const ADMIN_SESSION_COOKIE = "pitchside_admin_session";
 const ADMIN_SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 
@@ -41,14 +42,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const { password } = req.body;
+        const { clerkToken } = req.body;
 
-        if (!password || (password !== ADMIN_PASSWORD && password !== "pitchside2026")) {
-            return res.status(401).json({ error: "Invalid credentials" });
+        if (!clerkToken) {
+            return res.status(401).json({ error: "Missing Clerk token" });
         }
 
-        // Generate a token valid for 7 days
-        const token = jwt.sign({ role: "admin" }, JWT_SECRET, { expiresIn: "7d" });
+        // Verify Clerk token cryptographically
+        const decoded = await clerkClient.verifyToken(clerkToken);
+        const userId = decoded.sub;
+
+        // Fetch user from Clerk to get the primary email address
+        const user = await clerkClient.users.getUser(userId);
+        const primaryEmail = user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId);
+        const emailAddress = primaryEmail?.emailAddress?.trim().toLowerCase() || "";
+
+        // Strictly match against the required admin email
+        if (emailAddress !== "pranayagarwal382@gmail.com") {
+            return res.status(403).json({ error: "Unauthorized: Admin access is restricted to Pranayagarwal382@gmail.com." });
+        }
+
+        // Generate our pitchside admin JWT token valid for 7 days
+        const token = jwt.sign({ role: "admin", email: emailAddress }, JWT_SECRET, { expiresIn: "7d" });
         res.setHeader("Set-Cookie", buildAdminSessionCookie(req, token, ADMIN_SESSION_MAX_AGE));
 
         return res.status(200).json({ success: true, token });

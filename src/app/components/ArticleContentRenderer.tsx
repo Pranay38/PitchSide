@@ -1,4 +1,5 @@
 "use client";
+import DOMPurify from "isomorphic-dompurify";
 
 import { useMemo, useEffect, useRef } from "react";
 import { renderEditorialBlockHtml, type EditorialBlock } from "../lib/editorialBlocks";
@@ -11,7 +12,7 @@ import {
 
 function EditorialBlockView({ block }: { block: EditorialBlock }) {
   return (
-    <div dangerouslySetInnerHTML={{ __html: renderEditorialBlockHtml(block) }} />
+    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderEditorialBlockHtml(block)) }} />
   );
 }
 
@@ -99,7 +100,7 @@ export function ArticleContentRenderer({
                   <div
                     key={`html-${i}`}
                     className="text-[#334155] dark:text-gray-200"
-                    dangerouslySetInnerHTML={{ __html: block.content || "" }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(block.content || "") }}
                   />
                 );
               })}
@@ -114,7 +115,7 @@ export function ArticleContentRenderer({
           <div
             ref={containerRef}
             className={`text-[#334155] dark:text-gray-200 html-blob leading-8 ${className}`}
-            dangerouslySetInnerHTML={{ __html: model.html || "" }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(model.html || "") }}
           />
         </>
       );
