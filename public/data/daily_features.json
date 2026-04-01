@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-03-31T06:14:55.017677",
+  "lastUpdated": "2026-04-01T06:25:12.543953",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Fernandez on Real Madrid shortlist - Tuesday's gossip",
+    "text": "Man City lead Man Utd in Anderson race - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 88
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 85
     },
     {
-      "name": "Rob Edwards (WOL)",
-      "pressureScore": 72
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 82
     },
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 63
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 78
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 78
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 61
     }
   ]
 }
