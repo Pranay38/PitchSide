@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-04-01T06:25:12.543953",
+  "lastUpdated": "2026-04-02T06:10:04.106216",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man City lead Man Utd in Anderson race - Wednesday's gossip",
-    "sentimentScore": 41
+    "text": "Everton interested in Stones return - Thursday's gossip",
+    "sentimentScore": 62
   },
   "managerPressure": [
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 85
+      "name": "David Moyes (EVE)",
+      "pressureScore": 95
     },
     {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 82
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 89
     },
     {
-      "name": "Pep Guardiola (MCI)",
-      "pressureScore": 78
-    },
-    {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 78
+      "name": "Nuno Esp\u00edrito Santo (WHU)",
+      "pressureScore": 72
     },
     {
       "name": "Eddie Howe (NEW)",
-      "pressureScore": 61
+      "pressureScore": 67
     }
   ]
 }
