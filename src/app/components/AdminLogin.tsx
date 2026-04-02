@@ -18,8 +18,9 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
             const checkAdmin = async () => {
                 const primaryEmail = user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId);
                 const emailAddress = primaryEmail?.emailAddress?.toLowerCase() || "";
+                const allowedEmails = ["pranayagrawal382@gmail.com", "pranayagarwal382@gmail.com"];
                 
-                if (emailAddress !== "pranayagarwal382@gmail.com") {
+                if (!allowedEmails.includes(emailAddress)) {
                     toast.error("Unauthorized: Admin access is restricted to Pranay's email.");
                     await signOut();
                     return;

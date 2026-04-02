@@ -58,8 +58,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const emailAddress = primaryEmail?.emailAddress?.trim().toLowerCase() || "";
 
         // Strictly match against the required admin email
-        if (emailAddress !== "pranayagarwal382@gmail.com") {
-            return res.status(403).json({ error: "Unauthorized: Admin access is restricted to Pranayagarwal382@gmail.com." });
+        const allowedEmails = ["pranayagrawal382@gmail.com", "pranayagarwal382@gmail.com"];
+        if (!allowedEmails.includes(emailAddress)) {
+            return res.status(403).json({ error: "Unauthorized: Admin access is restricted to Pranay's email." });
         }
 
         // Generate our pitchside admin JWT token valid for 7 days
