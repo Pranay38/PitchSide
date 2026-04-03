@@ -1,28 +1,32 @@
 {
-  "lastUpdated": "2026-04-02T06:10:04.106216",
+  "lastUpdated": "2026-04-03T06:10:22.411908",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Everton interested in Stones return - Thursday's gossip",
-    "sentimentScore": 62
+    "text": "Rogers open to leaving Aston Villa - Friday gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 95
+      "name": "Rob Edwards (WOL)",
+      "pressureScore": 91
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 89
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 90
+    },
+    {
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 83
     },
     {
       "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 72
+      "pressureScore": 68
     },
     {
-      "name": "Eddie Howe (NEW)",
+      "name": "Pep Guardiola (MCI)",
       "pressureScore": 67
     }
   ]
