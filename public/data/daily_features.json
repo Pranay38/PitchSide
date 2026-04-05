@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-04-04T05:54:21.465163",
+  "lastUpdated": "2026-04-05T06:13:22.235965",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Manchester rivals to battle for Anderson - Saturday's gossip",
-    "sentimentScore": 24
+    "text": "Chelsea chase Strasbourg defender - Sunday's gossip",
+    "sentimentScore": 46
   },
   "managerPressure": [
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 81
+      "name": "David Moyes (EVE)",
+      "pressureScore": 95
     },
     {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 77
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 94
     },
     {
       "name": "Arne Slot (LIV)",
-      "pressureScore": 74
-    },
-    {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 70
+      "pressureScore": 81
     }
   ]
 }
