@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-04-08T06:19:38.965097",
+  "lastUpdated": "2026-04-09T06:19:24.730543",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs want Trafford as Vicario replacement - Wednesday's gossip",
-    "sentimentScore": 44
+    "text": "Dortmund weigh up third Sancho move - Thursday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 98
-    },
-    {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 97
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 79
     },
     {
       "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 88
-    },
-    {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 71
+      "pressureScore": 75
     },
     {
       "name": "Scott Parker (BUR)",
-      "pressureScore": 62
+      "pressureScore": 68
+    },
+    {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 68
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 67
     }
   ]
 }
