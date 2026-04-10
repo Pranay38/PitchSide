@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-04-09T06:19:24.730543",
+  "lastUpdated": "2026-04-10T06:51:38.530970",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Dortmund weigh up third Sancho move - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Rogers centre of transfer tug of war - Friday's gossip",
+    "sentimentScore": 15
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 79
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 87
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 75
-    },
-    {
-      "name": "Scott Parker (BUR)",
-      "pressureScore": 68
-    },
-    {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 68
+      "name": "David Moyes (EVE)",
+      "pressureScore": 73
     },
     {
       "name": "Eddie Howe (NEW)",
       "pressureScore": 67
+    },
+    {
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 65
     }
   ]
 }
