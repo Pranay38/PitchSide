@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-04-10T06:51:38.530970",
+  "lastUpdated": "2026-04-11T05:57:44.124474",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Rogers centre of transfer tug of war - Friday's gossip",
-    "sentimentScore": 15
+    "text": "Spurs lead race for Robertson - Saturday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 87
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 91
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 73
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 90
+    },
+    {
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 78
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 76
     },
     {
       "name": "Eddie Howe (NEW)",
       "pressureScore": 67
-    },
-    {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 65
     }
   ]
 }
