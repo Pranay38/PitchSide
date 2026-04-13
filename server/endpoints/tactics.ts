@@ -42,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── POST: Save a new tactical sequence ───
         if (req.method === "POST") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const { title, formation, keyframes } = req.body;
             if (!title) return res.status(400).json({ error: "Missing title" });
             if (!keyframes || !Array.isArray(keyframes) || keyframes.length === 0) {
@@ -61,7 +61,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── DELETE: Delete a saved sequence ───
         if (req.method === "DELETE") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const id = req.query.id as string;
             if (!id) return res.status(400).json({ error: "Missing tactics id" });
             const filter: any = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { _id: id as any };

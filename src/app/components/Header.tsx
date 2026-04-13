@@ -14,7 +14,7 @@ import {
   SignInButton,
   UserButton,
   useUser,
-} from "@clerk/clerk-react";
+} from "@clerk/nextjs";
 import { ClubOnboardingModal } from "./ClubOnboardingModal";
 
 /** Returns true if Clerk string is configured */
@@ -157,8 +157,8 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
       <div className="gradient-accent-line w-full" />
       <header className={`sticky top-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
         isScrolled 
-          ? "glass shadow-sm dark:shadow-none bg-white/70 dark:bg-[#0F172A]/70 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/5" 
-          : "bg-white/60 dark:bg-[#0F172A]/60 md:bg-transparent md:dark:bg-transparent backdrop-blur-xl md:backdrop-blur-none border-b border-gray-200/30 dark:border-white/5 md:border-transparent"
+          ? "glass shadow-sm dark:shadow-none bg-white/70 dark:bg-[#0b1326]/40 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/5 ghost-border-dark" 
+          : "bg-white/60 dark:bg-[#0b1326]/40 backdrop-blur-xl border-b border-gray-200/30 dark:border-white/5 md:border-transparent"
       }`}>
         <div className={`w-full max-w-7xl mx-auto px-4 lg:px-6 flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
           isScrolled ? "py-2" : "py-3.5"

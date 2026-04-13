@@ -1,5 +1,5 @@
 export type TransferWatchStatus = "confirmed" | "rumor";
-export type TransferFeeMode = "million-usd" | "million-eur" | "million-gbp" | "not-disclosed";
+export type TransferFeeMode = "million-usd" | "million-eur" | "million-gbp" | "not-disclosed" | "free";
 export type TransferRumorTier = 1 | 2 | 3 | 4 | 5 | null;
 
 export interface TransferWatchEntry {
@@ -20,7 +20,7 @@ export interface TransferWatchEntry {
 }
 
 const TRANSFER_STATUSES: TransferWatchStatus[] = ["confirmed", "rumor"];
-const TRANSFER_FEE_MODES: TransferFeeMode[] = ["million-usd", "million-eur", "million-gbp", "not-disclosed"];
+const TRANSFER_FEE_MODES: TransferFeeMode[] = ["million-usd", "million-eur", "million-gbp", "not-disclosed", "free"];
 
 function normalizeClubName(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
@@ -139,6 +139,10 @@ export function matchesTransferClub(entry: Pick<TransferWatchEntry, "club">, clu
 }
 
 export function formatTransferWatchAmount(entry: Pick<TransferWatchEntry, "feeMode" | "feeMillions">): string {
+  if (entry.feeMode === "free") {
+    return "Free Transfer";
+  }
+
   if (entry.feeMode === "not-disclosed") {
     return "Not disclosed";
   }

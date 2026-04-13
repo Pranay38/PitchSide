@@ -4,7 +4,7 @@ import { Header } from "../components/Header";
 import { SEO } from "../components/SEO";
 import { Bookmark, MessageSquare, Heart, ArrowLeft, User, Settings, Calendar, Share, Sparkles, Bell, Search, Shield, X, Mail, Clock } from "lucide-react";
 import { getAllClubs, getClubByName, searchClubsOnline, type Club, type SearchResult } from "../data/clubs";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { getAllPosts } from "../lib/postStorage";

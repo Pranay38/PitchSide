@@ -12,7 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Only admins can view analytics
-    if (!requireAuth(req, res)) return;
+    if (!(await requireAuth(req, res))) return;
 
     try {
         const { db } = await connectToDatabase();

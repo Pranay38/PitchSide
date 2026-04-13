@@ -362,6 +362,7 @@ export function AdminTransferWatchTab({
                                     <option value="million-eur">Million EUR</option>
                                     <option value="million-gbp">Million GBP</option>
                                     <option value="not-disclosed">Not disclosed</option>
+                                    <option value="free">Free Transfer</option>
                                 </select>
                             </label>
 
@@ -373,8 +374,8 @@ export function AdminTransferWatchTab({
                                     step="0.1"
                                     value={transferDraft.feeMillions}
                                     onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, feeMillions: e.target.value }))}
-                                    disabled={transferDraft.feeMode === "not-disclosed"}
-                                    placeholder={transferDraft.feeMode === "not-disclosed" ? "Not disclosed" : "45"}
+                                    disabled={transferDraft.feeMode === "not-disclosed" || transferDraft.feeMode === "free"}
+                                    placeholder={transferDraft.feeMode === "not-disclosed" ? "Not disclosed" : transferDraft.feeMode === "free" ? "Free" : "45"}
                                     className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A] disabled:opacity-50"
                                 />
                             </label>

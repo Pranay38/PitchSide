@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MessageSquareQuote, ThumbsUp, ThumbsDown, Sparkles } from "lucide-react";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/nextjs";
 
 export interface RumorMill {
     text: string;

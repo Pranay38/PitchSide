@@ -34,6 +34,7 @@ export interface BlogPost {
   reactions?: Record<string, number>;
   likedBy?: string[];
   author?: string;
+  format?: "article" | "quick-take" | "match-reaction"; // "article" (default) or "quick-take" (micro-post) or "match-reaction" (immediate post-match)
 }
 
 export const blogPosts: BlogPost[] = [

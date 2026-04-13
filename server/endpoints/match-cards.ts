@@ -40,7 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── POST: Create a new match card (admin) ───
         if (req.method === "POST") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
 
             const {
                 homeTeam, awayTeam,
@@ -77,7 +77,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── PUT: Update match card (admin) ───
         if (req.method === "PUT") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const id = req.query.id as string;
             if (!id) return res.status(400).json({ error: "Missing id" });
 
@@ -98,7 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── DELETE (admin) ───
         if (req.method === "DELETE") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const id = req.query.id as string;
             if (!id) return res.status(400).json({ error: "Missing id" });
 

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export function useScrollytelling(
   containerRef: React.RefObject<HTMLElement | null>,
-  selector: string = "> p, > h2, > h3, > div, > blockquote, > ul, > ol, > figure"
+  selector: string = ":scope > p, :scope > h2, :scope > h3, :scope > div, :scope > blockquote, :scope > ul, :scope > ol, :scope > figure"
 ) {
   useEffect(() => {
     if (!containerRef.current) return;

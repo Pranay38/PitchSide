@@ -42,6 +42,21 @@ function generateDraftPreviewToken(): string {
   return `${Date.now().toString(16)}${Math.random().toString(16).slice(2)}`;
 }
 
+export function calculateReadTime(text: string): string {
+  const wpm = 225;
+  const words = text.trim().split(/\s+/).length;
+  const time = Math.ceil(words / wpm);
+  return `${time} min read`;
+}
+
+export function formatDate(): string {
+  return new Date().toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+  });
+}
+
 // ──────────────────────────────────────────
 // POSTS: API-first with localStorage fallback
 // ──────────────────────────────────────────
@@ -177,9 +192,7 @@ export async function addPostAsync(
 
   if (!res.ok) {
     if (res.status === 401 || res.status === 403) {
-      adminLogout();
-      if (typeof window !== "undefined") window.location.reload();
-    }
+          }
     throw new Error(await getApiErrorMessage(res, "Failed to publish post"));
   }
 
@@ -240,9 +253,7 @@ export async function updatePostAsync(
 
   if (!res.ok) {
     if (res.status === 401 || res.status === 403) {
-      adminLogout();
-      if (typeof window !== "undefined") window.location.reload();
-    }
+          }
     throw new Error(await getApiErrorMessage(res, "Failed to update post"));
   }
 
@@ -302,9 +313,7 @@ export async function deletePostAsync(id: string): Promise<BlogPost[]> {
 
   if (!res.ok) {
     if (res.status === 401 || res.status === 403) {
-      adminLogout();
-      if (typeof window !== "undefined") window.location.reload();
-    }
+          }
     throw new Error(await getApiErrorMessage(res, "Failed to delete post"));
   }
 
@@ -388,123 +397,3 @@ export async function initializePosts(): Promise<void> {
   }
 }
 
-// ──────────────────────────────────────────
-// Admin authentication
-// ──────────────────────────────────────────
-
-export function isAdminAuthenticated(): boolean {
-  const token = getAuthToken();
-  if (!token) return false;
-
-  const isJwt = token.split(".").length === 3;
-  const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
-
-  // Outside localhost we only trust JWTs, not legacy raw-password fallback tokens.
-  if (!isJwt) {
-    if (!isLocalhost) {
-      adminLogout();
-      return false;
-    }
-    return true;
-  }
-
-  const payload = decodeJwtPayload(token);
-  const exp = typeof payload?.exp === "number" ? payload.exp : Number(payload?.exp);
-
-  if (!Number.isFinite(exp)) {
-    adminLogout();
-    return false;
-  }
-
-  if (exp * 1000 <= Date.now()) {
-    adminLogout();
-    return false;
-  }
-
-  return true;
-}
-
-// Updated to async to hit backend Auth API, with local dev fallback
-export type AdminLoginResult = {
-  ok: boolean;
-  error?: string;
-};
-
-export async function adminLogin(clerkToken: string): Promise<AdminLoginResult> {
-  try {
-    const res = await fetch(`${API_BASE}/auth`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ clerkToken }),
-      cache: "no-store",
-      credentials: "same-origin",
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      if (data.token) {
-        localStorage.setItem(ADMIN_KEY, data.token);
-        return { ok: true };
-      }
-      return { ok: false, error: "Could not sign in right now." };
-    }
-
-    const fallbackMessage =
-      res.status === 429
-        ? "Too many login attempts. Please wait a minute and try again."
-        : res.status === 401 || res.status === 403
-          ? "Unauthorized email."
-          : "Could not sign in right now.";
-
-    return { ok: false, error: await getApiErrorMessage(res, fallbackMessage) };
-  } catch {
-    // network error — API unreachable
-    return { ok: false, error: "Could not reach the admin login service." };
-  }
-}
-
-export function adminLogout(): void {
-  try {
-    localStorage.removeItem(ADMIN_KEY);
-  } catch {
-    // ignore
-  }
-
-  if (typeof window !== "undefined") {
-    void fetch(`${API_BASE}/auth`, {
-      method: "DELETE",
-      cache: "no-store",
-      credentials: "same-origin",
-    }).catch(() => {
-      // Best-effort server logout for the admin session cookie.
-    });
-  }
-}
-
-/**
- * Calculate read time from content
- */
-export function calculateReadTime(content: string): string {
-  const wordsPerMinute = 200;
-  const wordCount = content.trim().split(/\s+/).length;
-  const minutes = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
-  return `${minutes} min read`;
-}
-
-/**
- * Format today's date
- */
-export function formatDate(date: Date = new Date()): string {
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-/**
- * Convenience: save posts to localStorage.
- */
-export function savePosts(posts: BlogPost[]): void {
-  savePostsLocal(posts);
-}

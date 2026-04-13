@@ -167,27 +167,42 @@ export function TransferDossierPage() {
                   </h1>
               </div>
               
-              <div className="mt-4 flex items-center gap-3 font-bold text-[#16A34A] bg-white/50 dark:bg-white/5 px-5 py-3 rounded-2xl w-fit border border-gray-200 dark:border-gray-800">
+              {/* Modern Club-to-Club Directional Display */}
+              <div className="mt-8 flex flex-wrap items-center gap-4 md:gap-6 w-full max-w-full">
                 {dossier.fromClub && (
-                  <>
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-[200px] bg-white dark:bg-[#0F172A] p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 backdrop-blur-md">
+                    <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center p-2 border border-gray-100 dark:border-gray-700">
                       {fromClubInfo?.logo ? (
-                          <img src={fromClubInfo.logo} alt={dossier.fromClub} className="w-6 h-6 object-contain" />
+                          <img src={fromClubInfo.logo} alt={dossier.fromClub} className="w-full h-full object-contain" />
                       ) : (
                           <ShieldQuestion className="w-6 h-6 text-gray-400" />
                       )}
-                      <span className="text-rose-500 text-lg">{dossier.fromClub}</span>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-gray-400 mx-1" />
-                  </>
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-gray-500">Leaving</span>
+                      <span className="text-rose-500 font-bold text-lg sm:text-xl truncate">{dossier.fromClub}</span>
+                    </div>
+                  </div>
                 )}
-                <div className="flex items-center gap-2">
-                  {toClubInfo?.logo ? (
-                      <img src={toClubInfo.logo} alt={dossier.club} className="w-6 h-6 object-contain" />
-                  ) : (
-                      <ShieldQuestion className="w-6 h-6 text-gray-400" />
-                  )}
-                  <span className="text-emerald-500 text-lg">{dossier.club}</span>
+                
+                {dossier.fromClub && (
+                  <div className="flex items-center justify-center flex-shrink-0 bg-white/50 dark:bg-white/5 h-10 w-10 sm:h-12 sm:w-12 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 dark:text-gray-500" />
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-[200px] bg-white dark:bg-[#0F172A] p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 backdrop-blur-md">
+                  <div className="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center p-2 border border-gray-100 dark:border-gray-700">
+                    {toClubInfo?.logo ? (
+                        <img src={toClubInfo.logo} alt={dossier.club} className="w-full h-full object-contain" />
+                    ) : (
+                        <ShieldQuestion className="w-6 h-6 text-gray-400" />
+                    )}
+                  </div>
+                  <div className="flex flex-col overflow-hidden">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#64748B] dark:text-gray-500">Joining</span>
+                    <span className="text-emerald-500 font-bold text-lg sm:text-xl truncate">{dossier.club}</span>
+                  </div>
                 </div>
               </div>
 

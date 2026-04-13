@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { SignIn } from '@clerk/clerk-react';
+import { SignIn } from '@clerk/nextjs';
 
 const Page = () => {
   const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });

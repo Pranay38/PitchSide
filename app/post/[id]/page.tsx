@@ -15,9 +15,12 @@ import { ArticleContentRenderer } from "@/app/components/ArticleContentRenderer"
 import { ArticleAudioPlayer } from "@/app/components/ArticleAudioPlayer";
 import { InlineNewsletterCard } from "@/app/components/InlineNewsletterCard";
 import { RecommendedArticles } from "@/app/components/RecommendedArticles";
+import { SupportBanner } from "@/app/components/SupportBanner";
 import { PostActionsClient } from "./PostActionsClient";
 import { PostTrackersClient } from "./PostTrackersClient";
 import { PostEmbedHydrationClient } from "./PostEmbedHydrationClient";
+import { AdaptiveArticleHeader } from "@/app/components/AdaptiveArticleHeader";
+import { MilestoneScrubber } from "@/app/components/MilestoneScrubber";
 
 export const revalidate = 60;
 
@@ -52,9 +55,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `https://thetouchlinedribble.in/post/${post.slug || post.id}`,
       images: [
         {
-          url: post.coverImage || ogImageUrl,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
+          alt: post.title,
         },
       ],
       siteName: "The Touchline Dribble",
@@ -65,7 +69,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt || "",
-      images: [post.coverImage || ogImageUrl],
+      images: [ogImageUrl],
       site: "@TouchlineDribbl",
       creator: "@TouchlineDribbl",
     },
@@ -143,13 +147,13 @@ export default async function BlogPostPage({ params }: Props) {
       {/* Invisible trackers for reading history and saving progress */}
       <PostTrackersClient postId={post.id} />
       
-      {/* Server-rendered JSON-LD — Google sees this immediately */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
       <Header />
+      <AdaptiveArticleHeader title={post.title} />
 
       <main>
         <section className="relative overflow-hidden">
@@ -201,8 +205,12 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </section>
 
-        <section className="mx-auto grid w-full max-w-[1180px] gap-10 px-4 py-10 sm:px-6 xl:grid-cols-[minmax(0,1fr)_280px]">
-          <article className="min-w-0">
+        <section className="mx-auto grid w-full max-w-[1300px] gap-8 px-4 py-10 sm:px-6 xl:grid-cols-[200px_minmax(0,1fr)_280px]">
+          <aside className="w-full hidden xl:block relative">
+            <MilestoneScrubber />
+          </aside>
+          
+          <article className="min-w-0 xl:px-4">
             {/* Interactive actions block (Like, Bookmark, Follow) */}
             <PostActionsClient 
               post={{
@@ -239,6 +247,7 @@ export default async function BlogPostPage({ params }: Props) {
           
           <aside className="w-full xl:w-[280px] hidden xl:block space-y-8">
             <RecommendedArticles articleId={post.id} />
+            <SupportBanner variant="compact" />
           </aside>
         </section>
       </main>

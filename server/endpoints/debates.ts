@@ -123,7 +123,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
 
             // Create a new debate (admin)
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const { title, description, category, durationHours } = req.body;
             if (!title?.trim()) return res.status(400).json({ error: "Title is required" });
 
@@ -149,7 +149,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── DELETE: Delete a debate or argument (admin) ───
         if (req.method === "DELETE") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const id = req.query.id as string;
             const argumentId = req.query.argumentId as string;
 

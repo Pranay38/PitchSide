@@ -58,7 +58,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── POST: Create a new collection ───
         if (req.method === "POST") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const { title, description, emoji, postIds } = req.body;
             if (!title) return res.status(400).json({ error: "Title is required" });
 
@@ -76,7 +76,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── PUT: Update a collection ───
         if (req.method === "PUT") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const { id, ...updates } = req.body;
             if (!id) return res.status(400).json({ error: "Missing collection id" });
 
@@ -89,7 +89,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── DELETE: Delete a collection ───
         if (req.method === "DELETE") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const id = req.query.id as string;
             if (!id) return res.status(400).json({ error: "Missing collection id" });
 

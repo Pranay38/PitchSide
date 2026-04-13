@@ -66,7 +66,7 @@ export default async function titleRaceHandler(req: VercelRequest, res: VercelRe
     }
 
     if (req.method === "PUT") {
-      if (!requireAuth(req, res)) return;
+      if (!(await requireAuth(req, res))) return;
       
       const { teams } = req.body || {};
       if (!Array.isArray(teams)) {

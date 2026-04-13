@@ -39,7 +39,7 @@ import { topicPath } from "../lib/contentPaths";
 import { scheduleEmbedHydration } from "../lib/embedHydration";
 import { useReadingTracker } from "../hooks/useReadingTracker";
 import { RecommendedArticles } from "../components/RecommendedArticles";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/nextjs";
 
 function sortPosts(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());

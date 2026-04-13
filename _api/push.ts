@@ -53,7 +53,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             // Send notification (admin only)
             if (action === "send") {
-                if (!requireAuth(req, res)) return;
+                if (!(await requireAuth(req, res))) return;
 
                 const { title, body, url } = req.body;
                 if (!title?.trim()) return res.status(400).json({ error: "Notification title required" });

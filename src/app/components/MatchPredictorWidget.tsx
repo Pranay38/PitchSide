@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/nextjs";
 import { Trophy, Check, Loader2, Target } from "lucide-react";
 
 interface Fixture {

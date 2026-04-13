@@ -33,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── POST: Create or Update a Transfer (Admin) ───
         if (req.method === "POST") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const { id, player, playerImageUrl, fromClub, toClub, fee, source, status } = req.body;
 
             const now = new Date().toISOString();
@@ -81,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── DELETE: Remove a transfer (Admin) ───
         if (req.method === "DELETE") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const id = req.query.id as string;
             
             if (!id) return res.status(400).json({ error: "Missing transfer id" });

@@ -7,7 +7,6 @@ import subscribersHandler from "../server/endpoints/subscribers";
 import tacticsHandler from "../server/endpoints/tactics";
 import ogHandler from "../server/endpoints/og";
 import clubSeasonHandler from "../server/endpoints/club-season";
-import authHandler from "../server/endpoints/auth";
 import predictionsHandler from "../server/endpoints/predictions";
 import runInHandler from "../server/endpoints/run-in";
 import titleRaceHandler from "../server/endpoints/title-race";
@@ -52,8 +51,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     switch (route) {
-        case "auth":
-            return authHandler(req, res);
         case "on-this-day":
             return onThisDayHandler(req, res);
         case "predictions":

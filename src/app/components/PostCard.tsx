@@ -4,7 +4,7 @@ import type { BlogPost } from "../data/posts";
 import { getClubByName } from "../data/clubs";
 import { Clock, Star, ArrowRight, Heart } from "lucide-react";
 import { getCategoryBadgeColor } from "./ui/utils";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
 
 interface PostCardProps {

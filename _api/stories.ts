@@ -39,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === "GET") {
       const slug = String(req.query.slug || "").trim();
       const includeDrafts = String(req.query.includeDrafts || "").trim() === "1";
-      if (includeDrafts && !requireAuth(req, res)) return;
+      if (includeDrafts && !(await requireAuth(req, res))) return;
       let stories = await collection.find({}).sort({ _id: -1 }).toArray() as MongoStoryRecord[];
 
       if (stories.length === 0 && defaultStories.length > 0) {
@@ -65,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === "POST") {
-      if (!requireAuth(req, res)) return;
+      if (!(await requireAuth(req, res))) return;
       const story = req.body;
       if (!story?.id || !story?.slug || !story?.title) {
         return res.status(400).json({ error: "Story id, slug, and title are required" });
@@ -83,7 +83,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === "PUT") {
-      if (!requireAuth(req, res)) return;
+      if (!(await requireAuth(req, res))) return;
       const { id, ...updates } = req.body || {};
       if (!id) return res.status(400).json({ error: "Missing story id" });
 
@@ -103,7 +103,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === "DELETE") {
-      if (!requireAuth(req, res)) return;
+      if (!(await requireAuth(req, res))) return;
       const id = String(req.query.id || "").trim();
       if (!id) return res.status(400).json({ error: "Missing story id" });
 

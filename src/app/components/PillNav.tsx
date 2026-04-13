@@ -352,7 +352,9 @@ export const PillNav: React.FC<PillNavProps> = ({
                 background: isActive ? 'var(--pill-base)' : 'transparent',
                 color: isActive ? 'var(--pill-hover-text)' : 'inherit',
                 paddingLeft: 'var(--pill-pad-x)',
-                paddingRight: 'var(--pill-pad-x)'
+                paddingRight: 'var(--pill-pad-x)',
+                boxShadow: isActive ? '0 0 20px rgba(22, 163, 74, 0.3)' : 'none',
+                border: isActive ? '1px solid rgba(22, 163, 74, 0.2)' : 'none'
               };
 
               const PillContent = (

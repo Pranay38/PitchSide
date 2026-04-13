@@ -220,7 +220,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── GET: List all subscribers (for admin) ───
         if (req.method === "GET") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             res.setHeader("Cache-Control", "private, no-store, max-age=0, must-revalidate");
             const subscribers = await collection.find({}).sort({ subscribedAt: -1 }).toArray();
             return res.status(200).json({
@@ -235,7 +235,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── POST: Send Digest (for admin) ───
         if (req.method === "POST" && req.query.action === "send-digest") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
 
             if (!isMailerConfigured()) {
                 return res.status(500).json({ error: "Mailer is not configured." });

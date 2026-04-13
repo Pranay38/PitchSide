@@ -5,7 +5,7 @@ import { Link, useParams } from "@/lib/router-compat";
 import { ArrowRight, Plus, Check, Search, Tags } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/nextjs";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";

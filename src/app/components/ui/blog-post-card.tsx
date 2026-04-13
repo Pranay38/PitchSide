@@ -47,7 +47,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   const hasFooter = writer || publishedAt;
 
   return (
-    <Card className={cn("group flex w-full flex-col gap-3 overflow-hidden rounded-[2rem] shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-[#16A34A]/30 cursor-pointer dark:bg-[#0F172A] border-gray-100 dark:border-gray-800", className)}>
+    <Card className={cn("group flex w-full flex-col gap-3 overflow-hidden rounded-[2rem] shadow-sm transition-all duration-300 depth-card cursor-pointer dark:bg-[var(--card)] ghost-border-dark dark:ghost-border", className)}>
       {cover && (
         <CardHeader className="p-0">
           <div className="relative h-56 w-full overflow-hidden">
@@ -55,8 +55,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               src={cover}
               alt={headline}
               loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
+            {/* Gradient overlay for depth */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            {/* Read indicator */}
+            <div className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 dark:bg-[#0F172A]/90 backdrop-blur-sm text-xs font-bold text-[#16A34A] opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md">
+              Read →
+            </div>
           </div>
         </CardHeader>
       )}

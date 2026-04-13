@@ -10,6 +10,21 @@ import { blogPosts as defaultPosts } from "../src/app/data/posts";
 
 const COLLECTION = "posts";
 
+/**
+ * Ping Google and Bing to re-crawl the sitemap.
+ * Fire-and-forget — errors are silently swallowed so publishing never fails.
+ */
+async function pingSitemapToSearchEngines() {
+    const sitemapUrl = encodeURIComponent("https://thetouchlinedribble.in/sitemap.xml");
+    const endpoints = [
+        `https://www.google.com/ping?sitemap=${sitemapUrl}`,
+        `https://www.bing.com/ping?sitemap=${sitemapUrl}`,
+    ];
+    for (const url of endpoints) {
+        fetch(url).catch(() => {/* ignore */});
+    }
+}
+
 function buildIdFilter(id: string) {
     const filters: Array<Record<string, unknown>> = [{ id }, { _id: id }];
     if (ObjectId.isValid(id)) {
@@ -85,7 +100,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             // Admin-authenticated requests can see everything. Public requests
             // should not receive drafts or future-scheduled posts.
-            const isAdmin = hasAdminAuth(req);
+            const isAdmin = (await hasAdminAuth(req));
             if (!isAdmin) {
                 const now = new Date();
                 result = result.filter((p: any) => {
@@ -101,7 +116,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── POST: Create a new post ───
         if (req.method === "POST") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const postData = { ...req.body };
             const id = Date.now().toString();
             if (postData.previewToken == null) delete postData.previewToken;
@@ -128,6 +143,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             await collection.insertOne(newPost);
 
             if (isPostLive(newPost) && !newPost.notifiedSubscribersAt) {
+                pingSitemapToSearchEngines();
                 try {
                     const result = await notifySubscribersAboutPost(db, newPost);
                     if (result.sent > 0) {
@@ -143,7 +159,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── PUT: Update a post ───
         if (req.method === "PUT") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const { id, ...updates } = req.body;
             if (!id) return res.status(400).json({ error: "Missing post id" });
 
@@ -232,6 +248,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     isPostLive(mergedPost);
 
                 if (shouldNotifyNow) {
+                    pingSitemapToSearchEngines();
                     try {
                         const notificationResult = await notifySubscribersAboutPost(db, mergedPost as any);
                         if (notificationResult.sent > 0) {
@@ -248,7 +265,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── DELETE: Delete a post ───
         if (req.method === "DELETE") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
             const id = req.query.id as string;
             if (!id) return res.status(400).json({ error: "Missing post id" });
 

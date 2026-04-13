@@ -311,7 +311,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === "PUT") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
       const incoming = (req.body || {}) as Partial<SiteSettings>;
       const current = await collection.findOne({ _id: SETTINGS_ID });
 

@@ -1,13 +1,12 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "@/lib/router-compat";
+import { signOut } from "next-auth/react";
 import type { BlogPost } from "../data/posts";
 import { AdminLogin } from "../components/AdminLogin";
 import { PostEditor } from "../components/PostEditor";
 import { ThemeToggle } from "../components/ThemeToggle";
 import {
-    isAdminAuthenticated,
-    adminLogout,
-    getAllPosts,
+getAllPosts,
     getAllPostsAsync,
     addPostAsync,
     updatePostAsync,
@@ -64,14 +63,14 @@ import { AdminCalendarTab } from "../components/admin/AdminCalendarTab";
 import { AdminMatchCenterTab } from "../components/admin/AdminMatchCenterTab";
 import { AdminNotificationsTab } from "../components/admin/AdminNotificationsTab";
 import { AdminPOTSTab } from "../components/admin/AdminPOTSTab";
+import { AdminMatchReactionsTab } from "../components/admin/AdminMatchReactionsTab";
 
 type View = "list" | "create" | "edit";
-type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
+type Tab = "match-reactions" | "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
 
 export function AdminPage() {
     const navigate = useNavigate();
-    const [isAuthed, setIsAuthed] = useState(isAdminAuthenticated());
-    const [view, setView] = useState<View>("list");
+        const [view, setView] = useState<View>("list");
     const [activeTab, setActiveTab] = useState<Tab>("notifications");
     const [targetCarouselText, setTargetCarouselText] = useState("");
     const [showDebateEditor, setShowDebateEditor] = useState(false);
@@ -143,10 +142,7 @@ export function AdminPage() {
         return siteSettings.transferWatch.filter((entry) => entry.club === transferFilterClub);
     }, [siteSettings.transferWatch, transferFilterClub]);
 
-    const getAdminAuthHeaders = useCallback((): HeadersInit => {
-        const token = localStorage.getItem("pitchside_admin_auth");
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    }, []);
+    const getAdminAuthHeaders = useCallback((): HeadersInit => ({}), []);
 
     const fetchSubscriberCount = useCallback(async () => {
         try {
@@ -181,9 +177,8 @@ export function AdminPage() {
     }, []);
     const fetchServerPolls = useCallback(async () => {
         try {
-            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
-            const res = await fetch("/api/polls", {
-                headers: { Authorization: `Bearer ${pwd}` }
+                        const res = await fetch("/api/polls", {
+                headers: {}
             });
             if (res.ok) setServerPolls(await res.json());
         } catch {}
@@ -191,9 +186,8 @@ export function AdminPage() {
 
     const fetchServerMatchRatings = useCallback(async () => {
         try {
-            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
-            const res = await fetch("/api/match-ratings", {
-                headers: { Authorization: `Bearer ${pwd}` }
+                        const res = await fetch("/api/match-ratings", {
+                headers: {}
             });
             if (res.ok) setServerMatchRatings(await res.json());
         } catch {}
@@ -211,7 +205,7 @@ export function AdminPage() {
     }, []);
 
     useEffect(() => {
-        if (isAuthed) {
+        {
             void (async () => {
                 refreshPosts();
                 refreshStories();
@@ -225,10 +219,9 @@ export function AdminPage() {
                     .catch(() => { });
             })();
         }
-    }, [isAuthed, refreshPosts, refreshStories, fetchSubscriberCount, fetchCollections, fetchDebates, fetchServerPolls, fetchServerMatchRatings]);
+    }, [refreshPosts, refreshStories, fetchSubscriberCount, fetchCollections, fetchDebates, fetchServerPolls, fetchServerMatchRatings]);
 
-    const handleLogin = () => setIsAuthed(true);
-    const handleLogout = () => { adminLogout(); setIsAuthed(false); };
+        const handleLogout = () => { signOut({ callbackUrl: '/' }); };
 
     // Post Handlers
     const handleCreatePost = async (postData: Omit<BlogPost, "id">, isLeaving?: boolean) => {
@@ -376,13 +369,12 @@ export function AdminPage() {
     const handleSavePoll = async () => {
         try {
             setSavingPoll(true);
-            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
-            const isEditing = !!editingPoll._id;
+                        const isEditing = !!editingPoll._id;
             const url = isEditing ? `/api/polls/${editingPoll._id}` : "/api/polls";
             const method = isEditing ? "PUT" : "POST";
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${pwd}` },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(editingPoll),
             });
             if (res.ok) {
@@ -402,8 +394,7 @@ export function AdminPage() {
     const handleDeletePoll = async (id: string) => {
         if (!confirm("Delete this poll?")) return;
         try {
-            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
-            const res = await fetch(`/api/polls/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${pwd}` } });
+                        const res = await fetch(`/api/polls/${id}`, { method: "DELETE", headers: {} });
             if (res.ok) {
                 toast.success("Poll deleted");
                 fetchServerPolls();
@@ -416,13 +407,12 @@ export function AdminPage() {
     const handleSaveMatchRating = async () => {
         try {
             setSavingMatchRating(true);
-            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
-            const isEditing = !!editingMatchRating._id;
+                        const isEditing = !!editingMatchRating._id;
             const url = isEditing ? `/api/match-ratings/${editingMatchRating._id}` : "/api/match-ratings";
             const method = isEditing ? "PUT" : "POST";
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${pwd}` },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(editingMatchRating),
             });
             if (res.ok) {
@@ -442,8 +432,7 @@ export function AdminPage() {
     const handleDeleteMatchRating = async (id: string) => {
         if (!confirm("Delete these match ratings?")) return;
         try {
-            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
-            const res = await fetch(`/api/match-ratings/${id}`, { method: "DELETE", headers: { Authorization: `Bearer ${pwd}` } });
+                        const res = await fetch(`/api/match-ratings/${id}`, { method: "DELETE", headers: {} });
             if (res.ok) {
                 toast.success("Match Ratings deleted");
                 fetchServerMatchRatings();
@@ -770,8 +759,7 @@ export function AdminPage() {
         if (!window.confirm("Send weekly digest to all subscribers now?")) return;
         setSendingDigest(true);
         try {
-            const pwd = localStorage.getItem("pitchside_admin_auth") || "";
-            const res = await fetch("/api/digest", { 
+                        const res = await fetch("/api/digest", { 
                 method: "POST",
                 headers: { "Authorization": `Bearer ${pwd}` }
             });
@@ -784,8 +772,7 @@ export function AdminPage() {
         setSendingDigest(false);
     };
 
-    if (!isAuthed) return <AdminLogin onLogin={handleLogin} />;
-
+    
     if (view === "create" || view === "edit") {
         return (
             <PostEditor
@@ -848,6 +835,12 @@ export function AdminPage() {
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "posts" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <Layout className="w-4 h-4" /> Posts
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("match-reactions")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "match-reactions" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <Zap className="w-4 h-4" /> Match Reactions
                     </button>
                     <button
                         onClick={() => setActiveTab("stories")}
@@ -1074,6 +1067,11 @@ export function AdminPage() {
                         stories={stories}
                         setStories={setStories}
                     />
+                )}
+
+                {/* MATCH REACTIONS TAB */}
+                {activeTab === "match-reactions" && (
+                    <AdminMatchReactionsTab />
                 )}
 
                 {/* COLLECTIONS TAB */}

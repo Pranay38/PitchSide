@@ -46,43 +46,60 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const bccList = subscribers.map(s => s.email).join(",");
 
         // 2. Fetch posts from the last 7 days
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        // 2. Fetch recent posts
+        const sevenDaysAgoMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
-        const recentPosts = await db.collection("posts")
+        const candidatePosts = await db.collection("posts")
             .find({ 
-                date: { $gte: sevenDaysAgo.toISOString() },
                 isDraft: { $ne: true },
                 status: { $ne: "draft" }
             })
-            .sort({ "reactions.fire": -1, "reactions.mindblown": -1, date: -1 }) // Sort by popularity then date
-            .limit(5)
+            .sort({ _id: -1 })
+            .limit(20)
             .toArray();
+
+        // Filter manually in JS to avoid MongoDB string-to-ISO date comparison bugs for old string-formatted dates
+        const recentPostsResult = candidatePosts.filter(p => {
+            const timeMs = p.publishAt ? new Date(p.publishAt).getTime() : new Date(p.date).getTime();
+            return timeMs >= sevenDaysAgoMs;
+        });
+
+        // Top 5 by popularity or just date
+        const recentPosts = recentPostsResult
+            .sort((a, b) => {
+                const popA = (a.reactions?.fire || 0) + (a.reactions?.mindblown || 0);
+                const popB = (b.reactions?.fire || 0) + (b.reactions?.mindblown || 0);
+                if (popB !== popA) return popB - popA;
+                return new Date(b.publishAt || b.date).getTime() - new Date(a.publishAt || a.date).getTime();
+            })
+            .slice(0, 5);
 
         if (recentPosts.length === 0) {
             return res.status(200).json({ message: "No new posts in the last 7 days. Skipping." });
         }
 
-        // 3. Build the Email HTML
-        const postsHtml = recentPosts.map(post => `
+        // 3. Build the Email HTML - Clean Card layout, NO FULL CONTENT
+        const postsHtml = recentPosts.map(post => {
+            const postHref = `${SITE_URL}/post/${post.slug || post.id || post._id}`;
+            return `
             <div style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid #e2e8f0;">
-                ${post.coverImage ? `<img src="${post.coverImage}" alt="${post.title}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-bottom: 20px;" />` : ''}
+                ${post.coverImage ? `<a href="${postHref}"><img src="${post.coverImage}" alt="${post.title}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-bottom: 20px;" /></a>` : ''}
                 <div style="font-size: 11px; font-weight: bold; color: #16A34A; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;">
                     ${post.club || "Football"} • ${post.readTime || "5 min read"}
                 </div>
                 <h3 style="margin: 0 0 15px 0; font-size: 24px; color: #0f172a; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.3;">
-                    <a href="${SITE_URL}/post/${post.id}" style="color: #0f172a; text-decoration: none;">${post.title}</a>
+                    <a href="${postHref}" style="color: #0f172a; text-decoration: none;">${post.title}</a>
                 </h3>
                 <div style="margin: 0 0 20px 0; font-size: 16px; color: #334155; line-height: 1.7; font-family: 'Segoe UI', Arial, sans-serif;">
-                    ${post.content || post.excerpt}
+                    ${post.excerpt || ""}
                 </div>
-                <div style="text-align: center;">
-                    <a href="${SITE_URL}/post/${post.id}" style="display: inline-block; padding: 12px 24px; background-color: #16A34A; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: bold; letter-spacing: 0.5px;">
-                        Read Full Article Online →
+                <div style="text-align: left;">
+                    <a href="${postHref}" style="display: inline-block; padding: 12px 24px; background-color: #16A34A; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: bold; letter-spacing: 0.5px;">
+                        Read Article →
                     </a>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
 
         const emailHtml = `
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">

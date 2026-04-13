@@ -75,7 +75,7 @@ export default async function runInHandler(req: VercelRequest, res: VercelRespon
 
     // PUT: Update the run-in data (Admin Only)
     if (req.method === "PUT") {
-      if (!requireAuth(req, res)) return;
+      if (!(await requireAuth(req, res))) return;
 
       const { title, description, teams } = req.body || {};
 

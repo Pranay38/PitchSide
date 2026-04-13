@@ -1,6 +1,6 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useUser, SignInButton } from "@clerk/clerk-react";
+import { useUser, SignInButton } from "@clerk/nextjs";
 import { Link } from "@/lib/router-compat";
 import { ArrowRight, BookOpen, Library, Newspaper, Repeat2, ScrollText, Trophy, ShieldQuestion, Flame, ChevronLeft, ChevronRight } from "lucide-react";
 import { SEO } from "../components/SEO";
@@ -34,6 +34,37 @@ const PlatformFeaturesBento = lazy(() => import("../components/PlatformFeaturesB
 const InlineNewsletterCard = lazy(() => import("../components/InlineNewsletterCard").then(m => ({ default: m.InlineNewsletterCard })));
 const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m => ({ default: m.BlogPostsGrid })));
 import { TransferTicker } from "../components/TransferTicker";
+import { QuickTakesSection } from "../components/QuickTakesSection";
+import { MatchReactionsSection } from "../components/MatchReactionsSection";
+
+/** Hook: animates elements with class `scroll-reveal` when they enter viewport */
+function useScrollReveal() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' },
+    );
+
+    const elements = container.querySelectorAll('.scroll-reveal');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
+  return containerRef;
+}
 
 interface DailyFeaturesData {
   lastUpdated: string;
@@ -204,9 +235,18 @@ function TransferSpotlightCard({ entry }: { entry: ReturnType<typeof buildTransf
             <Repeat2 className="h-3.5 w-3.5" />
             Transfer Dossier
           </p>
-          <h3 className="mt-4 text-2xl font-black font-outfit text-[#0F172A] transition-colors group-hover:text-[#16A34A] dark:text-white">
-            {entry.player}
-          </h3>
+          <div className="mt-4 flex items-center gap-3">
+            {entry.playerImageUrl && (
+              <img 
+                 src={entry.playerImageUrl} 
+                 alt={entry.player} 
+                 className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-[#16A34A]/30 shadow-sm shrink-0 bg-gray-100 dark:bg-gray-800"
+              />
+            )}
+            <h3 className="text-2xl font-black font-outfit text-[#0F172A] transition-colors group-hover:text-[#16A34A] dark:text-white">
+              {entry.player}
+            </h3>
+          </div>
           <div className="mt-2 flex items-center gap-2 text-sm font-bold">
             {entry.fromClub && (
               <>
@@ -258,6 +298,7 @@ function TransferSpotlightCard({ entry }: { entry: ReturnType<typeof buildTransf
 }
 
 export function HomePage() {
+  const scrollRef = useScrollReveal();
   const { isSignedIn, isLoaded: clLoaded } = useUser();
   const clerkAvailable = typeof process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY === "string" && process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.length > 0;
   const { data: posts = [], isLoading: isLoadingPosts, error: postsError } = useQuery({
@@ -474,7 +515,7 @@ export function HomePage() {
   }
 
   return (
-    <div className="page-atmosphere min-h-screen transition-colors duration-300">
+    <div ref={scrollRef} className="page-atmosphere min-h-screen transition-colors duration-300">
       <SEO
         title="Home"
         description="A sharper front page for the day's best football analysis, deep reads, stories, and transfer coverage."
@@ -492,9 +533,6 @@ export function HomePage() {
         })}
       />
       <Header />
-      {siteSettings.transferWatch && siteSettings.transferWatch.length > 0 && (
-          <TransferTicker entries={siteSettings.transferWatch} />
-      )}
 
       {/* NEW FULL WIDTH HERO */}
       {(heroSelection?.type === "post" || heroSelection?.type === "story") ? (
@@ -513,8 +551,44 @@ export function HomePage() {
       {mappedEditorPicks.length > 0 && <Blogs articles={mappedEditorPicks} />}
 
       <main className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 md:py-12">
+        {/* --- DISCOVERY BUBBLES --- */}
+        <section className="mb-12 scroll-reveal text-center relative z-20">
+          <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide px-2 justify-start sm:justify-center">
+            {[
+              { label: "Tactical Trends", link: "/archive?search=tactical" },
+              { label: "Transfer Watch", link: "/transfers" },
+              { label: "Wonderkids", link: "/archive?search=wonderkids" },
+              { label: "Debates", link: "/debates" }
+            ].map((bubble) => (
+              <Link
+                key={bubble.label}
+                to={bubble.link}
+                className="flex-shrink-0 snap-start px-5 py-2.5 rounded-full bg-white/60 dark:bg-[#0b1326]/60 backdrop-blur-md ghost-border-dark dark:ghost-border text-[11px] font-black uppercase tracking-widest text-[#0F172A] dark:text-gray-200 hover:text-[#16A34A] dark:hover:text-[#16A34A] transition-all ambient-shadow cursor-pointer hover:-translate-y-0.5"
+              >
+                {bubble.label}
+              </Link>
+            ))}
+          </div>
+        </section>
 
-        <section className="mb-24">
+        {/* --- LIVE PULSE WIDGET --- */}
+        {siteSettings.transferWatch && siteSettings.transferWatch.length > 0 && (
+          <section className="mb-16 scroll-reveal relative z-10 w-full max-w-[1000px] mx-auto">
+             <div className="mb-4 flex items-center justify-between px-2">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#16A34A] flex items-center gap-1.5 ml-1">
+                    <Flame className="w-3.5 h-3.5" />
+                    Live Pulse
+                  </p>
+                </div>
+             </div>
+             <div className="w-full ghost-border-dark dark:ghost-border rounded-[1.5rem] overflow-hidden depth-card ambient-shadow bg-white dark:bg-[#0b1326]">
+                 <TransferTicker entries={siteSettings.transferWatch} />
+             </div>
+          </section>
+        )}
+
+        <section className="mb-24 scroll-reveal">
           <div className="grid gap-8 lg:gap-16 lg:grid-cols-[8fr_4fr] items-start">
             
             {/* Main Content Column (Left - 8fr) */}
@@ -547,7 +621,7 @@ export function HomePage() {
                         <Link
                           key={post.id}
                           to={`/post/${post.slug || post.id}`}
-                          className="group relative flex-shrink-0 w-[280px] sm:w-[320px] snap-start rounded-[1.5rem] overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                          className="group relative flex-shrink-0 w-[280px] sm:w-[320px] snap-start rounded-[1.5rem] overflow-hidden ghost-border-dark dark:ghost-border bg-white dark:bg-[var(--card)] shadow-sm ambient-shadow hover:-translate-y-1 depth-card transition-all duration-300"
                         >
                           <div className="relative h-40 overflow-hidden">
                             <img
@@ -580,6 +654,12 @@ export function HomePage() {
                   </div>
                 </div>
               )}
+
+              {/* Match Reactions */}
+              <MatchReactionsSection />
+
+              {/* Quick Takes Box */}
+              <QuickTakesSection posts={posts} />
 
               {/* Latest Analysis Block */}
               <div id="latest-articles">
@@ -626,7 +706,7 @@ export function HomePage() {
 
             {/* Daily Briefing Modules (Scrolling Sidebar - Right - 4fr) */}
             <div className="space-y-6 lg:sticky lg:top-24" id="daily-briefing">
-              <div className="tinted-panel rounded-[2rem] border border-gray-200 p-5 shadow-sm dark:border-gray-800">
+              <div className="tinted-panel rounded-[2rem] ghost-border-dark dark:ghost-border p-5 ambient-shadow dark:bg-[var(--card)]">
                 <div className="mb-4 flex items-center gap-3">
                   <div className="h-6 w-1.5 rounded-full bg-[#16A34A]" />
                   <div>
@@ -655,9 +735,13 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="mt-24 grid gap-12 xl:grid-cols-[8fr_4fr] items-start">
+        {/* Section Divider */}
+        <div className="section-divider" />
+
+        <section className="mt-24 grid gap-12 xl:grid-cols-[8fr_4fr] items-start scroll-reveal">
           <div className="w-full">
             <div className="w-full">
+              {/* Deep Reads (Stories) - TEMPORARILY HIDDEN
               {latestStories.length > 0 ? (
                 <BlogPostsGrid
                   title="Deep Reads"
@@ -668,7 +752,7 @@ export function HomePage() {
                     title: story.title,
                     category: story.eyebrow,
                     imageUrl: story.coverImage,
-                    views: Math.floor(Math.random() * 5000) + 1000, // Simulated since we don't have views count yet
+                    views: Math.floor(Math.random() * 5000) + 1000,
                     readTime: parseInt(story.readTime || "5", 10),
                     rating: 5,
                     href: `/stories/${story.slug}`
@@ -685,6 +769,7 @@ export function HomePage() {
                   description="Publish a story and it will slot into the deep reads rail automatically."
                 />
               )}
+              */}
             </div>
           </div>
 
@@ -773,7 +858,10 @@ export function HomePage() {
           </div>
         </section>
 
-        <section className="mt-24">
+        {/* Section Divider */}
+        <div className="section-divider" />
+
+        <section className="mt-24 scroll-reveal">
           <InlineNewsletterCard />
         </section>
 
@@ -782,7 +870,9 @@ export function HomePage() {
           <ProSubscriptionScroll />
         </section> */}
 
-        <PlatformFeaturesBento />
+        <div className="scroll-reveal">
+          <PlatformFeaturesBento />
+        </div>
 
         {/* Show CTA when Clerk says user is not signed in, OR when Clerk isn't available at all */}
         {((!clerkAvailable) || (clLoaded && !isSignedIn)) && (

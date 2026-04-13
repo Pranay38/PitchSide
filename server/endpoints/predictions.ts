@@ -95,7 +95,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // ─── PUT: Admin configures fixtures or sets results ───
         if (req.method === "PUT") {
-            if (!requireAuth(req, res)) return;
+            if (!(await requireAuth(req, res))) return;
 
             const { action, fixtures, fixtureId, actualHomeScore, actualAwayScore } = req.body;
 

@@ -17,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        if (!requireAuth(req, res)) return;
+        if (!(await requireAuth(req, res))) return;
 
         const { title, excerpt, postId } = req.body;
 

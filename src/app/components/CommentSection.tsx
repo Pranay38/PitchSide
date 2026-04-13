@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, Send, Loader2, CornerDownRight, ThumbsUp, Reply } from "lucide-react";
 import { toast } from "sonner";
 import { getDeviceId } from "../lib/deviceId";
-import { useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/nextjs";
 import { getAvatarUrl } from "../lib/avatar";
 
 interface ClubBadge {

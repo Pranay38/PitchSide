@@ -122,51 +122,46 @@ export default function RootLayout({
           </>
         )}
 
-        {process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ? (
-          <ClerkProvider
-            publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-            signInUrl="/sign-in"
-            signUpUrl="/sign-up"
-            appearance={{
-              baseTheme: undefined,
-              variables: {
-                colorPrimary: "#16A34A",
-                borderRadius: "0.75rem",
-              },
-              elements: {
-                card: "bg-white dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 shadow-xl",
-                headerTitle:
-                  "font-outfit font-black text-2xl text-slate-900 dark:text-white",
-                headerSubtitle:
-                  "text-slate-500 dark:text-gray-400 font-medium",
-                socialButtonsBlockButton:
-                  "border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A]/50 hover:bg-gray-50 dark:hover:bg-[#1e293b] text-slate-900 dark:text-white",
-                socialButtonsBlockButtonText:
-                  "text-slate-900 dark:text-white font-semibold flex-1 text-center",
-                formButtonPrimary:
-                  "bg-[#16A34A] hover:bg-[#15803d] text-white font-bold h-11",
-                formFieldInput:
-                  "bg-gray-50 dark:bg-[#08111f] border-gray-200 dark:border-gray-700 text-slate-900 dark:text-white focus:border-[#16A34A] h-11",
-                formFieldLabel:
-                  "text-slate-700 dark:text-gray-300 font-medium",
-                footerActionText: "text-slate-500 dark:text-gray-400",
-                footerActionLink:
-                  "text-[#16A34A] hover:text-[#15803d] font-semibold",
-                dividerLine: "bg-gray-200 dark:bg-gray-800",
-                dividerText: "text-slate-400 dark:text-gray-500",
-                identityPreview:
-                  "bg-gray-50 dark:bg-[#08111f] border border-gray-200 dark:border-gray-700",
-                identityPreviewText: "text-slate-900 dark:text-white",
-                identityPreviewEditButton:
-                  "text-[#16A34A] hover:text-[#15803d]",
-              },
-            }}
-          >
-            <Providers>{children}</Providers>
-          </ClerkProvider>
-        ) : (
+        <ClerkProvider
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+          appearance={{
+            baseTheme: undefined,
+            variables: {
+              colorPrimary: "#16A34A",
+              borderRadius: "0.75rem",
+            },
+            elements: {
+              card: "bg-white dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 shadow-xl",
+              headerTitle:
+                "font-outfit font-black text-2xl text-slate-900 dark:text-white",
+              headerSubtitle:
+                "text-slate-500 dark:text-gray-400 font-medium",
+              socialButtonsBlockButton:
+                "border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A]/50 hover:bg-gray-50 dark:hover:bg-[#1e293b] text-slate-900 dark:text-white",
+              socialButtonsBlockButtonText:
+                "text-slate-900 dark:text-white font-semibold flex-1 text-center",
+              formButtonPrimary:
+                "bg-[#16A34A] hover:bg-[#15803d] text-white font-bold h-11",
+              formFieldInput:
+                "bg-gray-50 dark:bg-[#08111f] border-gray-200 dark:border-gray-700 text-slate-900 dark:text-white focus:border-[#16A34A] h-11",
+              formFieldLabel:
+                "text-slate-700 dark:text-gray-300 font-medium",
+              footerActionText: "text-slate-500 dark:text-gray-400",
+              footerActionLink:
+                "text-[#16A34A] hover:text-[#15803d] font-semibold",
+              dividerLine: "bg-gray-200 dark:bg-gray-800",
+              dividerText: "text-slate-400 dark:text-gray-500",
+              identityPreview:
+                "bg-gray-50 dark:bg-[#08111f] border border-gray-200 dark:border-gray-700",
+              identityPreviewText: "text-slate-900 dark:text-white",
+              identityPreviewEditButton:
+                "text-[#16A34A] hover:text-[#15803d]",
+            },
+          }}
+        >
           <Providers>{children}</Providers>
-        )}
+        </ClerkProvider>
 
         {/* SEO: Noscript fallback for bots that don't execute JS */}
         <noscript>

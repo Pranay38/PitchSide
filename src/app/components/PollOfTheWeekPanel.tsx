@@ -69,11 +69,11 @@ export function PollOfTheWeekPanel() {
   const widgetData = adaptPollToWidget(dbPoll);
 
   return (
-    <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5 shadow-sm">
-      <div className="flex items-center justify-between gap-3 mb-4">
+    <div className="rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:tactical-board-bg p-5 shadow-sm dark:ambient-shadow noise-overlay relative overflow-hidden transition-all duration-500">
+      <div className="flex items-center justify-between gap-3 mb-4 relative z-10">
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-2">
-            Weekly Interaction
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-2 glow-green dark:text-green-400">
+            Coach's Clipboard
           </p>
           <h3 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white flex items-center gap-2">
             <BarChart3 className="w-4 h-4 text-[#16A34A]" />

@@ -9,6 +9,7 @@ import { ErrorBoundary } from "@/app/components/ErrorBoundary";
 import { UserPreferencesProvider } from "@/app/hooks/useUserPreferences";
 import { MobileBottomNav } from "@/app/components/MobileBottomNav";
 import { useState, Suspense } from "react";
+import { SessionProvider } from "next-auth/react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -25,18 +26,20 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <ErrorBoundary>
-      <UserPreferencesProvider>
-        <QueryClientProvider client={queryClient}>
-          <Suspense fallback={null}>
-            <OfflineIndicator />
-            <div className="pb-16 sm:pb-0">{children}</div>
-            <MobileBottomNav />
-          </Suspense>
-          <Toaster />
-          <BackToTopButton />
-          <CookieBanner />
-        </QueryClientProvider>
-      </UserPreferencesProvider>
+      <SessionProvider>
+        <UserPreferencesProvider>
+          <QueryClientProvider client={queryClient}>
+            <Suspense fallback={null}>
+              <OfflineIndicator />
+              <div className="pb-16 sm:pb-0">{children}</div>
+              <MobileBottomNav />
+            </Suspense>
+            <Toaster />
+            <BackToTopButton />
+            <CookieBanner />
+          </QueryClientProvider>
+        </UserPreferencesProvider>
+      </SessionProvider>
     </ErrorBoundary>
   );
 }

@@ -12,7 +12,6 @@ import { scheduleEmbedHydration } from "../lib/embedHydration";
 import { toast } from "sonner";
 import { SpellcheckBar } from "./admin/SpellcheckBar";
 
-/** Categories that are NOT club-specific */
 const GENERAL_CATEGORIES = [
     "General",
     "Tactics",
@@ -26,6 +25,41 @@ const GENERAL_CATEGORIES = [
     "Manager Spotlight",
     "Youth Development",
     "Women's Football",
+];
+
+const MATCH_REACTION_TEMPLATES = [
+    {
+        id: "tactical-breakdown",
+        title: "Tactical Breakdown",
+        description: "Deep dive into formations, pressing triggers, and key tactical shifts.",
+        icon: Activity,
+        format: "article",
+        html: `<h2>The Tactical Setup</h2>\n<p>Describe the initial formations and any surprising personnel choices here...</p>\n\n<h2>Where the Game Was Won</h2>\n<p>Break down the decisive tactical shift or area of the pitch that decided the outcome...</p>\n\n<h2>Key Data Points</h2>\n<ul><li><strong>Possession:</strong> %</li><li><strong>xG:</strong> </li><li><strong>Key Passes:</strong> </li></ul>`
+    },
+    {
+        id: "player-ratings",
+        title: "Player Ratings",
+        description: "Standard post-match player ratings and individual analysis.",
+        icon: Users,
+        format: "article",
+        html: `<h2>Starting XI</h2>\n<p><strong>[Player 1] - 7/10:</strong> Solid performance...</p>\n<p><strong>[Player 2] - 8/10:</strong> Outstanding in possession...</p>\n\n<h2>Substitutes</h2>\n<p><strong>[Sub 1] - 6/10:</strong> Came on and did a job...</p>\n\n<h2>Man of the Match</h2>\n<p><strong>[Player Name]:</strong> Best player on the pitch because...</p>`
+    },
+    {
+        id: "key-moments",
+        title: "Key Moments",
+        description: "A chronological breakdown of the match's most important events (Quick Take).",
+        icon: Flame,
+        format: "quick-take",
+        html: `<p><strong>15' The Turning Point:</strong> A brief description of the early moment...</p>\n<p><strong>45' Before the Half:</strong> What changed right before the whistle...</p>\n<p><strong>89' The Climax:</strong> The final decisive action...</p>`
+    },
+    {
+        id: "manager-quotes",
+        title: "Manager Quotes",
+        description: "Post-match press conference reactions and analysis (Quick Take).",
+        icon: MessageSquare,
+        format: "quick-take",
+        html: `<blockquote>"Quote goes here..."</blockquote>\n<p><strong>What it means:</strong> Analyze what the manager is really saying here...</p>\n\n<blockquote>"Second quote..."</blockquote>\n<p><strong>The takeaway:</strong> ...</p>`
+    }
 ];
 
 /** Compress and convert an image file to a base64 data URL */
@@ -66,6 +100,7 @@ interface PostEditorProps {
 export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     type SubmitAction = "draft" | "publish" | "back";
     const [title, setTitle] = useState(post?.title || "");
+    const [format, setFormat] = useState<"article" | "quick-take">(post?.format || "article");
     const [excerpt, setExcerpt] = useState(post?.excerpt || "");
     const [content, setContent] = useState(post?.content || "");
     const [coverImage, setCoverImage] = useState(post?.coverImage || "");
@@ -304,6 +339,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             title: finalTitle,
             excerpt: excerpt.trim(),
             content: content,
+            format,
             coverImage:
                 coverImage.trim() ||
                 "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
@@ -670,12 +706,82 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                         )}
                     </div>
 
-                    {/* Title & Excerpt */}
+                    {/* Match Reaction Templates */}
                     <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                         <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <FileText className="w-4 h-4 text-[#16A34A]" />
-                            Title & Summary
+                            <Activity className="w-4 h-4 text-[#16A34A]" />
+                            Match Reaction Templates
                         </label>
+                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
+                            Select a curated template to instantly drop tactical layouts into your post.
+                        </p>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            {MATCH_REACTION_TEMPLATES.map((template) => {
+                                const Icon = template.icon;
+                                return (
+                                    <button
+                                        key={template.id}
+                                        type="button"
+                                        onClick={() => {
+                                            if (content.trim() && content.length > 20) {
+                                                if (!window.confirm("This will inject the template into your existing content. OK to proceed?")) return;
+                                            }
+                                            setContent((prev) => prev ? prev + "\n" + template.html : template.html);
+                                            setFormat(template.format as "article" | "quick-take");
+                                            if (!title) setTitle(template.title);
+                                            toast.success(\`\${template.title} loaded!\`);
+                                        }}
+                                        className="flex flex-col items-start gap-2 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 hover:bg-[#16A34A]/5 hover:border-[#16A34A]/30 transition-all text-left group"
+                                    >
+                                        <Icon className="w-5 h-5 text-gray-500 group-hover:text-[#16A34A] transition-colors" />
+                                        <div>
+                                            <p className="text-sm font-bold text-[#0F172A] dark:text-white group-hover:text-[#16A34A] transition-colors">
+                                                {template.title}
+                                            </p>
+                                            <p className="text-[10px] text-[#64748B] dark:text-gray-400 mt-1 line-clamp-2">
+                                                {template.description}
+                                            </p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Title & Excerpt */}
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                        <div className="flex items-center justify-between mb-4">
+                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
+                                <FileText className="w-4 h-4 text-[#16A34A]" />
+                                Title & Summary
+                            </label>
+                            
+                            <div className="flex bg-gray-100 dark:bg-[#0F172A] p-1 rounded-lg">
+                                <button
+                                    type="button"
+                                    onClick={() => setFormat("article")}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
+                                        format === "article" 
+                                            ? "bg-white dark:bg-[#1E293B] shadow-sm text-[#0F172A] dark:text-white" 
+                                            : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
+                                    }`}
+                                >
+                                    Full Article
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setFormat("quick-take")}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1 ${
+                                        format === "quick-take" 
+                                            ? "bg-white dark:bg-[#1E293B] shadow-sm text-[#16A34A] dark:text-[#16A34A]" 
+                                            : "text-[#64748B] hover:text-[#16A34A]"
+                                    }`}
+                                >
+                                    Quick Take ⚡
+                                </button>
+                            </div>
+                        </div>
+
                         <input
                             type="text"
                             value={title}

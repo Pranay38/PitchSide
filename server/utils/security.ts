@@ -93,6 +93,8 @@ function parseCookie(req: VercelRequest, name: string): string | null {
     return null;
 }
 
+import { getToken } from "next-auth/jwt";
+
 function isValidAdminCredential(token: string | null | undefined): boolean {
     if (!token) return false;
 
@@ -104,7 +106,22 @@ function isValidAdminCredential(token: string | null | undefined): boolean {
     }
 }
 
-export function hasAdminAuth(req: VercelRequest): boolean {
+export async function hasAdminAuth(req: VercelRequest): Promise<boolean> {
+    // 1. Check for NextAuth session
+    try {
+        // Support VercelRequest objects
+        const nextAuthToken = await getToken({ 
+            req: req as any, 
+            secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "fallback_secret_for_local_dev" 
+        });
+        if (nextAuthToken) {
+            return true;
+        }
+    } catch (error) {
+        console.error("NextAuth token extraction failed", error);
+    }
+
+    // 2. Fallback to Bearer token (Legacy)
     const authHeader = req.headers.authorization;
     const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
 
@@ -112,21 +129,15 @@ export function hasAdminAuth(req: VercelRequest): boolean {
         return true;
     }
 
+    // 3. Fallback to custom cookie (Legacy)
     const cookieToken = parseCookie(req, ADMIN_SESSION_COOKIE);
     return isValidAdminCredential(cookieToken);
 }
 
-export function requireAuth(req: VercelRequest, res: VercelResponse): boolean {
-    const authHeader = req.headers.authorization;
-    const hasBearerHeader = !!authHeader?.startsWith("Bearer ");
-    const cookieToken = parseCookie(req, ADMIN_SESSION_COOKIE);
+export async function requireAuth(req: VercelRequest, res: VercelResponse): Promise<boolean> {
+    const isAuthorized = await hasAdminAuth(req);
 
-    if (!hasBearerHeader && !cookieToken) {
-        res.status(401).json({ error: "Unauthorized: Missing token" });
-        return false;
-    }
-
-    if (!hasAdminAuth(req)) {
+    if (!isAuthorized) {
         res.status(403).json({ error: "Forbidden: Invalid or expired token" });
         return false;
     }

@@ -133,12 +133,15 @@ export function Footer() {
           <p className="text-xs text-gray-500">
             &copy; 2026 The Touchline Dribble. All rights reserved.
           </p>
-          <p className="text-xs text-gray-600 dark:text-gray-500">
-            Enjoyed the writing?{" "}
-            <a href="https://buymeacoffee.com/thetouchlinedribble" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#4ade80] transition-colors duration-200 underline underline-offset-2 decoration-gray-700">
-              Keep it independent.
-            </a>
-          </p>
+          <a
+            href="https://razorpay.me/@thetouchlinedribble"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group text-xs text-gray-500 hover:text-[#4ade80] transition-colors duration-200 flex items-center gap-1.5"
+          >
+            <Heart className="w-3 h-3 text-red-500/60 group-hover:text-red-400 group-hover:fill-red-400 transition-colors" />
+            Keep it independent
+          </a>
           <p className="text-xs text-gray-500 flex items-center gap-1">
             Made with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> for the beautiful game
           </p>
@@ -147,3 +150,4 @@ export function Footer() {
     </footer>
   );
 }
+
