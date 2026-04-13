@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPostByIdServer } from "@/lib/server-data";
 
-export const runtime = "edge";
-
 /**
  * Serves a standalone, embeddable HTML card for any article.
  * Usage: <iframe src="https://thetouchlinedribble.in/api/embed/card/SLUG" width="480" height="280"></iframe>
