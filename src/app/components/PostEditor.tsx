@@ -729,7 +729,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                             setContent((prev) => prev ? prev + "\n" + template.html : template.html);
                                             setFormat(template.format as "article" | "quick-take");
                                             if (!title) setTitle(template.title);
-                                            toast.success(\`\${template.title} loaded!\`);
+                                            toast.success(`${template.title} loaded!`);
                                         }}
                                         className="flex flex-col items-start gap-2 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 hover:bg-[#16A34A]/5 hover:border-[#16A34A]/30 transition-all text-left group"
                                     >

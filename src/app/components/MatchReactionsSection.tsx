@@ -1,10 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { Zap, Share2, ArrowRight, MessageCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { toast } from "sonner";
-import { getAllPostsAsync } from "../../lib/postStorage";
-import type { BlogPost } from "../../data/posts";
-import ReactMarkdown from "react-markdown";
+import { getAllPostsAsync } from "../lib/postStorage";
+import type { BlogPost } from "../data/posts";
 import { ImageShareModal } from "./ImageShareModal";
 import { Camera } from "lucide-react";
 
@@ -97,8 +96,8 @@ export function MatchReactionsSection() {
                                 <h3 className="font-bold text-lg text-[#0F172A] dark:text-white mb-2 leading-tight group-hover:text-[#16A34A] transition-colors line-clamp-2">
                                     {reaction.title}
                                 </h3>
-                                <div className="text-sm text-[#64748B] dark:text-gray-400 line-clamp-4 prose dark:prose-invert max-w-none">
-                                    <ReactMarkdown>{reaction.content}</ReactMarkdown>
+                                <div className="text-sm text-[#64748B] dark:text-gray-400 line-clamp-4 prose dark:prose-invert max-w-none break-words">
+                                    {reaction.content?.replace(/<[^>]*>/g, "").replace(/[#*_`>]/g, "")}
                                 </div>
                             </Link>
 
