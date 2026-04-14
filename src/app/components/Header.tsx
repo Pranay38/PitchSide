@@ -116,7 +116,6 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
     { to: "/archive", label: "Archive" },
     { to: "/stories", label: "Stories" },
     { to: "/transfers", label: "Transfers" },
-    { to: "/whisper-network", label: "Whisper Network" },
     { to: "/transfer-tracker", label: "Tracker" },
     { to: "/collections", label: "Lists" },
     { to: "/about", label: "About" },

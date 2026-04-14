@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { Repeat2, CheckCircle2, ArrowRight, ShieldQuestion } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Repeat2, CheckCircle2, ArrowRight, ShieldQuestion, Search, SlidersHorizontal, X } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -21,6 +21,8 @@ const STATUS_COLORS: Record<TransferStatus, string> = {
 export function TransferTrackerPage() {
     const [transfers, setTransfers] = useState<TransferRecord[]>([]);
     const [loading, setLoading] = useState(true);
+    const [query, setQuery] = useState("");
+    const [filterClub, setFilterClub] = useState("");
 
     const fetchTransfers = useCallback(async () => {
         try {
@@ -51,6 +53,35 @@ export function TransferTrackerPage() {
         );
     }
 
+    // Unique clubs for filter
+    const allClubs = useMemo(() => {
+        const clubs = new Set<string>();
+        transfers.forEach((e) => {
+            if (e.toClub) clubs.add(e.toClub);
+            if (e.fromClub) clubs.add(e.fromClub);
+        });
+        return Array.from(clubs).sort();
+    }, [transfers]);
+
+    const filteredTransfers = useMemo(() => {
+        let out = transfers;
+        if (query) {
+            const q = query.toLowerCase();
+            out = out.filter(
+                (e) =>
+                    e.player.toLowerCase().includes(q) ||
+                    e.toClub.toLowerCase().includes(q) ||
+                    (e.fromClub && e.fromClub.toLowerCase().includes(q))
+            );
+        }
+        if (filterClub) {
+            out = out.filter(
+                (e) => e.toClub === filterClub || e.fromClub === filterClub
+            );
+        }
+        return out;
+    }, [transfers, query, filterClub]);
+
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
             <SEO 
@@ -73,16 +104,61 @@ export function TransferTrackerPage() {
                     </p>
                 </div>
 
-                {transfers.length === 0 ? (
+                {/* Filters */}
+                <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                    <div className="relative flex-1 max-w-sm">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search player or club…"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#16A34A]"
+                        />
+                        {query && (
+                            <button
+                                onClick={() => setQuery("")}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            >
+                                <X className="w-3.5 h-3.5" />
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="relative">
+                        <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                        <select
+                            value={filterClub}
+                            onChange={(e) => setFilterClub(e.target.value)}
+                            className="pl-9 pr-8 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:border-[#16A34A] appearance-none cursor-pointer"
+                        >
+                            <option value="">All clubs</option>
+                            {allClubs.map((c) => (
+                                <option key={c} value={c}>{c}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {(query || filterClub) && (
+                        <button
+                            onClick={() => { setQuery(""); setFilterClub(""); }}
+                            className="text-xs font-bold text-gray-400 hover:text-[#16A34A] transition-colors self-center"
+                        >
+                            Clear filters
+                        </button>
+                    )}
+                </div>
+
+                {filteredTransfers.length === 0 ? (
                     <PageState 
                         icon={Repeat2}
                         eyebrow="Window Closed"
                         title="No active deals currently"
-                        description="Check back when the transfer window opens for live tracking."
+                        description="Check back when the transfer window opens for live tracking or try a different filter."
                     />
                 ) : (
                     <div className="grid gap-6">
-                        {transfers.map(t => {
+                        {filteredTransfers.map(t => {
                             const statusIndex = STATUS_STAGES.indexOf(t.status);
                             const isDone = t.status === "done";
                             
@@ -221,6 +297,12 @@ export function TransferTrackerPage() {
                         })}
                     </div>
                 )}
+                
+                {/* Total count */}
+                <p className="mt-8 text-center text-xs text-gray-400 font-semibold">
+                    {filteredTransfers.length} transfer {filteredTransfers.length === 1 ? "rumour" : "rumours"} tracked
+                    {(query || filterClub) ? " (filtered)" : ""}
+                </p>
             </main>
             
             <Footer />
