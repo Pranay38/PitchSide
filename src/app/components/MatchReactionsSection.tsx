@@ -18,6 +18,8 @@ export function MatchReactionsSection() {
             const allPosts = await getAllPostsAsync();
             const reactionsPosts = allPosts.filter(p => !p.isDraft && p.format === "match-reaction");
             
+            reactionsPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            
             // Only show the 5 most recent reactions
             setReactions(reactionsPosts.slice(0, 5));
             setLoading(false);
