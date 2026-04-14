@@ -75,6 +75,17 @@ export const BlogPostSchema = z.object({
   reactions: z.record(z.string(), z.number()).optional(),
   likedBy: z.array(z.string()).optional(),
   author: z.string().optional(),
+  format: z.enum(["article", "quick-take", "match-reaction"]).optional(),
+  armchairRatings: z.array(z.object({
+    name: z.string(),
+    position: z.string(),
+    authorRating: z.number(),
+    imageUrl: z.string().optional()
+  })).optional(),
+  hotTakes: z.array(z.object({
+    id: z.string(),
+    statement: z.string()
+  })).optional(),
 });
 
 export type ValidatedBlogPost = z.infer<typeof BlogPostSchema>;
