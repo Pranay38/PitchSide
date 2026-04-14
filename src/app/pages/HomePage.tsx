@@ -352,11 +352,15 @@ export function HomePage() {
   const loading = isLoadingPosts || isLoadingStories || isLoadingSettings || isLoadingDaily;
   const error = postsError ? "Could not load the homepage feed right now." : "";
 
-  const fallbackFeaturedPost = useMemo(() => {
-    const mustReads = posts.filter((post) => post.mustRead);
-    const flagged = posts.filter((post) => post.mainStory);
-    return mustReads[0] || flagged[0] || posts[0] || null;
+  const standardPosts = useMemo(() => {
+    return posts.filter(p => !p.format || p.format === "standard");
   }, [posts]);
+
+  const fallbackFeaturedPost = useMemo(() => {
+    const mustReads = standardPosts.filter((post) => post.mustRead);
+    const flagged = standardPosts.filter((post) => post.mainStory);
+    return mustReads[0] || flagged[0] || standardPosts[0] || null;
+  }, [standardPosts]);
 
   // If the admin generated an AI Punchy Line for a Transfer Watch entry, use it to override the daily_features.json!
   const rumorMillCandidate = useMemo(() => {
@@ -404,8 +408,8 @@ export function HomePage() {
     if (heroSelection?.type === "post") {
       excludedIds.add(heroSelection.post.id);
     }
-    return pickOrderedItems(posts, siteSettings.homepageCuration.latestPostIds, 6, excludedIds);
-  }, [heroSelection, posts, siteSettings.homepageCuration.latestPostIds]);
+    return pickOrderedItems(standardPosts, siteSettings.homepageCuration.latestPostIds, 6, excludedIds);
+  }, [heroSelection, standardPosts, siteSettings.homepageCuration.latestPostIds]);
 
   const editorsPicks = useMemo(() => {
     const excludedIds = new Set<string>();
@@ -415,21 +419,21 @@ export function HomePage() {
     
     // Explicitly selected items from Post Editor
     // Bypass the hero exclusion if the author explicitly marked it as an Editor Pick
-    const manuallySelected = posts.filter((p) => p.editorPick);
+    const manuallySelected = standardPosts.filter((p) => p.editorPick);
       
     if (manuallySelected.length >= 3) {
       return manuallySelected.slice(0, 3);
     }
     
     // Any remaining slots fall back to highlighted posts or latest posts
-    const highlightedPosts = posts.filter((post) => post.mustRead || post.thisWeek);
-    const fillerSource = highlightedPosts.length > 0 ? highlightedPosts : posts;
+    const highlightedPosts = standardPosts.filter((post) => post.mustRead || post.thisWeek);
+    const fillerSource = highlightedPosts.length > 0 ? highlightedPosts : standardPosts;
     const filler = fillerSource.filter(
       (p) => !excludedIds.has(p.id) && !manuallySelected.some((m) => m.id === p.id)
     );
     
     return [...manuallySelected, ...filler].slice(0, 3);
-  }, [heroSelection, posts]);
+  }, [heroSelection, standardPosts]);
 
   const mappedEditorPicks = useMemo(() => editorsPicks.map(post => ({
     category: post.mustRead ? "Must Read" : "Editor Pick",
@@ -459,8 +463,8 @@ export function HomePage() {
   ), [dailyFeatures?.lastUpdated]);
 
   const thisWeekPosts = useMemo(() => {
-    return dedupePostsByTitle(posts.filter((p) => p.thisWeek));
-  }, [posts]);
+    return dedupePostsByTitle(standardPosts.filter((p) => p.thisWeek));
+  }, [standardPosts]);
 
   const hasContent = posts.length > 0 || stories.length > 0;
 
