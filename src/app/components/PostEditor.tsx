@@ -136,6 +136,10 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [matchRatings, setMatchRatings] = useState<{playerName: string, editorRating: number}[]>(post?.matchRatings || []);
     const [useMatchRatings, setUseMatchRatings] = useState(!!post?.matchRatings && post.matchRatings.length > 0);
     const [matchRating, setMatchRating] = useState<number | "">(post?.matchRating ?? "");
+    const [armchairRatings, setArmchairRatings] = useState<{name: string; position: string; authorRating: number; imageUrl?: string}[]>(post?.armchairRatings || []);
+    const [useArmchairRatings, setUseArmchairRatings] = useState(!!(post?.armchairRatings && post.armchairRatings.length > 0));
+    const [hotTakes, setHotTakes] = useState<{id: string; statement: string}[]>(post?.hotTakes || []);
+    const [useHotTakes, setUseHotTakes] = useState(!!(post?.hotTakes && post.hotTakes.length > 0));
     const [seriesName, setSeriesName] = useState(post?.seriesName || "");
     const [seriesOrder, setSeriesOrder] = useState<number | "">(post?.seriesOrder ?? "");
     const [publishAt, setPublishAt] = useState(post?.publishAt || "");
@@ -359,6 +363,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             poll: usePoll && poll.question.trim() ? poll : undefined,
             matchRatings: useMatchRatings && matchRatings.filter(r => r.playerName.trim()).length > 0 ? matchRatings.filter(r => r.playerName.trim()) : undefined,
             matchRating: matchRating === "" ? undefined : matchRating,
+            armchairRatings: useArmchairRatings && armchairRatings.filter(r => r.name.trim()).length > 0 ? armchairRatings.filter(r => r.name.trim()) : undefined,
+            hotTakes: useHotTakes && hotTakes.filter(t => t.statement.trim()).length > 0 ? hotTakes.filter(t => t.statement.trim()) : undefined,
             seriesName: seriesName.trim() || undefined,
             seriesOrder: seriesOrder === "" ? undefined : seriesOrder,
             publishAt: publishAt || undefined,
@@ -1221,6 +1227,107 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                         <Plus className="w-4 h-4" /> Add Player Rating
                                     </button>
                                 </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Armchair Pundit Ratings */}
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                        <div className="flex items-center justify-between mb-3">
+                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
+                                <Star className="w-4 h-4 text-amber-400" />
+                                Armchair Pundit Ratings
+                            </label>
+                            <button
+                                type="button"
+                                onClick={() => setUseArmchairRatings(!useArmchairRatings)}
+                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${useArmchairRatings ? 'bg-[#16A34A]' : 'bg-gray-300 dark:bg-gray-600'}`}
+                            >
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${useArmchairRatings ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                            </button>
+                        </div>
+                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">Add your author ratings per player. Readers can add their crowd ratings below the article.</p>
+                        {useArmchairRatings && (
+                            <div className="space-y-3">
+                                {armchairRatings.map((rating, idx) => (
+                                    <div key={idx} className="grid grid-cols-[1fr_1fr_auto_auto] gap-2 items-center">
+                                        <input
+                                            type="text"
+                                            placeholder="Player name"
+                                            value={rating.name}
+                                            onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], name: e.target.value }; setArmchairRatings(r); }}
+                                            className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Position (e.g. CM)"
+                                            value={rating.position}
+                                            onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], position: e.target.value }; setArmchairRatings(r); }}
+                                            className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50"
+                                        />
+                                        <input
+                                            type="number"
+                                            min="1" max="10" step="0.5"
+                                            placeholder="Rating"
+                                            value={rating.authorRating}
+                                            onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], authorRating: Number(e.target.value) }; setArmchairRatings(r); }}
+                                            className="w-20 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50"
+                                        />
+                                        <button type="button" onClick={() => setArmchairRatings(armchairRatings.filter((_, i) => i !== idx))} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => setArmchairRatings([...armchairRatings, { name: "", position: "", authorRating: 7 }])}
+                                    className="flex items-center gap-1.5 text-sm font-medium text-[#16A34A] hover:text-[#15803d]"
+                                >
+                                    <Plus className="w-4 h-4" /> Add Player
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Hot Take Heat Index */}
+                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                        <div className="flex items-center justify-between mb-3">
+                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
+                                <Flame className="w-4 h-4 text-orange-500" />
+                                Hot Take Heat Index
+                            </label>
+                            <button
+                                type="button"
+                                onClick={() => setUseHotTakes(!useHotTakes)}
+                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${useHotTakes ? 'bg-[#16A34A]' : 'bg-gray-300 dark:bg-gray-600'}`}
+                            >
+                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${useHotTakes ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                            </button>
+                        </div>
+                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">Add bold takes. Readers vote to reveal a temperature gauge showing how hot the community thinks your take is.</p>
+                        {useHotTakes && (
+                            <div className="space-y-3">
+                                {hotTakes.map((take, idx) => (
+                                    <div key={idx} className="flex gap-2 items-start">
+                                        <textarea
+                                            placeholder="Enter a bold take or opinion statement…"
+                                            value={take.statement}
+                                            onChange={(e) => { const t = [...hotTakes]; t[idx] = { ...t[idx], statement: e.target.value }; setHotTakes(t); }}
+                                            rows={2}
+                                            className="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-orange-400/50"
+                                        />
+                                        <button type="button" onClick={() => setHotTakes(hotTakes.filter((_, i) => i !== idx))} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 mt-1 flex-shrink-0">
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                                <button
+                                    type="button"
+                                    onClick={() => setHotTakes([...hotTakes, { id: `take-${Date.now()}`, statement: "" }])}
+                                    className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-400"
+                                >
+                                    <Plus className="w-4 h-4" /> Add Take
+                                </button>
                             </div>
                         )}
                     </div>

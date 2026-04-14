@@ -41,6 +41,8 @@ import { scheduleEmbedHydration } from "../lib/embedHydration";
 import { useReadingTracker } from "../hooks/useReadingTracker";
 import { RecommendedArticles } from "../components/RecommendedArticles";
 import { useUser } from "@clerk/nextjs";
+import { ArmchairPunditRatings } from "../components/ArmchairPunditRatings";
+import { HotTakeHeatIndex } from "../components/HotTakeHeatIndex";
 
 function sortPosts(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
@@ -480,6 +482,29 @@ export function BlogPostPage() {
             )}
 
             <ReactionUI itemId={post.id} itemType="post" initialReactions={post.reactions} />
+
+            {/* Armchair Pundit Ratings — shown on match reports with player ratings */}
+            {post.armchairRatings && post.armchairRatings.length > 0 && (
+              <ArmchairPunditRatings
+                postId={post.id}
+                players={post.armchairRatings}
+                className="my-8"
+              />
+            )}
+
+            {/* Hot Take Heat Index — shown per bold claim/take */}
+            {post.hotTakes && post.hotTakes.length > 0 && (
+              <div className="my-8 space-y-4">
+                {post.hotTakes.map((take) => (
+                  <HotTakeHeatIndex
+                    key={take.id}
+                    postId={post.id}
+                    takeId={take.id}
+                    statement={take.statement}
+                  />
+                ))}
+              </div>
+            )}
 
             <RecommendedArticles
               articleId={post.id}

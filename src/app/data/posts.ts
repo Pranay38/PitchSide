@@ -36,6 +36,16 @@ export interface BlogPost {
   likedBy?: string[];
   author?: string;
   format?: "article" | "quick-take" | "match-reaction"; // "article" (default) or "quick-take" (micro-post) or "match-reaction" (immediate post-match)
+  armchairRatings?: {
+    name: string;
+    position: string;
+    authorRating: number;
+    imageUrl?: string;
+  }[];
+  hotTakes?: {
+    id: string;
+    statement: string;
+  }[];
 }
 
 export const blogPosts: BlogPost[] = [

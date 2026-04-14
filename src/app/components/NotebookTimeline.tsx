@@ -72,7 +72,7 @@ export function NotebookTimeline({ title, items }: NotebookTimelineProps) {
         {/* The foreground active line (draws down) */}
         <div 
           className="absolute top-4 left-[9px] md:left-[17px] w-1 rounded-full bg-[#16A34A] transition-all ease-out duration-100 glow-green" 
-          style={{ height: \`\${lineHeight}px\` }} 
+          style={{ height: `${lineHeight}px` }} 
         />
 
         <div className="space-y-12">
@@ -82,23 +82,23 @@ export function NotebookTimeline({ title, items }: NotebookTimelineProps) {
             return (
               <div 
                 key={index} 
-                className={\`timeline-item-nodes relative flex flex-col md:flex-row gap-4 md:gap-8 transition-opacity duration-700 \${isActive ? 'opacity-100' : 'opacity-40'}\`}
+                className={`timeline-item-nodes relative flex flex-col md:flex-row gap-4 md:gap-8 transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-40'}`}
               >
                 {/* Node dot */}
                 <div 
-                  className={\`absolute -left-[30px] md:-left-[38px] top-4 w-4 h-4 rounded-full border-2 transition-all duration-500 z-10 \${
+                  className={`absolute -left-[30px] md:-left-[38px] top-4 w-4 h-4 rounded-full border-2 transition-all duration-500 z-10 ${
                     isActive 
                       ? 'bg-[#16A34A] border-[#bbf7d0] dark:border-green-900 scale-125 shadow-[0_0_15px_rgba(22,163,74,0.6)]' 
                       : 'bg-white dark:bg-[#0F172A] border-gray-300 dark:border-gray-600'
-                  }\`}
+                  }`}
                 />
                 
                 {/* Content Card */}
-                <div className={\`flex-1 rounded-[1.5rem] p-6 transition-all duration-700 \${
+                <div className={`flex-1 rounded-[1.5rem] p-6 transition-all duration-700 ${
                   isActive 
                     ? 'bg-white dark:bg-gray-800/80 shadow-xl shadow-[#16A34A]/5 border border-[#16A34A]/20 dark:border-white/10 translate-x-0'
                     : 'bg-gray-50 dark:bg-gray-800/40 border border-transparent translate-x-2'
-                }\`}>
+                }`}>
                   <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#16A34A]/10 text-[#16A34A] rounded-full text-[11px] font-black uppercase tracking-[0.18em] mb-3">
                     {item.label}
                   </div>
