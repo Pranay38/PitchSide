@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
-import { Zap, Send, Loader2, MessageCircle } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { Zap, Send, Loader2, MessageCircle, Trash2, Clock } from "lucide-react";
 import { toast } from "sonner";
-import { addPostAsync } from "../../lib/postStorage";
+import { addPostAsync, getAllPostsAsync, deletePostAsync } from "../../lib/postStorage";
 import type { BlogPost } from "../../data/posts";
 import { getAllClubNames } from "../../data/clubs";
 
@@ -10,8 +10,30 @@ export function AdminMatchReactionsTab() {
     const [content, setContent] = useState("");
     const [club, setClub] = useState("General");
     const [isPublishing, setIsPublishing] = useState(false);
+    
+    // Recent match reactions state
+    const [recentReactions, setRecentReactions] = useState<BlogPost[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const clubOptions = useMemo(() => ["General", ...getAllClubNames().sort()], []);
+
+    const loadReactions = async () => {
+        try {
+            const posts = await getAllPostsAsync();
+            const reactions = posts
+                .filter(p => p.format === "match-reaction")
+                .sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            setRecentReactions(reactions);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        void loadReactions();
+    }, []);
 
     const handlePublish = async () => {
         if (!content.trim()) {
@@ -49,11 +71,27 @@ export function AdminMatchReactionsTab() {
             setTitle("");
             setContent("");
             setClub("General");
+            
+            // Reload list
+            void loadReactions();
         } catch (error) {
             console.error(error);
             toast.error("Failed to publish reaction.");
         } finally {
             setIsPublishing(false);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!window.confirm("Are you sure you want to delete this match reaction?")) return;
+        
+        try {
+            await deletePostAsync(id);
+            setRecentReactions(prev => prev.filter(r => r.id !== id));
+            toast.success("Reaction deleted!");
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to delete reaction.");
         }
     };
 
@@ -129,9 +167,59 @@ export function AdminMatchReactionsTab() {
                 </div>
             </div>
             
-            <p className="text-center text-xs text-gray-400 mt-6 max-w-sm mx-auto">
-                Once published, you can share the direct link straight to X or Reddit directly from the Quick Takes homepage widget.
-            </p>
+            {/* Recent Match Reactions List */}
+            <div className="mt-12 mb-6 border-t border-gray-200 dark:border-gray-800 pt-8">
+                <div className="flex items-center gap-2 mb-6">
+                    <Clock className="w-5 h-5 text-gray-400" />
+                    <h2 className="text-xl font-bold font-outfit text-[#0F172A] dark:text-white">
+                        Past Match Reactions
+                    </h2>
+                </div>
+                
+                {isLoading ? (
+                    <div className="flex justify-center py-8">
+                        <Loader2 className="w-6 h-6 text-[#16A34A] animate-spin" />
+                    </div>
+                ) : recentReactions.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        No match reactions found.
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        {recentReactions.map(reaction => (
+                            <div key={reaction.id} className="bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-gray-800 rounded-2xl p-5 flex items-start justify-between gap-4 transition-all hover:shadow-md">
+                                <div className="space-y-2 flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                        {reaction.club && (
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-white bg-[#0F172A] dark:bg-gray-700 px-2 py-0.5 rounded">
+                                                {reaction.club}
+                                            </span>
+                                        )}
+                                        <span className="text-xs text-gray-500 font-medium">
+                                            {new Date(reaction.date).toLocaleString(undefined, {
+                                                month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+                                            })}
+                                        </span>
+                                    </div>
+                                    <h3 className="font-bold text-[#0F172A] dark:text-white truncate">
+                                        {reaction.title}
+                                    </h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+                                        {reaction.excerpt}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => void handleDelete(reaction.id)}
+                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors flex-shrink-0"
+                                    title="Delete Reaction"
+                                >
+                                    <Trash2 className="w-5 h-5" />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
