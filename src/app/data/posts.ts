@@ -16,6 +16,7 @@ export interface BlogPost {
   sofascoreUrl?: string; // Legacy support
   sofascoreWidget?: any; // Structured WidgetConfig
   playerName?: string;
+  audioUrl?: string;
   isDraft?: boolean;
   slug?: string;
   previewToken?: string; // Secret token for sharing draft previews

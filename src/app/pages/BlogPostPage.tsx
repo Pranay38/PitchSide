@@ -27,6 +27,7 @@ import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
 import { SeriesNavigator } from "../components/SeriesNavigator";
 import { PageState } from "../components/PageState";
 import { ArticleAudioPlayer } from "../components/ArticleAudioPlayer";
+import { TouchlineAudioPlayer } from "../components/TouchlineAudioPlayer";
 import {
   ArticleContentRenderer,
 } from "../components/ArticleContentRenderer";
@@ -405,6 +406,10 @@ export function BlogPostPage() {
                 Copy link
               </button>
             </div>
+
+            {post.audioUrl && (
+              <TouchlineAudioPlayer audioUrl={post.audioUrl} title={`${post.title} (Audio Breakdown)`} />
+            )}
 
             {articleContentModel && (
               <ArticleAudioPlayer

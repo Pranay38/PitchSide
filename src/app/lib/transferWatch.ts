@@ -2,6 +2,14 @@ export type TransferWatchStatus = "confirmed" | "rumor";
 export type TransferFeeMode = "million-usd" | "million-eur" | "million-gbp" | "not-disclosed" | "free";
 export type TransferRumorTier = 1 | 2 | 3 | 4 | 5 | null;
 
+export interface ScoutGrades {
+  pace: number;
+  physicality: number;
+  passing: number;
+  defensiveIQ: number;
+  finalThird: number;
+}
+
 export interface TransferWatchEntry {
   id: string;
   player: string;
@@ -12,6 +20,7 @@ export interface TransferWatchEntry {
   feeMillions: number;
   status: TransferWatchStatus;
   tier: TransferRumorTier;
+  scoutGrades?: ScoutGrades;
   punchyLine?: string;
   myTake?: string;
   aiScore?: number;
@@ -47,6 +56,23 @@ function normalizeRumorTier(value: unknown, status: TransferWatchStatus): Transf
   const parsed = typeof value === "number" ? value : Number(value);
   if (!Number.isFinite(parsed)) return 3;
   return Math.max(1, Math.min(5, Math.round(parsed))) as 1 | 2 | 3 | 4 | 5;
+}
+
+function clampGrade(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(parsed)) return 5;
+  return Math.max(1, Math.min(10, Math.round(parsed)));
+}
+
+function normalizeScoutGrades(input?: Partial<ScoutGrades> | null): ScoutGrades | undefined {
+  if (!input) return undefined;
+  return {
+    pace: clampGrade(input.pace),
+    physicality: clampGrade(input.physicality),
+    passing: clampGrade(input.passing),
+    defensiveIQ: clampGrade(input.defensiveIQ),
+    finalThird: clampGrade(input.finalThird),
+  };
 }
 
 export function buildTransferWatchId(player: string, club: string, updatedAt: string): string {
@@ -109,6 +135,7 @@ export function normalizeTransferWatchEntry(
     feeMillions,
     status,
     tier,
+    scoutGrades: normalizeScoutGrades(input.scoutGrades),
     punchyLine: typeof input.punchyLine === "string" ? input.punchyLine.trim() : undefined,
     myTake: typeof input.myTake === "string" ? input.myTake.trim() : undefined,
     aiScore: typeof input.aiScore === "number" ? input.aiScore : undefined,

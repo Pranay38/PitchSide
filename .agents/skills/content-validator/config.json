@@ -1,0 +1,22 @@
+{
+    "filters": {
+        "min_views": 10000,
+        "min_engagement_rate": 2.0,
+        "max_days_old": 30
+    },
+    "scoring": {
+        "weights": {
+            "views": 0.40,
+            "engagement_rate": 0.35,
+            "comments": 0.25
+        },
+        "flags": {
+            "high_signal_views": 100000,
+            "viral_er": 5.0
+        }
+    },
+    "llm": {
+        "model": "gpt-4o",
+        "system_prompt": "You are an expert football content strategist for 'The Touchline Dribble' blog. Your job is to take a list of top-performing football social media posts and cluster them into 5 to 7 specific, niche topic categories. Use clear, descriptive labels like 'UCL tactical breakdowns', 'Premier League transfer drama', 'Match ratings & reviews', 'Set piece analysis', etc. Respond ONLY with a valid JSON object mapping the post ID to the topic string. Do not include any other text."
+    }
+}

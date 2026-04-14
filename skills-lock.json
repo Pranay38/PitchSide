@@ -1,10 +1,185 @@
 {
   "version": 1,
   "skills": {
+    "apify-actor-development": {
+      "source": "apify/agent-skills",
+      "sourceType": "github",
+      "computedHash": "425fe06d1e77d3375a5eed157c108304908892b7f65b021b125b9d1555f3b01a"
+    },
+    "apify-actorization": {
+      "source": "apify/agent-skills",
+      "sourceType": "github",
+      "computedHash": "96959e18acb8736a5bb4da5a4dea24a586e635f4414fbc49aa62cd44b151fa5f"
+    },
+    "apify-generate-output-schema": {
+      "source": "apify/agent-skills",
+      "sourceType": "github",
+      "computedHash": "ab09d887aed3a381519d079c3ba47f261caa8b71a7a3680b0a806e369e9525ab"
+    },
+    "apify-ultimate-scraper": {
+      "source": "apify/agent-skills",
+      "sourceType": "github",
+      "computedHash": "94d190fc6c2fe7d99780f5108ef91477d930cd37fa6a0a28ed3133a427631636"
+    },
+    "brand-analyzer": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "85eb5e8a69a6d99cbf24d3097eb100977654108ba6b7022209682e744cc74954"
+    },
+    "business-analytics-reporter": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "920208f5135432b1069a294c2cb294271077564911bdb864316fcc5c95a34b5e"
+    },
+    "business-document-generator": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "53791ca830baaba4df75f551f86402dd078c56d2d07862a6a11e1880199c3487"
+    },
+    "cicd-pipeline-generator": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "74cffe0e57e9f4855c738a2fb11bbd5acbed5c4c89ff18f4fcd8410d62f33196"
+    },
+    "codebase-documenter": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "42f8267717c269dd643a1e3c179ffdab09783bd10469deea83852dda8a1b22cd"
+    },
+    "content-strategy": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "be124f3733b037fb8d859f275454ecd1c590759ef9ab184bea35ba1a0a38e14c"
+    },
+    "copy-editing": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "f1a31dc20a44b62d9a8b0e2c976e4cfaf12dd87e1c8a4ee8344bbf5aa8a73f63"
+    },
+    "copywriting": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "2e83eda2221e97166172a0798e9b0379e34080595e107e2fc0cf580e9b3bbf7b"
+    },
+    "csv-data-visualizer": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "ab28c0f78997f1ced464d183df83559109f865d88050e299dc1ca6096bb13dbd"
+    },
+    "data-analyst": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "7c438d04536efefdf05d75287835b8b8649bce678ee01e12317065bd9e98752e"
+    },
+    "docker-containerization": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "6ce7d7d9c41cf4904a588c2960e0934a94bfe6771b73c8245e14353dc4577002"
+    },
+    "docx": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "e0b998d770e20cfe3514d37feeec4089f408f29c276ab30f2ecae93618fe7e95"
+    },
+    "finance-manager": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "08e3f046b49145fd11fe2d2347400c26e41bbd040cd6d2b1450805b3b2e17aee"
+    },
+    "frontend-enhancer": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "ce3f050632febc5a0b58e78ef23589ea513af16150f6dfe053a2b26dd20c0ed8"
+    },
+    "nutritional-specialist": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "968b2d5319c2f13e27ae26dfd9e3484f74ed274779be2e3ef6b403a01e8ef3bb"
+    },
+    "pdf": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "5aeffa8a074c658da3955ed71120adebf572305b977178b3f45f33ed4465664f"
+    },
+    "personal-assistant": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "5531e9c0663cae7be8431b30970b645fee68f52e53e4997684732b41c771e07e"
+    },
+    "pitch-deck": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "b23b5c7542d53e3cada85052bd4165210a95447215afa4456256dc43a864eee4"
+    },
+    "pptx": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "f661434df55b05a9117b4418eb0814f2310e45c70771f6bfe3cef1058bd958dd"
+    },
+    "research-paper-writer": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "67be14e704ff0c2972e4fcfd164bffa4504898590ed43276d6ada1a376934748"
+    },
+    "resume-manager": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "5a09921ca955be6a23f63eba005e9b361a1e1dcd28ecdc519f44e15da4a59b70"
+    },
+    "script-writer": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "97f0cdcd52c188a879aabe0a4d2f00e3666cec270c499ad42f744ebe6f73ba3f"
+    },
+    "seo-optimizer": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "b5076608b80f436d87aafc273c94107146d9db1e86282239d3c38c8ce5487845"
+    },
+    "social-content": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "252f58c9993ea38761a6b6cc6f0bbe83fb13f94387a925a57049ca3ca3793b6b"
+    },
+    "social-media-generator": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "1a13abe6cbd7e3f9c7b854151775f2bad7feeaa68c414f34cbb99bc81864152b"
+    },
+    "startup-validator": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "d5a6b39c886911c3d0e0cb3da6bed2a5af992cd01437a42f507d740cd7d92702"
+    },
+    "storyboard-manager": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "3f1c42e36460df75f30a036ab04f19ff2c9cc44aeb946e91d71e8dcbb371aa78"
+    },
     "superdesign": {
       "source": "superdesigndev/superdesign-skill",
       "sourceType": "github",
       "computedHash": "7208b5e2e1145d76abcd698b2a9085952d986022ec2d5d8b9f972106b1b2447b"
+    },
+    "tech-debt-analyzer": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "654eeb566e92a38a13a74f61b79ce9c48961424af926e69aa71e477e5f6dda2b"
+    },
+    "test-specialist": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "895ab144061ef7050da048ff8429043fe32fab6c6400515a0d102b6fafcaf5b0"
+    },
+    "travel-planner": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "8320b1c4b544113788926eee4cb7a31ed1f354227d59cd9f880a51a0c02e101d"
+    },
+    "xlsx": {
+      "source": "ailabs-393/ai-labs-claude-skills",
+      "sourceType": "github",
+      "computedHash": "91fee0d519975ca387c7af1f7a46b4912d74b207c6702e01fab81c059bf9b1b3"
     }
   }
 }

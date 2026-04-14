@@ -67,11 +67,26 @@ export function ProfilePage() {
     const [pushStatus, setPushStatus] = useState<"default" | "granted" | "denied">("default");
     const [newsletterSubmitting, setNewsletterSubmitting] = useState(false);
 
-    // Club selector state
     const [clubSearchTerm, setClubSearchTerm] = useState("");
     const [showClubPicker, setShowClubPicker] = useState(false);
     const [onlineResults, setOnlineResults] = useState<SearchResult[]>([]);
     const [searchingOnline, setSearchingOnline] = useState(false);
+
+    // Football Philosophy
+    const [philosophy, setPhilosophy] = useState<"control" | "chaos" | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const savedPhil = localStorage.getItem("pitchside_philosophy") as "control" | "chaos" | null;
+            if (savedPhil) setPhilosophy(savedPhil);
+        }
+    }, []);
+
+    const handlePhilosophyChange = (phil: "control" | "chaos") => {
+        setPhilosophy(phil);
+        localStorage.setItem("pitchside_philosophy", phil);
+        toast.success(`Football philosophy set to: ${phil === 'control' ? 'Juego de Posición (Control)' : 'Heavy Metal Football (Chaos)'}`);
+    };
 
     useEffect(() => {
         if ("Notification" in window) {
@@ -139,6 +154,14 @@ export function ProfilePage() {
     const userName = user?.fullName || user?.firstName || "Football Fan";
     const newsletterEmail = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || "";
 
+    const readingLevel = useMemo(() => {
+        const count = historyArticles.length;
+        if (count >= 50) return { label: "Tactical Obsessive", icon: "🧠", color: "text-purple-500", bg: "bg-purple-500/10" };
+        if (count >= 20) return { label: "Season Ticket Holder", icon: "🏟️", color: "text-blue-500", bg: "bg-blue-500/10" };
+        if (count >= 5) return { label: "Regular Matchgoer", icon: "⚽", color: "text-[#16A34A]", bg: "bg-[#16A34A]/10" };
+        return { label: "Casual Supporter", icon: "👀", color: "text-gray-500", bg: "bg-gray-100 dark:bg-gray-800" };
+    }, [historyArticles.length]);
+
     const subscribeToNewsletter = async () => {
         if (!newsletterEmail) {
             toast.error("We could not find an email address on your account.");
@@ -204,8 +227,8 @@ export function ProfilePage() {
                                         ⚽ {fanClub.name}
                                     </span>
                                 )}
-                                <span className="text-xs text-gray-500 flex items-center gap-1">
-                                    <Calendar className="w-3 h-3" /> Joined recently
+                                <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1.5 ${readingLevel.bg} ${readingLevel.color}`}>
+                                    {readingLevel.icon} {readingLevel.label}
                                 </span>
                             </div>
                         </div>
@@ -616,6 +639,53 @@ export function ProfilePage() {
                                         </button>
                                     )}
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Football Philosophy Selector */}
+                        <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B]/50 border border-gray-100 dark:border-gray-800/50">
+                            <label className="block text-sm font-semibold text-[#0F172A] dark:text-gray-300 mb-2 flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-[#16A34A]" /> Football Philosophy
+                            </label>
+                            <p className="text-sm text-gray-500 mb-4">
+                                Do you prefer the methodical beauty of positional play, or the heavy metal intensity of transition football?
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                                <button
+                                    onClick={() => handlePhilosophyChange("control")}
+                                    className={`relative p-4 rounded-xl border text-left transition-all ${
+                                        philosophy === "control"
+                                            ? "bg-[#16A34A]/10 border-[#16A34A] shadow-sm"
+                                            : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className={`text-[11px] font-black uppercase tracking-[0.18em] ${philosophy === "control" ? "text-[#16A34A]" : "text-gray-500"}`}>
+                                            Juego de Posición
+                                        </span>
+                                        {philosophy === "control" && <div className="w-2 h-2 rounded-full bg-[#16A34A]" />}
+                                    </div>
+                                    <h4 className="text-lg font-bold text-[#0F172A] dark:text-white mb-1">Control</h4>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Possession, passing networks, maintaining structure.</p>
+                                </button>
+                                
+                                <button
+                                    onClick={() => handlePhilosophyChange("chaos")}
+                                    className={`relative p-4 rounded-xl border text-left transition-all ${
+                                        philosophy === "chaos"
+                                            ? "bg-[#16A34A]/10 border-[#16A34A] shadow-sm"
+                                            : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className={`text-[11px] font-black uppercase tracking-[0.18em] ${philosophy === "chaos" ? "text-red-500" : "text-gray-500"}`}>
+                                            Gegenpressing
+                                        </span>
+                                        {philosophy === "chaos" && <div className="w-2 h-2 rounded-full bg-red-500" />}
+                                    </div>
+                                    <h4 className="text-lg font-bold text-[#0F172A] dark:text-white mb-1">Chaos</h4>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">High intensity, rapid transitions, exploiting space.</p>
+                                </button>
                             </div>
                         </div>
                     </div>

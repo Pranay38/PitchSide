@@ -18,6 +18,7 @@ import {
 } from "../lib/storyStorage";
 import { ReactionUI } from "../components/ReactionUI";
 import { StoryFeatureCard } from "../components/StoryFeatureCard";
+import { TouchlineAudioPlayer } from "../components/TouchlineAudioPlayer";
 
 function StoryVisual({ story, chapter }: { story: StoryFeature; chapter: StoryChapter }) {
   return (
@@ -279,6 +280,10 @@ export function StoryPage() {
                   {story.chapters.length} chapters
                 </span>
               </div>
+
+              {story.audioUrl && (
+                <TouchlineAudioPlayer audioUrl={story.audioUrl} title={`${story.title} (Audio Breakdown)`} />
+              )}
 
               <div className="mt-8 max-w-2xl rounded-[1.5rem] border border-white/10 bg-black/20 p-5 backdrop-blur-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">

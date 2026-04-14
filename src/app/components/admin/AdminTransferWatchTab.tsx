@@ -394,6 +394,63 @@ export function AdminTransferWatchTab({
                                     <option value={5}>Tier 5 (Unreliable/Banter)</option>
                                 </select>
                             </label>
+
+                            {/* Scout Grades */}
+                            <div className="md:col-span-2 border-t border-gray-100 dark:border-gray-800 pt-5 mt-3">
+                                <h3 className="text-sm font-medium text-[#0F172A] dark:text-white mb-3">Scout Grades (1-10)</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                    <label className="block">
+                                        <span className="block text-xs font-medium text-[#64748B] dark:text-gray-400 mb-1">Pace</span>
+                                        <input
+                                            type="number" min={1} max={10}
+                                            value={transferDraft.scoutGrades?.pace || ""}
+                                            onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, scoutGrades: { ...prev.scoutGrades, pace: Number(e.target.value) } }))}
+                                            placeholder="8"
+                                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="block text-xs font-medium text-[#64748B] dark:text-gray-400 mb-1">Physicality</span>
+                                        <input
+                                            type="number" min={1} max={10}
+                                            value={transferDraft.scoutGrades?.physicality || ""}
+                                            onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, scoutGrades: { ...prev.scoutGrades, physicality: Number(e.target.value) } }))}
+                                            placeholder="7"
+                                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="block text-xs font-medium text-[#64748B] dark:text-gray-400 mb-1">Passing</span>
+                                        <input
+                                            type="number" min={1} max={10}
+                                            value={transferDraft.scoutGrades?.passing || ""}
+                                            onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, scoutGrades: { ...prev.scoutGrades, passing: Number(e.target.value) } }))}
+                                            placeholder="9"
+                                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="block text-xs font-medium text-[#64748B] dark:text-gray-400 mb-1">Defensive IQ</span>
+                                        <input
+                                            type="number" min={1} max={10}
+                                            value={transferDraft.scoutGrades?.defensiveIQ || ""}
+                                            onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, scoutGrades: { ...prev.scoutGrades, defensiveIQ: Number(e.target.value) } }))}
+                                            placeholder="5"
+                                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                        />
+                                    </label>
+                                    <label className="block">
+                                        <span className="block text-xs font-medium text-[#64748B] dark:text-gray-400 mb-1">Final Third</span>
+                                        <input
+                                            type="number" min={1} max={10}
+                                            value={transferDraft.scoutGrades?.finalThird || ""}
+                                            onChange={(e) => setTransferDraft((prev: any) => ({ ...prev, scoutGrades: { ...prev.scoutGrades, finalThird: Number(e.target.value) } }))}
+                                            placeholder="8"
+                                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
                         </div>
 
                         {/* AI Punchy Line */}

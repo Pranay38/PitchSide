@@ -129,6 +129,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [editorPick, setEditorPick] = useState(post?.editorPick || false);
     const [mainStory, setMainStory] = useState(post?.mainStory || false);
     const [mediaUrl, setMediaUrl] = useState(post?.mediaUrl || "");
+    const [audioUrl, setAudioUrl] = useState(post?.audioUrl || "");
     const [playerName, setPlayerName] = useState(post?.playerName || "");
     const [poll, setPoll] = useState(post?.poll || { question: "", options: [{ text: "", votes: 0 }, { text: "", votes: 0 }] });
     const [usePoll, setUsePoll] = useState(!!post?.poll);
@@ -352,6 +353,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             editorPick,
             mainStory,
             mediaUrl: mediaUrl.trim() || undefined,
+            audioUrl: audioUrl.trim() || undefined,
             playerName: playerName.trim() || undefined,
             isDraft,
             poll: usePoll && poll.question.trim() ? poll : undefined,
@@ -444,7 +446,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         };
     }, [
         title, excerpt, content, coverImage, club, category, tags,
-        thisWeek, mustRead, editorPick, mainStory, mediaUrl, playerName,
+        thisWeek, mustRead, editorPick, mainStory, mediaUrl, audioUrl, playerName,
         usePoll, poll, useMatchRatings, matchRatings, matchRating, seriesName, seriesOrder, publishAt, submitAction
     ]);
 
@@ -1046,6 +1048,23 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                             placeholder="https://www.youtube.com/watch?v=..."
                             className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
                         />
+                        
+                        <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6">
+                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
+                                <Mic className="w-4 h-4 text-[#16A34A]" />
+                                Touchline Audio Snippet
+                            </label>
+                            <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
+                                Paste the URL to an externally hosted audio breakdown.
+                            </p>
+                            <input
+                                type="url"
+                                value={audioUrl}
+                                onChange={(e) => setAudioUrl(e.target.value)}
+                                placeholder="https://api.example.com/audio.mp3"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                            />
+                        </div>
                     </div>
 
 

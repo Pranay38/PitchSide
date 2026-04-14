@@ -1,0 +1,117 @@
+{
+  "niche": "football/soccer",
+  "lookback_days": 7,
+  "keywords": [
+    "Premier League",
+    "Champions League",
+    "UCL",
+    "La Liga",
+    "Serie A",
+    "Bundesliga",
+    "Real Madrid",
+    "Barcelona",
+    "Inter Milan",
+    "AC Milan",
+    "football tactics",
+    "transfer news",
+    "set pieces",
+    "football culture",
+    "match ratings",
+    "tactical analysis",
+    "football thread"
+  ],
+  "hashtags": {
+    "instagram": [
+      "premierleague",
+      "championsleague",
+      "ucl",
+      "laliga",
+      "seriea",
+      "bundesliga",
+      "realmadrid",
+      "barcelona",
+      "intermilan",
+      "acmilan",
+      "footballtactics",
+      "transfernews",
+      "setpieces",
+      "footballculture",
+      "matchratings",
+      "tacticalanalysis"
+    ]
+  },
+  "competitors": {
+    "onemufc": {
+      "instagram": "onemufc",
+      "twitter": "onemufc",
+      "youtube": null
+    },
+    "talkfootballhd": {
+      "instagram": "talkfootballhd",
+      "twitter": "talkfootballhd",
+      "youtube": "talkfootballhd"
+    },
+    "markaroni": {
+      "instagram": "markaroni",
+      "twitter": null,
+      "youtube": "markaroni"
+    },
+    "divyansh": {
+      "instagram": "divyansh",
+      "twitter": null,
+      "youtube": "divyansh"
+    },
+    "yjr": {
+      "instagram": "yjr",
+      "twitter": null,
+      "youtube": "yjr"
+    },
+    "TifoFootball": {
+      "instagram": "tifofootball",
+      "twitter": "TifoFootball",
+      "youtube": "TifoFootball"
+    },
+    "TheAthleticFC": {
+      "instagram": "theathleticfc",
+      "twitter": "TheAthleticFC",
+      "youtube": null
+    },
+    "Squawka": {
+      "instagram": "squawka",
+      "twitter": "Squawka",
+      "youtube": null
+    },
+    "OptaJoe": {
+      "instagram": null,
+      "twitter": "OptaJoe",
+      "youtube": null
+    },
+    "footballdaily": {
+      "instagram": "footballdaily",
+      "twitter": "footballdaily",
+      "youtube": "footballdaily"
+    }
+  },
+  "viral_thresholds": {
+    "engagement_rate_percent": 5,
+    "views_count": 100000
+  },
+  "scraping_limits": {
+    "instagram_per_handle": 30,
+    "instagram_hashtags": 50,
+    "youtube_per_channel": 30,
+    "youtube_keywords": 50,
+    "twitter_per_handle": 50,
+    "twitter_keywords": 100
+  },
+  "whisper": {
+    "model": "whisper-1",
+    "max_concurrent": 3,
+    "language": "en"
+  },
+  "output": {
+    "sort_by": "views",
+    "sort_order": "desc",
+    "formats": ["csv", "json"]
+  }
+}

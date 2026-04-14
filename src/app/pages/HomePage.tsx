@@ -36,6 +36,7 @@ const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m =>
 import { TransferTicker } from "../components/TransferTicker";
 import { QuickTakesSection } from "../components/QuickTakesSection";
 import { MatchReactionsSection } from "../components/MatchReactionsSection";
+import { ChallengeTheTake } from "../components/home/ChallengeTheTake";
 
 /** Hook: animates elements with class `scroll-reveal` when they enter viewport */
 function useScrollReveal() {
@@ -534,28 +535,84 @@ export function HomePage() {
       />
       <Header />
 
-      {/* NEW FULL WIDTH HERO */}
-      {(heroSelection?.type === "post" || heroSelection?.type === "story") ? (
-        <AeroHero post={heroSelection.type === "post" ? heroSelection.post : heroSelection.story} />
-      ) : (
-        <div className="pt-24 pb-8 px-4">
-          <PageState
-            icon={ScrollText}
-            eyebrow="Lead Slot"
-            title="Waiting for a lead story"
-            description="Publish a main article or story and the front-page hero will update automatically."
-          />
-        </div>
+      {/* --- MAIN STORY HERO --- */}
+      {heroSelection && (
+        <AeroHero
+          post={heroSelection.type === "story" ? heroSelection.story : heroSelection.post}
+        />
       )}
 
-      {mappedEditorPicks.length > 0 && <Blogs articles={mappedEditorPicks} />}
+      {/* --- AUTHOR'S TAKE (INLINE BANNER STRIP) --- */}
+      <section className="mb-12 scroll-reveal">
+        <div className="relative w-full border-y border-gray-200 dark:border-gray-800/60 bg-gradient-to-r from-gray-50 to-white dark:from-[#060e20] dark:to-[#0b1325]">
+          <div className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-start md:items-center gap-4 flex-1">
+               <div className="h-12 w-12 rounded-full border-2 border-[#16A34A] bg-[#0F172A] overflow-hidden flex items-center justify-center shrink-0">
+                 <span className="font-outfit font-black text-white">PA</span>
+               </div>
+               <div>
+                 <div className="flex items-center gap-2 mb-1.5">
+                   <p className="font-outfit text-[10px] font-black text-[#16A34A] uppercase tracking-[0.2em]">Author's Take</p>
+                   <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
+                   <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">Every Friday</p>
+                 </div>
+                 <h2 className="font-outfit text-lg sm:text-2xl font-black text-[#0F172A] dark:text-white leading-tight">
+                   "The modern #10 is dead. Long live the hybrid roaming destroyer."
+                 </h2>
+               </div>
+            </div>
+            
+            <div className="shrink-0">
+              <button 
+                onClick={(e) => {
+                  const el = document.getElementById('author-take-challenge');
+                  if (el) {
+                    el.classList.toggle('hidden');
+                    if (!el.classList.contains('hidden')) {
+                      // Smooth scroll down a bit to show the content
+                      setTimeout(() => {
+                        window.scrollBy({ top: 150, behavior: 'smooth' });
+                      }, 50);
+                    }
+                  }
+                }}
+                className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#16A34A] hover:bg-[#15803d] text-white font-black uppercase tracking-widest text-[11px] shadow-sm transition-all"
+              >
+                Read & Challenge
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Expandable content */}
+        <div id="author-take-challenge" className="hidden mx-auto max-w-[1240px] px-4 pt-8 pb-4 sm:px-6">
+          <div className="max-w-4xl">
+            <div className="text-lg text-[#64748B] dark:text-gray-300 leading-relaxed mb-2">
+              <p>
+                We've spent the last decade obsessing over positional play and half-spaces. But watching this weekend's fixtures, something clicked: the pure creator is obsolete. Today's elite teams don't need a playmaker; they need an athlete who can destroy transitions to create them. Here's why the 'hybrid destroyer' is the most valuable profile in Europe right now.
+              </p>
+            </div>
+            <ChallengeTheTake />
+          </div>
+        </div>
+      </section>
 
       <main className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 md:py-12">
+        {/* --- QUICK TAKES --- */}
+        <section className="mb-8 scroll-reveal">
+          <QuickTakesSection posts={posts} />
+        </section>
+
+        {/* --- MATCH REACTIONS --- */}
+        <section className="scroll-reveal">
+          <MatchReactionsSection />
+        </section>
         {/* --- DISCOVERY BUBBLES --- */}
         <section className="mb-12 scroll-reveal text-center relative z-20">
           <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide px-2 justify-start sm:justify-center">
             {[
               { label: "Tactical Trends", link: "/archive?search=tactical" },
+              { label: "Deep Dives", link: "/premium" },
               { label: "Transfer Watch", link: "/transfers" },
               { label: "Wonderkids", link: "/archive?search=wonderkids" },
               { label: "Debates", link: "/debates" }
@@ -588,148 +645,125 @@ export function HomePage() {
           </section>
         )}
 
-        <section className="mb-24 scroll-reveal">
-          <div className="grid gap-8 lg:gap-16 lg:grid-cols-[8fr_4fr] items-start">
+        {/* --- DAILY BRIEFING CAROUSEL (DECLUTTERED) --- */}
+        <section className="mb-24 scroll-reveal w-full">
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+                Daily Briefing
+              </p>
+              <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                Today's pulse
+              </h2>
+            </div>
+          </div>
+          <NewsTicker />
+        </section>
+
+        {/* --- SPACIOUS MAIN LAYOUT --- */}
+        <section className="mb-32 scroll-reveal">
+          <div className="flex flex-col gap-24">
             
-            {/* Main Content Column (Left - 8fr) */}
-            <div className="space-y-16">
-              
-              {/* ── This Week's Big Reads — horizontal scroll ────────────── */}
-              {thisWeekPosts.length > 0 && (
-                <div>
-                  <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-                    <div>
-                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] flex items-center gap-1.5">
-                        <Flame className="w-3.5 h-3.5" />
-                        This Week
-                      </p>
-                      <h2 className="mt-2 text-3xl sm:text-4xl font-black font-outfit text-[#0F172A] dark:text-white">
-                        Big reads this week
-                      </h2>
-                    </div>
-                    <Link
-                      to="/archive?format=Weekly%20Briefing"
-                      className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
-                    >
-                      See all
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
-                  <div className="relative group/scroll">
-                    <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-                      {thisWeekPosts.map((post) => (
-                        <Link
-                          key={post.id}
-                          to={`/post/${post.slug || post.id}`}
-                          className="group relative flex-shrink-0 w-[280px] sm:w-[320px] snap-start rounded-[1.5rem] overflow-hidden ghost-border-dark dark:ghost-border bg-white dark:bg-[var(--card)] shadow-sm ambient-shadow hover:-translate-y-1 depth-card transition-all duration-300"
-                        >
-                          <div className="relative h-40 overflow-hidden">
-                            <img
-                              src={post.coverImage}
-                              alt={post.title}
-                              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                            <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                              <span className="rounded-full bg-[#16A34A] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
-                                {post.club || (post.tags && post.tags[0]) || 'Featured'}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="p-4">
-                            <h3 className="text-base font-black font-outfit text-[#0F172A] dark:text-white line-clamp-2 group-hover:text-[#16A34A] transition-colors">
-                              {post.title}
-                            </h3>
-                            <p className="mt-2 text-sm text-[#64748B] dark:text-gray-400 line-clamp-2">
-                              {post.excerpt}
-                            </p>
-                            <div className="mt-3 flex items-center justify-between text-xs text-[#94A3B8]">
-                              <span>{post.readTime}</span>
-                              <span className="text-[#16A34A] font-bold">Read →</span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Match Reactions */}
-              <MatchReactionsSection />
-
-              {/* Quick Takes Box */}
-              <QuickTakesSection posts={posts} />
-
-              {/* Latest Analysis Block */}
-              <div id="latest-articles">
-                <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            {/* ── This Week's Big Reads ────────────── */}
+            {thisWeekPosts.length > 0 && (
+              <div>
+                <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-                      Latest Analysis
-                    </p>
-                    <h2 className="mt-2 text-3xl sm:text-4xl font-black font-outfit text-[#0F172A] dark:text-white">
-                      Fresh reads from the feed
+                    <h2 className="mt-2 text-4xl sm:text-5xl font-black font-outfit text-[#0F172A] dark:text-white">
+                      Big deeper reads.
                     </h2>
                   </div>
                   <Link
-                    to="/archive?type=article"
+                    to="/archive?format=Weekly%20Briefing"
                     className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
                   >
-                    See every article
+                    See all
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
-                <div className="mb-6 flex flex-wrap gap-2">
-                  <Link to="/archive?topic=Premier%20League" className="filter-chip">Premier League</Link>
-                  <Link to="/archive?topic=Tactics" className="filter-chip">Tactics</Link>
-                  <Link to="/archive?format=Must%20Read" className="filter-chip">Must Reads</Link>
-                </div>
-                <div className="grid gap-6 sm:grid-cols-2">
-                  {latestPosts.map((post) => (
-                    <Link key={post.id} to={`/post/${post.slug || post.id}`} className="block h-full group">
-                      <ArticleCard
-                        headline={post.title}
-                        excerpt={post.excerpt}
-                        cover={post.coverImage}
-                        tag={post.club || (post.tags && post.tags[0])}
-                        readingTime={post.readTime}
-                        writer={post.author || ""}
-                        publishedAt={post.date}
-                        className="h-full"
-                      />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Daily Briefing Modules (Scrolling Sidebar - Right - 4fr) */}
-            <div className="space-y-6 lg:sticky lg:top-24" id="daily-briefing">
-              <div className="tinted-panel rounded-[2rem] ghost-border-dark dark:ghost-border p-5 ambient-shadow dark:bg-[var(--card)]">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="h-6 w-1.5 rounded-full bg-[#16A34A]" />
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-                      Daily Briefing
-                    </p>
-                    <h2 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white">
-                      Today&apos;s pulse
-                    </h2>
+                <div className="relative group/scroll">
+                  <div className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+                    {thisWeekPosts.map((post) => (
+                      <Link
+                        key={post.id}
+                        to={`/post/${post.slug || post.id}`}
+                        className="group relative flex-shrink-0 w-[300px] sm:w-[400px] snap-start rounded-[2rem] overflow-hidden ghost-border-dark dark:ghost-border bg-white dark:bg-[var(--card)] shadow-sm ambient-shadow hover:-translate-y-2 depth-card transition-all duration-500"
+                      >
+                        <div className="relative h-56 overflow-hidden">
+                          <img
+                            src={post.coverImage}
+                            alt={post.title}
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                            <span className="rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#060E20]">
+                              {post.club || (post.tags && post.tags[0]) || 'Featured'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="p-6">
+                          <h3 className="text-xl font-black font-outfit text-[#0F172A] dark:text-white line-clamp-2 group-hover:text-[#16A34A] transition-colors">
+                            {post.title}
+                          </h3>
+                          <p className="mt-3 text-sm text-[#64748B] dark:text-gray-400 line-clamp-2 leading-relaxed">
+                            {post.excerpt}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
                 </div>
-                <NewsTicker />
               </div>
+            )}
 
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
-                <YourVoiceSection />
-                {dailyFeatures?.rumorMill ? (
+            {/* --- UTILITY WIDGETS (Rumor Mill & Manager Pressure) --- */}
+            <div className="grid gap-6 sm:grid-cols-2">
+              {dailyFeatures?.rumorMill ? (
+                <div className="tinted-panel rounded-3xl p-6 border border-gray-100 dark:border-gray-800/50 bg-white dark:bg-[var(--card)] shadow-sm">
+                  <h3 className="font-outfit text-xl font-bold mb-4 dark:text-white">Transfer Rumors</h3>
                   <RumorMillWidget data={dailyFeatures.rumorMill} />
-                ) : null}
-                <OnThisDayWidget />
-                {dailyFeatures?.managerPressure?.length ? (
+                </div>
+              ) : null}
+              {dailyFeatures?.managerPressure?.length ? (
+                <div className="tinted-panel rounded-3xl p-6 border border-gray-100 dark:border-gray-800/50 bg-white dark:bg-[var(--card)] shadow-sm">
+                  <h3 className="font-outfit text-xl font-bold mb-4 dark:text-white">Managerial Pressure</h3>
                   <ManagerPressureWidget data={dailyFeatures.managerPressure} />
-                ) : null}
+                </div>
+              ) : null}
+            </div>
+
+            {/* Latest Analysis Block */}
+            <div id="latest-articles" className="pt-8 border-t border-gray-100 dark:border-gray-800/50">
+              <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <h2 className="mt-2 text-4xl sm:text-5xl font-black font-outfit text-[#0F172A] dark:text-white">
+                    Fresh from the feed.
+                  </h2>
+                </div>
+                <Link
+                  to="/archive?type=article"
+                  className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
+                >
+                  See every article
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                {latestPosts.map((post) => (
+                  <Link key={post.id} to={`/post/${post.slug || post.id}`} className="block h-full group">
+                    <ArticleCard
+                      headline={post.title}
+                      excerpt={post.excerpt}
+                      cover={post.coverImage}
+                      tag={post.club || (post.tags && post.tags[0])}
+                      readingTime={post.readTime}
+                      writer={post.author || ""}
+                      publishedAt={post.date}
+                      className="h-full border-none shadow-none bg-transparent"
+                    />
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

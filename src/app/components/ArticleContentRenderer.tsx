@@ -5,6 +5,7 @@ import { useMemo, useEffect, useRef } from "react";
 import { renderEditorialBlockHtml, type EditorialBlock } from "../lib/editorialBlocks";
 import { GlossaryTooltip, GlossaryStyles } from "./GlossaryTooltip";
 import { Tweet } from "./ui/tweet";
+import { NotebookTimeline } from "./NotebookTimeline";
 import {
   type ArticleContentModel,
   glossaryRegex
@@ -12,6 +13,9 @@ import {
 import { useScrollytelling } from "../hooks/useScrollytelling";
 
 function EditorialBlockView({ block }: { block: EditorialBlock }) {
+  if (block.kind === "timeline") {
+    return <NotebookTimeline title={block.title} items={block.items} />;
+  }
   return (
     <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderEditorialBlockHtml(block)) }} />
   );

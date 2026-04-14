@@ -59,6 +59,7 @@ export interface StoryFeature {
     target: number;
     cold: number;
   };
+  audioUrl?: string;
 }
 
 export type StoryTemplateId =

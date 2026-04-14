@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "@/lib/router-compat";
 import { ArrowLeft, ArrowRight, Bell, Repeat2, ShieldQuestion, Sparkles } from "lucide-react";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -123,6 +124,17 @@ export function TransferDossierPage() {
   
   const fromClubInfo = dossier.fromClub ? getClubByName(dossier.fromClub) : null;
   const toClubInfo = getClubByName(dossier.club);
+
+  const radarData = useMemo(() => {
+    if (!dossier?.scoutGrades) return null;
+    return [
+      { subject: "Pace", A: dossier.scoutGrades.pace, fullMark: 10 },
+      { subject: "Final Third", A: dossier.scoutGrades.finalThird, fullMark: 10 },
+      { subject: "Passing", A: dossier.scoutGrades.passing, fullMark: 10 },
+      { subject: "Defensive IQ", A: dossier.scoutGrades.defensiveIQ, fullMark: 10 },
+      { subject: "Physicality", A: dossier.scoutGrades.physicality, fullMark: 10 },
+    ];
+  }, [dossier]);
 
   return (
     <div className="page-atmosphere min-h-screen transition-colors duration-300">
@@ -248,6 +260,46 @@ export function TransferDossierPage() {
             </div>
           </div>
         </section>
+
+        {radarData && radarData.length > 0 && (
+          <section className="mt-10">
+            <div className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8 flex flex-col md:flex-row items-center gap-8">
+              <div className="flex-1 w-full max-w-sm h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+                    <PolarGrid stroke="#16A34A" strokeOpacity={0.2} />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748B', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }} />
+                    <PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} />
+                    <Radar
+                      name="Player"
+                      dataKey="A"
+                      stroke="#16A34A"
+                      fill="#16A34A"
+                      fillOpacity={0.4}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex-1">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">Scouting Profile</p>
+                <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                  Radar Evaluation
+                </h2>
+                <p className="mt-3 text-base leading-7 text-[#64748B] dark:text-gray-400">
+                  This multi-axis plot breaks down the player's underlying profile attributes based on our film room scouting and statistical analysis.
+                </p>
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                    {radarData.map((stat, i) => (
+                      <div key={i} className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-2">
+                        <span className="text-[11px] font-black uppercase tracking-widest text-[#64748B] dark:text-gray-400">{stat.subject}</span>
+                        <span className="text-xl font-black font-outfit text-[#0F172A] dark:text-white">{stat.A}</span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="mt-10">
           <div className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8">

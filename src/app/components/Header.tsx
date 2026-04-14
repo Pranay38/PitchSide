@@ -8,8 +8,10 @@ import { NotificationBell } from "./NotificationBell";
 import { DesktopCommandPalette } from "./DesktopCommandPalette";
 import { SearchModal } from "./SearchModal";
 import { getClubByName } from "../data/clubs";
-import { Heart, House, Menu, Search, X, LogIn, ShieldAlert, User } from "lucide-react";
+import { Heart, House, Menu, Search, X, LogIn, ShieldAlert, User, Briefcase } from "lucide-react";
 import { PillNav } from "./PillNav";
+import { BriefcaseDrawer } from "./BriefcaseDrawer";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 import {
   SignInButton,
   UserButton,
@@ -101,10 +103,12 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [briefcaseOpen, setBriefcaseOpen] = useState(false);
   const [archiveQuery, setArchiveQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { savedPosts } = useUserPreferences();
 
   const club = favoriteClub ? getClubByName(favoriteClub) : null;
   const navLinks = [
@@ -153,6 +157,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   return (
     <>
       <ClubOnboardingModal />
+      <BriefcaseDrawer isOpen={briefcaseOpen} onClose={() => setBriefcaseOpen(false)} />
       {/* Animated gradient accent line at the very top */}
       <div className="gradient-accent-line w-full" />
       <header className={`sticky top-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
@@ -222,6 +227,16 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
             <div className="flex items-center gap-2">
               <ThemeToggle />
+              <button
+                onClick={() => setBriefcaseOpen(true)}
+                className="relative p-2 text-gray-400 hover:text-[#16A34A] hover:bg-[#16A34A]/10 rounded-full transition-colors"
+                aria-label="Open Briefcase"
+              >
+                <Briefcase className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                {savedPosts.length > 0 && (
+                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white dark:border-[#0F172A] rounded-full"></span>
+                )}
+              </button>
               <NotificationBell />
             </div>
           </div>
@@ -285,6 +300,19 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
               <div className="flex items-center gap-3 pt-2 border-t border-gray-200 dark:border-gray-700">
                 <ThemeToggle />
+                <button
+                  onClick={() => {
+                    setBriefcaseOpen(true);
+                    setMobileOpen(false);
+                  }}
+                  className="relative p-2 text-gray-400 hover:text-[#16A34A] hover:bg-[#16A34A]/10 rounded-full transition-colors"
+                  aria-label="Open Briefcase"
+                >
+                  <Briefcase className="w-[18px] h-[18px]" strokeWidth={2.5} />
+                  {savedPosts.length > 0 && (
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white dark:border-[#0F172A] rounded-full"></span>
+                  )}
+                </button>
                 <NotificationBell />
               </div>
             </div>
