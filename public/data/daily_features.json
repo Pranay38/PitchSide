@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-04-14T06:29:10.055935",
+  "lastUpdated": "2026-04-15T06:52:51.965804",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal and Chelsea chase Hall - Tuesday's gossip",
+    "text": "Man Utd watch Bournemouth pair - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 97
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 98
     },
     {
-      "name": "Liam Rosenior (CHE)",
-      "pressureScore": 73
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 87
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 72
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 62
-    },
-    {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 60
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 64
     }
   ]
 }
