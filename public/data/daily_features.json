@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-04-15T06:52:51.965804",
+  "lastUpdated": "2026-04-16T06:54:44.396804",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd watch Bournemouth pair - Wednesday's gossip",
+    "text": "Liverpool lead Senesi race - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Pep Guardiola (MCI)",
-      "pressureScore": 98
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 95
     },
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 87
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 91
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 64
+      "pressureScore": 74
+    },
+    {
+      "name": "Liam Rosenior (CHE)",
+      "pressureScore": 71
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 70
     }
   ]
 }
