@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-04-16T06:54:44.396804",
+  "lastUpdated": "2026-04-17T06:55:29.634032",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool lead Senesi race - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Rashford's Barca future uncertain - Friday's gossip",
+    "sentimentScore": 27
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 95
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 93
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 91
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 90
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 74
+      "pressureScore": 81
     },
     {
-      "name": "Liam Rosenior (CHE)",
-      "pressureScore": 71
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 69
     },
     {
       "name": "Eddie Howe (NEW)",
-      "pressureScore": 70
+      "pressureScore": 61
     }
   ]
 }
