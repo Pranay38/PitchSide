@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 // --- Custom SVG Components for Hand-Drawn Accents ---
 

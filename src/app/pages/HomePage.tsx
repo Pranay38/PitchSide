@@ -561,7 +561,7 @@ export function HomePage() {
                    <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">Every Friday</p>
                  </div>
                  <h2 className="font-outfit text-lg sm:text-2xl font-black text-[#0F172A] dark:text-white leading-tight">
-                   "The modern #10 is dead. Long live the hybrid roaming destroyer."
+                   {siteSettings.authorsTake?.headline || "\"The modern #10 is dead. Long live the hybrid roaming destroyer.\""}
                  </h2>
                </div>
             </div>
@@ -593,7 +593,7 @@ export function HomePage() {
           <div className="max-w-4xl">
             <div className="text-lg text-[#64748B] dark:text-gray-300 leading-relaxed mb-2">
               <p>
-                We've spent the last decade obsessing over positional play and half-spaces. But watching this weekend's fixtures, something clicked: the pure creator is obsolete. Today's elite teams don't need a playmaker; they need an athlete who can destroy transitions to create them. Here's why the 'hybrid destroyer' is the most valuable profile in Europe right now.
+                {siteSettings.authorsTake?.body || "We've spent the last decade obsessing over positional play and half-spaces. But watching this weekend's fixtures, something clicked: the pure creator is obsolete. Today's elite teams don't need a playmaker; they need an athlete who can destroy transitions to create them. Here's why the 'hybrid destroyer' is the most valuable profile in Europe right now."}
               </p>
             </div>
             <ChallengeTheTake />

@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=420, initial-scale=1.0">
+<title>Yamal vs Olise – Who's Better This Season?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Yamal — Blaugrana */
+    --barca:    #004D98;
+    --barca-lt: #2B7BD4;
+    --garnet:   #A50044;
+    --garnet-lt:#D4195A;
+    /* Olise — Bayern */
+    --bayern:   #DC052D;
+    --bayern-lt:#FF2D47;
+    /* Legacy aliases */
+    --red:    #DC052D;
+    --red-lt: #FF2D47;
+    --blue:   #004D98;
+    --blue-lt:#2B7BD4;
+    --gold:   #F0A500;
+    --gold-lt:#FCD34D;
+    --dark:   #060810;
+    --dark2:  #0E1220;
+    --glass:  rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.08);
+    --text:   #E8ECF0;
+    --muted:  rgba(255,255,255,0.55);
+  }
+
+  *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: #010205;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── IG FRAME ───────────────────────────────── */
+  .ig-frame {
+    width: 420px;
+    background: #161616;
+    border-radius: 16px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.8);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .ig-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px 9px;
+    background: #0a0a0a;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .ig-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--red), #FF6B35);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px var(--red), 0 0 0 4px #161616;
+  }
+  .ig-handle { font-size: 13px; font-weight: 600; color: #fff; }
+  .ig-sub    { font-size: 11px; color: #555; }
+  .ig-follow {
+    margin-left: auto;
+    font-size: 12px; font-weight: 600; color: var(--blue-lt);
+    border: 1px solid var(--blue-lt);
+    padding: 4px 12px; border-radius: 20px;
+  }
+
+  /* ── CAROUSEL ──────────────────────────────── */
+  .carousel-viewport {
+    width: 420px;
+    height: 525px;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    touch-action: pan-y;
+  }
+  .carousel-viewport:active { cursor: grabbing; }
+
+  .carousel-track {
+    display: flex;
+    height: 100%;
+    transition: transform .36s cubic-bezier(.4,0,.2,1);
+    will-change: transform;
+  }
+
+  .slide {
+    width: 420px;
+    height: 525px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── SLIDE PROGRESS ─────────────────────────── */
+  .prog {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 10px 26px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 20;
+  }
+  .prog-track {
+    flex: 1; height: 3px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.12);
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%; border-radius: 99px;
+    transition: width 0.5s ease;
+  }
+  .prog-num {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: .5px;
+    white-space: nowrap;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* ── SWIPE ARROW ──────────────────────────────── */
+  .arrow {
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 42px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 15;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .slide.active .arrow { opacity: 1; animation: pulseArrow 2s ease-in-out infinite; }
+  @keyframes pulseArrow {
+    0%,100% { opacity: 0.3; transform: translateX(0); }
+    50% { opacity: 0.6; transform: translateX(3px); }
+  }
+
+  /* ── LEFT BAR ACCENT ──────────────────────────── */
+  .lbar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    z-index: 2;
+  }
+
+  /* ── IG CHROME ─────────────────────────────── */
+  .ig-dots {
+    display: flex; justify-content: center; gap: 5px;
+    padding: 8px 0;
+    background: #161616;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #2A2A2A;
+    transition: background .3s, transform .3s, width .3s;
+  }
+  .dot.active { background: var(--red-lt); transform: scale(1.2); width: 18px; border-radius: 3px; }
+
+  .ig-actions {
+    display: flex; align-items: center; gap: 14px;
+    padding: 8px 14px 6px;
+    background: #161616;
+  }
+  .ig-actions svg { opacity: 0.75; }
+  .ig-bookmark { margin-left: auto; }
+  .ig-caption {
+    padding: 5px 14px 16px;
+    background: #161616;
+    font-size: 12.5px;
+    color: #ccc;
+    line-height: 1.45;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .ig-caption strong { color: #fff; }
+  .hash { color: #3897f0; }
+
+  /* ── ANIMATIONS ─────────────────────────────── */
+  /* Word-by-word reveal */
+  .anim-word {
+    opacity: 0;
+    transform: translateY(12px);
+    display: inline-block;
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .slide.active .anim-word {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Fade-up blocks */
+  .anim-fade {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .slide.active .anim-fade {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Fade-left */
+  .anim-left {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .slide.active .anim-left {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Fade-right */
+  .anim-right {
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .slide.active .anim-right {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Scale-in */
+  .anim-scale {
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .slide.active .anim-scale {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Ken Burns zoom on backgrounds */
+  .ken-burns {
+    transition: transform 4s ease-out;
+    transform: scale(1.0);
+  }
+  .slide.active .ken-burns {
+    transform: scale(1.06);
+  }
+
+  /* Delay classes */
+  .delay-1 { transition-delay: 0.15s !important; }
+  .delay-2 { transition-delay: 0.35s !important; }
+  .delay-3 { transition-delay: 0.55s !important; }
+  .delay-4 { transition-delay: 0.75s !important; }
+  .delay-5 { transition-delay: 0.95s !important; }
+  .delay-6 { transition-delay: 1.15s !important; }
+  .delay-7 { transition-delay: 1.35s !important; }
+  .delay-8 { transition-delay: 1.55s !important; }
+  .delay-9 { transition-delay: 1.75s !important; }
+
+  /* SVG draw-in */
+  .draw-line {
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    transition: stroke-dashoffset 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .slide.active .draw-line {
+    stroke-dashoffset: 0;
+  }
+
+  /* Bar fill */
+  .bar-fill {
+    width: 0% !important;
+    transition: width 1.2s ease;
+  }
+  .slide.active .bar-fill {
+    /* width set via JS */
+  }
+
+  /* Flash border */
+  @keyframes flashBorderBarca {
+    0%,100% { border-color: var(--barca); box-shadow: 0 0 0 transparent; }
+    50% { border-color: var(--garnet-lt); box-shadow: 0 0 18px rgba(0,77,152,0.3); }
+  }
+  @keyframes flashBorderBayern {
+    0%,100% { border-color: var(--bayern); box-shadow: 0 0 0 transparent; }
+    50% { border-color: var(--bayern-lt); box-shadow: 0 0 18px rgba(220,5,45,0.3); }
+  }
+
+  /* ── TAG ──────────────────────────────── */
+  .tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 4px;
+  }
+  .tag-red  { background: rgba(220,5,45,0.2); color: var(--bayern-lt); border: 1px solid rgba(220,5,45,0.35); }
+  .tag-blue { background: rgba(0,77,152,0.25); color: var(--barca-lt); border: 1px solid rgba(0,77,152,0.4); }
+  .tag-barca { background: linear-gradient(135deg, rgba(0,77,152,0.2), rgba(165,0,68,0.2)); color: var(--barca-lt); border: 1px solid rgba(0,77,152,0.35); }
+  .tag-gold { background: rgba(240,165,0,0.12); color: var(--gold-lt); border: 1px solid rgba(240,165,0,0.3); }
+  .tag-muted{ background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.1); }
+
+  /* ── WATERMARK ────────────────────────── */
+  .watermark {
+    position: absolute;
+    top: 14px; left: 0; right: 0;
+    text-align: center;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: rgba(255,255,255,0.18);
+    z-index: 9;
+    pointer-events: none;
+  }
+
+  /* ── REEL CONTROLS ─────────────────────── */
+  .reel-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #0a0a0a;
+  }
+  .reel-btn {
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.7);
+  }
+  .reel-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .reel-btn.active { background: var(--red); border-color: var(--red-lt); color: #fff; }
+
+  /* ── STAT ROW ─────────────────────────── */
+  .stat-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-val {
+    font-size: 24px; font-weight: 700;
+    min-width: 52px;
+    text-align: right;
+  }
+  .stat-label {
+    flex: 1; text-align: center;
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    font-weight: 500;
+  }
+  .stat-winner { color: #fff; }
+  .stat-loser  { color: rgba(255,255,255,0.35); }
+
+  /* ── MOMENT CARD ──────────────────────── */
+  .moment-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    margin-bottom: 8px;
+  }
+  .moment-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .moment-title {
+    font-size: 14px; font-weight: 600; color: #fff;
+    line-height: 1.3;
+  }
+  .moment-sub {
+    font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px;
+  }
+  .moment-score {
+    margin-left: auto;
+    font-size: 18px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ── METRIC ───────────────────────────── */
+  .metric-card {
+    padding: 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+  }
+  .metric-label {
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.45); font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .metric-val {
+    font-size: 24px; font-weight: 700; line-height: 1;
+  }
+  .metric-name {
+    font-size: 10px; color: rgba(255,255,255,0.35); font-weight: 500;
+  }
+  .metric-bar-track {
+    height: 4px; border-radius: 4px;
+    background: rgba(255,255,255,0.08);
+    margin-top: 8px; overflow: hidden;
+  }
+  .metric-bar-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 1.5s ease;
+  }
+
+  /* ── VOTE BUTTONS ──────────────────────── */
+  .vote-btn {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 16px; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .vote-btn-1 {
+    background: linear-gradient(135deg, rgba(0,77,152,0.15), rgba(165,0,68,0.12));
+    border: 1.5px solid var(--barca);
+    color: var(--barca-lt);
+    animation: flashBorderBarca 3s ease-in-out infinite;
+  }
+  .vote-btn-2 {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.6);
+  }
+  .vote-btn-3 {
+    background: rgba(220,5,45,0.12);
+    border: 1.5px solid var(--bayern);
+    color: var(--bayern-lt);
+    animation: flashBorderBayern 3s ease-in-out infinite 1.5s;
+  }
+  .vote-num {
+    font-size: 22px; font-weight: 700;
+    min-width: 28px;
+  }
+
+  /* ── CTA BUTTONS ──────────────────────── */
+  .cta-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--barca), var(--garnet));
+    color: #fff;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,77,152,0.3);
+    transition: all 0.2s;
+  }
+  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,77,152,0.4); }
+  .cta-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 28px;
+    background: transparent;
+    color: rgba(255,255,255,0.6);
+    font-size: 15px; font-weight: 600; letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .cta-ghost:hover { background: rgba(255,255,255,0.06); color: #fff; }
+
+  /* ── AUTO-PLAY PROGRESS ──────────────── */
+  .auto-progress {
+    position: absolute;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--barca), var(--garnet));
+    z-index: 30;
+    width: 0%;
+    transition: none;
+  }
+  .auto-progress.running {
+    transition: width linear;
+  }
+
+  .ig-avatar {
+    background: linear-gradient(135deg, var(--barca), var(--garnet)) !important;
+    box-shadow: 0 0 0 2px var(--barca), 0 0 0 4px #161616 !important;
+  }
+
+  /* ── VIDEO MODE ─────────────────────────── */
+  body.video-mode .ig-header,
+  body.video-mode .reel-controls,
+  body.video-mode .ig-dots,
+  body.video-mode .ig-actions,
+  body.video-mode .ig-caption { display: none !important; }
+  body.video-mode .ig-frame {
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+  }
+  body.video-mode {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #000;
+  }
+</style>
+</head>
+<body>
+
+<div class="ig-frame">
+
+  <!-- Header -->
+  <div class="ig-header">
+    <div class="ig-avatar"><svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="18" fill="none" stroke="white" stroke-width="2"/><text x="20" y="25" text-anchor="middle" font-family="Bebas Neue,sans-serif" font-size="16" font-weight="400" fill="white" letter-spacing="1">TTD</text></svg></div>
+    <div>
+      <div class="ig-handle">@thetouchlinedribble</div>
+      <div class="ig-sub">Football Analytics · Debate</div>
+    </div>
+    <div class="ig-follow">Follow</div>
+  </div>
+
+  <!-- Reel Controls -->
+  <div class="reel-controls">
+    <div class="reel-btn" id="btn-prev" onclick="goTo(current-1)">← Prev</div>
+    <div class="reel-btn active" id="btn-auto" onclick="toggleAutoplay()">▶ Auto-Play</div>
+    <div class="reel-btn" id="btn-next" onclick="goTo(current+1)">Next →</div>
+  </div>
+
+  <!-- Carousel -->
+  <div class="carousel-viewport" id="cv">
+    <div class="auto-progress" id="autoBar"></div>
+    <div class="carousel-track" id="track">
+
+      <!-- ══════════════ SLIDE 1 — HOOK ══════════════ -->
+      <div class="slide active" data-index="0">
+        <div class="ken-burns" style="position:absolute;inset:0;background:
+          radial-gradient(ellipse 80% 60% at 50% 100%, rgba(165,0,68,0.2) 0%, transparent 70%),
+          radial-gradient(ellipse 60% 50% at 20% 50%, rgba(0,77,152,0.18) 0%, transparent 60%),
+          radial-gradient(ellipse 60% 40% at 80% 40%, rgba(220,5,45,0.12) 0%, transparent 50%),
+          linear-gradient(180deg, #08090F 0%, #0D0F1A 100%);"></div>
+
+        <!-- Giant VS background -->
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-56%);font-family:'Bebas Neue';font-size:260px;font-weight:400;color:rgba(255,255,255,0.025);z-index:1;pointer-events:none;">VS</div>
+
+        <!-- Accent lines -->
+        <div class="lbar" style="background:linear-gradient(180deg,var(--barca) 0%,var(--garnet) 60%,transparent 100%);"></div>
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--barca) 0%,var(--garnet) 50%,transparent 100%);z-index:3;"></div>
+
+        <div class="watermark">@thetouchlinedribble</div>
+
+        <div style="position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:flex-end;padding:0 28px 54px;">
+
+          <div class="anim-fade delay-1">
+            <span class="tag tag-red">🔥 Season 2025/26</span>
+          </div>
+
+          <div style="width:32px;height:3px;background:linear-gradient(90deg,var(--red),var(--red-lt));border-radius:2px;margin:12px 0;" class="anim-left delay-2"></div>
+
+          <h1 class="anim-fade delay-2" style="font-family:'Bebas Neue';font-size:38px;font-weight:400;line-height:1.05;letter-spacing:1px;color:#fff;">
+            STOP CALLING YAMAL<br>
+            THE <span style="color:var(--barca-lt);">NEXT MESSI.</span><br>
+            HE'S NOT EVEN<br>
+            BETTER THAN <span style="color:var(--bayern-lt);">OLISE.</span>
+          </h1>
+
+          <p class="anim-fade delay-3" style="margin-top:10px;font-size:14px;font-weight:400;color:rgba(255,255,255,0.65);line-height:1.5;">
+            The stats, the moments, the impact.<br>Swipe before you argue. ⬇️
+          </p>
+
+          <div style="display:flex;gap:6px;margin-top:14px;" class="anim-fade delay-4">
+            <div style="flex:1;padding:10px 8px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;text-transform:uppercase;cursor:pointer;background:linear-gradient(135deg,rgba(0,77,152,0.15),rgba(165,0,68,0.12));border:1px solid rgba(0,77,152,0.4);color:var(--barca-lt);">
+              1️⃣ Yamal
+            </div>
+            <div style="flex:0.8;padding:10px 6px;border-radius:8px;font-size:11px;font-weight:600;text-align:center;text-transform:uppercase;cursor:pointer;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);">
+              2️⃣ Equal
+            </div>
+            <div style="flex:1;padding:10px 8px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;text-transform:uppercase;cursor:pointer;background:rgba(220,5,45,0.15);border:1px solid rgba(220,5,45,0.4);color:var(--bayern-lt);">
+              3️⃣ Olise
+            </div>
+          </div>
+
+          <div style="margin-top:10px;height:1px;background:rgba(255,255,255,0.08);" class="anim-fade delay-5"></div>
+          <p class="anim-fade delay-5" style="margin-top:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);">Champions League · La Liga · Bundesliga · 2025/26</p>
+        </div>
+
+        <div class="prog">
+          <div class="prog-track"><div class="prog-fill" style="width:14.3%;background:linear-gradient(90deg,var(--barca),var(--garnet));"></div></div>
+          <span class="prog-num">1/7</span>
+        </div>
+        <div class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <!-- ══════════════ SLIDE 2 — STATS ══════════════ -->
+      <div class="slide" data-index="1">
+        <div class="ken-burns" style="position:absolute;inset:0;background:
+          radial-gradient(ellipse 70% 40% at 0% 60%, rgba(0,77,152,0.18) 0%, transparent 60%),
+          radial-gradient(ellipse 70% 40% at 100% 60%, rgba(220,5,45,0.15) 0%, transparent 60%),
+          linear-gradient(180deg, #050710 0%, #0A0C18 100%);"></div>
+        <div class="lbar" style="background:linear-gradient(180deg,var(--barca) 0%,var(--bayern) 100%);"></div>
+        <div class="watermark">@thetouchlinedribble</div>
+
+        <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;padding:32px 0 50px;">
+
+          <!-- Header -->
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;padding:0 28px;margin-bottom:14px;" class="anim-fade delay-1">
+            <div>
+              <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--barca-lt);margin-bottom:3px;font-weight:600;">Lamine Yamal</div>
+              <div style="font-family:'Bebas Neue';font-size:24px;color:var(--barca-lt);letter-spacing:1px;">18</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;font-weight:500;">FC BARCELONA</div>
+            </div>
+            <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.3);padding:4px 12px;border:1px solid rgba(255,255,255,0.12);border-radius:20px;">VS</div>
+            <div style="text-align:right;">
+              <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--bayern-lt);margin-bottom:3px;font-weight:600;">Michael Olise</div>
+              <div style="font-family:'Bebas Neue';font-size:24px;color:var(--bayern-lt);letter-spacing:1px;">24</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;font-weight:500;">BAYERN MUNICH</div>
+            </div>
+          </div>
+
+          <div style="padding:0 28px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px;">
+            <style>
+              .bi-row { position: relative; width: 100%; height: 32px; display: flex; align-items: center; margin-bottom: 6px; }
+              .bi-label { position: absolute; left: 50%; transform: translateX(-50%); top: -14px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.6); z-index: 10; }
+              .bi-left { width: 50%; display: flex; justify-content: flex-end; padding-right: 4px; box-sizing: border-box; }
+              .bi-right { width: 50%; display: flex; justify-content: flex-start; padding-left: 4px; box-sizing: border-box; }
+              .bi-bar { height: 12px; border-radius: 6px; position: relative; display: flex; align-items: center; }
+              .bi-val-left { position: absolute; left: -30px; font-size: 13px; font-weight: 700; color: rgba(43,123,212,0.55); }
+              .bi-val-right { position: absolute; right: -30px; font-size: 13px; font-weight: 700; color: rgba(255,45,71,0.55); }
+              .bi-bar.winner .bi-val-left { color: var(--barca-lt); font-size: 15px; text-shadow: 0 0 10px rgba(0,77,152,0.8); }
+              .bi-bar.winner .bi-val-right { color: var(--bayern-lt); font-size: 15px; text-shadow: 0 0 10px rgba(220,5,45,0.8); }
+              .bi-bar-fill-left { background: linear-gradient(90deg, rgba(0,77,152,0.3), var(--barca)); box-shadow: 0 0 8px rgba(0,77,152,0.4); }
+              .bi-bar-fill-right { background: linear-gradient(270deg, rgba(220,5,45,0.3), var(--bayern-lt)); box-shadow: 0 0 8px rgba(220,5,45,0.4); }
+            </style>
+
+            <div class="bi-row anim-scale delay-2">
+              <div class="bi-label">Contributions</div>
+              <div class="bi-left"><div class="bi-bar bi-bar-fill-left" style="width: 79%;"><span class="bi-val-left">23</span></div></div>
+              <div class="bi-right"><div class="bi-bar bi-bar-fill-right winner" style="width: 100%;"><span class="bi-val-right">29</span></div></div>
+            </div>
+            <div class="bi-row anim-scale delay-3">
+              <div class="bi-label">Goals</div>
+              <div class="bi-left"><div class="bi-bar bi-bar-fill-left winner" style="width: 100%;"><span class="bi-val-left">14</span></div></div>
+              <div class="bi-right"><div class="bi-bar bi-bar-fill-right" style="width: 78%;"><span class="bi-val-right">11</span></div></div>
+            </div>
+            <div class="bi-row anim-scale delay-4">
+              <div class="bi-label">Assists</div>
+              <div class="bi-left"><div class="bi-bar bi-bar-fill-left" style="width: 50%;"><span class="bi-val-left">9</span></div></div>
+              <div class="bi-right"><div class="bi-bar bi-bar-fill-right winner" style="width: 100%;"><span class="bi-val-right">18</span></div></div>
+            </div>
+            <div class="bi-row anim-scale delay-5">
+              <div class="bi-label">G+A per 90</div>
+              <div class="bi-left"><div class="bi-bar bi-bar-fill-left" style="width: 74%;"><span class="bi-val-left">0.97</span></div></div>
+              <div class="bi-right"><div class="bi-bar bi-bar-fill-right winner" style="width: 100%;"><span class="bi-val-right">1.30</span></div></div>
+            </div>
+            <div class="bi-row anim-scale delay-6">
+              <div class="bi-label">Shots per 90</div>
+              <div class="bi-left"><div class="bi-bar bi-bar-fill-left winner" style="width: 100%;"><span class="bi-val-left">4.48</span></div></div>
+              <div class="bi-right"><div class="bi-bar bi-bar-fill-right" style="width: 57%;"><span class="bi-val-right">2.58</span></div></div>
+            </div>
+            <div class="bi-row anim-scale delay-7" style="margin-bottom:0;">
+              <div class="bi-label">SoT per 90</div>
+              <div class="bi-left"><div class="bi-bar bi-bar-fill-left" style="width: 55%;"><span class="bi-val-left">1.44</span></div></div>
+              <div class="bi-right"><div class="bi-bar bi-bar-fill-right winner" style="width: 100%;"><span class="bi-val-right">2.58</span></div></div>
+            </div>
+
+            <div style="margin-top:14px;text-align:center;" class="anim-scale delay-8">
+              <span class="tag tag-gold" style="font-size:10px;">⚡ Numbers this season: Olise leads G/A, Yamal shoots more.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="prog">
+          <div class="prog-track"><div class="prog-fill" style="width:28.6%;background:linear-gradient(90deg,var(--barca),var(--bayern));"></div></div>
+          <span class="prog-num">2/7</span>
+        </div>
+        <div class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <!-- ══════════════ SLIDE 3 — TACTICAL ══════════════ -->
+      <div class="slide" data-index="2">
+        <div class="ken-burns" style="position:absolute;inset:0;background:
+          radial-gradient(ellipse 100% 70% at 50% 100%, rgba(0,77,152,0.15) 0%, transparent 65%),
+          radial-gradient(ellipse 60% 40% at 80% 30%, rgba(220,5,45,0.1) 0%, transparent 50%),
+          linear-gradient(180deg, #07080E 0%, #0C0F1B 100%);"></div>
+        <div class="lbar" style="background:linear-gradient(180deg,var(--gold) 0%,transparent 60%);"></div>
+        <div class="watermark">@thetouchlinedribble</div>
+
+        <!-- Pitch diagram -->
+        <div style="position:absolute;top:50px;left:50%;transform:translateX(-50%);z-index:2;width:360px;height:220px;">
+          <svg viewBox="0 0 360 220" width="360" height="220" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="4" width="352" height="212" rx="4" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" class="anim-scale delay-1"/>
+            <line x1="180" y1="4" x2="180" y2="216" stroke="rgba(255,255,255,0.08)" stroke-width="1" class="anim-scale delay-1"/>
+            <circle cx="180" cy="110" r="30" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" class="anim-scale delay-1"/>
+            <rect x="4" y="62" width="54" height="96" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <rect x="302" y="62" width="54" height="96" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+            <!-- Yamal zones (Blaugrana) -->
+            <ellipse cx="290" cy="80" rx="40" ry="28" fill="rgba(0,77,152,0.25)" class="anim-scale delay-2"/>
+            <ellipse cx="290" cy="140" rx="35" ry="22" fill="rgba(165,0,68,0.18)" class="anim-scale delay-2"/>
+            <!-- Yamal arrows -->
+            <path d="M 260 85 Q 230 75 195 100" fill="none" stroke="var(--barca-lt)" stroke-width="2" stroke-dasharray="4 3" class="draw-line delay-4" id="y-arrow-1"/>
+            <path d="M 260 140 Q 240 150 210 135" fill="none" stroke="var(--garnet-lt)" stroke-width="2" stroke-dasharray="4 3" class="draw-line delay-5" id="y-arrow-2"/>
+
+            <!-- Olise zones (Bayern) -->
+            <ellipse cx="70" cy="75" rx="40" ry="28" fill="rgba(220,5,45,0.22)" class="anim-scale delay-3"/>
+            <ellipse cx="90" cy="130" rx="45" ry="25" fill="rgba(220,5,45,0.14)" class="anim-scale delay-3"/>
+            <!-- Olise arrows -->
+            <path d="M 100 75 Q 150 65 200 95" fill="none" stroke="var(--bayern-lt)" stroke-width="2" stroke-dasharray="4 3" class="draw-line delay-6" id="o-arrow-1"/>
+            <path d="M 120 135 Q 165 125 195 115" fill="none" stroke="var(--bayern-lt)" stroke-width="2" stroke-dasharray="4 3" class="draw-line delay-7" id="o-arrow-2"/>
+
+            <!-- Player dots -->
+            <circle cx="290" cy="80" r="8" fill="var(--barca)" class="anim-scale delay-2"/>
+            <circle cx="70" cy="75" r="8" fill="var(--bayern-lt)" class="anim-scale delay-3"/>
+            <text x="290" y="84" text-anchor="middle" font-family="Outfit" font-size="9" fill="white" font-weight="700" class="anim-scale delay-2">Y</text>
+            <text x="70" y="79" text-anchor="middle" font-family="Outfit" font-size="9" fill="white" font-weight="700" class="anim-scale delay-3">O</text>
+          </svg>
+        </div>
+
+        <!-- Legend -->
+        <div style="position:absolute;top:44px;left:28px;z-index:3;" class="anim-fade delay-1">
+          <span class="tag tag-muted">🎯 Tactical Zones</span>
+        </div>
+
+        <div style="position:absolute;bottom:0;left:0;right:0;z-index:3;padding:0 28px 54px;">
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <div class="anim-left delay-4" style="flex:1;padding:10px 12px;background:linear-gradient(135deg,rgba(0,77,152,0.1),rgba(165,0,68,0.08));border:1px solid rgba(0,77,152,0.25);border-radius:10px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--barca);flex-shrink:0;"></div>
+                <span style="font-size:12px;font-weight:700;color:var(--barca-lt);text-transform:uppercase;letter-spacing:0.5px;">Yamal</span>
+              </div>
+              <p style="font-size:11px;color:rgba(255,255,255,0.6);line-height:1.4;">More aggressive & individual. <strong style="color:rgba(255,255,255,0.8);">Direct scorer & dribbler.</strong></p>
+            </div>
+            <div class="anim-right delay-4" style="flex:1;padding:10px 12px;background:rgba(220,5,45,0.1);border:1px solid rgba(220,5,45,0.25);border-radius:10px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:var(--bayern-lt);flex-shrink:0;"></div>
+                <span style="font-size:12px;font-weight:700;color:var(--bayern-lt);text-transform:uppercase;letter-spacing:0.5px;">Olise</span>
+              </div>
+              <p style="font-size:11px;color:rgba(255,255,255,0.6);line-height:1.4;">Controls games safely. <strong style="color:rgba(255,255,255,0.8);">Creator & playmaker.</strong></p>
+            </div>
+          </div>
+
+          <div class="anim-fade delay-5" style="padding:10px 14px;background:rgba(240,165,0,0.07);border:1px solid rgba(240,165,0,0.18);border-radius:8px;text-align:center;">
+            <span style="font-size:12px;color:rgba(255,255,255,0.7);font-style:italic;line-height:1.4;">
+              "Yamal creates danger through dribbling.<br>Olise controls through passing." 🎯
+            </span>
+          </div>
+        </div>
+
+        <div class="prog">
+          <div class="prog-track"><div class="prog-fill" style="width:42.9%;background:linear-gradient(90deg,var(--red),var(--gold));"></div></div>
+          <span class="prog-num">3/7</span>
+        </div>
+        <div class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <!-- ══════════════ SLIDE 4 — CLUTCH MOMENTS ══════════════ -->
+      <div class="slide" data-index="3">
+        <div class="ken-burns" style="position:absolute;inset:0;background:
+          radial-gradient(ellipse 80% 60% at 50% 100%, rgba(220,5,45,0.18) 0%, transparent 65%),
+          radial-gradient(ellipse 50% 40% at 20% 40%, rgba(0,77,152,0.12) 0%, transparent 50%),
+          linear-gradient(170deg, #060810 0%, #0B0D1A 100%);"></div>
+        <div class="lbar" style="background:linear-gradient(180deg,var(--bayern) 0%,var(--barca) 80%,transparent 100%);"></div>
+        <div class="watermark">@thetouchlinedribble</div>
+
+        <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;padding:34px 0 50px;">
+          <div style="padding:0 28px;margin-bottom:12px;" class="anim-fade delay-1">
+            <span class="tag tag-blue">🧐 Deep Dive</span>
+            <h2 style="font-family:'Bebas Neue';font-size:30px;font-weight:400;letter-spacing:1px;color:#fff;margin-top:10px;line-height:1.05;">
+              ADVANCED<br><span style="color:var(--blue-lt);">COMPARISON</span>
+            </h2>
+          </div>
+
+          <div style="padding:0 28px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
+            <svg width="240" height="230" viewBox="0 0 220 230" style="overflow:visible;" class="anim-scale delay-2">
+              <!-- Grid background -->
+              <!-- Outer pentagon -->
+              <polygon points="110,10 205,79 169,191 51,191 15,79" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+              <!-- Inner pentagon 1 (66%) -->
+              <polygon points="110,43 173,89 149,164 71,164 47,89" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+              <!-- Inner pentagon 2 (33%) -->
+              <polygon points="110,77 141,100 129,137 91,137 79,100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              <!-- Axes -->
+              <line x1="110" y1="110" x2="110" y2="10" stroke="rgba(255,255,255,0.1)" />
+              <line x1="110" y1="110" x2="205" y2="79" stroke="rgba(255,255,255,0.1)" />
+              <line x1="110" y1="110" x2="169" y2="191" stroke="rgba(255,255,255,0.1)" />
+              <line x1="110" y1="110" x2="51" y2="191" stroke="rgba(255,255,255,0.1)" />
+              <line x1="110" y1="110" x2="15" y2="79" stroke="rgba(255,255,255,0.1)" />
+
+              <!-- Labels -->
+              <text x="110" y="-6" fill="rgba(255,255,255,0.7)" font-size="10" font-weight="700" text-anchor="middle" text-transform="uppercase" letter-spacing="1">1v1 Threat</text>
+              <text x="210" y="82" fill="rgba(255,255,255,0.7)" font-size="10" font-weight="700" text-anchor="start" text-transform="uppercase" letter-spacing="1">Carries</text>
+              <text x="174" y="206" fill="rgba(255,255,255,0.7)" font-size="10" font-weight="700" text-anchor="middle" text-transform="uppercase" letter-spacing="1">Pressing</text>
+              <text x="46" y="206" fill="rgba(255,255,255,0.7)" font-size="10" font-weight="700" text-anchor="middle" text-transform="uppercase" letter-spacing="1">Consistency</text>
+              <text x="10" y="82" fill="rgba(255,255,255,0.7)" font-size="10" font-weight="700" text-anchor="end" text-transform="uppercase" letter-spacing="1">Playmaking</text>
+
+              <!-- Yamal Polygon -->
+              <polygon points="110,10 195,85 134,153 86,153 43,88" fill="rgba(0,77,152,0.4)" stroke="var(--barca-lt)" stroke-width="2.5" class="anim-fade delay-3"/>
+              <!-- Olise Polygon -->
+              <polygon points="110,40 176,90 157,185 63,185 15,79" fill="rgba(220,5,45,0.5)" stroke="var(--bayern-lt)" stroke-width="2.5" class="anim-fade delay-4"/>
+              
+              <!-- Center Dot -->
+              <circle cx="110" cy="110" r="3" fill="#fff" opacity="0.5"/>
+            </svg>
+
+            <!-- Legend Grid -->
+            <div style="display:flex;gap:16px;width:100%;margin-top:20px;" class="anim-fade delay-5">
+              <div style="flex:1;text-align:center;padding:12px 8px;background:rgba(0,77,152,0.15);border:1px solid rgba(0,77,152,0.3);border-radius:10px;">
+                <div style="font-size:15px;font-weight:700;color:var(--barca-lt);margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--barca-lt);"></div>Yamal
+                </div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.6);">Chaotic Threat</div>
+              </div>
+              <div style="flex:1;text-align:center;padding:12px 8px;background:rgba(220,5,45,0.15);border:1px solid rgba(220,5,45,0.3);border-radius:10px;">
+                <div style="font-size:15px;font-weight:700;color:var(--bayern-lt);margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:6px;">
+                  <div style="width:8px;height:8px;border-radius:50%;background:var(--bayern-lt);"></div>Olise
+                </div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.6);">Complete Orchestrator</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prog">
+          <div class="prog-track"><div class="prog-fill" style="width:57.1%;background:linear-gradient(90deg,var(--bayern),var(--bayern-lt));"></div></div>
+          <span class="prog-num">4/7</span>
+        </div>
+        <div class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <!-- ══════════════ SLIDE 5 — ADVANCED METRICS ══════════════ -->
+      <div class="slide" data-index="4">
+        <div class="ken-burns" style="position:absolute;inset:0;background:
+          radial-gradient(ellipse 90% 80% at 50% 110%, rgba(240,165,0,0.1) 0%, transparent 60%),
+          radial-gradient(ellipse 60% 50% at 0% 0%, rgba(0,77,152,0.12) 0%, transparent 50%),
+          radial-gradient(ellipse 50% 40% at 100% 0%, rgba(220,5,45,0.1) 0%, transparent 50%),
+          linear-gradient(180deg, #08090F 0%, #0E1018 100%);"></div>
+        <div class="lbar" style="background:linear-gradient(180deg,var(--gold) 0%,transparent 60%);"></div>
+        <div class="watermark">@thetouchlinedribble</div>
+
+        <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;padding:32px 28px 52px;">
+          <div class="anim-fade delay-1" style="margin-bottom:12px;">
+            <span class="tag tag-gold">🏅 Head to Head</span>
+            <h2 style="font-family:'Bebas Neue';font-size:28px;font-weight:400;letter-spacing:1px;color:#fff;margin-top:10px;line-height:1.05;">
+              WHO IS<br><span style="color:var(--gold-lt);">BETTER?</span>
+            </h2>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:14px;width:100%;" class="anim-fade delay-2">
+            
+            <div style="display:flex;align-items:center;background:linear-gradient(90deg, rgba(255,255,255,0.04), transparent);padding:12px 16px;border-left:4px solid var(--barca-lt);border-radius:0 8px 8px 0;">
+              <div style="font-size:20px;margin-right:14px;text-shadow:0 0 10px rgba(0,77,152,0.8);">⚡</div>
+              <div style="flex:1;">
+                <div style="font-size:10px;text-transform:uppercase;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:2px;">1v1 Ability & Chaotic Threat</div>
+                <div style="font-size:15px;font-weight:700;color:var(--barca-lt);">Lamine Yamal</div>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;background:linear-gradient(90deg, rgba(255,255,255,0.04), transparent);padding:12px 16px;border-left:4px solid var(--bayern-lt);border-radius:0 8px 8px 0;">
+              <div style="font-size:20px;margin-right:14px;text-shadow:0 0 10px rgba(220,5,45,0.8);">🧠</div>
+              <div style="flex:1;">
+                <div style="font-size:10px;text-transform:uppercase;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:2px;">Playmaking & Consistency</div>
+                <div style="font-size:15px;font-weight:700;color:var(--bayern-lt);">Michael Olise</div>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;background:linear-gradient(90deg, rgba(255,255,255,0.04), transparent);padding:12px 16px;border-left:4px solid var(--barca-lt);border-radius:0 8px 8px 0;">
+              <div style="font-size:20px;margin-right:14px;text-shadow:0 0 10px rgba(0,77,152,0.8);">📈</div>
+              <div style="flex:1;">
+                <div style="font-size:10px;text-transform:uppercase;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:2px;">Long-term Ceiling</div>
+                <div style="font-size:15px;font-weight:700;color:var(--barca-lt);">Lamine Yamal</div>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;background:linear-gradient(90deg, rgba(255,255,255,0.04), transparent);padding:12px 16px;border-left:4px solid var(--bayern-lt);border-radius:0 8px 8px 0;">
+              <div style="font-size:20px;margin-right:14px;text-shadow:0 0 10px rgba(220,5,45,0.8);">🏆</div>
+              <div style="flex:1;">
+                <div style="font-size:10px;text-transform:uppercase;color:rgba(255,255,255,0.5);letter-spacing:1px;margin-bottom:2px;">Complete Player Right Now</div>
+                <div style="font-size:15px;font-weight:700;color:var(--bayern-lt);">Michael Olise</div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="anim-fade delay-5" style="padding:10px 14px;background:rgba(240,165,0,0.07);border:1px solid rgba(240,165,0,0.2);border-radius:10px;">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-lt);margin-bottom:4px;font-weight:600;">⚖️ Verdict</div>
+            <p style="font-size:11px;color:rgba(255,255,255,0.75);line-height:1.4;font-style:italic;">Olise is more polished right now. Yamal is close despite being six years younger, and his long-term potential is probably higher.</p>
+          </div>
+        </div>
+
+        <div class="prog">
+          <div class="prog-track"><div class="prog-fill" style="width:71.4%;background:linear-gradient(90deg,var(--gold),var(--gold-lt));"></div></div>
+          <span class="prog-num">5/7</span>
+        </div>
+        <div class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <!-- ══════════════ SLIDE 6 — VOTE ══════════════ -->
+      <div class="slide" data-index="5">
+        <div class="ken-burns" style="position:absolute;inset:0;background:
+          radial-gradient(ellipse 80% 80% at 30% 60%, rgba(0,77,152,0.15) 0%, transparent 65%),
+          radial-gradient(ellipse 60% 60% at 80% 40%, rgba(220,5,45,0.12) 0%, transparent 50%),
+          linear-gradient(180deg, #06080E 0%, #0C0E1C 100%);"></div>
+        <div class="lbar" style="background:linear-gradient(180deg,var(--barca) 0%,var(--bayern) 100%);"></div>
+        <div class="watermark">@thetouchlinedribble</div>
+
+        <!-- Big VS background -->
+        <div style="position:absolute;top:30px;left:50%;transform:translateX(-50%);z-index:1;font-family:'Bebas Neue';font-size:200px;color:rgba(255,255,255,0.025);pointer-events:none;">VS</div>
+
+        <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;padding:42px 28px 64px;justify-content:space-between;">
+
+          <div class="anim-fade delay-1">
+            <span class="tag tag-red">🗳️ Cast Your Vote</span>
+          </div>
+
+          <div>
+            <h2 class="anim-fade delay-2" style="font-family:'Bebas Neue';font-size:40px;font-weight:400;letter-spacing:1px;line-height:1.05;color:#fff;margin-bottom:18px;">
+              WHO'S<br>
+              <span style="color:var(--garnet-lt);">BETTER</span><br>
+              THIS SEASON?
+            </h2>
+
+            <div class="vote-btn vote-btn-1 anim-left delay-3">
+              <span class="vote-num">1️⃣</span>
+              <span style="flex:1;font-size:17px;">Lamine Yamal</span>
+              <span style="font-size:12px;opacity:0.6;">La Liga · Barca</span>
+            </div>
+            <div class="vote-btn vote-btn-2 anim-left delay-4">
+              <span class="vote-num">2️⃣</span>
+              <span style="flex:1;font-size:17px;">They're Equal</span>
+              <span style="font-size:12px;opacity:0.5;">Hot take 🤷</span>
+            </div>
+            <div class="vote-btn vote-btn-3 anim-left delay-5">
+              <span class="vote-num">3️⃣</span>
+              <span style="flex:1;font-size:17px;">Michael Olise</span>
+              <span style="font-size:12px;opacity:0.6;">Bundesliga · Bayern</span>
+            </div>
+          </div>
+
+          <div class="anim-fade delay-6" style="text-align:center;">
+            <p style="font-size:13px;color:rgba(255,255,255,0.45);letter-spacing:1.5px;text-transform:uppercase;font-weight:500;">Drop 1, 2 or 3 in the comments 👇</p>
+          </div>
+        </div>
+
+        <div class="prog">
+          <div class="prog-track"><div class="prog-fill" style="width:85.7%;background:linear-gradient(90deg,var(--barca),var(--bayern));"></div></div>
+          <span class="prog-num">6/7</span>
+        </div>
+        <div class="arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+
+      <!-- ══════════════ SLIDE 7 — CTA ══════════════ -->
+      <div class="slide" data-index="6">
+        <div class="ken-burns" style="position:absolute;inset:0;background:
+          radial-gradient(ellipse 100% 100% at 50% 100%, rgba(0,77,152,0.3) 0%, transparent 55%),
+          radial-gradient(ellipse 80% 60% at 50% 0%, rgba(165,0,68,0.2) 0%, transparent 55%),
+          linear-gradient(180deg, #06080E 0%, #0D0F1C 100%);"></div>
+
+
+        <!-- Glow rings -->
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-62%);width:280px;height:280px;border-radius:50%;border:1px solid rgba(0,77,152,0.18);box-shadow:0 0 80px rgba(0,77,152,0.12),inset 0 0 80px rgba(165,0,68,0.06);z-index:1;"></div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-62%);width:200px;height:200px;border-radius:50%;border:1px solid rgba(165,0,68,0.22);z-index:1;"></div>
+
+        <!-- Top line -->
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--barca),var(--garnet),transparent);z-index:5;"></div>
+
+        <div style="position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 28px;text-align:center;padding-bottom:54px;">
+
+          <div class="anim-scale delay-1" style="width:72px;height:72px;border-radius:50%;overflow:hidden;margin-bottom:22px;box-shadow:0 0 40px rgba(0,77,152,0.4);">
+            <img src="logo.png" alt="The Touchline Dribble" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+
+          <div class="anim-fade delay-2" style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:12px;font-weight:500;">
+            @thetouchlinedribble
+          </div>
+
+          <h2 class="anim-fade delay-3" style="font-family:'Bebas Neue';font-size:40px;font-weight:400;letter-spacing:1px;line-height:1.05;color:#fff;margin-bottom:8px;">
+            WHO<br>
+            <span style="color:var(--garnet-lt);">ACTUALLY</span><br>
+            WINS?
+          </h2>
+
+          <p class="anim-fade delay-4" style="font-size:14px;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:18px;max-width:280px;">
+            Yamal is a generational talent.<br>
+            Olise is a different level of scary.<br>
+            <strong style="color:rgba(255,255,255,0.75);">The debate never ends.</strong>
+          </p>
+
+          <div class="anim-fade delay-5" style="padding:10px 18px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:10px;margin-bottom:16px;width:100%;">
+            <p style="font-size:14px;color:rgba(255,255,255,0.65);">
+              Comment <strong style="color:var(--barca-lt);">1</strong> · <strong style="color:rgba(255,255,255,0.6);">2</strong> · <strong style="color:var(--bayern-lt);">3</strong> — Who do you pick?
+            </p>
+          </div>
+
+          <div class="anim-fade delay-6" style="display:flex;gap:12px;width:100%;">
+            <div class="cta-btn" style="flex:1;">Follow 🔔</div>
+            <div class="cta-ghost" style="flex:1;">Share ↗</div>
+          </div>
+
+          <div class="anim-fade delay-7" style="margin-top:18px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);">
+            Season 2025/26 · The Touchline Dribble
+          </div>
+        </div>
+
+        <div class="prog">
+          <div class="prog-track"><div class="prog-fill" style="width:100%;background:linear-gradient(90deg,var(--barca),var(--garnet));"></div></div>
+          <span class="prog-num">7/7</span>
+        </div>
+      </div>
+
+    </div><!-- /track -->
+  </div><!-- /viewport -->
+
+  <!-- Dots -->
+  <div class="ig-dots" id="dots">
+    <div class="dot active" data-i="0"></div>
+    <div class="dot" data-i="1"></div>
+    <div class="dot" data-i="2"></div>
+    <div class="dot" data-i="3"></div>
+    <div class="dot" data-i="4"></div>
+    <div class="dot" data-i="5"></div>
+    <div class="dot" data-i="6"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="ig-actions">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    <svg class="ig-bookmark" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+  </div>
+
+  <div class="ig-caption">
+    <strong>@thetouchlinedribble</strong> Yamal or Olise? The debate that broke the internet 🔥 Drop 1, 2 or 3 👇 <span class="hash">#Yamal #Olise #Football #LaLiga #Bundesliga</span>
+    <span style="color:rgba(255,255,255,0.3);font-size:11px;"> · 2h</span>
+  </div>
+</div>
+
+<script>
+const track   = document.getElementById('track');
+const dots    = document.querySelectorAll('.dot');
+const slides  = document.querySelectorAll('.slide');
+const autoBar = document.getElementById('autoBar');
+const total   = slides.length;
+let current   = 0;
+let startX    = 0;
+let isDragging= false;
+let dx        = 0;
+let autoplayTimer = null;
+let autoplayRunning = false;
+const SLIDE_DURATION = 5000; // 5 seconds per slide
+const isVideoMode = new URLSearchParams(window.location.search).has('video');
+
+if (isVideoMode) {
+  document.body.classList.add('video-mode');
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= total) {
+    if (autoplayRunning && idx >= total) {
+      stopAutoplay(); // Stop at end in video mode
+      return;
+    }
+    return;
+  }
+
+  // Pause old slide
+  slides[current].classList.remove('active');
+  dots[current].classList.remove('active');
+
+  current = idx;
+
+  // Activate new slide
+  slides[current].classList.add('active');
+  dots[current].classList.add('active');
+
+  track.style.transform = `translateX(${-current * 420}px)`;
+
+  // Trigger bar fills on slide 5 (index 4)
+  if (current === 4) {
+    setTimeout(() => {
+      document.querySelectorAll('.metric-bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.target + '%';
+      });
+    }, 600);
+  } else {
+    // Reset bars when leaving
+    document.querySelectorAll('.metric-bar-fill').forEach(bar => {
+      bar.style.width = '0%';
+    });
+  }
+
+  // Auto-play progress bar
+  if (autoplayRunning) {
+    startAutoProgress();
+  }
+}
+
+function startAutoProgress() {
+  autoBar.classList.remove('running');
+  autoBar.style.width = '0%';
+  
+  // Force reflow
+  autoBar.offsetHeight;
+  
+  autoBar.classList.add('running');
+  autoBar.style.transitionDuration = SLIDE_DURATION + 'ms';
+  autoBar.style.width = '100%';
+}
+
+function toggleAutoplay() {
+  const btn = document.getElementById('btn-auto');
+  if (autoplayRunning) {
+    stopAutoplay();
+    btn.textContent = '▶ Auto-Play';
+    btn.classList.remove('active');
+  } else {
+    startAutoplay();
+    btn.textContent = '⏸ Pause';
+    btn.classList.add('active');
+  }
+}
+
+function startAutoplay() {
+  autoplayRunning = true;
+  startAutoProgress();
+  autoplayTimer = setInterval(() => {
+    goTo(current + 1);
+  }, SLIDE_DURATION);
+}
+
+function stopAutoplay() {
+  autoplayRunning = false;
+  clearInterval(autoplayTimer);
+  autoBar.classList.remove('running');
+  autoBar.style.width = '0%';
+}
+
+// Touch / drag
+const vp = document.getElementById('cv');
+vp.addEventListener('mousedown', e => { isDragging=true; startX=e.clientX; track.style.transition='none'; if(autoplayRunning) stopAutoplay(); });
+vp.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  dx = e.clientX - startX;
+  track.style.transform = `translateX(${-current*420 + dx}px)`;
+});
+vp.addEventListener('mouseup', e => {
+  if (!isDragging) return;
+  isDragging=false;
+  track.style.transition='transform 0.36s cubic-bezier(.4,0,.2,1)';
+  if (dx < -50) goTo(current+1);
+  else if (dx > 50) goTo(current-1);
+  else track.style.transform=`translateX(${-current*420}px)`;
+  dx=0;
+});
+vp.addEventListener('mouseleave', e => {
+  if (!isDragging) return;
+  isDragging=false;
+  track.style.transition='transform 0.36s cubic-bezier(.4,0,.2,1)';
+  if (dx < -50) goTo(current+1);
+  else if (dx > 50) goTo(current-1);
+  else track.style.transform=`translateX(${-current*420}px)`;
+  dx=0;
+});
+vp.addEventListener('touchstart', e => { startX=e.touches[0].clientX; track.style.transition='none'; if(autoplayRunning) { stopAutoplay(); document.getElementById('btn-auto').textContent='▶ Auto-Play'; document.getElementById('btn-auto').classList.remove('active'); } }, {passive:true});
+vp.addEventListener('touchmove',  e => {
+  dx = e.touches[0].clientX - startX;
+  track.style.transform=`translateX(${-current*420+dx}px)`;
+}, {passive:true});
+vp.addEventListener('touchend', e => {
+  track.style.transition='transform 0.36s cubic-bezier(.4,0,.2,1)';
+  if (dx<-50) goTo(current+1);
+  else if(dx>50) goTo(current-1);
+  else track.style.transform=`translateX(${-current*420}px)`;
+  dx=0;
+});
+
+// Dots click
+dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.i)));
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight') goTo(current+1);
+  if (e.key==='ArrowLeft')  goTo(current-1);
+  if (e.key===' ') { e.preventDefault(); toggleAutoplay(); }
+});
+
+// Init
+goTo(0);
+
+// Auto-start in video mode
+if (isVideoMode) {
+  setTimeout(() => { startAutoplay(); }, 800);
+}
+</script>
+</body>
+</html>

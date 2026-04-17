@@ -18,54 +18,88 @@ export function LeaderboardPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // In a real app we'd fetch this from a /api/leaderboard endpoint connected to MongoDB
-  // For the MVP, we'll simulate the top predictors to drive engagement, and fetch 
-  // the current user's actual local score to insert them into the list.
+  // Fetch leaderboard data from the real API (MongoDB-backed)
+  // Falls back to local predictor score if API is unavailable
   useEffect(() => {
     let isMounted = true;
     
-    setTimeout(() => {
-        if (!isMounted) return;
-        
-        // Get user's local score if they've played
-        let userScore = 0;
-        let userTotal = 0;
+    const fetchLeaderboard = async () => {
+      try {
+        // Get user's local Clerk ID or session ID for personalization
+        let userId = "";
         try {
-           const localData = JSON.parse(localStorage.getItem("pitchside_predictor_state") || "{}");
-           userScore = localData.score || 0;
-           userTotal = (localData.correctIds?.length || 0) + (localData.incorrectIds?.length || 0) + userScore; 
-           // rough estimate for total played if score is just correct points
-        } catch(e) {}
-        
-        const mockData: LeaderboardEntry[] = [
-            { sessionId: "1", name: "TacticsNerd99", score: 850, totalPredictions: 142, accuracy: 68 },
-            { sessionId: "2", name: "xG_Enthusiast", score: 720, totalPredictions: 110, accuracy: 62 },
-            { sessionId: "3", name: "FalseNine", score: 690, totalPredictions: 135, accuracy: 55 },
-            { sessionId: "4", name: "Kloppite88", score: 550, totalPredictions: 89, accuracy: 58 },
-            { sessionId: "5", name: "WengerOut", score: 420, totalPredictions: 90, accuracy: 46 },
-            { sessionId: "6", name: "SetPieceGuru", score: 380, totalPredictions: 60, accuracy: 63 },
-            { sessionId: "7", name: "TikiTakaTom", score: 310, totalPredictions: 45, accuracy: 66 },
-            { sessionId: "8", name: "VAR_Lover", score: 290, totalPredictions: 50, accuracy: 56 },
-            { sessionId: "9", name: "B2B_Mid", score: 210, totalPredictions: 40, accuracy: 50 },
-            { sessionId: "10", name: "SweeperKeeper", score: 180, totalPredictions: 25, accuracy: 72 },
-        ];
-        
-        // Inject user if they have points
-        if (userScore > 0) {
-            mockData.push({
-                sessionId: "you",
-                name: "You",
-                score: userScore * 10, // Match the scale
-                totalPredictions: Math.max(userTotal, userScore),
-                accuracy: Math.round((userScore / Math.max(userTotal, userScore, 1)) * 100)
-            });
-            mockData.sort((a,b) => b.score - a.score);
-        }
-        
-        setLeaderboard(mockData.slice(0, 10)); // Top 10
-        setLoading(false);
-    }, 600);
+          const localData = JSON.parse(localStorage.getItem("pitchside_predictor_state") || "{}");
+          userId = localData.userId || "";
+        } catch {}
 
+        const url = userId 
+          ? `/api/predictions?userId=${encodeURIComponent(userId)}` 
+          : "/api/predictions";
+        
+        const res = await fetch(url);
+        
+        if (res.ok) {
+          const data = await res.json();
+          
+          if (data.leaderboard && data.leaderboard.length > 0) {
+            // Map API response to component's expected shape
+            const entries: LeaderboardEntry[] = data.leaderboard.map((entry: any, i: number) => ({
+              sessionId: entry.userId || String(i),
+              name: entry.username || `Player ${i + 1}`,
+              score: entry.totalPoints || 0,
+              totalPredictions: entry.totalPicks || 0,
+              accuracy: entry.accuracy || 0,
+            }));
+
+            // Inject user's local score if they have one and aren't already in the list
+            try {
+              const localData = JSON.parse(localStorage.getItem("pitchside_predictor_state") || "{}");
+              const userScore = localData.score || 0;
+              if (userScore > 0 && !entries.some(e => e.sessionId === userId)) {
+                const userTotal = Math.max((localData.correctIds?.length || 0) + (localData.incorrectIds?.length || 0), userScore);
+                entries.push({
+                  sessionId: "you",
+                  name: "You",
+                  score: userScore * 10,
+                  totalPredictions: userTotal,
+                  accuracy: Math.round((userScore / Math.max(userTotal, 1)) * 100),
+                });
+                entries.sort((a, b) => b.score - a.score);
+              }
+            } catch {}
+
+            if (isMounted) {
+              setLeaderboard(entries.slice(0, 10));
+              setLoading(false);
+            }
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch leaderboard:", error);
+      }
+      
+      // Fallback: show user's local score if API returned nothing
+      if (isMounted) {
+        try {
+          const localData = JSON.parse(localStorage.getItem("pitchside_predictor_state") || "{}");
+          const userScore = localData.score || 0;
+          if (userScore > 0) {
+            const userTotal = Math.max((localData.correctIds?.length || 0) + (localData.incorrectIds?.length || 0), userScore);
+            setLeaderboard([{
+              sessionId: "you",
+              name: "You",
+              score: userScore * 10,
+              totalPredictions: userTotal,
+              accuracy: Math.round((userScore / Math.max(userTotal, 1)) * 100),
+            }]);
+          }
+        } catch {}
+        setLoading(false);
+      }
+    };
+
+    fetchLeaderboard();
     return () => { isMounted = false; };
   }, []);
 

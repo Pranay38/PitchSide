@@ -43,6 +43,13 @@ export interface HomepageCuration {
   transferSpotlightIds: string[];
 }
 
+export interface AuthorsTake {
+  headline: string;
+  body: string;
+  enabled: boolean;
+  updatedAt: string;
+}
+
 export interface SiteSettings {
   socialWallEnabled: boolean;
   socialWallTitle: string;
@@ -53,6 +60,7 @@ export interface SiteSettings {
   transferWatch: TransferWatchEntry[];
   homepageCuration: HomepageCuration;
   supplementalEvents: SupplementalEvent[];
+  authorsTake: AuthorsTake;
   updatedAt: string;
 }
 
@@ -76,6 +84,12 @@ const DEFAULT_SETTINGS: SiteSettings = {
     transferSpotlightIds: [],
   },
   supplementalEvents: [],
+  authorsTake: {
+    headline: "",
+    body: "",
+    enabled: false,
+    updatedAt: "",
+  },
   updatedAt: "",
 };
 
@@ -158,6 +172,15 @@ function normalizeSupplementalEvents(input?: SupplementalEvent[] | null): Supple
   }, []).sort((a, b) => b.year - a.year);
 }
 
+function normalizeAuthorsTake(input?: Partial<AuthorsTake> | null): AuthorsTake {
+  return {
+    headline: String(input?.headline || "").trim(),
+    body: String(input?.body || "").trim(),
+    enabled: input?.enabled ?? false,
+    updatedAt: String(input?.updatedAt || ""),
+  };
+}
+
 function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
   return {
     socialWallEnabled: input?.socialWallEnabled ?? DEFAULT_SETTINGS.socialWallEnabled,
@@ -169,6 +192,7 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     transferWatch: normalizeTransferWatchEntries(input?.transferWatch),
     homepageCuration: normalizeHomepageCuration(input?.homepageCuration),
     supplementalEvents: normalizeSupplementalEvents(input?.supplementalEvents),
+    authorsTake: normalizeAuthorsTake(input?.authorsTake),
     updatedAt: input?.updatedAt || DEFAULT_SETTINGS.updatedAt,
   };
 }
