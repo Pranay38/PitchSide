@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-04-17T06:55:29.634032",
+  "lastUpdated": "2026-04-18T06:11:20.504930",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Rashford's Barca future uncertain - Friday's gossip",
-    "sentimentScore": 27
+    "text": "Liverpool to rival Man Utd for Wharton - Saturday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 93
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 99
     },
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 90
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 91
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 72
+    },
+    {
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 70
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 81
-    },
-    {
-      "name": "Pep Guardiola (MCI)",
-      "pressureScore": 69
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 61
+      "pressureScore": 68
     }
   ]
 }
