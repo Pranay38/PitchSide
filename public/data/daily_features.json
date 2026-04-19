@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-04-18T06:11:20.504930",
+  "lastUpdated": "2026-04-19T06:27:07.736911",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool to rival Man Utd for Wharton - Saturday's gossip",
-    "sentimentScore": 41
+    "text": "Bayern keen on Villa's Rogers - Sunday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 99
+      "name": "Scott Parker (BUR)",
+      "pressureScore": 98
+    },
+    {
+      "name": "Rob Edwards (WOL)",
+      "pressureScore": 94
+    },
+    {
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 94
+    },
+    {
+      "name": "Nuno Esp\u00edrito Santo (WHU)",
+      "pressureScore": 60
     },
     {
       "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 91
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 72
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 70
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 68
+      "pressureScore": 60
     }
   ]
 }
