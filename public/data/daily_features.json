@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-04-19T06:27:07.736911",
+  "lastUpdated": "2026-04-20T07:13:46.953619",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Bayern keen on Villa's Rogers - Sunday's gossip",
+    "text": "Arsenal & Chelsea keen on Bergvall - Monday's gossip",
     "sentimentScore": 60
   },
   "managerPressure": [
     {
-      "name": "Scott Parker (BUR)",
-      "pressureScore": 98
-    },
-    {
-      "name": "Rob Edwards (WOL)",
-      "pressureScore": 94
-    },
-    {
       "name": "Daniel Farke (LEE)",
-      "pressureScore": 94
+      "pressureScore": 89
     },
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 60
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 79
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 60
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 77
+    },
+    {
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 76
     }
   ]
 }
