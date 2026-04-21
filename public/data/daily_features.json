@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-04-20T07:13:46.953619",
+  "lastUpdated": "2026-04-21T06:56:36.795872",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal & Chelsea keen on Bergvall - Monday's gossip",
-    "sentimentScore": 60
+    "text": "Gordon will cost Bayern Munich \u00c2\u00a375m - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 89
+      "name": "Scott Parker (BUR)",
+      "pressureScore": 98
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 79
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 97
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 70
     },
     {
       "name": "Michael Carrick (MUN)",
-      "pressureScore": 77
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 76
+      "pressureScore": 63
     }
   ]
 }
