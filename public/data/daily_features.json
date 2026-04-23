@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-04-22T06:55:45.814814",
+  "lastUpdated": "2026-04-23T06:59:29.418075",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Kolo Muani on Liverpool's radar - Wednesday's gossip",
+    "text": "PSG make Fernandes approach - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 89
+      "name": "Nuno Esp\u00edrito Santo (WHU)",
+      "pressureScore": 96
     },
     {
-      "name": "Oliver Glasner (CRY)",
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 90
+    },
+    {
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 87
+    },
+    {
+      "name": "Eddie Howe (NEW)",
       "pressureScore": 76
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 69
-    },
-    {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 67
-    },
-    {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 65
+      "pressureScore": 68
     }
   ]
 }
