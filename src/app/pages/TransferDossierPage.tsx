@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "@/lib/router-compat";
-import { ArrowLeft, ArrowRight, Bell, Repeat2, ShieldQuestion, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bell, ExternalLink, Lock, Repeat2, ShieldQuestion, Sparkles } from "lucide-react";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from "recharts";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
@@ -10,7 +10,7 @@ import { PostCard } from "../components/PostCard";
 import { StoryFeatureCard } from "../components/StoryFeatureCard";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
-import { getTransferWatchEntriesAsync } from "../lib/siteSettingsStorage";
+import { getSiteSettingsAsync } from "../lib/siteSettingsStorage";
 import { buildTransferReliabilityBoard, type TransferReliabilityEntry } from "../lib/transferReliability";
 import {
   buildTransferDossierSlug,
@@ -20,19 +20,30 @@ import {
 } from "../lib/transferWatch";
 import {
   buildTransferSummary,
+  buildTransferCoverageSummary,
   buildTransferTimeline,
+  buildTransferSourceTimeline,
   getAdjacentTransferEntries,
   getRelatedTransferPosts,
   getRelatedTransferStories,
   matchesTransferEntrySlug,
 } from "../lib/transferDossiers";
+import {
+  buildTransferSourceSnapshot,
+  formatTransferSourceDate,
+  getTransferSourceStanceLabel,
+  getTransferSourcesForDossier,
+  type TransferSourceArticle,
+} from "../lib/transferSources";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { toast } from "sonner";
 import { getClubByName } from "../data/clubs";
 
 export function TransferDossierPage() {
-  const { slug = "" } = useParams();
+  const params = useParams();
+  const slug = params.slug ? String(params.slug) : "";
   const [entries, setEntries] = useState<TransferReliabilityEntry[]>([]);
+  const [sources, setSources] = useState<TransferSourceArticle[]>([]);
   const [posts, setPosts] = useState(() => getPublishedPosts());
   const [stories, setStories] = useState(() => getAllStories());
   const [loading, setLoading] = useState(entries.length === 0);
@@ -43,13 +54,14 @@ export function TransferDossierPage() {
     let isMounted = true;
 
     Promise.all([
-      getTransferWatchEntriesAsync(),
+      getSiteSettingsAsync(),
       getPublishedPostsAsync(),
       getAllStoriesAsync(),
     ])
-      .then(([transferWatch, nextPosts, nextStories]) => {
+      .then(([settings, nextPosts, nextStories]) => {
         if (!isMounted) return;
-        setEntries(buildTransferReliabilityBoard(transferWatch));
+        setEntries(buildTransferReliabilityBoard(settings.transferWatch));
+        setSources(settings.transferSources);
         setPosts(nextPosts);
         setStories(nextStories);
         setLoading(false);
@@ -80,6 +92,33 @@ export function TransferDossierPage() {
   const adjacentEntries = useMemo(() => (
     dossier ? getAdjacentTransferEntries(entries, dossier) : []
   ), [dossier, entries]);
+  const dossierSources = useMemo(() => (
+    dossier ? getTransferSourcesForDossier(sources, dossier) : []
+  ), [dossier, sources]);
+  const sourceSnapshot = useMemo(() => (
+    buildTransferSourceSnapshot(dossierSources)
+  ), [dossierSources]);
+  const sourceTimeline = useMemo(() => (
+    buildTransferSourceTimeline(dossierSources)
+  ), [dossierSources]);
+  const coverageSummary = useMemo(() => (
+    buildTransferCoverageSummary(dossierSources)
+  ), [dossierSources]);
+
+  const followed = dossier ? followedTransfers.some((topic) => topic === dossier.topic) : false;
+  const title = dossier ? `${dossier.player} to ${dossier.club} dossier` : "Transfer dossier";
+  const fromClubInfo = dossier?.fromClub ? getClubByName(dossier.fromClub) : null;
+  const toClubInfo = dossier ? getClubByName(dossier.club) : null;
+  const radarData = useMemo(() => {
+    if (!dossier?.scoutGrades) return null;
+    return [
+      { subject: "Pace", A: dossier.scoutGrades.pace, fullMark: 10 },
+      { subject: "Final Third", A: dossier.scoutGrades.finalThird, fullMark: 10 },
+      { subject: "Passing", A: dossier.scoutGrades.passing, fullMark: 10 },
+      { subject: "Defensive IQ", A: dossier.scoutGrades.defensiveIQ, fullMark: 10 },
+      { subject: "Physicality", A: dossier.scoutGrades.physicality, fullMark: 10 },
+    ];
+  }, [dossier]);
 
   if (!loading && !dossier) {
     return (
@@ -118,23 +157,6 @@ export function TransferDossierPage() {
       </div>
     );
   }
-
-  const followed = followedTransfers.some((topic) => topic === dossier.topic);
-  const title = `${dossier.player} to ${dossier.club} dossier`;
-  
-  const fromClubInfo = dossier.fromClub ? getClubByName(dossier.fromClub) : null;
-  const toClubInfo = getClubByName(dossier.club);
-
-  const radarData = useMemo(() => {
-    if (!dossier?.scoutGrades) return null;
-    return [
-      { subject: "Pace", A: dossier.scoutGrades.pace, fullMark: 10 },
-      { subject: "Final Third", A: dossier.scoutGrades.finalThird, fullMark: 10 },
-      { subject: "Passing", A: dossier.scoutGrades.passing, fullMark: 10 },
-      { subject: "Defensive IQ", A: dossier.scoutGrades.defensiveIQ, fullMark: 10 },
-      { subject: "Physicality", A: dossier.scoutGrades.physicality, fullMark: 10 },
-    ];
-  }, [dossier]);
 
   return (
     <div className="page-atmosphere min-h-screen transition-colors duration-300">
@@ -234,7 +256,7 @@ export function TransferDossierPage() {
               )}
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[380px]">
+            <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[420px]">
               <div className="rounded-2xl bg-[#16A34A]/8 p-4">
                 <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Board score</p>
                 <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">{dossier.reliabilityScore}</p>
@@ -242,6 +264,13 @@ export function TransferDossierPage() {
               <div className="rounded-2xl bg-[#0F172A]/5 p-4 dark:bg-white/5">
                 <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Fee signal</p>
                 <p className="mt-2 text-base font-black font-outfit text-[#0F172A] dark:text-white">{formatTransferWatchAmount(dossier)}</p>
+              </div>
+              <div className="rounded-2xl bg-sky-500/5 p-4 border border-sky-500/10">
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-sky-600 dark:text-sky-300">External desk</p>
+                <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">{sourceSnapshot.coverageCount}</p>
+                <p className="mt-1 text-xs font-semibold text-[#64748B] dark:text-gray-400">
+                  {sourceSnapshot.consensusLabel} consensus
+                </p>
               </div>
               <button
                 type="button"
@@ -268,7 +297,7 @@ export function TransferDossierPage() {
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
                     <PolarGrid stroke="#16A34A" strokeOpacity={0.2} />
-                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748B', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em' }} />
+                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#64748B', fontSize: 11, fontWeight: 800 }} />
                     <PolarRadiusAxis angle={30} domain={[0, 10]} tick={false} axisLine={false} />
                     <Radar
                       name="Player"
@@ -300,6 +329,86 @@ export function TransferDossierPage() {
             </div>
           </section>
         )}
+
+        <section className="mt-10">
+          <div className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">External signal desk</p>
+                <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                  Linked coverage around this move
+                </h2>
+                <p className="mt-3 text-base leading-7 text-[#64748B] dark:text-gray-400">
+                  {coverageSummary}
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[360px]">
+                <div className="rounded-2xl bg-[#0F172A]/5 p-4 dark:bg-white/5">
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Coverage</p>
+                  <p className="mt-2 text-2xl font-black font-outfit text-[#0F172A] dark:text-white">{sourceSnapshot.coverageCount}</p>
+                </div>
+                <div className="rounded-2xl bg-amber-500/5 p-4 border border-amber-500/10">
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-amber-600 dark:text-amber-300">Consensus</p>
+                  <p className="mt-2 text-2xl font-black font-outfit text-[#0F172A] dark:text-white">{sourceSnapshot.consensusLabel}</p>
+                </div>
+                <div className="rounded-2xl bg-emerald-500/5 p-4 border border-emerald-500/10">
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-300">Latest update</p>
+                  <p className="mt-2 text-sm font-black text-[#0F172A] dark:text-white">
+                    {sourceSnapshot.lastExternalUpdateAt ? formatTransferSourceDate(sourceSnapshot.lastExternalUpdateAt) : "No linked update"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {dossierSources.length === 0 ? (
+              <div className="mt-6 rounded-[1.5rem] border border-dashed border-gray-300 bg-white/60 p-5 text-sm leading-6 text-[#64748B] dark:border-gray-700 dark:bg-[#0F172A] dark:text-gray-400">
+                No BBC, ESPN, Athletic, club-site, or reporter links have been attached yet. The dossier still works, but this external desk becomes much stronger once those source cards are logged from the admin.
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-4 lg:grid-cols-2">
+                {dossierSources.map((source) => (
+                  <a
+                    key={source.id}
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group rounded-[1.5rem] border border-gray-200 bg-white p-5 transition-colors hover:border-[#16A34A]/30 hover:bg-[#16A34A]/5 dark:border-gray-800 dark:bg-[#0F172A]"
+                  >
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-[#16A34A]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
+                        {source.sourceLabel}
+                      </span>
+                      <span className="rounded-full bg-[#0F172A]/5 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:bg-white/5 dark:text-gray-300">
+                        {getTransferSourceStanceLabel(source.stance)}
+                      </span>
+                      {source.paywalled && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-amber-600 dark:text-amber-300">
+                          <Lock className="h-3 w-3" />
+                          Paywalled
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="mt-4 text-xl font-black font-outfit text-[#0F172A] transition-colors group-hover:text-[#16A34A] dark:text-white">
+                      {source.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-6 text-[#64748B] dark:text-gray-400">
+                      {source.claimSummary || "External source coverage attached to the dossier."}
+                    </p>
+                    <div className="mt-4 flex flex-wrap items-center gap-3 text-xs font-semibold text-[#64748B] dark:text-gray-400">
+                      <span>{formatTransferSourceDate(source.publishedAt || source.discoveredAt)}</span>
+                      {source.reporter && <span>By {source.reporter}</span>}
+                      <span className="inline-flex items-center gap-1 text-[#16A34A]">
+                        Open source
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
 
         <section className="mt-10">
           <div className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8">
@@ -339,6 +448,36 @@ export function TransferDossierPage() {
                 </div>
               ))}
             </div>
+
+            {sourceTimeline.length > 0 && (
+              <div className="mt-8 border-t border-gray-100 pt-8 dark:border-gray-800">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">External timeline</p>
+                <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                  {sourceTimeline.map((item) => (
+                    <a
+                      key={`${item.label}-${item.title}-${item.url}`}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-[1.5rem] border border-gray-200 bg-white p-5 transition-colors hover:border-[#16A34A]/30 hover:bg-[#16A34A]/5 dark:border-gray-800 dark:bg-[#0F172A]"
+                    >
+                      <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">{item.label}</p>
+                      <h3 className="mt-2 text-xl font-black font-outfit text-[#0F172A] dark:text-white">{item.title}</h3>
+                      <p className="mt-3 text-sm leading-6 text-[#64748B] dark:text-gray-400">{item.note}</p>
+                      <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-[#64748B] dark:text-gray-400">
+                        <span>{item.sourceLabel}</span>
+                        {item.paywalled && (
+                          <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-300">
+                            <Lock className="h-3 w-3" />
+                            Paywalled
+                          </span>
+                        )}
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </section>
 

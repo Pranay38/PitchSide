@@ -61,7 +61,8 @@ function StoryVisual({ story, chapter }: { story: StoryFeature; chapter: StoryCh
 }
 
 export function StoryPage() {
-  const { slug = "" } = useParams();
+  const params = useParams();
+  const slug = params.slug ? String(params.slug) : "";
   const [searchParams] = useSearchParams();
   const isPreviewMode = searchParams.get("preview") === "1";
   const previewId = searchParams.get("storyId") || "";
@@ -455,7 +456,7 @@ export function StoryPage() {
                 </section>
               ))}
 
-              <ReactionUI itemId={story.id} itemType="story" initialReactions={story.reactions} />
+              <ReactionUI itemId={story.id} itemType="story" />
             </div>
 
             <aside className="hidden xl:block">

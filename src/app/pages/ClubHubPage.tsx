@@ -26,7 +26,8 @@ function sortPosts(posts: BlogPost[], sort: string): BlogPost[] {
 }
 
 export function ClubHubPage() {
-  const { slug = "" } = useParams();
+  const params = useParams();
+  const slug = params.slug ? String(params.slug) : "";
   const [posts, setPosts] = useState<BlogPost[]>(() => getPublishedPosts());
   const [stories, setStories] = useState<StoryFeature[]>(() => getAllStories(true));
   const [loading, setLoading] = useState(posts.length === 0);

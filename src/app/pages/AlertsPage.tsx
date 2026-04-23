@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { Bell, Mail, Plus, Repeat2, ShieldAlert, UserRound, X } from "lucide-react";
@@ -138,7 +139,6 @@ export function AlertsPage() {
                 type="button"
                 onClick={() => {
                   toggleFollowedClub(favoriteClub);
-                  setFollowedClubs(getFollowedClubs());
                   toast.success(`Following ${favoriteClub} alerts`);
                 }}
                 className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-bold text-[#0F172A] dark:text-white hover:border-[#16A34A]/30"
@@ -186,7 +186,7 @@ export function AlertsPage() {
                       type="button"
                       onClick={() => {
                         toggleFollowedClub(club);
-                        setFollowedClubs(getFollowedClubs());
+
                       }}
                       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-sm font-semibold text-[#16A34A]"
                     >
@@ -223,7 +223,7 @@ export function AlertsPage() {
                       type="button"
                       onClick={() => {
                         toggleFollowedPlayer(player);
-                        setFollowedPlayers(getFollowedPlayers());
+
                       }}
                       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-sm font-semibold text-[#0F172A] dark:text-white"
                     >
@@ -246,7 +246,7 @@ export function AlertsPage() {
                       type="button"
                       onClick={() => {
                         toggleFollowedTransfer(topic);
-                        setFollowedTransfers(getFollowedTransfers());
+
                       }}
                       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-sm font-semibold text-[#64748B] dark:text-gray-300"
                     >

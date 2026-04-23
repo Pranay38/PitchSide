@@ -1,26 +1,87 @@
+import { useState } from "react";
 import { Trash2, CalendarDays } from "lucide-react";
-import type { SupplementalEvent } from "../../data/supplementalEvents";
+import type { SupplementalEvent } from "../../lib/siteSettingsStorage";
 import { AdminEmptyState } from "./AdminEmptyState";
+import { updateSiteSettingsAsync } from "../../lib/siteSettingsStorage";
+import { toast } from "sonner";
 
 interface AdminOnThisDayTabProps {
     siteSettings: any;
-    eventDraft: any;
-    savingSupplementalEvent: boolean;
-    setEventDraft: React.Dispatch<React.SetStateAction<any>>;
-    handleAddSupplementalEvent: () => void;
-    handleSaveSupplementalEvents: () => Promise<void>;
-    handleDeleteSupplementalEvent: (id: string) => void;
+    setSiteSettings: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export function AdminOnThisDayTab({
     siteSettings,
-    eventDraft,
-    savingSupplementalEvent,
-    setEventDraft,
-    handleAddSupplementalEvent,
-    handleSaveSupplementalEvents,
-    handleDeleteSupplementalEvent
+    setSiteSettings
 }: AdminOnThisDayTabProps) {
+    const [savingSupplementalEvent, setSavingSupplementalEvent] = useState(false);
+    const [eventDraft, setEventDraft] = useState<Partial<SupplementalEvent>>({
+        dateMMDD: new Date().toISOString().slice(5, 10),
+        year: new Date().getFullYear(),
+        text: "",
+        category: "event",
+        thumbnail: "",
+        articleUrl: "",
+    });
+
+    const handleAddSupplementalEvent = () => {
+        if (!eventDraft.dateMMDD || !eventDraft.year || !eventDraft.text) {
+            toast.error("Please fill in the date, year, and text for the event.");
+            return;
+        }
+
+        const newEvent: SupplementalEvent = {
+            id: `event-${Date.now()}`,
+            dateMMDD: eventDraft.dateMMDD as string,
+            year: Number(eventDraft.year),
+            text: eventDraft.text as string,
+            category: (eventDraft.category || "event") as SupplementalEvent["category"],
+            thumbnail: (eventDraft.thumbnail as string) || "",
+            articleUrl: (eventDraft.articleUrl as string) || "",
+            updatedAt: new Date().toISOString(),
+        };
+
+        setSiteSettings((prev: any) => ({
+            ...prev,
+            supplementalEvents: [...(prev.supplementalEvents || []), newEvent].sort((a, b) => {
+                if (a.dateMMDD !== b.dateMMDD) return a.dateMMDD.localeCompare(b.dateMMDD);
+                return b.year - a.year; // Latest years first for same date
+            }),
+        }));
+
+        setEventDraft({
+            dateMMDD: new Date().toISOString().slice(5, 10),
+            year: new Date().getFullYear(),
+            text: "",
+            category: "event",
+            thumbnail: "",
+            articleUrl: "",
+        });
+        toast.success("Event added to pending list. Click Save to persist.");
+    };
+
+    const handleSaveSupplementalEvents = async () => {
+        setSavingSupplementalEvent(true);
+        try {
+            const updated = await updateSiteSettingsAsync({
+                supplementalEvents: siteSettings.supplementalEvents || [],
+            });
+            setSiteSettings(updated);
+            toast.success("Saved override events.");
+        } catch (error) {
+            toast.error("Failed to save override events.");
+        } finally {
+            setSavingSupplementalEvent(false);
+        }
+    };
+
+    const handleDeleteSupplementalEvent = (id: string) => {
+        if (!window.confirm("Remove this manual override event?")) return;
+        setSiteSettings((prev: any) => ({
+            ...prev,
+            supplementalEvents: (prev.supplementalEvents || []).filter((e: any) => e.id !== id),
+        }));
+    };
     return (
         <div className="space-y-8">
             <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">

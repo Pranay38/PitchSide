@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "@/lib/router-compat";
 import { SEO } from "../components/SEO";
@@ -71,7 +72,10 @@ interface SeasonData {
 }
 
 export function LeagueClubSeasonPage() {
-    const { league, club, season } = useParams();
+    const params = useParams();
+    const league = params.league ? String(params.league) : "";
+    const club = params.club ? String(params.club) : "";
+    const season = params.season ? String(params.season) : "";
     const { favoriteClub } = useClubPreference();
     const [data, setData] = useState<SeasonData | null>(null);
     const [loading, setLoading] = useState(true);

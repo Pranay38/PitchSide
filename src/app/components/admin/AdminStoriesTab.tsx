@@ -1,40 +1,81 @@
+import { useState } from "react";
 import { Plus, Edit3, Trash2, Eye, Copy, BookOpen } from "lucide-react";
 import { AdminEmptyState } from "./AdminEmptyState";
 import { useNavigate } from "@/lib/router-compat";
+import { addStoryAsync, updateStoryAsync, deleteStoryAsync } from "../../lib/storyStorage";
 import type { StoryFeature } from "../../data/stories";
 import { StoryEditor } from "../StoryEditor";
+import { toast } from "sonner";
 
 interface AdminStoriesTabProps {
     stories: StoryFeature[];
-    showStoryEditor: boolean;
-    editingStory: StoryFeature | null;
-    onCreateStory: () => void;
-    onEditStory: (story: StoryFeature) => void;
-    onSaveStory: (story: StoryFeature) => Promise<void>;
-    onDeleteStory: (id: string) => void;
-    onDuplicateStory: (story: StoryFeature) => void;
-    onCancelEdit: () => void;
+    setStories: React.Dispatch<React.SetStateAction<StoryFeature[]>>;
 }
 
 export function AdminStoriesTab({
     stories,
-    showStoryEditor,
-    editingStory,
-    onCreateStory,
-    onEditStory,
-    onSaveStory,
-    onDeleteStory,
-    onDuplicateStory,
-    onCancelEdit,
+    setStories,
 }: AdminStoriesTabProps) {
     const navigate = useNavigate();
+    const [showStoryEditor, setShowStoryEditor] = useState(false);
+    const [editingStory, setEditingStory] = useState<StoryFeature | null>(null);
+
+    const handleCreateStory = () => {
+        setEditingStory(null);
+        setShowStoryEditor(true);
+    };
+
+    const handleEditStory = (story: StoryFeature) => {
+        setEditingStory(story);
+        setShowStoryEditor(true);
+    };
+
+    const handleSaveStory = async (story: StoryFeature) => {
+        try {
+            let updatedStories;
+            if (editingStory) {
+                updatedStories = await updateStoryAsync(story);
+            } else {
+                updatedStories = await addStoryAsync(story);
+            }
+            setStories(updatedStories);
+            setShowStoryEditor(false);
+            setEditingStory(null);
+            toast.success("Story saved successfully!");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to save story.");
+            throw error;
+        }
+    };
+
+    const handleDeleteStory = async (id: string) => {
+        if (!window.confirm("Are you sure you want to delete this story?")) return;
+        try {
+            const updatedStories = await deleteStoryAsync(id);
+            setStories(updatedStories);
+            toast.success("Story deleted.");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to delete story.");
+        }
+    };
+
+    const handleDuplicateStory = async (story: StoryFeature) => {
+        try {
+            const duplicate = { ...story, id: `story-${Date.now()}`, title: `${story.title} (Copy)`, slug: `${story.slug}-copy-${Date.now()}` };
+            const updatedStories = await addStoryAsync(duplicate);
+            setStories(updatedStories);
+            toast.success("Story duplicated.");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to duplicate story.");
+        }
+    };
 
     if (showStoryEditor) {
         return (
             <StoryEditor
                 story={editingStory}
-                onSave={onSaveStory}
-                onCancel={onCancelEdit}
+                onSave={handleSaveStory}
+                onCancel={() => { setShowStoryEditor(false); setEditingStory(null); }}
             />
         );
     }
@@ -49,7 +90,7 @@ export function AdminStoriesTab({
                     </p>
                 </div>
                 <button
-                    onClick={onCreateStory}
+                    onClick={handleCreateStory}
                     className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
                 >
                     <Plus className="w-4 h-4" />New Story
@@ -63,7 +104,7 @@ export function AdminStoriesTab({
                     description="Create your first scrollytelling story with chapters, metrics, and sticky visuals."
                     action={
                         <button
-                            onClick={onCreateStory}
+                            onClick={handleCreateStory}
                             className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all active:scale-95 shadow-sm mt-2"
                         >
                             <Plus className="w-4 h-4" />Create First Story
@@ -132,21 +173,21 @@ export function AdminStoriesTab({
                                                 <Eye className="w-4 h-4" />
                                             </button>
                                             <button
-                                                onClick={() => onDuplicateStory(story)}
+                                                onClick={() => handleDuplicateStory(story)}
                                                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors"
                                                 title="Duplicate Story"
                                             >
                                                 <Copy className="w-4 h-4" />
                                             </button>
                                             <button
-                                                onClick={() => onEditStory(story)}
+                                                onClick={() => handleEditStory(story)}
                                                 className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-[#64748B] dark:text-gray-400 hover:text-blue-600 transition-colors"
                                                 title="Edit Story"
                                             >
                                                 <Edit3 className="w-4 h-4" />
                                             </button>
                                             <button
-                                                onClick={() => onDeleteStory(story.id)}
+                                                onClick={() => handleDeleteStory(story.id)}
                                                 className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#64748B] dark:text-gray-400 hover:text-red-600 transition-colors"
                                                 title="Delete Story"
                                             >

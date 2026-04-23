@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-function walkDir(dir) {
-    let results = [];
+function walkDir(dir: string): string[] {
+    let results: string[] = [];
     const list = fs.readdirSync(dir);
     list.forEach(function(file) {
         if (file === 'node_modules' || file === '.next') return;

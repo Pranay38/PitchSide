@@ -37,6 +37,8 @@ import { TransferTicker } from "../components/TransferTicker";
 import { QuickTakesSection } from "../components/QuickTakesSection";
 import { MatchReactionsSection } from "../components/MatchReactionsSection";
 import { ChallengeTheTake } from "../components/home/ChallengeTheTake";
+import { ReadingStreakBanner } from "../components/ReadingStreakBanner";
+import { PredictionArenaWidget } from "../components/PredictionArenaWidget";
 
 /** Hook: animates elements with class `scroll-reveal` when they enter viewport */
 function useScrollReveal() {
@@ -353,7 +355,7 @@ export function HomePage() {
   const error = postsError ? "Could not load the homepage feed right now." : "";
 
   const standardPosts = useMemo(() => {
-    return posts.filter(p => !p.format || p.format === "standard");
+    return posts.filter(p => !p.format || p.format === "article");
   }, [posts]);
 
   const fallbackFeaturedPost = useMemo(() => {
@@ -521,6 +523,7 @@ export function HomePage() {
 
   return (
     <div ref={scrollRef} className="page-atmosphere min-h-screen transition-colors duration-300">
+      <ReadingStreakBanner />
       <SEO
         title="Home"
         description="A sharper front page for the day's best football analysis, deep reads, stories, and transfer coverage."
@@ -561,42 +564,19 @@ export function HomePage() {
                    <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">Every Friday</p>
                  </div>
                  <h2 className="font-outfit text-lg sm:text-2xl font-black text-[#0F172A] dark:text-white leading-tight">
-                   {siteSettings.authorsTake?.headline || "\"The modern #10 is dead. Long live the hybrid roaming destroyer.\""}
+                   {siteSettings.authorsTake?.headline || "Lamine Yamal Injury: Barcelona's Tactical Crisis and How Hansi Flick Adapts"}
                  </h2>
                </div>
             </div>
             
             <div className="shrink-0">
-              <button 
-                onClick={(e) => {
-                  const el = document.getElementById('author-take-challenge');
-                  if (el) {
-                    el.classList.toggle('hidden');
-                    if (!el.classList.contains('hidden')) {
-                      // Smooth scroll down a bit to show the content
-                      setTimeout(() => {
-                        window.scrollBy({ top: 150, behavior: 'smooth' });
-                      }, 50);
-                    }
-                  }
-                }}
+              <Link 
+                to="/post/lamine-yamal-injury-barcelona-tactics"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#16A34A] hover:bg-[#15803d] text-white font-black uppercase tracking-widest text-[11px] shadow-sm transition-all"
               >
-                Read & Challenge
-              </button>
+                Read & Analyze
+              </Link>
             </div>
-          </div>
-        </div>
-        
-        {/* Expandable content */}
-        <div id="author-take-challenge" className="hidden mx-auto max-w-[1240px] px-4 pt-8 pb-4 sm:px-6">
-          <div className="max-w-4xl">
-            <div className="text-lg text-[#64748B] dark:text-gray-300 leading-relaxed mb-2">
-              <p>
-                {siteSettings.authorsTake?.body || "We've spent the last decade obsessing over positional play and half-spaces. But watching this weekend's fixtures, something clicked: the pure creator is obsolete. Today's elite teams don't need a playmaker; they need an athlete who can destroy transitions to create them. Here's why the 'hybrid destroyer' is the most valuable profile in Europe right now."}
-              </p>
-            </div>
-            <ChallengeTheTake />
           </div>
         </div>
       </section>
@@ -721,8 +701,8 @@ export function HomePage() {
               </div>
             )}
 
-            {/* --- UTILITY WIDGETS (Rumor Mill & Manager Pressure) --- */}
-            <div className="grid gap-6 sm:grid-cols-2">
+            {/* --- UTILITY WIDGETS (Rumor Mill, Manager Pressure, Prediction Arena) --- */}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {dailyFeatures?.rumorMill ? (
                 <div className="tinted-panel rounded-3xl p-6 border border-gray-100 dark:border-gray-800/50 bg-white dark:bg-[var(--card)] shadow-sm">
                   <h3 className="font-outfit text-xl font-bold mb-4 dark:text-white">Transfer Rumors</h3>
@@ -735,6 +715,7 @@ export function HomePage() {
                   <ManagerPressureWidget data={dailyFeatures.managerPressure} />
                 </div>
               ) : null}
+              <PredictionArenaWidget />
             </div>
 
             {/* Latest Analysis Block */}

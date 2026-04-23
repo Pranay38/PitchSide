@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "@/lib/router-compat";
 import { LoaderCircle, Pause, Play, Square } from "lucide-react";
@@ -105,7 +106,8 @@ function PitchMarkings() {
 }
 
 export function TacticalEmbedPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params.id ? String(params.id) : "";
   const [tactic, setTactic] = useState<SavedTactic | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [arrows, setArrows] = useState<Arrow[]>([]);

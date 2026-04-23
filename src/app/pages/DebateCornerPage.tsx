@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Link } from "@/lib/router-compat";
 import {
@@ -143,7 +145,7 @@ function VoteSwingChart({ voteHistory }: { voteHistory: VoteHistoryEntry[] }) {
 }
 
 // ─── Shareable Result Card ───
-function DebateResultCard({ debate, cardRef }: { debate: Debate; cardRef: React.RefObject<HTMLDivElement | null> }) {
+function DebateResultCard({ debate, cardRef }: { debate: Debate; cardRef: React.Ref<HTMLDivElement> }) {
     const total = debate.agreeVotes + debate.disagreeVotes || 1;
     const agreePct = Math.round((debate.agreeVotes / total) * 100);
     const disagreePct = 100 - agreePct;

@@ -149,11 +149,11 @@ export function ArchivePage() {
     } else {
       next.set(key, value);
     }
-    setSearchParams(next, { replace: true });
+    setSearchParams(next);
   };
 
   const clearFilters = () => {
-    setSearchParams({}, { replace: true });
+    setSearchParams({});
   };
 
   return (

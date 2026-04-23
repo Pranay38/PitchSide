@@ -29,6 +29,7 @@ interface CollectionSummary {
 interface CollectionPost {
   id: string;
   title: string;
+  slug?: string;
   excerpt?: string;
   coverImage?: string;
   date?: string;

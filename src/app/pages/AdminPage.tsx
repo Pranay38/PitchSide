@@ -30,9 +30,13 @@ import {
     type ClubIntelligence,
 } from "../lib/clubIntelligence";
 import {
+    buildTransferDossierSlug,
+    buildTransferTopic,
     formatTransferWatchAmount,
     normalizeTransferWatchEntry,
+    type ScoutGrades,
     type TransferFeeMode,
+    type TransferWatchEntry,
     type TransferWatchStatus,
 }
 from "../lib/transferWatch";
@@ -44,29 +48,66 @@ import { AdminRunInEditor } from "../components/AdminRunInEditor";
 import { AdminTitleRaceTab } from "../components/admin/AdminTitleRaceTab";
 import type { SupplementalEvent } from "../lib/siteSettingsStorage";
 
-// Import Admin Tabs
-import { AdminStoriesTab } from "../components/admin/AdminStoriesTab";
-import { AdminCollectionsTab } from "../components/admin/AdminCollectionsTab";
-import { AdminDebatesTab } from "../components/admin/AdminDebatesTab";
-import { AdminPollsTab } from "../components/admin/AdminPollsTab";
-import { AdminOnThisDayTab } from "../components/admin/AdminOnThisDayTab";
-import { AdminTransferWatchTab } from "../components/admin/AdminTransferWatchTab";
-import { AdminTransferTrackerTab } from "../components/admin/AdminTransferTrackerTab";
-import { AdminSettingsTab } from "../components/admin/AdminSettingsTab";
-import { AdminMatchRatingsTab } from "../components/admin/AdminMatchRatingsTab";
-import { AdminNewsletterTab } from "../components/admin/AdminNewsletterTab";
-import { AdminAnalyticsTab } from "../components/admin/AdminAnalyticsTab";
-import { InstagramCarouselGenerator } from "../components/admin/InstagramCarouselGenerator";
-import { DraftAssistant } from "../components/admin/DraftAssistant";
-import { TweetThreadGenerator } from "../components/admin/TweetThreadGenerator";
-import { AdminCalendarTab } from "../components/admin/AdminCalendarTab";
-import { AdminMatchCenterTab } from "../components/admin/AdminMatchCenterTab";
-import { AdminNotificationsTab } from "../components/admin/AdminNotificationsTab";
-import { AdminPOTSTab } from "../components/admin/AdminPOTSTab";
-import { AdminMatchReactionsTab } from "../components/admin/AdminMatchReactionsTab";
+import dynamic from 'next/dynamic';
+
+const AdminStoriesTab = dynamic(() => import('../components/admin/AdminStoriesTab').then(m => m.AdminStoriesTab));
+const AdminCollectionsTab = dynamic(() => import('../components/admin/AdminCollectionsTab').then(m => m.AdminCollectionsTab));
+const AdminDebatesTab = dynamic(() => import('../components/admin/AdminDebatesTab').then(m => m.AdminDebatesTab));
+const AdminPollsTab = dynamic(() => import('../components/admin/AdminPollsTab').then(m => m.AdminPollsTab));
+const AdminOnThisDayTab = dynamic(() => import('../components/admin/AdminOnThisDayTab').then(m => m.AdminOnThisDayTab));
+const AdminTransferWatchTab = dynamic(() => import('../components/admin/AdminTransferWatchTab').then(m => m.AdminTransferWatchTab));
+const AdminTransferTrackerTab = dynamic(() => import('../components/admin/AdminTransferTrackerTab').then(m => m.AdminTransferTrackerTab));
+const AdminSettingsTab = dynamic(() => import('../components/admin/AdminSettingsTab').then(m => m.AdminSettingsTab));
+const AdminMatchRatingsTab = dynamic(() => import('../components/admin/AdminMatchRatingsTab').then(m => m.AdminMatchRatingsTab));
+const AdminNewsletterTab = dynamic(() => import('../components/admin/AdminNewsletterTab').then(m => m.AdminNewsletterTab));
+const AdminAnalyticsTab = dynamic(() => import('../components/admin/AdminAnalyticsTab').then(m => m.AdminAnalyticsTab));
+const InstagramCarouselGenerator = dynamic(() => import('../components/admin/InstagramCarouselGenerator').then(m => m.InstagramCarouselGenerator));
+const DraftAssistant = dynamic(() => import('../components/admin/DraftAssistant').then(m => m.DraftAssistant));
+const TweetThreadGenerator = dynamic(() => import('../components/admin/TweetThreadGenerator').then(m => m.TweetThreadGenerator));
+const QuickTakeVideoGenerator = dynamic(() => import('../components/QuickTakeVideoGenerator').then(m => m.QuickTakeVideoGenerator));
+const AdminCalendarTab = dynamic(() => import('../components/admin/AdminCalendarTab').then(m => m.AdminCalendarTab));
+const AdminMatchCenterTab = dynamic(() => import('../components/admin/AdminMatchCenterTab').then(m => m.AdminMatchCenterTab));
+const AdminNotificationsTab = dynamic(() => import('../components/admin/AdminNotificationsTab').then(m => m.AdminNotificationsTab));
+const AdminPOTSTab = dynamic(() => import('../components/admin/AdminPOTSTab').then(m => m.AdminPOTSTab));
+const AdminMatchReactionsTab = dynamic(() => import('../components/admin/AdminMatchReactionsTab').then(m => m.AdminMatchReactionsTab));
+const AdminPostsTab = dynamic(() => import('../components/admin/AdminPostsTab').then(m => m.AdminPostsTab));
 
 type View = "list" | "create" | "edit";
-type Tab = "match-reactions" | "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "draft-assistant" | "tweet-generator" | "calendar";
+type Tab = "match-reactions" | "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "quick-take-video" | "draft-assistant" | "tweet-generator" | "calendar";
+
+type TransferDraft = {
+    player: string;
+    playerImageUrl: string;
+    club: string;
+    fromClub: string;
+    feeMode: TransferFeeMode;
+    feeMillions: string;
+    status: TransferWatchStatus;
+    tier: number;
+    scoutGrades?: Partial<ScoutGrades>;
+    punchyLine: string;
+    myTake: string;
+    aiTake: string;
+    aiScore?: number;
+};
+
+function createTransferDraft(club = "Arsenal"): TransferDraft {
+    return {
+        player: "",
+        playerImageUrl: "",
+        club,
+        fromClub: "",
+        feeMode: "million-usd",
+        feeMillions: "",
+        status: "rumor",
+        tier: 3,
+        scoutGrades: undefined,
+        punchyLine: "",
+        myTake: "",
+        aiTake: "",
+        aiScore: undefined,
+    };
+}
 
 export function AdminPage() {
     const navigate = useNavigate();
@@ -84,13 +125,8 @@ export function AdminPage() {
     const [savingMatchRating, setSavingMatchRating] = useState(false);
 
     
-    // Post Filters and Sorting
-    const [postFilter, setPostFilter] = useState<"all" | "published" | "drafts">("all");
-    const [postSort, setPostSort] = useState<"newest" | "oldest" | "a-z" | "z-a">("newest");
-
     const [posts, setPosts] = useState<BlogPost[]>(() => getAllPosts());
     const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
-    const importFileRef = useRef<HTMLInputElement>(null);
 
     const [subscriberCount, setSubscriberCount] = useState(0);
     const [notifyingPostId, setNotifyingPostId] = useState<string | null>(null);
@@ -103,28 +139,9 @@ export function AdminPage() {
     const [savingTransferWatch, setSavingTransferWatch] = useState(false);
     const [stories, setStories] = useState<StoryFeature[]>(() => getAllStories(true));
     const [selectedClubForInsights, setSelectedClubForInsights] = useState("Arsenal");
-    const [transferDraft, setTransferDraft] = useState({
-        player: "",
-        club: "Arsenal",
-        fromClub: "",
-        feeMode: "million-usd" as TransferFeeMode,
-        feeMillions: "",
-        status: "rumor" as TransferWatchStatus,
-        tier: 3,
-        punchyLine: "",
-    });
+    const [transferDraft, setTransferDraft] = useState<TransferDraft>(() => createTransferDraft());
     const [transferEditId, setTransferEditId] = useState<string | null>(null);
     const [transferFilterClub, setTransferFilterClub] = useState("all");
-
-    const [eventDraft, setEventDraft] = useState<Partial<SupplementalEvent>>({
-        dateMMDD: new Date().toISOString().slice(5, 10),
-        year: new Date().getFullYear(),
-        text: "",
-        category: "event",
-        thumbnail: "",
-        articleUrl: "",
-    });
-    const [savingSupplementalEvent, setSavingSupplementalEvent] = useState(false);
 
     const [collections, setCollections] = useState<any[]>([]);
     const [debates, setDebates] = useState<any[]>([]);
@@ -333,38 +350,7 @@ export function AdminPage() {
         setNotifyingPostId(null);
     };
 
-    const handleExport = () => {
-        exportPostsAsJSON();
-        toast.success("Posts exported! Move posts.json to your public/ folder.");
-    };
 
-    const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        try {
-            const imported = await importPostsFromJSON(file);
-            setPosts(imported);
-            toast.success(`Imported ${imported.length} posts successfully!`);
-        } catch {
-            toast.error("Failed to import valid posts.json");
-        }
-        if (importFileRef.current) importFileRef.current.value = "";
-    };
-
-    // Derived filtered and sorted posts
-    const displayedPosts = [...posts]
-        .filter(post => {
-            if (postFilter === "published") return !post.isDraft;
-            if (postFilter === "drafts") return post.isDraft;
-            return true; // "all"
-        })
-        .sort((a, b) => {
-            if (postSort === "newest") return new Date(b.date).getTime() - new Date(a.date).getTime();
-            if (postSort === "oldest") return new Date(a.date).getTime() - new Date(b.date).getTime();
-            if (postSort === "a-z") return a.title.localeCompare(b.title);
-            if (postSort === "z-a") return b.title.localeCompare(a.title);
-            return 0;
-        });
 
     const handleSavePoll = async () => {
         try {
@@ -443,12 +429,16 @@ export function AdminPage() {
     };
 
     const handleAddTransferWatchEntry = async () => {
+        const existingEntry = transferEditId
+            ? siteSettings.transferWatch.find((entry) => entry.id === transferEditId) || null
+            : null;
         const normalized = normalizeTransferWatchEntry({
             ...transferDraft,
             feeMillions: Number(transferDraft.feeMillions) || 0,
+            tier: transferDraft.tier as 1|2|3|4|5,
             updatedAt: new Date().toISOString(),
             id: transferEditId || undefined, // Use existing ID if editing
-        });
+        } as Partial<TransferWatchEntry>);
 
         if (!normalized) {
             toast.error("Add at least a player name and club before saving a transfer item.");
@@ -458,22 +448,33 @@ export function AdminPage() {
         const isNew = !transferEditId;
 
         const newTransferWatch = [normalized, ...siteSettings.transferWatch.filter((entry) => entry.id !== normalized.id)];
+        const previousDossierSlug = existingEntry ? buildTransferDossierSlug(existingEntry) : null;
+        const previousTopic = existingEntry ? buildTransferTopic(existingEntry.player, existingEntry.club) : null;
+        const nextTransferSources = existingEntry
+            ? siteSettings.transferSources.map((source) => {
+                const matchesPreviousDossier = source.dossierSlug === previousDossierSlug
+                    || source.topic === previousTopic
+                    || (source.player === existingEntry.player && source.club === existingEntry.club);
+
+                if (!matchesPreviousDossier) return source;
+
+                return {
+                    ...source,
+                    dossierSlug: buildTransferDossierSlug(normalized),
+                    topic: buildTransferTopic(normalized.player, normalized.club),
+                    player: normalized.player,
+                    club: normalized.club,
+                };
+            })
+            : siteSettings.transferSources;
         
         setSiteSettings((prev) => ({
             ...prev,
             transferWatch: newTransferWatch,
+            transferSources: nextTransferSources,
         }));
         
-        setTransferDraft({
-            player: "",
-            club: transferDraft.club,
-            fromClub: "",
-            feeMode: "million-usd",
-            feeMillions: "",
-            status: "rumor",
-            tier: 3,
-            punchyLine: "",
-        });
+        setTransferDraft(createTransferDraft(normalized.club));
         setTransferEditId(null);
         toast.success(isNew ? "Transfer watch item added to the draft feed." : "Transfer watch item updated.");
 
@@ -502,6 +503,7 @@ export function AdminPage() {
         try {
             const updated = await updateSiteSettingsAsync({
                 transferWatch: newTransferWatch,
+                transferSources: nextTransferSources,
             });
             setSiteSettings(updated);
         } catch (error) {
@@ -512,37 +514,56 @@ export function AdminPage() {
     const handleEditTransferWatchEntry = (entry: typeof siteSettings.transferWatch[0]) => {
         setTransferDraft({
             player: entry.player,
+            playerImageUrl: entry.playerImageUrl || "",
             club: entry.club,
             fromClub: entry.fromClub || "",
             feeMode: entry.feeMode,
             feeMillions: String(entry.feeMillions || ""),
             status: entry.status,
             tier: entry.tier || 3,
+            scoutGrades: entry.scoutGrades,
             punchyLine: entry.punchyLine || "",
+            myTake: entry.myTake || "",
+            aiTake: entry.aiTake || "",
+            aiScore: entry.aiScore,
         });
         setTransferEditId(entry.id);
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     const handleCancelTransferWatchEdit = () => {
-        setTransferDraft({
-            player: "",
-            club: transferDraft.club,
-            fromClub: "",
-            feeMode: "million-usd",
-            feeMillions: "",
-            status: "rumor",
-            tier: 3,
-            punchyLine: "",
-        });
+        setTransferDraft(createTransferDraft(transferDraft.club || "Arsenal"));
         setTransferEditId(null);
     };
 
     const handleDeleteTransferWatchEntry = (id: string) => {
+        const entryToDelete = siteSettings.transferWatch.find((entry) => entry.id === id);
+        const nextTransferWatch = siteSettings.transferWatch.filter((entry) => entry.id !== id);
+        const nextTransferSources = entryToDelete
+            ? siteSettings.transferSources.filter((source) => (
+                source.dossierSlug !== buildTransferDossierSlug(entryToDelete)
+                && source.topic !== buildTransferTopic(entryToDelete.player, entryToDelete.club)
+                && !(source.player === entryToDelete.player && source.club === entryToDelete.club)
+            ))
+            : siteSettings.transferSources;
+
         setSiteSettings((prev) => ({
             ...prev,
-            transferWatch: prev.transferWatch.filter((entry) => entry.id !== id),
+            transferWatch: nextTransferWatch,
+            transferSources: nextTransferSources,
         }));
+
+        if (transferEditId === id) {
+            setTransferDraft(createTransferDraft());
+            setTransferEditId(null);
+        }
+    };
+
+    const handleSaveTransferSources = async (nextSources: SiteSettings["transferSources"]) => {
+        const updated = await updateSiteSettingsAsync({
+            transferSources: nextSources,
+        });
+        setSiteSettings(updated);
     };
 
     const handleSaveTransferWatch = async () => {
@@ -550,6 +571,7 @@ export function AdminPage() {
         try {
             const updated = await updateSiteSettingsAsync({
                 transferWatch: siteSettings.transferWatch,
+                transferSources: siteSettings.transferSources,
             });
             setSiteSettings(updated);
             toast.success("Transfer watch updated.");
@@ -761,7 +783,7 @@ export function AdminPage() {
         try {
                         const res = await fetch("/api/digest", { 
                 method: "POST",
-                headers: { "Authorization": `Bearer ${pwd}` }
+                headers: { "Authorization": `Bearer ${localStorage.getItem("pitchside_admin_auth") || ""}` }
             });
             const data = await res.json();
             if (res.ok) toast.success(data.message || "Digest sent!");
@@ -812,8 +834,6 @@ export function AdminPage() {
                     </div>
                 </div>
             </header>
-
-            <input ref={importFileRef} type="file" accept=".json" className="hidden" onChange={handleImport} />
 
             <main className="max-w-[1100px] mx-auto px-6 py-8">
                 {/* Tabs Wrapper */}
@@ -934,6 +954,12 @@ export function AdminPage() {
                         <ImageIcon className="w-4 h-4" /> Carousel Gen
                     </button>
                     <button
+                        onClick={() => setActiveTab("quick-take-video")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "quick-take-video" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <Zap className="w-4 h-4" /> Quick Take Video
+                    </button>
+                    <button
                         onClick={() => setActiveTab("draft-assistant")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "draft-assistant" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
@@ -956,108 +982,18 @@ export function AdminPage() {
                 {/* POSTS TAB */}
                 {activeTab === "posts" && (
                     <>
-                        <div className="flex items-center justify-between mb-8">
-                            <div>
-                                <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">Your Posts</h1>
-                                <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">{posts.length} article{posts.length !== 1 ? "s" : ""} published</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-[#64748B] dark:text-gray-400 rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-                                    <Download className="w-4 h-4" /><span className="hidden sm:inline">Export</span>
-                                </button>
-                                <button onClick={() => importFileRef.current?.click()} className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-[#64748B] dark:text-gray-400 rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all">
-                                    <Upload className="w-4 h-4" /><span className="hidden sm:inline">Import</span>
-                                </button>
-                                <button onClick={() => setView("create")} className="flex flex-shrink-0 items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] active:scale-95 transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25">
-                                    <Plus className="w-4 h-4" />New Post
-                                </button>
-                            </div>
-                        </div>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                            <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit">
-                                <button
-                                    onClick={() => setPostFilter("all")}
-                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all ${postFilter === "all" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
-                                >
-                                    All ({posts.length})
-                                </button>
-                                <button
-                                    onClick={() => setPostFilter("published")}
-                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all ${postFilter === "published" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
-                                >
-                                    Published ({posts.filter(p => !p.isDraft).length})
-                                </button>
-                                <button
-                                    onClick={() => setPostFilter("drafts")}
-                                    className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-all ${postFilter === "drafts" ? "bg-white dark:bg-[#0F172A] text-[#16A34A] shadow-sm" : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"}`}
-                                >
-                                    Drafts ({posts.filter(p => p.isDraft).length})
-                                </button>
-                            </div>
-                            
-                            <div className="flex items-center gap-2">
-                                <Filter className="w-4 h-4 text-gray-400" />
-                                <select 
-                                    value={postSort}
-                                    onChange={(e) => setPostSort(e.target.value as any)}
-                                    className="bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-[#16A34A] focus:border-[#16A34A] block w-full p-2.5 outline-none cursor-pointer pr-8"
-                                >
-                                    <option value="newest">Newest First</option>
-                                    <option value="oldest">Oldest First</option>
-                                    <option value="a-z">Title (A-Z)</option>
-                                    <option value="z-a">Title (Z-A)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {displayedPosts.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800">
-                                <div className="text-5xl mb-4">📝</div>
-                                <h2 className="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">No posts yet</h2>
-                                <p className="text-sm text-[#64748B] dark:text-gray-400 mb-6">Create your first blog post to get started.</p>
-                                <button onClick={() => setView("create")} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] active:scale-95 transition-all">
-                                    <Plus className="w-4 h-4" />Write Your First Post
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {displayedPosts.map((post) => (
-                                    <div key={post.id} className="flex items-center gap-4 p-4 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-all group">
-                                        {post.coverImage && (
-                                            <div className="hidden sm:block w-20 h-14 rounded-lg overflow-hidden flex-shrink-0">
-                                                <img src={post.coverImage} alt="" className="w-full h-full object-cover" />
-                                            </div>
-                                        )}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="font-semibold text-[#0F172A] dark:text-white text-sm truncate">{post.title}</h3>
-                                                {post.isDraft && (
-                                                    <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider rounded">Draft</span>
-                                                )}
-                                            </div>
-                                            <div className="flex items-center gap-2 mt-1 text-xs text-[#94A3B8] dark:text-gray-500">
-                                                <span className="px-2 py-0.5 bg-[#16A34A]/10 text-[#16A34A] rounded-full font-medium">{post.club}</span>
-                                                <span>{post.date}</span><span>•</span><span>{post.readTime}</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-1 flex-shrink-0">
-                                            <button onClick={() => notifySubscribers(post)} disabled={notifyingPostId === post.id || post.isDraft} className={`p-2 rounded-lg ${post.isDraft ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors'}`} title="Notify Subscribers">
-                                                <Send className={`w-4 h-4 ${notifyingPostId === post.id ? 'animate-pulse' : ''}`} />
-                                            </button>
-                                            <button onClick={() => {
-                                                setTargetCarouselText(post.content);
-                                                setActiveTab("carousel-generator");
-                                            }} className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-green-600 transition-colors" title="Create Carousel">
-                                                <ImageIcon className="w-4 h-4" />
-                                            </button>
-                                            <button onClick={() => handleViewPost(post)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
-                                            <button onClick={() => handleEditPost(post)} className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-[#64748B] dark:text-gray-400 hover:text-blue-600 transition-colors" title="Edit"><Edit3 className="w-4 h-4" /></button>
-                                            <button onClick={() => handleDeletePost(post.id)} className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#64748B] dark:text-gray-400 hover:text-red-600 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <AdminPostsTab
+                            posts={posts}
+                            setPosts={setPosts}
+                            setView={setView}
+                            handleViewPost={handleViewPost}
+                            handleEditPost={handleEditPost}
+                            handleDeletePost={handleDeletePost}
+                            notifySubscribers={notifySubscribers}
+                            notifyingPostId={notifyingPostId}
+                            setTargetCarouselText={setTargetCarouselText}
+                            setActiveTab={setActiveTab}
+                        />
                     </>
                 )}
 
@@ -1159,6 +1095,8 @@ export function AdminPage() {
                         handleSaveTransferWatch={handleSaveTransferWatch}
                         handleDeleteTransferWatchEntry={handleDeleteTransferWatchEntry}
                         formatTransferWatchAmount={formatTransferWatchAmount}
+                        transferSources={siteSettings.transferSources}
+                        onPersistTransferSources={handleSaveTransferSources}
                     />
                 )}
 
@@ -1213,6 +1151,11 @@ export function AdminPage() {
                     />
                 )}
 
+                {/* QUICK TAKE VIDEO GENERATOR TAB */}
+                {activeTab === "quick-take-video" && (
+                    <QuickTakeVideoGenerator />
+                )}
+
                 {/* DRAFT ASSISTANT TAB */}
                 {activeTab === "draft-assistant" && (
                     <DraftAssistant />
@@ -1237,7 +1180,7 @@ export function AdminPage() {
                 {activeTab === "pots" && (
                     <AdminPOTSTab 
                         settings={siteSettings.pots} 
-                        onSave={(pots) => updateSiteSettingsAsync({ pots })} 
+                        onSave={async (pots) => { await updateSiteSettingsAsync({ pots }); }} 
                     />
                 )}
             </main>

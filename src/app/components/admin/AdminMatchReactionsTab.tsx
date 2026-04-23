@@ -49,12 +49,13 @@ export function AdminMatchReactionsTab() {
                 id: crypto.randomUUID(),
                 title: finalTitle,
                 content: content.trim(),
+                coverImage: "",
                 author: "Admin", // or fetch from session
                 date: timestamp,
                 readTime: "1 min read",
                 format: "match-reaction",
                 tags: club !== "General" ? [club, "Match Reaction"] : ["Analysis", "Match Reaction"],
-                club: club !== "General" ? club : undefined,
+                club: club !== "General" ? club : "",
                 excerpt: content.replace(/<[^>]*>?/gm, '').substring(0, 150) + "...",
                 isDraft: false,
             };

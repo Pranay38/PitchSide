@@ -1,10 +1,12 @@
+"use client";
 import { useParams } from "@/lib/router-compat";
 import { StadiumMatchCenter } from "../components/StadiumMatchCenter";
 import { MatchPredictorWidget } from "../components/MatchPredictorWidget";
 import { SEO } from "../components/SEO";
 
 export function MatchCenterPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params.id ? String(params.id) : "";
 
   if (!id) return <div>Match ID required</div>;
 
