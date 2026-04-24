@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-04-23T06:59:29.418075",
+  "lastUpdated": "2026-04-24T07:02:46.934882",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "PSG make Fernandes approach - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Man City interested in Fernandez - Friday's gossip",
+    "sentimentScore": 62
   },
   "managerPressure": [
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 96
-    },
-    {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 90
-    },
-    {
-      "name": "Pep Guardiola (MCI)",
+      "name": "Michael Carrick (MUN)",
       "pressureScore": 87
     },
     {
-      "name": "Eddie Howe (NEW)",
+      "name": "Unai Emery (AVL)",
       "pressureScore": 76
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 68
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 76
     }
   ]
 }
