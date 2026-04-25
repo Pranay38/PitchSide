@@ -1,7 +1,8 @@
+"use client";
 import { Link } from "@/lib/router-compat";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
-import { Twitter, Instagram, Mail, PenLine, BarChart3, Zap } from "lucide-react";
+import { Twitter, Instagram, Mail, PenLine, MessageSquare, Crosshair, Swords } from "lucide-react";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { SEO } from "../components/SEO";
 import { GlowButton } from "../components/ui/GlowButton";
@@ -11,7 +12,30 @@ export function AboutPage() {
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
-            <SEO title="About Us" description="About the founder and writer of The Touchline Dribble." url="https://pitchside.vercel.app/about" />
+            {/* Person JSON-LD for E-E-A-T author entity */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "Person",
+                        name: "Pranay Agrawal",
+                        url: "https://thetouchlinedribble.in/about",
+                        jobTitle: "Football Tactics Writer & Analyst",
+                        description: "Tactical writer and football obsessive. Founder of The Touchline Dribble — post-match breakdowns, formation deep dives, and the bold opinions your pundit won't give you.",
+                        sameAs: [
+                            "https://x.com/TouchlineDribbl",
+                            "https://www.instagram.com/thetouchlinedribble/"
+                        ],
+                        worksFor: {
+                            "@type": "Organization",
+                            name: "The Touchline Dribble",
+                            url: "https://thetouchlinedribble.in",
+                            logo: "https://thetouchlinedribble.in/logo.png"
+                        },
+                    }),
+                }}
+            />
             <Header favoriteClub={favoriteClub} />
 
             <main className="max-w-[720px] mx-auto px-6 py-12">
@@ -24,7 +48,7 @@ export function AboutPage() {
                         About The Touchline Dribble
                     </h1>
                     <p className="text-lg text-[#64748B] dark:text-gray-400 leading-relaxed max-w-lg mx-auto">
-                        From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions for the beautiful game.
+                        We break down what actually happened on the pitch — the tactical shifts, the managerial gambles, the moments your pundit missed. Sharp analysis. Bold opinions. No PR fluff.
                     </p>
                 </div>
 
@@ -32,24 +56,24 @@ export function AboutPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     <div className="bg-white dark:bg-[#1E293B] rounded-xl p-6 border border-gray-100 dark:border-gray-800 text-center">
                         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#16A34A]/10 mb-4">
-                            <PenLine className="w-5 h-5 text-[#16A34A]" />
+                            <Crosshair className="w-5 h-5 text-[#16A34A]" />
                         </div>
-                        <h3 className="font-bold text-[#0F172A] dark:text-white mb-2">Deep Analysis</h3>
-                        <p className="text-sm text-[#64748B] dark:text-gray-400">Tactical breakdowns and match analysis that go beyond the surface.</p>
+                        <h3 className="font-bold text-[#0F172A] dark:text-white mb-2">Tactical Breakdowns</h3>
+                        <p className="text-sm text-[#64748B] dark:text-gray-400">Post-match autopsies that explain the <em>why</em> behind every result. Formations, pressing triggers, and the moments that changed the game.</p>
                     </div>
                     <div className="bg-white dark:bg-[#1E293B] rounded-xl p-6 border border-gray-100 dark:border-gray-800 text-center">
                         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#16A34A]/10 mb-4">
-                            <BarChart3 className="w-5 h-5 text-[#16A34A]" />
-                        </div>
-                        <h3 className="font-bold text-[#0F172A] dark:text-white mb-2">Data Driven</h3>
-                        <p className="text-sm text-[#64748B] dark:text-gray-400">Stats-backed insights that add context to every story and opinion piece.</p>
-                    </div>
-                    <div className="bg-white dark:bg-[#1E293B] rounded-xl p-6 border border-gray-100 dark:border-gray-800 text-center">
-                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#16A34A]/10 mb-4">
-                            <Zap className="w-5 h-5 text-[#16A34A]" />
+                            <Swords className="w-5 h-5 text-[#16A34A]" />
                         </div>
                         <h3 className="font-bold text-[#0F172A] dark:text-white mb-2">Bold Opinions</h3>
-                        <p className="text-sm text-[#64748B] dark:text-gray-400">Honest takes that spark conversation. We say what fans are thinking.</p>
+                        <p className="text-sm text-[#64748B] dark:text-gray-400">Hot takes backed by tactical reasoning, not vibes. The kind of arguments that fuel your group chat.</p>
+                    </div>
+                    <div className="bg-white dark:bg-[#1E293B] rounded-xl p-6 border border-gray-100 dark:border-gray-800 text-center">
+                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#16A34A]/10 mb-4">
+                            <MessageSquare className="w-5 h-5 text-[#16A34A]" />
+                        </div>
+                        <h3 className="font-bold text-[#0F172A] dark:text-white mb-2">Fan Debate</h3>
+                        <p className="text-sm text-[#64748B] dark:text-gray-400">Polls, predictions, and community debates. Your tactical opinion matters here — vote, argue, and get proven right (or wrong).</p>
                     </div>
                 </div>
 
@@ -61,10 +85,10 @@ export function AboutPage() {
                         </div>
                         <div className="text-center sm:text-left">
                             <h2 className="text-xl font-bold text-[#0F172A] dark:text-white mb-1">Pranay Agrawal</h2>
-                            <p className="text-sm text-[#16A34A] font-medium mb-3">Founder & Writer</p>
+                            <p className="text-sm text-[#16A34A] font-medium mb-3">Founder & Tactical Writer</p>
                             <p className="text-sm text-[#64748B] dark:text-gray-400 leading-relaxed mb-4">
-                                Football obsessive since childhood. I started The Touchline Dribble to combine my love for the beautiful game with data-driven analysis.
-                                Every article is written with the goal of making you see the game differently.
+                                Football obsessive since childhood. I started The Touchline Dribble because I was tired of pundits saying "they wanted it more" when the real story was a formation change in the 55th minute.
+                                Every piece I write aims to make you see the game differently — the tactical shifts, the managerial mindgames, the details that decide matches.
                             </p>
                             <div className="flex items-center justify-center sm:justify-start gap-3">
                                 <a href="https://x.com/TouchlineDribbl" target="_blank" rel="noopener noreferrer"

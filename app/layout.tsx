@@ -5,15 +5,16 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
+import { CSPostHogProvider } from "@/app/components/PostHogProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "The Touchline Dribble — Football Analysis & Opinion",
+    default: "The Touchline Dribble — Football Tactics & Bold Opinions",
     template: "%s | The Touchline Dribble",
   },
   description:
-    "From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions. Your go-to pitch for the beautiful game. ⚽",
+    "Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and bold opinions for die-hard football fans. ⚽",
   metadataBase: new URL("https://thetouchlinedribble.in"),
   alternates: {
     types: {
@@ -23,9 +24,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "The Touchline Dribble",
-    title: "The Touchline Dribble — Football Analysis & Opinion",
+    title: "The Touchline Dribble — Football Tactics & Bold Opinions",
     description:
-      "From the touchline to your timeline — sharp football analysis, tactical breakdowns & bold opinions. ⚽🔥",
+      "Tactical breakdowns your pundit missed. Post-match analysis, bold opinions & the football debates that actually matter. ⚽🔥",
+    images: [
+      {
+        url: "/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "The Touchline Dribble — Tactical breakdowns your pundit missed",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -38,6 +47,13 @@ export const metadata: Metadata = {
   icons: {
     icon: "/logo.png",
     apple: "/logo.png",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    "max-image-preview": "large" as const,
+    "max-snippet": -1,
+    "max-video-preview": -1,
   },
   manifest: "/manifest.json",
   appleWebApp: {
@@ -96,7 +112,7 @@ export default function RootLayout({
               alternateName: "PitchSide",
               url: "https://thetouchlinedribble.in",
               description:
-                "From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions.",
+                "From the touchline to your timeline — tactical breakdowns, bold football opinions, and the analysis your pundit missed.",
               potentialAction: {
                 "@type": "SearchAction",
                 target:
@@ -160,7 +176,9 @@ export default function RootLayout({
             },
           }}
         >
-          <Providers>{children}</Providers>
+          <CSPostHogProvider>
+            <Providers>{children}</Providers>
+          </CSPostHogProvider>
         </ClerkProvider>
 
         {/* SEO: Noscript fallback for bots that don't execute JS */}
@@ -176,12 +194,12 @@ export default function RootLayout({
             }}
           >
             <h1>
-              The Touchline Dribble — Football Analysis &amp; Opinion
+              The Touchline Dribble — Football Tactics &amp; Bold Opinions
             </h1>
             <p>
-              From the touchline to your timeline — sharp football
-              analysis, tactical breakdowns, transfer dossiers, and bold
-              opinions for die-hard fans.
+              Tactical breakdowns your pundit missed. Post-match analysis,
+              formation deep dives, manager pressure watches, and the bold
+              opinions that fuel your group chat.
             </p>
             <nav>
               <ul>

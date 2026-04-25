@@ -18,6 +18,33 @@ Disallow: /saved
 Disallow: /profile
 Disallow: /alerts
 
+# Block auth pages
+Disallow: /sign-in
+Disallow: /sign-up
+
 # Block embed pages (meant for iframes, not search results)
 Disallow: /tactics/embed/
 Disallow: /match-center/embed/
+
+# ─── AI Crawler Access (GEO: Generative Engine Optimization) ───
+# Allow AI search engines to crawl and cite our tactical analysis
+# This helps content appear in ChatGPT, Perplexity, Claude, etc.
+
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /pitchside-manage-x7k9
+Disallow: /saved
+Disallow: /profile
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /

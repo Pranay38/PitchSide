@@ -8,7 +8,7 @@ import { topicPath } from "../lib/contentPaths";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 
 export function Footer() {
-  const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
+  const { newsletterOptIn, setNewsletterOptIn, loading, fanClub, followedClubs } = useUserPreferences();
   const [email, setEmail] = useState("");
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -41,6 +41,33 @@ export function Footer() {
     setEmail("");
   };
 
+  // Construct personalized categories for the footer
+  let categories = ["Tactical Breakdowns", "Bold Takes", "Manager Watch", "Premier League", "Transfers", "Champions League"];
+  
+  if (fanClub?.name || (followedClubs && followedClubs.length > 0)) {
+    const customCategories: string[] = [];
+    if (fanClub?.name) {
+      customCategories.push(fanClub.name);
+    }
+    if (followedClubs) {
+      followedClubs.forEach((club) => {
+        if (!customCategories.includes(club)) {
+          customCategories.push(club);
+        }
+      });
+    }
+    
+    // Fill the rest with default categories, up to 6 total
+    const defaultCategories = ["Tactical Breakdowns", "Bold Takes", "Manager Watch", "Premier League", "Transfers"];
+    for (const cat of defaultCategories) {
+      if (!customCategories.includes(cat) && customCategories.length < 6) {
+         customCategories.push(cat);
+      }
+    }
+    
+    categories = customCategories;
+  }
+
   return (
     <footer className="mt-20 relative overflow-hidden bg-[#0F172A] dark:bg-[#020617] text-white transition-colors duration-300">
       {/* Gradient top accent line */}
@@ -57,7 +84,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed mb-5">
-              From the touchline to your timeline — sharp football analysis, tactical breakdowns, and bold opinions for the beautiful game.
+              The tactical detail your pundit missed. Sharp analysis, bold opinions, and the football debates that actually matter.
             </p>
             <div className="flex items-center gap-3">
               <a href="https://x.com/TouchlineDribbl" target="_blank" rel="noopener noreferrer"
@@ -90,7 +117,7 @@ export function Footer() {
 
             <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-3 mt-6">Categories</h3>
             <div className="flex flex-wrap gap-1.5">
-              {["Tactics", "Premier League", "La Liga", "Champions League", "Transfer News"].map((cat) => (
+              {categories.map((cat) => (
                 <Link
                   to={topicPath(cat)}
                   key={cat}
@@ -105,9 +132,9 @@ export function Footer() {
           {/* Newsletter */}
           {!loading && !newsletterOptIn && (
             <div>
-              <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-4">Stay Updated</h3>
+              <h3 className="text-sm font-black font-outfit uppercase tracking-wider text-gray-200 mb-4">The Touchline Briefing</h3>
               <p className="text-sm text-gray-400 mb-4">
-                Get the latest insights delivered straight to your inbox. No spam, just footy.
+                Every Friday: the week&apos;s biggest tactical talking point + a weekend match preview. The email your group chat will thank you for.
               </p>
               <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
                 <input

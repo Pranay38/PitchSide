@@ -12,8 +12,8 @@ interface InlineNewsletterCardProps {
 }
 
 export function InlineNewsletterCard({
-  title = "Get the week's best reads in one email",
-  description = "A concise football briefing with the strongest analysis, long reads, and standout stories from the site.",
+  title = "The tactical breakdown your pundit missed — every Friday",
+  description = "One email, every Friday. The week's biggest tactical talking point, a bold opinion you can argue about, and a weekend match preview so you know exactly what to watch for.",
   className = "",
 }: InlineNewsletterCardProps) {
   const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
