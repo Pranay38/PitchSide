@@ -11,6 +11,13 @@ import { PollWidget } from "./PollWidget";
 import { scheduleEmbedHydration } from "../lib/embedHydration";
 import { toast } from "sonner";
 import { SpellcheckBar } from "./admin/SpellcheckBar";
+import { InteractiveWidgets } from "./editor/InteractiveWidgets";
+import { MetaSettings } from "./editor/MetaSettings";
+import { EditorTopBar } from "./editor/EditorTopBar";
+import { CoverImageUpload } from "./editor/CoverImageUpload";
+import { RichTextCanvas } from "./editor/RichTextCanvas";
+import { SeoTools } from "./editor/SeoTools";
+import { SidebarSettings } from "./editor/SidebarSettings";
 
 const GENERAL_CATEGORIES = [
     "General",
@@ -27,40 +34,7 @@ const GENERAL_CATEGORIES = [
     "Women's Football",
 ];
 
-const MATCH_REACTION_TEMPLATES = [
-    {
-        id: "tactical-breakdown",
-        title: "Tactical Breakdown",
-        description: "Deep dive into formations, pressing triggers, and key tactical shifts.",
-        icon: Activity,
-        format: "article",
-        html: `<h2>The Tactical Setup</h2>\n<p>Describe the initial formations and any surprising personnel choices here...</p>\n\n<h2>Where the Game Was Won</h2>\n<p>Break down the decisive tactical shift or area of the pitch that decided the outcome...</p>\n\n<h2>Key Data Points</h2>\n<ul><li><strong>Possession:</strong> %</li><li><strong>xG:</strong> </li><li><strong>Key Passes:</strong> </li></ul>`
-    },
-    {
-        id: "player-ratings",
-        title: "Player Ratings",
-        description: "Standard post-match player ratings and individual analysis.",
-        icon: Users,
-        format: "article",
-        html: `<h2>Starting XI</h2>\n<p><strong>[Player 1] - 7/10:</strong> Solid performance...</p>\n<p><strong>[Player 2] - 8/10:</strong> Outstanding in possession...</p>\n\n<h2>Substitutes</h2>\n<p><strong>[Sub 1] - 6/10:</strong> Came on and did a job...</p>\n\n<h2>Man of the Match</h2>\n<p><strong>[Player Name]:</strong> Best player on the pitch because...</p>`
-    },
-    {
-        id: "key-moments",
-        title: "Key Moments",
-        description: "A chronological breakdown of the match's most important events (Quick Take).",
-        icon: Flame,
-        format: "quick-take",
-        html: `<p><strong>15' The Turning Point:</strong> A brief description of the early moment...</p>\n<p><strong>45' Before the Half:</strong> What changed right before the whistle...</p>\n<p><strong>89' The Climax:</strong> The final decisive action...</p>`
-    },
-    {
-        id: "manager-quotes",
-        title: "Manager Quotes",
-        description: "Post-match press conference reactions and analysis (Quick Take).",
-        icon: MessageSquare,
-        format: "quick-take",
-        html: `<blockquote>"Quote goes here..."</blockquote>\n<p><strong>What it means:</strong> Analyze what the manager is really saying here...</p>\n\n<blockquote>"Second quote..."</blockquote>\n<p><strong>The takeaway:</strong> ...</p>`
-    }
-];
+
 
 /** Compress and convert an image file to a base64 data URL */
 function compressImage(file: File, maxWidth = 1200, quality = 0.8): Promise<string> {
@@ -100,7 +74,7 @@ interface PostEditorProps {
 export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     type SubmitAction = "draft" | "publish" | "back";
     const [title, setTitle] = useState(post?.title || "");
-    const [format, setFormat] = useState<"article" | "quick-take">(post?.format || "article");
+    const [format, setFormat] = useState<"article" | "quick-take">(post?.format === "quick-take" ? "quick-take" : "article");
     const [excerpt, setExcerpt] = useState(post?.excerpt || "");
     const [content, setContent] = useState(post?.content || "");
     const [coverImage, setCoverImage] = useState(post?.coverImage || "");
@@ -115,13 +89,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         return post?.club || "General";
     });
     const [club, setClub] = useState(post?.club || "");
-    const [clubSearch, setClubSearch] = useState("");
-    const [clubResults, setClubResults] = useState<SearchResult[]>([]);
-    const [searchingClubs, setSearchingClubs] = useState(false);
-    const [showClubDropdown, setShowClubDropdown] = useState(false);
-    const [brokenLogos, setBrokenLogos] = useState<Set<string>>(new Set());
-    const clubSearchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const clubDropdownRef = useRef<HTMLDivElement>(null);
+
     const [tagInput, setTagInput] = useState("");
     const [tags, setTags] = useState<string[]>(post?.tags || []);
     const [thisWeek, setThisWeek] = useState(post?.thisWeek || false);
@@ -133,11 +101,6 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [playerName, setPlayerName] = useState(post?.playerName || "");
     const [poll, setPoll] = useState(post?.poll || { question: "", options: [{ text: "", votes: 0 }, { text: "", votes: 0 }] });
     const [usePoll, setUsePoll] = useState(!!post?.poll);
-    const [matchRatings, setMatchRatings] = useState<{playerName: string, editorRating: number}[]>(post?.matchRatings || []);
-    const [useMatchRatings, setUseMatchRatings] = useState(!!post?.matchRatings && post.matchRatings.length > 0);
-    const [matchRating, setMatchRating] = useState<number | "">(post?.matchRating ?? "");
-    const [armchairRatings, setArmchairRatings] = useState<{name: string; position: string; authorRating: number; imageUrl?: string}[]>(post?.armchairRatings || []);
-    const [useArmchairRatings, setUseArmchairRatings] = useState(!!(post?.armchairRatings && post.armchairRatings.length > 0));
     const [hotTakes, setHotTakes] = useState<{id: string; statement: string}[]>(post?.hotTakes || []);
     const [useHotTakes, setUseHotTakes] = useState(!!(post?.hotTakes && post.hotTakes.length > 0));
     const [seriesName, setSeriesName] = useState(post?.seriesName || "");
@@ -147,9 +110,6 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [showPreview, setShowPreview] = useState(false);
     const previewContentRef = useRef<HTMLDivElement | null>(null);
 
-    // Custom Team Modal State
-    const [showCustomTeamModal, setShowCustomTeamModal] = useState(false);
-    const [customTeamLogoInput, setCustomTeamLogoInput] = useState("");
     const [copiedThread, setCopiedThread] = useState(false);
 
     // Auto-save state
@@ -160,109 +120,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const saveFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const previewArticleModel = useMemo(() => getArticleContentModel(content), [content]);
 
-    // Derive the effective "club" field based on category
-    const effectiveClub = category === "club" ? club : category;
 
-    // Auto-set primary tag when category/club changes
-    useEffect(() => {
-        const primary = category === "club" ? club : category;
-        if (primary && !tags.includes(primary)) {
-            setTags((prev) => [primary, ...prev.filter((t) => t !== primary)]);
-        }
-    }, [category, club]);
-
-    const addTag = () => {
-        const t = tagInput.trim();
-        if (t && !tags.includes(t)) {
-            setTags([...tags, t]);
-            setTagInput("");
-        }
-    };
-
-    const removeTag = (tag: string) => {
-        setTags(tags.filter((t) => t !== tag));
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            addTag();
-        }
-    };
-
-    // Club search with debounce
-    const handleClubSearch = (query: string) => {
-        setClubSearch(query);
-        setShowClubDropdown(true);
-
-        // Show local matches immediately
-        const localNames = getAllClubNames();
-        const localMatches = localNames
-            .filter((n) => n.toLowerCase().includes(query.toLowerCase()))
-            .map((n) => {
-                const c = getClubByName(n);
-                return { name: n, league: c?.league || "", logo: c?.logo || "" };
-            });
-        setClubResults(localMatches);
-
-        // Debounced online search
-        if (clubSearchTimeout.current) clearTimeout(clubSearchTimeout.current);
-        if (query.length >= 2) {
-            setSearchingClubs(true);
-            clubSearchTimeout.current = setTimeout(async () => {
-                const online = await searchClubsOnline(query);
-                // Merge: local first, then online results not already in local
-                const localSet = new Set(localMatches.map((m) => m.name.toLowerCase()));
-                const merged = [
-                    ...localMatches,
-                    ...online.filter((r) => !localSet.has(r.name.toLowerCase())),
-                ];
-                setClubResults(merged);
-                setSearchingClubs(false);
-            }, 400);
-        } else {
-            setSearchingClubs(false);
-        }
-    };
-
-    const handleAddCustomClub = () => {
-        if (!clubSearch.trim()) return;
-        setCustomTeamLogoInput("");
-        setShowCustomTeamModal(true);
-    };
-
-    const confirmCustomTeamAdd = () => {
-        if (!clubSearch.trim()) return;
-
-        const newClub = {
-            name: clubSearch.trim(),
-            league: "Custom Teams", // Generic bucket for user-added teams
-            logo: customTeamLogoInput.trim() || ""
-        };
-
-        addCustomClub(newClub);
-        selectClub(newClub);
-        setShowCustomTeamModal(false);
-    };
-
-    const selectClub = (result: SearchResult) => {
-        setClub(result.name);
-        setClubSearch(result.name);
-        setShowClubDropdown(false);
-        // Add to persistent club list if it's new
-        addCustomClub({ name: result.name, league: result.league, logo: result.logo });
-    };
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handler = (e: MouseEvent) => {
-            if (clubDropdownRef.current && !clubDropdownRef.current.contains(e.target as Node)) {
-                setShowClubDropdown(false);
-            }
-        };
-        document.addEventListener("mousedown", handler);
-        return () => document.removeEventListener("mousedown", handler);
-    }, []);
 
     useEffect(() => {
         if (!showPreview || !content) return;
@@ -348,8 +206,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             coverImage:
                 coverImage.trim() ||
                 "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-            club: effectiveClub,
-            tags: tags.length > 0 ? tags : [effectiveClub],
+            club: club,
+            tags: tags.length > 0 ? tags : [club],
             date: post?.date || formatDate(),
             readTime: calculateReadTime(plainText),
             thisWeek,
@@ -361,9 +219,6 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             playerName: playerName.trim() || undefined,
             isDraft,
             poll: usePoll && poll.question.trim() ? poll : undefined,
-            matchRatings: useMatchRatings && matchRatings.filter(r => r.playerName.trim()).length > 0 ? matchRatings.filter(r => r.playerName.trim()) : undefined,
-            matchRating: matchRating === "" ? undefined : matchRating,
-            armchairRatings: useArmchairRatings && armchairRatings.filter(r => r.name.trim()).length > 0 ? armchairRatings.filter(r => r.name.trim()) : undefined,
             hotTakes: useHotTakes && hotTakes.filter(t => t.statement.trim()).length > 0 ? hotTakes.filter(t => t.statement.trim()) : undefined,
             seriesName: seriesName.trim() || undefined,
             seriesOrder: seriesOrder === "" ? undefined : seriesOrder,
@@ -453,7 +308,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     }, [
         title, excerpt, content, coverImage, club, category, tags,
         thisWeek, mustRead, editorPick, mainStory, mediaUrl, audioUrl, playerName,
-        usePoll, poll, useMatchRatings, matchRatings, matchRating, seriesName, seriesOrder, publishAt, submitAction
+        usePoll, poll, seriesName, seriesOrder, publishAt, submitAction
     ]);
 
     useEffect(() => {
@@ -501,1004 +356,112 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
             {/* Top Bar */}
-            <div className="sticky top-0 z-50 bg-white/80 dark:bg-[#0F172A]/80 backdrop-blur-lg border-b border-gray-200/50 dark:border-gray-800/50">
-                <div className="max-w-[900px] mx-auto px-6 py-3 flex items-center justify-between">
-                    <button
-                        type="button"
-                        onClick={() => void handleBack()}
-                        disabled={isBusy}
-                        className="flex items-center gap-2 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        Back
-                    </button>
+            <EditorTopBar
+                handleBack={handleBack}
+                isBusy={isBusy}
+                isSubmitting={isSubmitting}
+                actionInFlightLabel={actionInFlightLabel}
+                saveStatus={saveStatus}
+                post={post}
+                setShowPreview={setShowPreview}
+                handleDraftSave={handleDraftSave}
+                draftButtonLabel={draftButtonLabel}
+                handlePublish={handlePublish}
+                publishButtonLabel={publishButtonLabel}
+                submitAction={submitAction}
+            />
 
-                    {/* Auto-save indicator */}
-                    <div className="flex items-center justify-center flex-1 mx-4">
-                        {isSubmitting && (
-                            <span className="flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-md">
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                {actionInFlightLabel}
-                            </span>
-                        )}
-                        {!isSubmitting && saveStatus === "saving" && (
-                            <span className="flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-md">
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                Saving draft...
-                            </span>
-                        )
-                        }
-                        {
-                            saveStatus === "saved" && (
-                                <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md">
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
-                                    Draft saved to cloud
-                                </span>
-                            )
-                        }
-                        {
-                            saveStatus === "error" && (
-                                <span className="flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-500 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-md">
-                                    <CloudOff className="w-3.5 h-3.5" />
-                                    Disconnected
-                                </span>
-                            )
-                        }
-                    </div >
-
-                    <div className="flex items-center gap-3">
-                        {/* Copy Preview Link — only for saved drafts */}
-                        {post?.isDraft && post?.previewToken && (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    const previewUrl = `${window.location.origin}/post/${post.slug || post.id}?preview=${post.previewToken}`;
-                                    navigator.clipboard.writeText(previewUrl);
-                                    toast.success("Preview link copied! Share it for feedback.");
-                                }}
-                                className="flex items-center gap-2 px-4 py-1.5 border border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 rounded-lg font-medium text-sm hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-all duration-200"
-                            >
-                                <Link className="w-4 h-4" />
-                                Copy Preview Link
-                            </button>
-                        )}
-                        <button
-                            type="button"
-                            onClick={() => setShowPreview(true)}
-                            disabled={isBusy}
-                            className="flex items-center gap-2 px-4 py-1.5 border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white rounded-lg font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200"
-                        >
-                            <Eye className="w-4 h-4" />
-                            Preview
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => void handleDraftSave()}
-                            disabled={isBusy}
-                            className="px-5 py-1.5 border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white rounded-lg font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-                        >
-                            {submitAction === "draft" ? "Saving..." : draftButtonLabel}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => void handlePublish()}
-                            disabled={isBusy}
-                            className="px-5 py-1.5 bg-[#16A34A] text-white rounded-lg font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25 disabled:opacity-60 disabled:cursor-not-allowed"
-                        >
-                            {submitAction === "publish" ? "Working..." : publishButtonLabel}
-                        </button>
-                    </div>
-                </div >
-            </div >
-
-            <div className="max-w-[900px] mx-auto px-6 py-8">
+            <div className="max-w-[1200px] mx-auto px-6 py-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Cover Image */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <Image className="w-4 h-4 text-[#16A34A]" />
-                            Cover Image
-                        </label>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Main Content Area */}
+                        <div className="lg:col-span-2 space-y-6">
 
-                        {/* Toggle: Upload vs URL */}
-                        <div className="grid grid-cols-2 gap-2 mb-4">
-                            <button
-                                type="button"
-                                onClick={() => setImageMode("upload")}
-                                className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${imageMode === "upload"
-                                    ? "bg-[#16A34A] text-white border-[#16A34A] shadow-md shadow-[#16A34A]/20"
-                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-[#16A34A]"
-                                    }`}
-                            >
-                                <Upload className="w-4 h-4" />
-                                Upload from Device
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setImageMode("url")}
-                                className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${imageMode === "url"
-                                    ? "bg-[#16A34A] text-white border-[#16A34A] shadow-md shadow-[#16A34A]/20"
-                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-[#16A34A]"
-                                    }`}
-                            >
-                                <Link className="w-4 h-4" />
-                                Paste URL
-                            </button>
-                        </div>
 
-                        {/* Upload mode */}
-                        {imageMode === "upload" && (
-                            <>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) handleFileUpload(file);
-                                    }}
-                                />
-                                <div
-                                    onClick={() => fileInputRef.current?.click()}
-                                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                                    onDragLeave={() => setDragOver(false)}
-                                    onDrop={handleDrop}
-                                    className={`relative flex flex-col items-center justify-center gap-3 p-8 rounded-xl border-2 border-dashed cursor-pointer transition-all ${dragOver
-                                        ? "border-[#16A34A] bg-[#16A34A]/5"
-                                        : "border-gray-300 dark:border-gray-600 hover:border-[#16A34A] hover:bg-gray-50 dark:hover:bg-[#0F172A]"
-                                        }`}
-                                >
-                                    {uploading ? (
-                                        <div className="flex items-center gap-2 text-[#16A34A]">
-                                            <div className="w-5 h-5 border-2 border-[#16A34A] border-t-transparent rounded-full animate-spin" />
-                                            <span className="text-sm font-medium">Processing...</span>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <Upload className="w-8 h-8 text-[#94A3B8]" />
-                                            <div className="text-center">
-                                                <p className="text-sm font-medium text-[#0F172A] dark:text-white">
-                                                    Click to upload or drag & drop
-                                                </p>
-                                                <p className="text-xs text-[#94A3B8] mt-1">
-                                                    PNG, JPG, WEBP up to 10MB — auto-compressed
-                                                </p>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </>
-                        )}
-
-                        {/* URL mode */}
-                        {imageMode === "url" && (
-                            <>
-                                <input
-                                    type="url"
-                                    value={coverImage.startsWith("data:") ? "" : coverImage}
-                                    onChange={(e) => setCoverImage(e.target.value)}
-                                    placeholder="https://images.unsplash.com/..."
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                                />
-                                <p className="text-xs text-[#94A3B8] dark:text-gray-500 mt-2">
-                                    Tip: Use{" "}
-                                    <a href="https://unsplash.com" target="_blank" rel="noopener" className="text-[#16A34A] hover:underline">
-                                        Unsplash
-                                    </a>{" "}
-                                    for free high-quality images
-                                </p>
-                            </>
-                        )}
-
-                        {/* Preview */}
-                        {coverImage && (
-                            <div className="mt-4 relative">
-                                <div className="aspect-[21/9] rounded-xl overflow-hidden">
-                                    <img
-                                        src={coverImage}
-                                        alt="Cover preview"
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => (e.currentTarget.style.display = "none")}
-                                    />
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => { setCoverImage(""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
-                                    className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-lg transition-colors"
-                                    title="Remove image"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Match Reaction Templates */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <Activity className="w-4 h-4 text-[#16A34A]" />
-                            Match Reaction Templates
-                        </label>
-                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
-                            Select a curated template to instantly drop tactical layouts into your post.
-                        </p>
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                            {MATCH_REACTION_TEMPLATES.map((template) => {
-                                const Icon = template.icon;
-                                return (
-                                    <button
-                                        key={template.id}
-                                        type="button"
-                                        onClick={() => {
-                                            if (content.trim() && content.length > 20) {
-                                                if (!window.confirm("This will inject the template into your existing content. OK to proceed?")) return;
-                                            }
-                                            setContent((prev) => prev ? prev + "\n" + template.html : template.html);
-                                            setFormat(template.format as "article" | "quick-take");
-                                            if (!title) setTitle(template.title);
-                                            toast.success(`${template.title} loaded!`);
-                                        }}
-                                        className="flex flex-col items-start gap-2 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 hover:bg-[#16A34A]/5 hover:border-[#16A34A]/30 transition-all text-left group"
-                                    >
-                                        <Icon className="w-5 h-5 text-gray-500 group-hover:text-[#16A34A] transition-colors" />
-                                        <div>
-                                            <p className="text-sm font-bold text-[#0F172A] dark:text-white group-hover:text-[#16A34A] transition-colors">
-                                                {template.title}
-                                            </p>
-                                            <p className="text-[10px] text-[#64748B] dark:text-gray-400 mt-1 line-clamp-2">
-                                                {template.description}
-                                            </p>
-                                        </div>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Title & Excerpt */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <div className="flex items-center justify-between mb-4">
-                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
-                                <FileText className="w-4 h-4 text-[#16A34A]" />
-                                Title & Summary
-                            </label>
-                            
-                            <div className="flex bg-gray-100 dark:bg-[#0F172A] p-1 rounded-lg">
-                                <button
-                                    type="button"
-                                    onClick={() => setFormat("article")}
-                                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
-                                        format === "article" 
-                                            ? "bg-white dark:bg-[#1E293B] shadow-sm text-[#0F172A] dark:text-white" 
-                                            : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
-                                    }`}
-                                >
-                                    Full Article
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setFormat("quick-take")}
-                                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1 ${
-                                        format === "quick-take" 
-                                            ? "bg-white dark:bg-[#1E293B] shadow-sm text-[#16A34A] dark:text-[#16A34A]" 
-                                            : "text-[#64748B] hover:text-[#16A34A]"
-                                    }`}
-                                >
-                                    Quick Take ⚡
-                                </button>
-                            </div>
-                        </div>
-
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => {
-                                setTitle(e.target.value);
-                                setErrors({ ...errors, title: "" });
-                            }}
-                            placeholder="Your article title..."
-                            className={`w-full px-4 py-3 rounded-xl border ${errors.title ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-lg font-semibold mb-3`}
-                        />
-                        {errors.title && <p className="text-red-500 text-xs mb-2">{errors.title}</p>}
-
-                        <textarea
-                            value={excerpt}
-                            onChange={(e) => {
-                                setExcerpt(e.target.value);
-                                setErrors({ ...errors, excerpt: "" });
-                            }}
-                            placeholder="Brief summary of the article (shown on cards)..."
-                            rows={2}
-                            className={`w-full px-4 py-3 rounded-xl border ${errors.excerpt ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm resize-none`}
-                        />
-                        {errors.excerpt && <p className="text-red-500 text-xs">{errors.excerpt}</p>}
-                        <button
-                            type="button"
-                            onClick={async () => {
-                                if (!content.trim()) {
-                                    toast.error("Write some content first so AI can generate a description.");
-                                    return;
-                                }
-                                toast.loading("Generating meta description...", { id: "meta-gen" });
-                                try {
-                                    const res = await fetch("/api/ai-generate", {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({ type: "meta-description", text: content.slice(0, 3000) }),
-                                    });
-                                    const data = await res.json();
-                                    if (data.data) {
-                                        setExcerpt(data.data.trim());
-                                        toast.success("Meta description generated!", { id: "meta-gen" });
-                                    } else {
-                                        toast.error(data.error || "Failed", { id: "meta-gen" });
-                                    }
-                                } catch {
-                                    toast.error("AI generation failed", { id: "meta-gen" });
-                                }
-                            }}
-                            className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-500/20 transition-colors"
-                        >
-                            🪄 AI Meta Description
-                        </button>
-                    </div>
-
-                    {/* Category & Club */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <Tag className="w-4 h-4 text-[#16A34A]" />
-                            Category & Tags
-                        </label>
-
-                        {/* Category type selector */}
-                        <div className="grid grid-cols-2 gap-2 mb-4">
-                            <button
-                                type="button"
-                                onClick={() => setCategory("club")}
-                                className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${category === "club"
-                                    ? "bg-[#16A34A] text-white border-[#16A34A] shadow-md shadow-[#16A34A]/20"
-                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-[#16A34A]"
-                                    }`}
-                            >
-                                ⚽ Club-Specific
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setCategory("General")}
-                                className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all ${category !== "club"
-                                    ? "bg-[#16A34A] text-white border-[#16A34A] shadow-md shadow-[#16A34A]/20"
-                                    : "bg-gray-50 dark:bg-[#0F172A] border-gray-200 dark:border-gray-600 text-[#64748B] dark:text-gray-400 hover:border-[#16A34A]"
-                                    }`}
-                            >
-                                📋 General Topic
-                            </button>
-                        </div>
-
-                        {/* Club selector with search (only when club-specific) */}
-                        {category === "club" && (
-                            <div ref={clubDropdownRef} className="relative mb-3">
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                    <img
-                                        src={club ? (getClubByName(club)?.logo || "") : ""}
-                                        alt=""
-                                        className="absolute left-10 top-1/2 -translate-y-1/2 w-5 h-5 object-contain"
-                                        style={{ display: club && getClubByName(club)?.logo ? "block" : "none" }}
-                                    />
-                                    <input
-                                        type="text"
-                                        value={clubSearch || club}
-                                        onChange={(e) => handleClubSearch(e.target.value)}
-                                        onFocus={() => { if (clubSearch || club) handleClubSearch(clubSearch || club); }}
-                                        placeholder="Search any club in the world..."
-                                        className={`w-full ${club && getClubByName(club)?.logo ? 'pl-[4.5rem]' : 'pl-10'} pr-4 py-3 rounded-xl border ${errors.club ? "border-red-400" : "border-gray-200 dark:border-gray-600"} bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm`}
-                                    />
-                                    <Loader2
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#16A34A] animate-spin"
-                                        style={{ display: searchingClubs ? "block" : "none" }}
-                                    />
-                                </div>
-
-                                {/* Dropdown results */}
-                                <div
-                                    className="absolute z-50 w-full mt-1 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-200 dark:border-gray-600 shadow-xl max-h-72 overflow-y-auto"
-                                    style={{ display: showClubDropdown && (clubResults.length > 0 || clubSearch.length > 1) ? "block" : "none" }}
-                                >
-                                    {clubResults.map((result) => (
-                                        <div
-                                            key={result.name}
-                                            className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700/50 last:border-0 group text-sm"
-                                        >
-                                            <button
-                                                type="button"
-                                                onClick={() => selectClub(result)}
-                                                className="w-full flex items-center gap-3 text-left flex-1"
-                                            >
-                                                <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                                                    <img
-                                                        src={result.logo || ""}
-                                                        alt=""
-                                                        className="w-5 h-5 object-contain"
-                                                        style={{ display: result.logo && !brokenLogos.has(result.logo) ? "block" : "none" }}
-                                                        onError={() => {
-                                                            setBrokenLogos(prev => new Set(prev).add(result.logo));
-                                                        }}
-                                                    />
-                                                    <span 
-                                                        className="text-xs font-bold text-[#64748B]"
-                                                        style={{ display: !result.logo || brokenLogos.has(result.logo) ? "block" : "none" }}
-                                                    >
-                                                        {result.name[0]}
-                                                    </span>
-                                                </div>
-                                                <div className="flex-1 min-w-0 pr-2">
-                                                    <p className="font-medium text-[#0F172A] dark:text-white truncate">{result.name}</p>
-                                                    <p className="text-xs text-[#94A3B8] dark:text-gray-500 truncate">{result.league}</p>
-                                                </div>
-                                            </button>
-                                            {isCustomClub(result.name) && (
-                                                <button
-                                                    type="button"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        deleteCustomClub(result.name);
-                                                        handleClubSearch(clubSearch || "");
-                                                        if (club === result.name) {
-                                                            setClub("");
-                                                            setCategory("General");
-                                                        }
-                                                    }}
-                                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                                                    title="Delete custom team"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            )}
-                                        </div>
-                                    ))}
-
-                                    {/* Add Custom Club Button */}
-                                    {clubSearch.length > 1 && !clubResults.some(c => c.name.toLowerCase() === clubSearch.toLowerCase()) && (
-                                        <button
-                                            type="button"
-                                            onClick={handleAddCustomClub}
-                                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-green-50 dark:hover:bg-green-500/10 transition-colors text-sm border-t border-gray-100 dark:border-gray-700/50"
-                                        >
-                                            <div className="w-7 h-7 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                                                <Plus className="w-4 h-4 text-green-600 dark:text-green-500" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-green-600 dark:text-green-400 truncate">Add "{clubSearch}" as a new team</p>
-                                                <p className="text-xs text-green-500/70 truncate">Save this custom team for future posts</p>
-                                            </div>
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* General topic selector (only when general) */}
-                        {category !== "club" && (
-                            <select
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm mb-3"
-                            >
-                                {GENERAL_CATEGORIES.map((cat) => (
-                                    <option key={cat} value={cat}>
-                                        {cat}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-
-                        {errors.club && <p className="text-red-500 text-xs mb-2">{errors.club}</p>}
-
-                        {/* Tag input */}
-                        <div className="flex gap-2 mb-3">
-                            <input
-                                type="text"
-                                value={tagInput}
-                                onChange={(e) => setTagInput(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Add a custom tag (e.g., Premier League, UCL)..."
-                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                            />
-                            <button
-                                type="button"
-                                onClick={addTag}
-                                className="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-[#0F172A] dark:text-white rounded-xl text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                            >
-                                Add
-                            </button>
-                        </div>
-
-                        {tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                                {tags.map((tag) => (
-                                    <span
-                                        key={tag}
-                                        className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full ${tag === effectiveClub
-                                            ? "bg-[#16A34A] text-white"
-                                            : "bg-gray-100 dark:bg-gray-700 text-[#64748B] dark:text-gray-400"
-                                            }`}
-                                    >
-                                        {tag}
-                                        <button
-                                            type="button"
-                                            onClick={() => removeTag(tag)}
-                                            className="ml-1 hover:text-red-500 transition-colors"
-                                        >
-                                            ×
-                                        </button>
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Media / YouTube Embed */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <Link className="w-4 h-4 text-[#16A34A]" />
-                            Media / Embed Link (YouTube, Spotify)
-                        </label>
-                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
-                            Paste a YouTube or Spotify URL here to automatically embed a playable widget at the bottom of your post.
-                        </p>
-                        <input
-                            type="url"
-                            value={mediaUrl}
-                            onChange={(e) => setMediaUrl(e.target.value)}
-                            placeholder="https://www.youtube.com/watch?v=..."
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                        />
-                        
-                        <div className="mt-6 border-t border-gray-100 dark:border-gray-800 pt-6">
-                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                                <Mic className="w-4 h-4 text-[#16A34A]" />
-                                Touchline Audio Snippet
-                            </label>
-                            <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
-                                Paste the URL to an externally hosted audio breakdown.
-                            </p>
-                            <input
-                                type="url"
-                                value={audioUrl}
-                                onChange={(e) => setAudioUrl(e.target.value)}
-                                placeholder="https://api.example.com/audio.mp3"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                            <RichTextCanvas
+                                title={title}
+                                setTitle={setTitle}
+                                format={format}
+                                setFormat={setFormat}
+                                content={content}
+                                setContent={setContent}
+                                errors={errors}
+                                handleCopyAsThread={handleCopyAsThread}
+                                copiedThread={copiedThread}
                             />
                         </div>
-                    </div>
 
-
-
-                    {/* Player Name (for Player Profile category) */}
-                    {(category === "Player Profile" || tags.includes("Player Profile")) && (
-                        <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                                <User className="w-4 h-4 text-[#16A34A]" />
-                                Player Name
-                            </label>
-                            <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
-                                Enter the player's full name. This will allow readers to filter by player on the homepage.
-                            </p>
-                            <input
-                                type="text"
-                                value={playerName}
-                                onChange={(e) => setPlayerName(e.target.value)}
-                                placeholder="e.g. Erling Haaland"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                            />
-                        </div>
-                    )}
-
-                    {/* Poll Section */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <div className="flex items-center justify-between mb-4">
-                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
-                                <FileText className="w-4 h-4 text-[#16A34A]" />
-                                Interactive Poll
-                            </label>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" checked={usePoll} onChange={(e) => setUsePoll(e.target.checked)} />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#16A34A]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#16A34A]"></div>
-                            </label>
-                        </div>
-
-                        {usePoll && (
-                            <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                                <div>
-                                    <input
-                                        type="text"
-                                        value={poll.question}
-                                        onChange={(e) => setPoll({ ...poll, question: e.target.value })}
-                                        placeholder="Poll Question (e.g. Who will win the title?)"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm mb-3 font-semibold"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <p className="text-xs font-medium text-[#64748B] dark:text-gray-400">Poll Options</p>
-                                    {poll.options.map((opt, idx) => (
-                                        <div key={idx} className="flex gap-2">
-                                            <input
-                                                type="text"
-                                                value={opt.text}
-                                                onChange={(e) => {
-                                                    const newOpts = [...poll.options];
-                                                    newOpts[idx].text = e.target.value;
-                                                    setPoll({ ...poll, options: newOpts });
-                                                }}
-                                                placeholder={`Option ${idx + 1}`}
-                                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                                            />
-                                            {poll.options.length > 2 && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const newOpts = poll.options.filter((_, i) => i !== idx);
-                                                        setPoll({ ...poll, options: newOpts });
-                                                    }}
-                                                    className="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors"
-                                                >
-                                                    <X className="w-4 h-4" />
-                                                </button>
-                                            )}
-                                        </div>
-                                    ))}
-                                    {poll.options.length < 5 && (
-                                        <button
-                                            type="button"
-                                            onClick={() => setPoll({ ...poll, options: [...poll.options, { text: "", votes: 0 }] })}
-                                            className="text-xs font-semibold text-[#16A34A] hover:text-[#15803d] transition-colors mt-2"
-                                        >
-                                            + Add Option
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Interactive Match Ratings Section */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <div className="flex items-center justify-between mb-4">
-                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
-                                <Star className="w-4 h-4 text-[#16A34A]" />
-                                Interactive Match Ratings
-                            </label>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" checked={useMatchRatings} onChange={(e) => setUseMatchRatings(e.target.checked)} />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#16A34A]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#16A34A]"></div>
-                            </label>
-                        </div>
-
-                        {useMatchRatings && (
-                            <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
-                                <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
-                                    Set your editor ratings out of 10. Fans will be able to submit their own ratings directly on the article!
-                                </p>
-                                <div className="space-y-2">
-                                    {matchRatings.map((rating, idx) => (
-                                        <div key={idx} className="flex gap-2">
-                                            <input
-                                                type="text"
-                                                value={rating.playerName}
-                                                onChange={(e) => {
-                                                    const newRatings = [...matchRatings];
-                                                    newRatings[idx].playerName = e.target.value;
-                                                    setMatchRatings(newRatings);
-                                                }}
-                                                placeholder="Player Name (e.g. Bukayo Saka)"
-                                                className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                                            />
-                                            <input
-                                                type="number"
-                                                min="1"
-                                                max="10"
-                                                value={rating.editorRating}
-                                                onChange={(e) => {
-                                                    const newRatings = [...matchRatings];
-                                                    newRatings[idx].editorRating = Number(e.target.value);
-                                                    setMatchRatings(newRatings);
-                                                }}
-                                                placeholder="Rating (1-10)"
-                                                className="w-24 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    const newRatings = matchRatings.filter((_, i) => i !== idx);
-                                                    setMatchRatings(newRatings);
-                                                }}
-                                                className="p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors"
-                                            >
-                                                <X className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    ))}
-                                    <button
-                                        type="button"
-                                        onClick={() => setMatchRatings([...matchRatings, { playerName: "", editorRating: 7 }])}
-                                        className="flex items-center gap-1.5 text-sm font-medium text-[#16A34A] hover:text-[#15803d]"
-                                    >
-                                        <Plus className="w-4 h-4" /> Add Player Rating
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Armchair Pundit Ratings */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <div className="flex items-center justify-between mb-3">
-                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
-                                <Star className="w-4 h-4 text-amber-400" />
-                                Armchair Pundit Ratings
-                            </label>
-                            <button
-                                type="button"
-                                onClick={() => setUseArmchairRatings(!useArmchairRatings)}
-                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${useArmchairRatings ? 'bg-[#16A34A]' : 'bg-gray-300 dark:bg-gray-600'}`}
-                            >
-                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${useArmchairRatings ? 'translate-x-4' : 'translate-x-0.5'}`} />
-                            </button>
-                        </div>
-                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">Add your author ratings per player. Readers can add their crowd ratings below the article.</p>
-                        {useArmchairRatings && (
-                            <div className="space-y-3">
-                                {armchairRatings.map((rating, idx) => (
-                                    <div key={idx} className="grid grid-cols-[1fr_1fr_auto_auto] gap-2 items-center">
-                                        <input
-                                            type="text"
-                                            placeholder="Player name"
-                                            value={rating.name}
-                                            onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], name: e.target.value }; setArmchairRatings(r); }}
-                                            className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Position (e.g. CM)"
-                                            value={rating.position}
-                                            onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], position: e.target.value }; setArmchairRatings(r); }}
-                                            className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50"
-                                        />
-                                        <input
-                                            type="number"
-                                            min="1" max="10" step="0.5"
-                                            placeholder="Rating"
-                                            value={rating.authorRating}
-                                            onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], authorRating: Number(e.target.value) }; setArmchairRatings(r); }}
-                                            className="w-20 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50"
-                                        />
-                                        <button type="button" onClick={() => setArmchairRatings(armchairRatings.filter((_, i) => i !== idx))} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    onClick={() => setArmchairRatings([...armchairRatings, { name: "", position: "", authorRating: 7 }])}
-                                    className="flex items-center gap-1.5 text-sm font-medium text-[#16A34A] hover:text-[#15803d]"
-                                >
-                                    <Plus className="w-4 h-4" /> Add Player
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Hot Take Heat Index */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <div className="flex items-center justify-between mb-3">
-                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
-                                <Flame className="w-4 h-4 text-orange-500" />
-                                Hot Take Heat Index
-                            </label>
-                            <button
-                                type="button"
-                                onClick={() => setUseHotTakes(!useHotTakes)}
-                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${useHotTakes ? 'bg-[#16A34A]' : 'bg-gray-300 dark:bg-gray-600'}`}
-                            >
-                                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${useHotTakes ? 'translate-x-4' : 'translate-x-0.5'}`} />
-                            </button>
-                        </div>
-                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">Add bold takes. Readers vote to reveal a temperature gauge showing how hot the community thinks your take is.</p>
-                        {useHotTakes && (
-                            <div className="space-y-3">
-                                {hotTakes.map((take, idx) => (
-                                    <div key={idx} className="flex gap-2 items-start">
-                                        <textarea
-                                            placeholder="Enter a bold take or opinion statement…"
-                                            value={take.statement}
-                                            onChange={(e) => { const t = [...hotTakes]; t[idx] = { ...t[idx], statement: e.target.value }; setHotTakes(t); }}
-                                            rows={2}
-                                            className="flex-1 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-orange-400/50"
-                                        />
-                                        <button type="button" onClick={() => setHotTakes(hotTakes.filter((_, i) => i !== idx))} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 mt-1 flex-shrink-0">
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
-                                <button
-                                    type="button"
-                                    onClick={() => setHotTakes([...hotTakes, { id: `take-${Date.now()}`, statement: "" }])}
-                                    className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-400"
-                                >
-                                    <Plus className="w-4 h-4" /> Add Take
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Overall Match & Series Info */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-3">
-                            <Library className="w-4 h-4 text-[#16A34A]" />
-                            Meta: Match Rating & Article Series
-                        </label>
-                        <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
-                            Optionally provide an overall rating for this match and link this post to an ongoing series.
-                        </p>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Overall Match Rating (0-10)</label>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="10"
-                                    step="0.5"
-                                    value={matchRating}
-                                    onChange={(e) => setMatchRating(e.target.value ? Number(e.target.value) : "")}
-                                    placeholder="e.g. 8.5"
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                        {/* Sidebar Settings */}
+                        <div className="lg:col-span-1">
+                            <SidebarSettings>
+                                <CoverImageUpload
+                                    imageMode={imageMode}
+                                    setImageMode={setImageMode}
+                                    coverImage={coverImage}
+                                    setCoverImage={setCoverImage}
+                                    uploading={uploading}
+                                    dragOver={dragOver}
+                                    setDragOver={setDragOver}
+                                    handleFileUpload={handleFileUpload}
+                                    handleDrop={handleDrop}
+                                    fileInputRef={fileInputRef}
                                 />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Series Name</label>
-                                <input
-                                    type="text"
-                                    value={seriesName}
-                                    onChange={(e) => setSeriesName(e.target.value)}
-                                    placeholder="e.g. The EPL in Europe"
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+
+                                <SeoTools
+                                    excerpt={excerpt}
+                                    setExcerpt={setExcerpt}
+                                    content={content}
+                                    errors={errors}
                                 />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Series Part (Order)</label>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    value={seriesOrder}
-                                    onChange={(e) => setSeriesOrder(e.target.value ? Number(e.target.value) : "")}
-                                    placeholder="e.g. 1"
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+
+                                <MetaSettings
+                                    category={category}
+                                    setCategory={setCategory}
+                                    club={club}
+                                    setClub={setClub}
+                                    tagInput={tagInput}
+                                    setTagInput={setTagInput}
+                                    tags={tags}
+                                    setTags={setTags}
+                                    mediaUrl={mediaUrl}
+                                    setMediaUrl={setMediaUrl}
+                                    audioUrl={audioUrl}
+                                    setAudioUrl={setAudioUrl}
+                                    playerName={playerName}
+                                    setPlayerName={setPlayerName}
+                                    seriesName={seriesName}
+                                    setSeriesName={setSeriesName}
+                                    seriesOrder={seriesOrder}
+                                    setSeriesOrder={setSeriesOrder}
+                                    thisWeek={thisWeek}
+                                    setThisWeek={setThisWeek}
+                                    mustRead={mustRead}
+                                    setMustRead={setMustRead}
+                                    editorPick={editorPick}
+                                    setEditorPick={setEditorPick}
+                                    mainStory={mainStory}
+                                    setMainStory={setMainStory}
+                                    publishAt={publishAt}
+                                    setPublishAt={setPublishAt}
+                                    errors={errors}
                                 />
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Featured Layout Options */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
-                            <Star className="w-4 h-4 text-[#16A34A]" />
-                            Featured Layout
-                        </label>
-
-                        {/* Featured Layout Segmented Controls */}
-                        <div className="mt-4 flex flex-wrap gap-2">
-                            <button
-                                type="button"
-                                onClick={() => setThisWeek(!thisWeek)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all active:scale-95 ${thisWeek ? 'border-orange-500 bg-orange-500/10 text-orange-600 dark:text-orange-400' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-black/20 text-gray-600 dark:text-gray-400 hover:border-orange-300 dark:hover:border-orange-700'}`}
-                            >
-                                <Flame className="w-3.5 h-3.5" />
-                                "This Week"
-                            </button>
-                            
-                            <button
-                                type="button"
-                                onClick={() => setMustRead(!mustRead)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all active:scale-95 ${mustRead ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-black/20 text-gray-600 dark:text-gray-400 hover:border-amber-300 dark:hover:border-amber-700'}`}
-                            >
-                                <Star className="w-3.5 h-3.5" />
-                                Must Read Pick
-                            </button>
-                            
-                            <button
-                                type="button"
-                                onClick={() => setEditorPick(!editorPick)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all active:scale-95 ${editorPick ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-black/20 text-gray-600 dark:text-gray-400 hover:border-indigo-300 dark:hover:border-indigo-700'}`}
-                            >
-                                <Star className="w-3.5 h-3.5" />
-                                Editor Pick
-                            </button>
-                            
-                            <button
-                                type="button"
-                                onClick={() => setMainStory(!mainStory)}
-                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all active:scale-95 ${mainStory ? 'border-purple-500 bg-purple-500/10 text-purple-600 dark:text-purple-400' : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-black/20 text-gray-600 dark:text-gray-400 hover:border-purple-300 dark:hover:border-purple-700'}`}
-                            >
-                                <Crown className="w-3.5 h-3.5" />
-                                Main Story
-                            </button>
-                        </div>
-
-                        {/* Schedule Publishing */}
-                        <div className="flex border-t border-gray-100 dark:border-gray-800 pt-6 flex-col gap-3">
-                            <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${publishAt ? 'bg-blue-500/10 text-blue-500' : 'bg-gray-100 dark:bg-gray-800 text-gray-400'}`}>
-                                    <CalendarDays className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-semibold text-[#0F172A] dark:text-white mb-0.5">Schedule Publish</p>
-                                    <p className="text-xs text-[#64748B] dark:text-gray-400">
-                                        {publishAt
-                                            ? `Scheduled for ${new Date(publishAt).toLocaleString()}`
-                                            : "Set a future date to auto-publish before matchday."}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="datetime-local"
-                                    value={publishAt ? new Date(new Date(publishAt).getTime() - new Date(publishAt).getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
-                                    onChange={(e) => setPublishAt(e.target.value ? new Date(e.target.value).toISOString() : "")}
-                                    className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                                <InteractiveWidgets
+                                    usePoll={usePoll}
+                                    setUsePoll={setUsePoll}
+                                    poll={poll}
+                                    setPoll={setPoll}
+                                    useHotTakes={useHotTakes}
+                                    setUseHotTakes={setUseHotTakes}
+                                    hotTakes={hotTakes}
+                                    setHotTakes={setHotTakes}
                                 />
-                                {publishAt && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setPublishAt("")}
-                                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                                        title="Clear schedule"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                )}
-                            </div>
+                            </SidebarSettings>
                         </div>
-                    </div>
-
-                    {/* Rich Text Content */}
-                    <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
-                        <div className="flex flex-wrap items-center justify-between mb-3 gap-2">
-                            <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
-                                <FileText className="w-4 h-4 text-[#16A34A]" />
-                                Content
-                            </label>
-                            <div className="flex items-center gap-4">
-                                <button
-                                    type="button"
-                                    onClick={handleCopyAsThread}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0F172A] dark:bg-white text-white dark:text-[#0F172A] text-xs font-semibold rounded-lg hover:opacity-80 transition-opacity"
-                                >
-                                    {copiedThread ? <><CheckCircle2 className="w-3.5 h-3.5" /> Copied Thread</> : <><MessageSquare className="w-3.5 h-3.5" /> Copy as Thread</>}
-                                </button>
-                                <span className="text-xs font-medium text-[#94A3B8] dark:text-gray-500">
-                                    {calculateReadTime(content.replace(/<[^>]*>/g, " "))}
-                                </span>
-                            </div>
-                        </div>
-                        <p className="mb-3 text-xs leading-5 text-[#64748B] dark:text-gray-400">
-                            Use the <span className="inline-flex items-center gap-1 font-semibold text-[#16A34A] dark:text-[#4ade80]">✦ Editorial Blocks</span> button in the toolbar above to insert timelines, stats cards, quote blocks, key takeaways, comparison tables, and tactical board embeds — they render in both preview and published articles.
-                        </p>
-                        {errors.content && <p className="text-red-500 text-xs mb-2">{errors.content}</p>}
-                        <SpellcheckBar
-                            content={content}
-                            onFix={(found, replacement) => {
-                                // Replace all occurrences (case-sensitive)
-                                const re = new RegExp(found.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
-                                setContent((prev) => prev.replace(re, replacement));
-                            }}
-                        />
-                        <RichTextEditor content={content} onChange={setContent} existingPosts={getAllPosts()} />
                     </div>
 
                     {/* Submit */}
-                    <div className="flex justify-end gap-3 pb-8">
+                    <div className="flex justify-end gap-3 pb-8 mt-8 border-t border-gray-200 dark:border-gray-800 pt-6">
                         <button
                             type="button"
                             onClick={onCancel}
@@ -1525,45 +488,6 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     </div>
                 </form>
             </div>
-
-            {/* ── Custom Team Logo Modal ── */}
-            {showCustomTeamModal && (
-                <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
-                    <div className="bg-white dark:bg-[#1E293B] w-full max-w-md rounded-2xl shadow-xl overflow-hidden animate-in slide-in-from-bottom-4">
-                        <div className="p-6">
-                            <h3 className="text-xl font-bold text-[#0F172A] dark:text-white mb-2">New Team Options</h3>
-                            <p className="text-sm text-[#64748B] dark:text-gray-400 mb-6 font-medium">Adding <span className="font-bold text-[#16A34A]">{clubSearch}</span></p>
-
-                            <label className="block text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
-                                Logo URL <span className="text-xs text-[#94A3B8] font-normal">(Optional)</span>
-                            </label>
-                            <input
-                                type="url"
-                                value={customTeamLogoInput}
-                                onChange={(e) => setCustomTeamLogoInput(e.target.value)}
-                                placeholder="https://example.com/logo.png"
-                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm mb-6"
-                                autoFocus
-                            />
-
-                            <div className="flex gap-3 justify-end">
-                                <button
-                                    onClick={() => setShowCustomTeamModal(false)}
-                                    className="px-5 py-2.5 text-sm font-medium text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:hover:text-white transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={confirmCustomTeamAdd}
-                                    className="px-6 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] transition-all duration-200 hover:shadow-lg hover:shadow-[#16A34A]/25"
-                                >
-                                    Save & Select
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* ── Preview Overlay ── */}
             {
@@ -1626,7 +550,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                     {tags.map((tag) => (
                                         <span
                                             key={tag}
-                                            className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full ${tag === effectiveClub
+                                            className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full ${tag === club
                                                 ? "text-white bg-[#16A34A]"
                                                 : "text-[#64748B] dark:text-gray-400 bg-gray-100 dark:bg-gray-800"
                                                 }`}

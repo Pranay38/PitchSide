@@ -1,3 +1,4 @@
+"use client";
 import { ScrollytellingPitch, ScrollytellingStep } from "../components/ScrollytellingPitch";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";

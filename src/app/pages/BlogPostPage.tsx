@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "@/lib/router-compat";
 import {
@@ -41,8 +42,8 @@ import { scheduleEmbedHydration } from "../lib/embedHydration";
 import { useReadingTracker } from "../hooks/useReadingTracker";
 import { RecommendedArticles } from "../components/RecommendedArticles";
 import { useUser } from "@clerk/nextjs";
-import { ArmchairPunditRatings } from "../components/ArmchairPunditRatings";
 import { HotTakeHeatIndex } from "../components/HotTakeHeatIndex";
+import { PredictionArenaWidget } from "../components/PredictionArenaWidget";
 
 function sortPosts(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
@@ -255,6 +256,14 @@ export function BlogPostPage() {
       "@type": "WebPage",
       "@id": `https://thetouchlinedribble.com/post/${post.slug || post.id}`,
     },
+    speakable: {
+      "@type": "SpeakableSpecification",
+      xpath: [
+        "//h1",
+        "//p[contains(@class, 'lead')]",
+        "//p[1]"
+      ]
+    }
   });
 
   return (
@@ -308,12 +317,7 @@ export function BlogPostPage() {
                     {tag}
                   </Link>
                 ))}
-                {post.matchRating !== undefined && post.matchRating > 0 && (
-                  <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold bg-[#4ade80] text-[#0F172A] shadow-md">
-                    <Star className="h-3 w-3 fill-[#0F172A]" />
-                    {post.matchRating}/10 Match Rating
-                  </span>
-                )}
+                {/* Removed Match Rating logic to align with pure editorial focus */}
               </div>
 
               <h1 className="mt-6 text-4xl font-black font-outfit leading-[0.95] text-white md:text-6xl">
@@ -483,15 +487,6 @@ export function BlogPostPage() {
 
             <ReactionUI itemId={post.id} itemType="post" initialReactions={post.reactions} />
 
-            {/* Armchair Pundit Ratings — shown on match reports with player ratings */}
-            {post.armchairRatings && post.armchairRatings.length > 0 && (
-              <ArmchairPunditRatings
-                postId={post.id}
-                players={post.armchairRatings}
-                className="my-8"
-              />
-            )}
-
             {/* Hot Take Heat Index — shown per bold claim/take */}
             {post.hotTakes && post.hotTakes.length > 0 && (
               <div className="my-8 space-y-4">
@@ -503,6 +498,20 @@ export function BlogPostPage() {
                     statement={take.statement}
                   />
                 ))}
+              </div>
+            )}
+
+            {/* Prediction Arena Widget for specific articles */}
+            {post.slug === "lamine-yamal-injury-barcelona-tactics" && (
+              <div className="my-10">
+                <PredictionArenaWidget
+                  title="Will Barca win without Yamal?"
+                  subtitle="La Liga Matchday"
+                  date="Upcoming Fixture"
+                  teamA={{ name: "Barcelona", short: "FCB", bgClass: "bg-blue-800", textClass: "text-[#a50044]" }}
+                  teamB={{ name: "Opponent", short: "OPP", bgClass: "bg-gray-800", textClass: "text-white" }}
+                  options={["Barcelona Win", "Draw", "Opponent Win"]}
+                />
               </div>
             )}
 

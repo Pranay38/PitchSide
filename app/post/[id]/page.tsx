@@ -21,6 +21,7 @@ import { PostTrackersClient } from "./PostTrackersClient";
 import { PostEmbedHydrationClient } from "./PostEmbedHydrationClient";
 import { AdaptiveArticleHeader } from "@/app/components/AdaptiveArticleHeader";
 import { MilestoneScrubber } from "@/app/components/MilestoneScrubber";
+import { PredictionArenaWidget } from "@/app/components/PredictionArenaWidget";
 
 export const revalidate = 60;
 
@@ -63,6 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ],
       siteName: "The Touchline Dribble",
       publishedTime: post.publishAt || post.date ? new Date(post.publishAt || post.date).toISOString() : undefined,
+      modifiedTime: post.updatedAt ? new Date(post.updatedAt).toISOString() : undefined,
       ...(post.author ? { authors: [post.author] } : {}),
     },
     twitter: {
@@ -102,10 +104,13 @@ export default async function BlogPostPage({ params }: Props) {
   // 3. Prepare content models
   const articleContentModel = post.content ? getArticleContentModel(post.content) : null;
 
+  const isMedical = post.tags?.some((t: string) => t.toLowerCase() === "injury" || t.toLowerCase() === "medical");
+
   // JSON-LD structured data for the article
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
+    ...(isMedical && { additionalType: "MedicalWebPage" }),
     headline: post.title,
     description: post.excerpt || "",
     image: [post.coverImage],
@@ -119,15 +124,29 @@ export default async function BlogPostPage({ params }: Props) {
         : undefined,
     articleSection: post.club || "Football",
     wordCount: post.content?.split(/\s+/).length || 0,
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["article h1", "article .quick-summary", "article h2", "article h2 + p"],
+    },
     ...(post.author ? {
       author: [
         {
           "@type": "Person",
           name: post.author,
-          url: "https://x.com/TouchlineDribbl",
+          url: "https://thetouchlinedribble.in/about",
+          sameAs: ["https://x.com/TouchlineDribbl", "https://www.instagram.com/thetouchlinedribble/"],
         },
       ]
-    } : {}),
+    } : {
+      author: [
+        {
+          "@type": "Person",
+          name: "Pranay Agrawal",
+          url: "https://thetouchlinedribble.in/about",
+          sameAs: ["https://x.com/TouchlineDribbl", "https://www.instagram.com/thetouchlinedribble/"],
+        },
+      ]
+    }),
     publisher: {
       "@type": "Organization",
       name: "The Touchline Dribble",
@@ -142,6 +161,22 @@ export default async function BlogPostPage({ params }: Props) {
     },
   };
 
+  // BreadcrumbList JSON-LD for rich SERP breadcrumbs
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://thetouchlinedribble.in" },
+      ...(post.tags?.[0] || post.club ? [{
+        "@type": "ListItem",
+        position: 2,
+        name: post.tags?.[0] || post.club,
+        item: `https://thetouchlinedribble.in/topic/${encodeURIComponent((post.tags?.[0] || post.club || "").toLowerCase().replace(/\s+/g, "-"))}`,
+      }] : []),
+      { "@type": "ListItem", position: post.tags?.[0] || post.club ? 3 : 2, name: post.title },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] transition-colors duration-300 dark:bg-[#0B1120]">
       {/* Invisible trackers for reading history and saving progress */}
@@ -150,6 +185,10 @@ export default async function BlogPostPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       
       <Header />
@@ -195,7 +234,20 @@ export default async function BlogPostPage({ params }: Props) {
                 {post.excerpt}
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-white/70">
+                <Link href="/about" className="flex items-center gap-2 hover:text-white transition-colors">
+                  <div className="h-7 w-7 rounded-full bg-gradient-to-br from-[#16A34A] to-[#4ade80] flex items-center justify-center">
+                    <span className="text-xs font-bold text-white">P</span>
+                  </div>
+                  <span className="font-semibold text-white/90">{post.author || "Pranay Agrawal"}</span>
+                </Link>
+                <span className="text-white/40">•</span>
                 <span>{post.date}</span>
+                {post.updatedAt && new Date(post.updatedAt).toDateString() !== new Date(post.date).toDateString() && (
+                  <>
+                    <span className="text-white/40">•</span>
+                    <span className="text-[#4ade80]/80">Updated {new Date(post.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                  </>
+                )}
                 <span className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
                   {post.readTime}
@@ -236,6 +288,19 @@ export default async function BlogPostPage({ params }: Props) {
                  <ArticleContentRenderer model={articleContentModel} />
               )}
             </PostEmbedHydrationClient>
+
+            {(post.id === "lamine-yamal-injury-barcelona-tactics" || post.slug === "lamine-yamal-injury-barcelona-tactics") && (
+              <div className="mt-12">
+                <PredictionArenaWidget 
+                  title="Will Barca win without Yamal?"
+                  subtitle="La Liga Matchday"
+                  date="This Weekend"
+                  teamA={{ name: "Barcelona", short: "FCB", bgClass: "bg-blue-700", textClass: "text-white" }}
+                  teamB={{ name: "Real Madrid", short: "RMA", bgClass: "bg-gray-100", textClass: "text-black" }}
+                  options={["Yes (Barca)", "Draw", "No (Madrid)"]}
+                />
+              </div>
+            )}
 
             <div className="mt-12">
               <InlineNewsletterCard

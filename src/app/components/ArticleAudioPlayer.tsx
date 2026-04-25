@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Headphones, Pause, Play, RotateCcw, Volume2 } from "lucide-react";
-import type { ArticleContentModel } from "./ArticleContentRenderer";
-
+import type { ArticleContentModel } from "../lib/articleModel";
 type PlayerState = "idle" | "speaking" | "paused";
 
 function extractNarrationText(title: string, excerpt: string, model: ArticleContentModel): string {
@@ -18,7 +17,7 @@ function extractNarrationText(title: string, excerpt: string, model: ArticleCont
   }
 
   const bodyText = (model.blocks || [])
-    .map((block) => {
+    .map((block: any) => {
       if (block.type === "heading") return block.text;
       if (block.type === "blockquote") return block.text;
       if (block.type === "paragraph") return block.text;
@@ -27,16 +26,16 @@ function extractNarrationText(title: string, excerpt: string, model: ArticleCont
         return `${block.block.data.quote} ${block.block.data.attribution || ""}`.trim();
       }
       if (block.block.kind === "timeline") {
-        return block.block.items.map((item) => `${item.label}. ${item.title}. ${item.note || ""}`.trim()).join(". ");
+        return block.block.items.map((item: any) => `${item.label}. ${item.title}. ${item.note || ""}`.trim()).join(". ");
       }
       if (block.block.kind === "stats-card") {
-        return block.block.items.map((item) => `${item.label}: ${item.value}. ${item.hint || ""}`.trim()).join(". ");
+        return block.block.items.map((item: any) => `${item.label}: ${item.value}. ${item.hint || ""}`.trim()).join(". ");
       }
       if (block.block.kind === "key-takeaways") {
         return block.block.data.items.join(". ");
       }
       if (block.block.kind === "comparison-table") {
-        return block.block.data.rows.map((row) => row.join(". ")).join(". ");
+        return block.block.data.rows.map((row: any) => row.join(". ")).join(". ");
       }
       return "";
     })

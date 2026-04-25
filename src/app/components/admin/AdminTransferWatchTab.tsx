@@ -1,9 +1,11 @@
 import { useState, useRef } from "react";
 import { Repeat2, Trash2, Sparkles, LoaderCircle, Edit3, ImagePlus, X, TrendingUp } from "lucide-react";
 import { AdminEmptyState } from "./AdminEmptyState";
+import { AdminTransferSourceManager } from "./AdminTransferSourceManager";
 import { toast } from "sonner";
 import { getAllClubNames, getClubByName, addCustomClub } from "../../data/clubs";
 import { getTransferTierLabel, type TransferWatchEntry, type TransferFeeMode, type TransferWatchStatus } from "../../lib/transferWatch";
+import type { TransferSourceArticle } from "../../lib/transferSources";
 
 interface AdminTransferWatchTabProps {
     siteSettings: any;
@@ -20,6 +22,8 @@ interface AdminTransferWatchTabProps {
     handleDeleteTransferWatchEntry: (id: string) => void;
     formatTransferWatchAmount: (entry: TransferWatchEntry) => string;
     transferEditId: string | null;
+    transferSources: TransferSourceArticle[];
+    onPersistTransferSources: (nextSources: TransferSourceArticle[]) => Promise<void>;
 }
 
 export function AdminTransferWatchTab({
@@ -36,7 +40,9 @@ export function AdminTransferWatchTab({
     handleSaveTransferWatch,
     handleDeleteTransferWatchEntry,
     formatTransferWatchAmount,
-    transferEditId
+    transferEditId,
+    transferSources,
+    onPersistTransferSources,
 }: AdminTransferWatchTabProps) {
     const [generatingLine, setGeneratingLine] = useState(false);
     const [isCustomClub, setIsCustomClub] = useState(false);
@@ -92,6 +98,9 @@ export function AdminTransferWatchTab({
 
     const baseClubOptions = getAllClubNames().sort((left, right) => left.localeCompare(right));
     const clubOptions = [...baseClubOptions, "Other..."];
+    const selectedTransferEntry = transferEditId
+        ? siteSettings.transferWatch.find((entry: TransferWatchEntry) => entry.id === transferEditId) || null
+        : null;
 
     const handleGeneratePunchyLine = async () => {
         if (!transferDraft.player || !transferDraft.club) {
@@ -587,7 +596,14 @@ export function AdminTransferWatchTab({
                                 />
                             ) : (
                                 filteredTransferWatchEntries.map((entry) => (
-                                    <div key={entry.id} className="rounded-xl bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-gray-800 p-4">
+                                    <div
+                                        key={entry.id}
+                                        className={`rounded-xl border p-4 transition-colors ${
+                                            entry.id === transferEditId
+                                                ? "border-[#16A34A]/40 bg-[#16A34A]/5 dark:border-[#16A34A]/40 dark:bg-[#16A34A]/10"
+                                                : "border-gray-100 bg-white dark:border-gray-800 dark:bg-[#1E293B]"
+                                        }`}
+                                    >
                                         <div className="flex items-start justify-between gap-3">
                                             <div>
                                                 <p className="text-sm font-bold text-[#0F172A] dark:text-white">{entry.player}</p>
@@ -630,6 +646,11 @@ export function AdminTransferWatchTab({
                                                 "{entry.punchyLine}"
                                             </p>
                                         )}
+                                        {entry.id === transferEditId && (
+                                            <p className="mt-3 text-[11px] font-black uppercase tracking-[0.16em] text-[#16A34A]">
+                                                Active dossier for linked-source editing
+                                            </p>
+                                        )}
                                     </div>
                                 ))
                             )}
@@ -637,6 +658,12 @@ export function AdminTransferWatchTab({
                     </div>
                 </div>
             </section>
+
+            <AdminTransferSourceManager
+                selectedEntry={selectedTransferEntry}
+                transferSources={transferSources}
+                onPersistTransferSources={onPersistTransferSources}
+            />
         </div>
     );
 }

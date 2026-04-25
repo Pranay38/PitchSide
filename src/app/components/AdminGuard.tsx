@@ -1,3 +1,4 @@
+"use client";
 /**
  * AdminGuard — NextAuth wrapper for the admin route.
  * If authenticated → show AdminPage directly.

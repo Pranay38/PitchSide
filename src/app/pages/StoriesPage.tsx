@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { ArrowRight, Layers3, ScanSearch, Search } from "lucide-react";

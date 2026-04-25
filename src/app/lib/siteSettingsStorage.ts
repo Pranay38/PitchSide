@@ -9,6 +9,11 @@ import {
   normalizeTransferWatchEntries,
 } from "./transferWatch";
 import {
+  type TransferSourceArticle,
+  getTransferSourcesForDossier,
+  normalizeTransferSourceArticles,
+} from "./transferSources";
+import {
   createDefaultPollOfWeek,
   normalizePollOfWeek,
   type PollOfWeek,
@@ -58,6 +63,7 @@ export interface SiteSettings {
   pots: POTSSettings;
   clubIntelligence: Record<string, ClubIntelligence>;
   transferWatch: TransferWatchEntry[];
+  transferSources: TransferSourceArticle[];
   homepageCuration: HomepageCuration;
   supplementalEvents: SupplementalEvent[];
   authorsTake: AuthorsTake;
@@ -76,6 +82,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   pots: createDefaultPOTSSettings(),
   clubIntelligence: {},
   transferWatch: [],
+  transferSources: [],
   homepageCuration: {
     hero: { type: "post", id: "" },
     latestPostIds: [],
@@ -190,6 +197,7 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     pots: normalizePOTSSettings(input?.pots),
     clubIntelligence: normalizeClubIntelligenceMap(input?.clubIntelligence),
     transferWatch: normalizeTransferWatchEntries(input?.transferWatch),
+    transferSources: normalizeTransferSourceArticles(input?.transferSources),
     homepageCuration: normalizeHomepageCuration(input?.homepageCuration),
     supplementalEvents: normalizeSupplementalEvents(input?.supplementalEvents),
     authorsTake: normalizeAuthorsTake(input?.authorsTake),
@@ -300,4 +308,19 @@ export async function getTransferWatchEntriesAsync(club?: string): Promise<Trans
   const settings = await getSiteSettingsAsync();
   if (!club) return settings.transferWatch;
   return settings.transferWatch.filter((entry) => matchesTransferClub(entry, club));
+}
+
+export function getTransferSources(): TransferSourceArticle[] {
+  return getSettingsLocal().transferSources;
+}
+
+export async function getTransferSourcesAsync(): Promise<TransferSourceArticle[]> {
+  return (await getSiteSettingsAsync()).transferSources;
+}
+
+export async function getTransferSourcesForDossierAsync(
+  dossier: Pick<TransferSourceArticle, "dossierSlug" | "topic" | "player" | "club">,
+): Promise<TransferSourceArticle[]> {
+  const settings = await getSiteSettingsAsync();
+  return getTransferSourcesForDossier(settings.transferSources, dossier);
 }

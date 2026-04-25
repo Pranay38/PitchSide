@@ -1,20 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Flame, Snowflake, ThumbsUp, ThumbsDown } from "lucide-react";
+import { getDeviceId } from "../lib/deviceId";
 
 interface HotTakeHeatIndexProps {
     postId: string;
-    takeId: string; // unique ID for this specific take within the post
-    statement: string; // the bold claim being voted on
+    takeId: string;
+    statement: string;
     className?: string;
 }
 
 type Vote = "agree" | "disagree";
-
-function storageKey(postId: string, takeId: string) {
-    return `pitchside_hottake_${postId}_${takeId}`;
-}
 
 const LABELS = [
     { min: 0, max: 19, text: "Stone Cold", icon: "🧊", color: "text-blue-400" },
@@ -37,41 +34,74 @@ export function HotTakeHeatIndex({
     const [votes, setVotes] = useState({ agree: 0, disagree: 0 });
     const [userVote, setUserVote] = useState<Vote | null>(null);
     const [revealed, setRevealed] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [animating, setAnimating] = useState(false);
 
+    // Fetch community votes from API on mount
     useEffect(() => {
-        const raw = localStorage.getItem(storageKey(postId, takeId));
-        if (raw) {
+        const fetchVotes = async () => {
             try {
-                const parsed = JSON.parse(raw);
-                setVotes(parsed.votes);
-                setUserVote(parsed.userVote);
-                setRevealed(true);
+                const deviceId = getDeviceId();
+                const res = await fetch(
+                    `/api/hot-takes?postId=${encodeURIComponent(postId)}&takeId=${encodeURIComponent(takeId)}&deviceId=${encodeURIComponent(deviceId)}`
+                );
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.votes) setVotes(data.votes);
+                    if (data.userVote) {
+                        setUserVote(data.userVote);
+                        setRevealed(true);
+                    }
+                }
             } catch {
-                // ignore
+                // Silently fail — component still works without API
             }
-        }
+        };
+        fetchVotes();
     }, [postId, takeId]);
 
     const total = votes.agree + votes.disagree;
     const agreePercent = total > 0 ? Math.round((votes.agree / total) * 100) : 50;
     const label = getLabel(agreePercent);
 
-    const handleVote = (vote: Vote) => {
-        if (userVote !== null) return;
+    const handleVote = useCallback(async (vote: Vote) => {
+        if (userVote !== null || isSubmitting) return;
 
-        const next = {
+        setIsSubmitting(true);
+        setAnimating(true);
+
+        // Optimistic update
+        const optimisticVotes = {
             agree: votes.agree + (vote === "agree" ? 1 : 0),
             disagree: votes.disagree + (vote === "disagree" ? 1 : 0),
         };
-
-        setVotes(next);
+        setVotes(optimisticVotes);
         setUserVote(vote);
         setRevealed(true);
-        localStorage.setItem(
-            storageKey(postId, takeId),
-            JSON.stringify({ votes: next, userVote: vote })
-        );
-    };
+
+        try {
+            const res = await fetch("/api/hot-takes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ postId, takeId, vote, deviceId: getDeviceId() }),
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                if (data.votes) setVotes(data.votes);
+            } else if (res.status === 409) {
+                // Already voted — sync with server data
+                const data = await res.json();
+                if (data.votes) setVotes(data.votes);
+                if (data.userVote) setUserVote(data.userVote);
+            }
+        } catch {
+            // Keep optimistic update — better UX than reverting
+        } finally {
+            setIsSubmitting(false);
+            setTimeout(() => setAnimating(false), 800);
+        }
+    }, [userVote, isSubmitting, votes, postId, takeId]);
 
     const thermometerPercent = agreePercent;
 
@@ -98,11 +128,16 @@ export function HotTakeHeatIndex({
                     <span className="text-[11px] font-black uppercase tracking-[0.18em] text-orange-500">
                         Hot Take Heat Index
                     </span>
+                    {total > 0 && (
+                        <span className="ml-auto text-[10px] font-bold text-gray-400 tabular-nums">
+                            {total} {total === 1 ? "vote" : "votes"}
+                        </span>
+                    )}
                 </div>
 
                 {/* Statement */}
                 <p className="text-lg font-black text-[#0F172A] dark:text-white leading-snug mb-6">
-                    "{statement}"
+                    &ldquo;{statement}&rdquo;
                 </p>
 
                 {/* Thermometer */}
@@ -122,11 +157,10 @@ export function HotTakeHeatIndex({
                             </div>
                         </div>
 
-                        {/* Gradient bar */}
+                        {/* Gradient bar with animated fill */}
                         <div className="relative h-4 rounded-full bg-gradient-to-r from-blue-400 via-amber-400 to-red-500 overflow-hidden">
-                            {/* Position indicator */}
                             <div
-                                className="absolute top-0 h-full w-1 bg-white shadow-lg rounded-full transition-all duration-1000 ease-out"
+                                className={`absolute top-0 h-full w-1 bg-white shadow-lg rounded-full ${animating ? "transition-all duration-1000 ease-out" : ""}`}
                                 style={{ left: `calc(${thermometerPercent}% - 2px)` }}
                             />
                         </div>
@@ -151,7 +185,7 @@ export function HotTakeHeatIndex({
                 <div className="grid grid-cols-2 gap-3">
                     <button
                         onClick={() => handleVote("agree")}
-                        disabled={userVote !== null}
+                        disabled={userVote !== null || isSubmitting}
                         className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border font-bold text-sm transition-all ${
                             userVote === "agree"
                                 ? "bg-[#16A34A]/10 border-[#16A34A] text-[#16A34A]"
@@ -161,11 +195,11 @@ export function HotTakeHeatIndex({
                         }`}
                     >
                         <ThumbsUp className="w-4 h-4" />
-                        {userVote === "agree" ? "Agreed ✓" : "Agree"}
+                        {isSubmitting ? "..." : userVote === "agree" ? "Agreed ✓" : "Agree"}
                     </button>
                     <button
                         onClick={() => handleVote("disagree")}
-                        disabled={userVote !== null}
+                        disabled={userVote !== null || isSubmitting}
                         className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border font-bold text-sm transition-all ${
                             userVote === "disagree"
                                 ? "bg-red-500/10 border-red-400 text-red-400"
@@ -175,7 +209,7 @@ export function HotTakeHeatIndex({
                         }`}
                     >
                         <ThumbsDown className="w-4 h-4" />
-                        {userVote === "disagree" ? "Disagreed ✓" : "Disagree"}
+                        {isSubmitting ? "..." : userVote === "disagree" ? "Disagreed ✓" : "Disagree"}
                     </button>
                 </div>
 

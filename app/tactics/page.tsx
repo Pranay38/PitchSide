@@ -1,3 +1,20 @@
-"use client";
+import type { Metadata } from "next";
 import { TacticalBoardPage as TacticalBoardPageOriginal } from "@/app/pages/TacticalBoardPage";
-export default function TacticsPage() { return <TacticalBoardPageOriginal />; }
+
+export const metadata: Metadata = {
+  title: "Tactical Board — Football Formations & Analysis",
+  description:
+    "Interactive tactical board with formations, heat maps, and positional analysis. Understand how football teams set up and play.",
+  openGraph: {
+    title: "Tactical Board — Football Formations & Analysis",
+    description:
+      "Interactive tactical board with formations, heat maps, and positional analysis.",
+    type: "website",
+    url: "https://thetouchlinedribble.in/tactics",
+  },
+  alternates: { canonical: "https://thetouchlinedribble.in/tactics" },
+};
+
+export default function TacticsPage() {
+  return <TacticalBoardPageOriginal />;
+}

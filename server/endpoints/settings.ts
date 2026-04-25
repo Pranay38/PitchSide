@@ -9,6 +9,21 @@ interface SiteSettings {
   socialWallEnabled: boolean;
   socialWallTitle: string;
   socialWallEmbedCode: string;
+  pots: {
+    enabled: boolean;
+    title: string;
+    description: string;
+    contenders: Array<{
+      id: string;
+      name: string;
+      club: string;
+      image: string;
+      votes: number;
+      stats: Array<{ label: string; value: string | number }>;
+      verdict: string;
+      highlights: string[];
+    }>;
+  };
   pollOfWeek: {
     id: string;
     enabled: boolean;
@@ -43,12 +58,43 @@ interface SiteSettings {
     playerImageUrl?: string;
     club: string;
     fromClub?: string;
-    feeMode: "million-usd" | "million-eur" | "million-gbp" | "not-disclosed";
+    feeMode: "million-usd" | "million-eur" | "million-gbp" | "not-disclosed" | "free";
     feeMillions: number;
     status: "confirmed" | "rumor";
     tier: 1 | 2 | 3 | 4 | 5 | null;
     punchyLine?: string;
+    myTake?: string;
+    aiScore?: number;
+    aiTake?: string;
+    scoutGrades?: {
+      pace: number;
+      physicality: number;
+      passing: number;
+      defensiveIQ: number;
+      finalThird: number;
+    };
     updatedAt: string;
+  }>;
+  transferSources: Array<{
+    id: string;
+    dossierSlug: string;
+    topic: string;
+    player: string;
+    club: string;
+    sourceOutlet: "bbc" | "espn" | "the-athletic" | "sky-sports" | "guardian" | "club-official" | "reporter" | "other";
+    sourceLabel: string;
+    url: string;
+    canonicalUrl: string;
+    title: string;
+    reporter?: string;
+    publishedAt: string;
+    discoveredAt: string;
+    stance: "advances" | "confirms" | "analysis" | "contradicts" | "official";
+    claimSummary: string;
+    sourceTier?: 1 | 2 | 3 | 4 | 5;
+    paywalled?: boolean;
+    isPrimaryReport?: boolean;
+    notes?: string;
   }>;
   homepageCuration: {
     hero: {
@@ -70,6 +116,12 @@ interface SiteSettings {
     articleUrl: string;
     updatedAt: string;
   }>;
+  authorsTake: {
+    headline: string;
+    body: string;
+    enabled: boolean;
+    updatedAt: string;
+  };
   updatedAt: string;
 }
 
@@ -81,6 +133,12 @@ const DEFAULT_SETTINGS: SiteSettings = {
   socialWallEnabled: false,
   socialWallTitle: "Social Wall",
   socialWallEmbedCode: "",
+  pots: {
+    enabled: false,
+    title: "Player of the Season 2026",
+    description: "Vote for your Player of the Season. Compare the top contenders, read our verdict, and cast your vote below.",
+    contenders: [],
+  },
   pollOfWeek: {
     id: "",
     enabled: false,
@@ -95,6 +153,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   },
   clubIntelligence: {},
   transferWatch: [],
+  transferSources: [],
   homepageCuration: {
     hero: { type: "post", id: "" },
     latestPostIds: [],
@@ -103,6 +162,12 @@ const DEFAULT_SETTINGS: SiteSettings = {
     transferSpotlightIds: [],
   },
   supplementalEvents: [],
+  authorsTake: {
+    headline: "",
+    body: "",
+    enabled: false,
+    updatedAt: "",
+  },
   updatedAt: "",
 };
 
@@ -192,15 +257,25 @@ function normalizeTransferWatch(
       playerImageUrl: item.playerImageUrl ? String(item.playerImageUrl).trim() : undefined,
       club,
       fromClub: item.fromClub ? String(item.fromClub).trim() : undefined,
-      feeMode: (["million-usd", "million-eur", "million-gbp", "not-disclosed"] as const).includes(item.feeMode) 
+      feeMode: (["million-usd", "million-eur", "million-gbp", "not-disclosed", "free"] as const).includes(item.feeMode) 
         ? item.feeMode 
         : "not-disclosed",
-      feeMillions: item.feeMode !== "not-disclosed" ? clampMetric(item.feeMillions) : 0,
+      feeMillions: item.feeMode !== "not-disclosed" && item.feeMode !== "free" ? clampMetric(item.feeMillions) : 0,
       status: item.status === "confirmed" ? "confirmed" : "rumor",
       tier: item.status === "confirmed"
         ? null
         : ([1, 2, 3, 4, 5].includes(Number(item.tier)) ? Number(item.tier) as 1 | 2 | 3 | 4 | 5 : 3),
       punchyLine: item.punchyLine ? String(item.punchyLine).trim() : undefined,
+      myTake: item.myTake ? String(item.myTake).trim() : undefined,
+      aiScore: Number.isFinite(Number(item.aiScore)) ? Number(item.aiScore) : undefined,
+      aiTake: item.aiTake ? String(item.aiTake).trim() : undefined,
+      scoutGrades: item.scoutGrades && typeof item.scoutGrades === "object" ? {
+        pace: Math.max(1, Math.min(10, Math.round(clampMetric(item.scoutGrades.pace) || 5))),
+        physicality: Math.max(1, Math.min(10, Math.round(clampMetric(item.scoutGrades.physicality) || 5))),
+        passing: Math.max(1, Math.min(10, Math.round(clampMetric(item.scoutGrades.passing) || 5))),
+        defensiveIQ: Math.max(1, Math.min(10, Math.round(clampMetric(item.scoutGrades.defensiveIQ) || 5))),
+        finalThird: Math.max(1, Math.min(10, Math.round(clampMetric(item.scoutGrades.finalThird) || 5))),
+      } : undefined,
       updatedAt: String(item.updatedAt || ""),
     });
 
@@ -210,6 +285,115 @@ function normalizeTransferWatch(
   return normalized.sort(
     (left, right) => new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
   );
+}
+
+function normalizeTransferSources(
+  input?: SiteSettings["transferSources"] | null,
+): SiteSettings["transferSources"] {
+  if (!Array.isArray(input)) return [];
+
+  const validOutlets = new Set([
+    "bbc",
+    "espn",
+    "the-athletic",
+    "sky-sports",
+    "guardian",
+    "club-official",
+    "reporter",
+    "other",
+  ]);
+  const validStances = new Set(["advances", "confirms", "analysis", "contradicts", "official"]);
+
+  const normalized = input.reduce<SiteSettings["transferSources"]>((acc, item) => {
+    if (!item || typeof item !== "object") return acc;
+
+    const player = String(item.player || "").trim();
+    const club = String(item.club || "").trim();
+    const canonicalUrl = String(item.canonicalUrl || item.url || "").trim();
+    if (!player || !club || !canonicalUrl) return acc;
+
+    const sourceOutlet = validOutlets.has(item.sourceOutlet)
+      ? item.sourceOutlet
+      : "other";
+    const stance = validStances.has(item.stance)
+      ? item.stance
+      : "analysis";
+    const sourceTier = [1, 2, 3, 4, 5].includes(Number(item.sourceTier))
+      ? Number(item.sourceTier) as 1 | 2 | 3 | 4 | 5
+      : undefined;
+
+    acc.push({
+      id: String(item.id || `${player}-${club}-${canonicalUrl}`),
+      dossierSlug: String(item.dossierSlug || "").trim(),
+      topic: String(item.topic || "").trim(),
+      player,
+      club,
+      sourceOutlet,
+      sourceLabel: String(item.sourceLabel || sourceOutlet).trim(),
+      url: String(item.url || canonicalUrl).trim(),
+      canonicalUrl,
+      title: String(item.title || "").trim(),
+      reporter: item.reporter ? String(item.reporter).trim() : undefined,
+      publishedAt: String(item.publishedAt || "").trim(),
+      discoveredAt: String(item.discoveredAt || "").trim(),
+      stance,
+      claimSummary: String(item.claimSummary || "").trim(),
+      sourceTier,
+      paywalled: item.paywalled === true,
+      isPrimaryReport: item.isPrimaryReport === true,
+      notes: item.notes ? String(item.notes).trim() : undefined,
+    });
+
+    return acc;
+  }, []);
+
+  return normalized.sort((left, right) => {
+    const rightTime = new Date(right.publishedAt || right.discoveredAt).getTime();
+    const leftTime = new Date(left.publishedAt || left.discoveredAt).getTime();
+    return rightTime - leftTime;
+  });
+}
+
+function normalizePOTSSettings(
+  input?: SiteSettings["pots"] | null,
+): SiteSettings["pots"] {
+  const contenders = Array.isArray(input?.contenders)
+    ? input!.contenders.map((item) => ({
+      id: String(item?.id || Math.random().toString(36).slice(2)),
+      name: String(item?.name || "").trim(),
+      club: String(item?.club || "").trim(),
+      image: String(item?.image || "").trim(),
+      votes: Math.max(0, Math.round(clampMetric(item?.votes))),
+      stats: Array.isArray(item?.stats)
+        ? item.stats.map((stat) => ({
+          label: String(stat?.label || "").trim(),
+          value: typeof stat?.value === "number" ? stat.value : String(stat?.value || "").trim(),
+        }))
+        : [],
+      verdict: String(item?.verdict || "").trim(),
+      highlights: Array.isArray(item?.highlights)
+        ? item.highlights.map((highlight) => String(highlight || "").trim()).filter(Boolean)
+        : [],
+    })).filter((item) => item.name)
+    : [];
+
+  return {
+    enabled: input?.enabled ?? DEFAULT_SETTINGS.pots.enabled,
+    title: String(input?.title || DEFAULT_SETTINGS.pots.title).trim(),
+    description: String(input?.description || DEFAULT_SETTINGS.pots.description).trim(),
+    contenders,
+  };
+}
+
+function normalizeAuthorsTake(
+  input?: SiteSettings["authorsTake"] | null,
+): SiteSettings["authorsTake"] {
+  return {
+    headline: String(input?.headline || "").trim(),
+    body: String(input?.body || "").trim(),
+    enabled: input?.enabled ?? false,
+    updatedAt: String(input?.updatedAt || ""),
+  };
 }
 
 function normalizePollOfWeek(
@@ -283,11 +467,14 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     socialWallEnabled: input?.socialWallEnabled ?? DEFAULT_SETTINGS.socialWallEnabled,
     socialWallTitle: (input?.socialWallTitle || DEFAULT_SETTINGS.socialWallTitle).trim(),
     socialWallEmbedCode: input?.socialWallEmbedCode || DEFAULT_SETTINGS.socialWallEmbedCode,
+    pots: normalizePOTSSettings(input?.pots),
     pollOfWeek: normalizePollOfWeek(input?.pollOfWeek),
     clubIntelligence: normalizeClubIntelligenceMap(input?.clubIntelligence),
     transferWatch: normalizeTransferWatch(input?.transferWatch),
+    transferSources: normalizeTransferSources(input?.transferSources),
     homepageCuration: normalizeHomepageCuration(input?.homepageCuration),
     supplementalEvents: normalizeSupplementalEvents(input?.supplementalEvents),
+    authorsTake: normalizeAuthorsTake(input?.authorsTake),
     updatedAt: input?.updatedAt || DEFAULT_SETTINGS.updatedAt,
   };
 }

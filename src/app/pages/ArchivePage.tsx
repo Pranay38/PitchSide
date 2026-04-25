@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "@/lib/router-compat";
 import { BookOpen, Library, ScrollText, Search, SlidersHorizontal, X } from "lucide-react";

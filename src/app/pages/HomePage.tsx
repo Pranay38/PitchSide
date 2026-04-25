@@ -1,3 +1,4 @@
+"use client";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useUser, SignInButton } from "@clerk/nextjs";
@@ -35,7 +36,7 @@ const InlineNewsletterCard = lazy(() => import("../components/InlineNewsletterCa
 const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m => ({ default: m.BlogPostsGrid })));
 import { TransferTicker } from "../components/TransferTicker";
 import { QuickTakesSection } from "../components/QuickTakesSection";
-import { MatchReactionsSection } from "../components/MatchReactionsSection";
+
 import { ChallengeTheTake } from "../components/home/ChallengeTheTake";
 import { ReadingStreakBanner } from "../components/ReadingStreakBanner";
 import { PredictionArenaWidget } from "../components/PredictionArenaWidget";
@@ -589,7 +590,7 @@ export function HomePage() {
 
         {/* --- MATCH REACTIONS --- */}
         <section className="scroll-reveal">
-          <MatchReactionsSection />
+
         </section>
         {/* --- DISCOVERY BUBBLES --- */}
         <section className="mb-12 scroll-reveal text-center relative z-20">

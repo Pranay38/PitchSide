@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getPublishedPostsServer, getStoriesServer } from '@/lib/server-data';
+import fs from 'fs';
+import path from 'path';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getPublishedPostsServer();
@@ -40,6 +42,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
+  // Static content pages (previously missing from sitemap)
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/archive`, priority: 0.8, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/debates`, priority: 0.7, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/daily-fix`, priority: 0.8, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/quick-takes`, priority: 0.7, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/glossary`, priority: 0.6, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/collections`, priority: 0.6, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/pots`, priority: 0.6, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/about`, priority: 0.5, changeFrequency: 'monthly' as const },
+  ].map(p => ({ ...p, lastModified: new Date() }));
+
   // Article pages
   const postRoutes = posts.map((post: any) => ({
     url: `${baseUrl}/post/${post.slug || post.id}`,
@@ -56,5 +70,57 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  return [...routes, ...postRoutes, ...storyRoutes];
+  // Topic/tag pages (auto-generated from unique tags across all posts)
+  const uniqueTags = [...new Set(posts.flatMap((p: any) => p.tags || []))].filter(Boolean);
+  const tagRoutes: MetadataRoute.Sitemap = uniqueTags.map((tag: string) => ({
+    url: `${baseUrl}/topic/${encodeURIComponent(tag.toLowerCase().replace(/\s+/g, '-'))}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.7,
+  }));
+
+  // Club hub pages (auto-generated from unique clubs across all posts)
+  const uniqueClubs = [...new Set(posts.map((p: any) => p.club).filter(Boolean))];
+  const clubRoutes: MetadataRoute.Sitemap = uniqueClubs.map((club: string) => ({
+    url: `${baseUrl}/club/${encodeURIComponent(club.toLowerCase().replace(/\s+/g, '-'))}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.7,
+  }));
+
+  // ─── Programmatic SEO: Manager Pressure Pages ───
+  let managerRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const managerDataPath = path.join(process.cwd(), 'data', 'manager_pressure.json');
+    if (fs.existsSync(managerDataPath)) {
+      const managerData = JSON.parse(fs.readFileSync(managerDataPath, 'utf-8'));
+      managerRoutes = Object.keys(managerData).map((slug) => ({
+        url: `${baseUrl}/managers/${slug}`,
+        lastModified: managerData[slug].lastUpdated ? new Date(managerData[slug].lastUpdated) : new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.8,
+      }));
+    }
+  } catch (e) {
+    console.error('Sitemap: Failed to load manager pressure data', e);
+  }
+
+  // ─── Programmatic SEO: Tactical Matchup Pages ───
+  let matchupRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const matchupDataPath = path.join(process.cwd(), 'data', 'matchups.json');
+    if (fs.existsSync(matchupDataPath)) {
+      const matchupData = JSON.parse(fs.readFileSync(matchupDataPath, 'utf-8'));
+      matchupRoutes = Object.keys(matchupData).map((slug) => ({
+        url: `${baseUrl}/matchups/${slug}`,
+        lastModified: matchupData[slug].lastUpdated ? new Date(matchupData[slug].lastUpdated) : new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.8,
+      }));
+    }
+  } catch (e) {
+    console.error('Sitemap: Failed to load matchup data', e);
+  }
+
+  return [...routes, ...staticPages, ...postRoutes, ...storyRoutes, ...tagRoutes, ...clubRoutes, ...managerRoutes, ...matchupRoutes];
 }

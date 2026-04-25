@@ -1,19 +1,32 @@
 import { Link, useLocation } from "@/lib/router-compat";
-import { Home, Newspaper, ArrowLeftRight, Flame, User } from "lucide-react";
-
-const tabs = [
-    { to: "/", label: "Home", icon: Home },
-    { to: "/stories", label: "Stories", icon: Newspaper },
-    { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
-    { to: "/debates", label: "Debate", icon: Flame },
-    { to: "/profile", label: "Profile", icon: User },
-];
+import { Home, Newspaper, ArrowLeftRight, Flame, User, Shield } from "lucide-react";
+import { useUserPreferences } from "../hooks/useUserPreferences";
+import { topicPath } from "../lib/contentPaths";
 
 export function MobileBottomNav() {
     const location = useLocation();
+    const { fanClub } = useUserPreferences();
 
     // Hide on admin page
     if (location.pathname.includes("pitchside-manage")) return null;
+
+    const tabs = [
+        { to: "/", label: "Home", icon: Home },
+        { to: "/stories", label: "Stories", icon: Newspaper },
+        { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
+    ];
+
+    if (fanClub?.name) {
+        tabs.push({ 
+            to: topicPath(fanClub.name), 
+            label: fanClub.name.length > 8 ? fanClub.name.substring(0, 7) + "." : fanClub.name, 
+            icon: Shield 
+        });
+    } else {
+        tabs.push({ to: "/debates", label: "Debate", icon: Flame });
+    }
+
+    tabs.push({ to: "/profile", label: "Profile", icon: User });
 
     return (
         <nav className="fixed bottom-4 left-4 right-4 z-50 sm:hidden">

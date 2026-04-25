@@ -65,23 +65,13 @@ export const BlogPostSchema = z.object({
     question: z.string(),
     options: z.array(z.object({ text: z.string(), votes: z.number() })),
   }).optional(),
-  matchRatings: z.array(z.object({
-    playerName: z.string(),
-    editorRating: z.number(),
-  })).optional(),
-  matchRating: z.number().min(0).max(10).optional(),
   seriesName: nullableOptionalString,
   seriesOrder: z.number().optional(),
   reactions: z.record(z.string(), z.number()).optional(),
   likedBy: z.array(z.string()).optional(),
   author: z.string().optional(),
-  format: z.enum(["article", "quick-take", "match-reaction"]).optional(),
-  armchairRatings: z.array(z.object({
-    name: z.string(),
-    position: z.string(),
-    authorRating: z.number(),
-    imageUrl: z.string().optional()
-  })).optional(),
+  format: z.enum(["article", "quick-take"]).optional(),
+
   hotTakes: z.array(z.object({
     id: z.string(),
     statement: z.string()

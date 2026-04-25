@@ -197,20 +197,6 @@ export async function addPostAsync(
   }
 
   const createdPost = await res.json();
-  if (post.matchRatings && post.matchRatings.length > 0 && createdPost.id) {
-    try {
-      await fetch(`${API_BASE}/match-ratings`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${getAuthToken()}`
-        },
-        body: JSON.stringify({ postId: createdPost.id, ratings: post.matchRatings }),
-      });
-    } catch (e) {
-      console.error("Failed to sync match ratings", e);
-    }
-  }
 
   return getAllPostsAsync();
 }
@@ -255,21 +241,6 @@ export async function updatePostAsync(
     if (res.status === 401 || res.status === 403) {
           }
     throw new Error(await getApiErrorMessage(res, "Failed to update post"));
-  }
-
-  if (updates.matchRatings && updates.matchRatings.length > 0) {
-    try {
-      await fetch(`${API_BASE}/match-ratings`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${getAuthToken()}`
-        },
-        body: JSON.stringify({ postId: id, ratings: updates.matchRatings }),
-      });
-    } catch (e) {
-      console.error("Failed to sync match ratings", e);
-    }
   }
 
   return getAllPostsAsync();

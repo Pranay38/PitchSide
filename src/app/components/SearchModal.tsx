@@ -4,6 +4,7 @@ import { Search, X, Loader2, FileText, Calendar } from "lucide-react";
 
 interface SearchResult {
   id: string;
+  slug?: string;
   title: string;
   excerpt: string;
   publishedAt: string;

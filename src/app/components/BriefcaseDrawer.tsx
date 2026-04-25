@@ -11,7 +11,7 @@ interface BriefcaseDrawerProps {
 }
 
 export function BriefcaseDrawer({ isOpen, onClose }: BriefcaseDrawerProps) {
-  const { savedPosts: savedPostIds, toggleSavePost } = useUserPreferences();
+  const { savedPosts: savedPostIds, toggleSavedPost } = useUserPreferences();
   const allPosts = useMemo(() => getPublishedPosts(), []);
 
   const savedPosts = useMemo(() => {
@@ -90,13 +90,13 @@ export function BriefcaseDrawer({ isOpen, onClose }: BriefcaseDrawerProps) {
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] uppercase font-black tracking-widest text-[#16A34A] mb-1 truncate">
-                        {post.category || "Tactics"}
+                        {post.club || "Tactics"}
                       </p>
                       <h3 className="text-sm font-bold text-[#0F172A] dark:text-white leading-snug line-clamp-2">
                         {post.title}
                       </h3>
                       <p className="text-xs text-[#64748B] dark:text-gray-400 mt-1">
-                        {new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric'})}
+                        {new Date(post.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric'})}
                       </p>
                     </div>
                   </div>
@@ -104,8 +104,8 @@ export function BriefcaseDrawer({ isOpen, onClose }: BriefcaseDrawerProps) {
                   {/* Actions */}
                   <div className="flex items-center justify-between pt-3 mt-2 border-t border-gray-200/50 dark:border-gray-700/50">
                     <button 
-                      onClick={() => toggleSavePost(post.id)}
-                      className="text-xs flex items-center gap-1.5 font-semibold text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => toggleSavedPost(post.id)}
+                      className="text-xs flex items-center gap-1.5 font-semibold text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                     >
                       <BookmarkMinus className="w-3.5 h-3.5" /> Remove
                     </button>

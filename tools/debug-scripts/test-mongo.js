@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb';
 
 async function check() {
-    const uri = "mongodb+srv://The Touchline Dribble:T8A8EAVsvlTg1egz@cluster0.mqgk89r.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+    const uri = "mongodb+srv://user:pass@cluster.mongodb.net/test";
     const client = new MongoClient(uri);
     try {
         await client.connect();

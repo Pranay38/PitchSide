@@ -205,6 +205,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 12px; color: #94a3b8;">
                     <p>You received this email because you subscribed to The Touchline Dribble.</p>
                     ${customBacklink}
+                    <p style="margin-top: 15px;"><a href="${SITE_URL}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}" style="color: #94a3b8; text-decoration: underline;">Unsubscribe</a></p>
                 </div>
             </div>
             `;

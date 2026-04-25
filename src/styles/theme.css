@@ -933,3 +933,71 @@
 .dark .ambient-shadow {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 40px rgba(22, 163, 74, 0.05);
 }
+
+/* ─── Unified Design System Tokens ─── */
+
+:root {
+  /* Tactical Noir — Main Platform System */
+  --pitch-primary: #16A34A;
+  --pitch-primary-light: #22C55E;
+  --pitch-primary-glow: rgba(22, 163, 74, 0.15);
+  --pitch-surface: #FFFFFF;
+  --pitch-surface-container: #F8FAFC;
+  --pitch-surface-container-high: #F1F5F9;
+  --pitch-text: #0F172A;
+  --pitch-text-muted: #64748B;
+  --pitch-radius: 1rem;
+  --pitch-radius-pill: 9999px;
+  --pitch-radius-button: 0.75rem;
+
+  /* Urgency System — Alert/Pressure Widgets ONLY */
+  --urgency-primary: #FF3D00;
+  --urgency-surface: #FFF7F5;
+  --urgency-accent: #39FF14;
+  --urgency-radius: 0px;
+  --urgency-shadow: 4px 4px 0 0 #FF3D00;
+}
+
+.dark {
+  --pitch-surface: #0B1120;
+  --pitch-surface-container: #0F172A;
+  --pitch-surface-container-high: #1E293B;
+  --pitch-text: #E2E8F0;
+  --pitch-text-muted: #94A3B8;
+  --pitch-primary-glow: rgba(22, 163, 74, 0.25);
+
+  --urgency-surface: #0B0B0B;
+  --urgency-shadow: 8px 8px 0 0 #FF3D00;
+}
+
+/* Urgency widget utility classes */
+.urgency-panel {
+  background: var(--urgency-surface);
+  border: 3px solid var(--urgency-primary);
+  box-shadow: var(--urgency-shadow);
+  border-radius: var(--urgency-radius);
+}
+
+.urgency-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--urgency-primary);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+}
+
+/* ─── Thermometer Fill Animation ─── */
+@keyframes thermometer-fill {
+  from {
+    width: 0%;
+  }
+}
+
+.animate-thermometer-fill {
+  animation: thermometer-fill 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

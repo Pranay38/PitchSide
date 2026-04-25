@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Repeat2, CheckCircle2, ArrowRight, ShieldQuestion, Search, SlidersHorizontal, X } from "lucide-react";
 import { SEO } from "../components/SEO";

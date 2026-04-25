@@ -25,17 +25,13 @@ export interface BlogPost {
     question: string;
     options: { text: string; votes: number }[];
   };
-  matchRatings?: {
-    playerName: string;
-    editorRating: number;
-  }[];
-  matchRating?: number;
+
   seriesName?: string;
   seriesOrder?: number;
   reactions?: Record<string, number>;
   likedBy?: string[];
   author?: string;
-  format?: "article" | "quick-take" | "match-reaction"; // "article" (default) or "quick-take" (micro-post) or "match-reaction" (immediate post-match)
+  format?: "article" | "quick-take"; // "article" (default) or "quick-take" (micro-post)
   armchairRatings?: {
     name: string;
     position: string;

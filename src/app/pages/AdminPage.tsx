@@ -1,3 +1,4 @@
+"use client";
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "@/lib/router-compat";
 import { signOut } from "next-auth/react";
@@ -58,7 +59,6 @@ const AdminOnThisDayTab = dynamic(() => import('../components/admin/AdminOnThisD
 const AdminTransferWatchTab = dynamic(() => import('../components/admin/AdminTransferWatchTab').then(m => m.AdminTransferWatchTab));
 const AdminTransferTrackerTab = dynamic(() => import('../components/admin/AdminTransferTrackerTab').then(m => m.AdminTransferTrackerTab));
 const AdminSettingsTab = dynamic(() => import('../components/admin/AdminSettingsTab').then(m => m.AdminSettingsTab));
-const AdminMatchRatingsTab = dynamic(() => import('../components/admin/AdminMatchRatingsTab').then(m => m.AdminMatchRatingsTab));
 const AdminNewsletterTab = dynamic(() => import('../components/admin/AdminNewsletterTab').then(m => m.AdminNewsletterTab));
 const AdminAnalyticsTab = dynamic(() => import('../components/admin/AdminAnalyticsTab').then(m => m.AdminAnalyticsTab));
 const InstagramCarouselGenerator = dynamic(() => import('../components/admin/InstagramCarouselGenerator').then(m => m.InstagramCarouselGenerator));
@@ -66,14 +66,12 @@ const DraftAssistant = dynamic(() => import('../components/admin/DraftAssistant'
 const TweetThreadGenerator = dynamic(() => import('../components/admin/TweetThreadGenerator').then(m => m.TweetThreadGenerator));
 const QuickTakeVideoGenerator = dynamic(() => import('../components/QuickTakeVideoGenerator').then(m => m.QuickTakeVideoGenerator));
 const AdminCalendarTab = dynamic(() => import('../components/admin/AdminCalendarTab').then(m => m.AdminCalendarTab));
-const AdminMatchCenterTab = dynamic(() => import('../components/admin/AdminMatchCenterTab').then(m => m.AdminMatchCenterTab));
 const AdminNotificationsTab = dynamic(() => import('../components/admin/AdminNotificationsTab').then(m => m.AdminNotificationsTab));
 const AdminPOTSTab = dynamic(() => import('../components/admin/AdminPOTSTab').then(m => m.AdminPOTSTab));
-const AdminMatchReactionsTab = dynamic(() => import('../components/admin/AdminMatchReactionsTab').then(m => m.AdminMatchReactionsTab));
 const AdminPostsTab = dynamic(() => import('../components/admin/AdminPostsTab').then(m => m.AdminPostsTab));
 
 type View = "list" | "create" | "edit";
-type Tab = "match-reactions" | "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "match-center" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "match-ratings" | "newsletter" | "analytics" | "carousel-generator" | "quick-take-video" | "draft-assistant" | "tweet-generator" | "calendar";
+type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "newsletter" | "analytics" | "carousel-generator" | "quick-take-video" | "draft-assistant" | "tweet-generator" | "calendar";
 
 type TransferDraft = {
     player: string;
@@ -857,12 +855,6 @@ export function AdminPage() {
                         <Layout className="w-4 h-4" /> Posts
                     </button>
                     <button
-                        onClick={() => setActiveTab("match-reactions")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "match-reactions" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
-                    >
-                        <Zap className="w-4 h-4" /> Match Reactions
-                    </button>
-                    <button
                         onClick={() => setActiveTab("stories")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "stories" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
@@ -881,12 +873,6 @@ export function AdminPage() {
                         <HelpCircle className="w-4 h-4" /> Polls (Server)
                     </button>
                     <button
-                        onClick={() => setActiveTab("match-ratings")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "match-ratings" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
-                    >
-                        <BarChart3 className="w-4 h-4" /> Fan Ratings
-                    </button>
-                    <button
                         onClick={() => setActiveTab("debates")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "debates" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
@@ -903,13 +889,6 @@ export function AdminPage() {
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "title-race" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
                         <ArrowUpDown className="w-4 h-4" /> Title Race
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("match-center")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "match-center" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
-                    >
-                        <BarChart2 className="w-4 h-4" />
-                        Match Center
                     </button>
                     <button
                         onClick={() => setActiveTab("transfer-tracker")}
@@ -1005,11 +984,6 @@ export function AdminPage() {
                     />
                 )}
 
-                {/* MATCH REACTIONS TAB */}
-                {activeTab === "match-reactions" && (
-                    <AdminMatchReactionsTab />
-                )}
-
                 {/* COLLECTIONS TAB */}
                 {activeTab === "collections" && (
                     <AdminCollectionsTab 
@@ -1030,18 +1004,6 @@ export function AdminPage() {
                     />
                 )}
 
-                {/* MATCH RATINGS TAB */}
-                {activeTab === "match-ratings" && (
-                    <AdminMatchRatingsTab
-                        serverSessions={serverMatchRatings}
-                        editingSession={editingMatchRating}
-                        savingSession={savingMatchRating}
-                        setEditingSession={setEditingMatchRating}
-                        onSaveSession={handleSaveMatchRating}
-                        onDeleteSession={handleDeleteMatchRating}
-                    />
-                )}
-
                 {/* DEBATES TAB */}
                 {activeTab === "debates" && (
                     <AdminDebatesTab 
@@ -1058,11 +1020,6 @@ export function AdminPage() {
                 {/* TITLE RACE TAB */}
                 {activeTab === "title-race" && (
                     <AdminTitleRaceTab />
-                )}
-
-                {/* MATCH CENTER TAB */}
-                {activeTab === "match-center" && (
-                    <AdminMatchCenterTab />
                 )}
 
                 {/* ON THIS DAY TAB */}

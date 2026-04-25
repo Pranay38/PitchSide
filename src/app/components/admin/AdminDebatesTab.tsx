@@ -1,28 +1,70 @@
+import { useState } from "react";
 import { Plus, Trash2, MessageSquare } from "lucide-react";
 import { DebateEditor } from "../DebateEditor";
 import { AdminEmptyState } from "./AdminEmptyState";
+import { toast } from "sonner";
 
 interface AdminDebatesTabProps {
     debates: any[];
-    showDebateEditor: boolean;
-    expandedDebateId: string | null;
-    onShowDebateEditor: (show: boolean) => void;
-    onSaveDebate: (data: any) => Promise<void>;
-    onDeleteDebate: (id: string) => void;
-    onToggleDebateExpanded: (id: string | null) => void;
-    onDeleteArgument: (debateId: string, argumentId: string) => void;
+    fetchDebates: () => Promise<void>;
 }
 
 export function AdminDebatesTab({
     debates,
-    showDebateEditor,
-    expandedDebateId,
-    onShowDebateEditor,
-    onSaveDebate,
-    onDeleteDebate,
-    onToggleDebateExpanded,
-    onDeleteArgument
+    fetchDebates
 }: AdminDebatesTabProps) {
+    const [showDebateEditor, setShowDebateEditor] = useState(false);
+    const [expandedDebateId, setExpandedDebateId] = useState<string | null>(null);
+
+    const handleSaveDebate = async (data: any) => {
+        try {
+            const res = await fetch("/api/debates", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                toast.success("Debate saved successfully!");
+                setShowDebateEditor(false);
+                fetchDebates();
+            } else {
+                toast.error("Failed to save debate.");
+            }
+        } catch {
+            toast.error("Network error.");
+        }
+    };
+
+    const handleDeleteDebate = async (id: string) => {
+        if (!confirm("Are you sure?")) return;
+        try {
+            const res = await fetch(`/api/debates/${id}`, { method: "DELETE" });
+            if (res.ok) {
+                toast.success("Debate deleted.");
+                fetchDebates();
+            } else {
+                toast.error("Failed to delete debate.");
+            }
+        } catch {
+            toast.error("Network error.");
+        }
+    };
+
+    const handleDeleteArgument = async (debateId: string, argumentId: string) => {
+        if (!confirm("Are you sure you want to delete this argument?")) return;
+        try {
+            const res = await fetch(`/api/debates/${debateId}/arguments/${argumentId}`, { method: "DELETE" });
+            if (res.ok) {
+                toast.success("Argument deleted.");
+                fetchDebates();
+            } else {
+                toast.error("Failed to delete argument.");
+            }
+        } catch {
+            toast.error("Network error.");
+        }
+    };
+
     return (
         <>
             <div className="flex items-center justify-between mb-8">
@@ -30,13 +72,13 @@ export function AdminDebatesTab({
                     <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">Debate Corner</h1>
                     <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">{debates.length} hot takes</p>
                 </div>
-                <button onClick={() => onShowDebateEditor(true)} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
+                <button onClick={() => setShowDebateEditor(true)} className="flex items-center gap-2 px-5 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d]">
                     <Plus className="w-4 h-4" />New Debate
                 </button>
             </div>
 
             {showDebateEditor && (
-                <DebateEditor onSave={onSaveDebate} onCancel={() => onShowDebateEditor(false)} />
+                <DebateEditor onSave={handleSaveDebate} onCancel={() => setShowDebateEditor(false)} />
             )}
             <div className="space-y-3">
                 {debates.length === 0 && (
@@ -68,13 +110,13 @@ export function AdminDebatesTab({
                             </div>
                             <div className="flex gap-2">
                                 <button 
-                                    onClick={() => onToggleDebateExpanded(expandedDebateId === deb.id ? null : deb.id)} 
+                                    onClick={() => setExpandedDebateId(expandedDebateId === deb.id ? null : deb.id)} 
                                     className={`p-2 rounded-lg transition-colors ${expandedDebateId === deb.id ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"}`}
                                     title="View Comments"
                                 >
                                     <MessageSquare className="w-4 h-4" />
                                 </button>
-                                <button onClick={() => onDeleteDebate(deb.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                <button onClick={() => handleDeleteDebate(deb.id)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 rounded-lg transition-colors"><Trash2 className="w-4 h-4" /></button>
                             </div>
                         </div>
                         
@@ -94,7 +136,7 @@ export function AdminDebatesTab({
                                                 <p className="text-sm text-gray-600 dark:text-gray-400">{arg.text}</p>
                                             </div>
                                             <button 
-                                                onClick={() => onDeleteArgument(deb.id, arg.id)}
+                                                onClick={() => handleDeleteArgument(deb.id, arg.id)}
                                                 className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded-lg transition-colors flex-shrink-0"
                                                 title="Delete Comment"
                                             >

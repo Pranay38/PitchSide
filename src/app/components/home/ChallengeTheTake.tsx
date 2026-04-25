@@ -1,29 +1,52 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { CheckCircle2 } from "lucide-react";
+import { getDeviceId } from "../../lib/deviceId";
 
-export function ChallengeTheTake() {
+interface ChallengeTheTakeProps {
+  postId?: string;
+}
+
+export function ChallengeTheTake({ postId }: ChallengeTheTakeProps) {
   const [challengeText, setChallengeText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async () => {
-    if (!challengeText.trim()) return;
-    
+  const handleSubmit = useCallback(async () => {
+    if (!challengeText.trim() || isSubmitting) return;
+
     setIsSubmitting(true);
-    // Mock API call
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
-    setChallengeText("");
-    
-    // Reset success state after a few seconds
-    setTimeout(() => {
-      setIsSuccess(false);
-    }, 4000);
-  };
+    setError(null);
+
+    try {
+      const res = await fetch("/api/challenges", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: challengeText.trim(),
+          postId: postId || null,
+          deviceId: getDeviceId(),
+        }),
+      });
+
+      if (res.ok) {
+        setIsSuccess(true);
+        setChallengeText("");
+        setTimeout(() => setIsSuccess(false), 4000);
+      } else {
+        const data = await res.json();
+        setError(data.error || "Failed to submit. Try again.");
+        setTimeout(() => setError(null), 4000);
+      }
+    } catch {
+      setError("Network error. Try again.");
+      setTimeout(() => setError(null), 4000);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [challengeText, isSubmitting, postId]);
 
   return (
     <div className="mx-auto max-w-xl text-left mt-8">
@@ -31,11 +54,11 @@ export function ChallengeTheTake() {
         <div className="h-[1px] w-8 bg-[#16A34A]/50"></div>
         <h3 className="font-outfit text-sm font-semibold tracking-widest uppercase text-gray-300">Challenge the Take</h3>
       </div>
-      
+
       <p className="text-sm text-gray-500 mb-6 font-light">Prove me wrong below. The strongest argument gets featured tomorrow.</p>
-      
+
       <div className="relative">
-        <textarea 
+        <textarea
           value={challengeText}
           onChange={(e) => setChallengeText(e.target.value)}
           disabled={isSubmitting || isSuccess}
@@ -44,7 +67,7 @@ export function ChallengeTheTake() {
           placeholder="I completely disagree because..."
           maxLength={280}
         />
-        
+
         {/* X/Twitter Style Character Count Ring */}
         <div className="absolute bottom-3 left-2 flex items-center justify-center opacity-70">
           {challengeText.length > 0 && (
@@ -58,13 +81,13 @@ export function ChallengeTheTake() {
                   stroke="currentColor"
                   strokeWidth="1.5"
                   fill="transparent"
-                  strokeDasharray="50.26" /* 2 * PI * 8 */
+                  strokeDasharray="50.26"
                   strokeDashoffset={Math.max(0, 50.26 - (50.26 * challengeText.length) / 280)}
                   className={`${
-                    challengeText.length >= 280 
-                      ? "text-red-500" 
-                      : challengeText.length > 260 
-                        ? "text-yellow-500" 
+                    challengeText.length >= 280
+                      ? "text-red-500"
+                      : challengeText.length > 260
+                        ? "text-yellow-500"
                         : "text-[#16A34A]"
                   } transition-all duration-200 ease-out`}
                 />
@@ -73,12 +96,19 @@ export function ChallengeTheTake() {
           )}
         </div>
 
-        <button 
+        {/* Error message */}
+        {error && (
+          <div className="absolute bottom-3 left-10 text-[10px] font-bold text-red-400 animate-in fade-in">
+            {error}
+          </div>
+        )}
+
+        <button
           onClick={handleSubmit}
           disabled={isSubmitting || isSuccess || !challengeText.trim()}
           className={`absolute bottom-2 right-0 font-medium text-xs tracking-wide px-4 py-1.5 rounded-full transition-all duration-300 ${
-            isSuccess 
-              ? "text-[#16A34A]" 
+            isSuccess
+              ? "text-[#16A34A]"
               : "text-gray-300 hover:text-white disabled:opacity-30"
           }`}
         >

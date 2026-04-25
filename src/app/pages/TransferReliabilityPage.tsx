@@ -1,294 +1,300 @@
+"use client";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/lib/router-compat";
-import { ArrowRight, Filter, Repeat2, Search, ShieldCheck, Bell, ShieldQuestion } from "lucide-react";
+import { ArrowRight, Repeat2, Search, ShieldQuestion } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PageState } from "../components/PageState";
-import { useClubPreference } from "../hooks/useClubPreference";
-import { getTransferWatchEntriesAsync } from "../lib/siteSettingsStorage";
-import { buildTransferReliabilityBoard, type TransferReliabilityEntry } from "../lib/transferReliability";
-import {
-  buildTransferDossierSlug,
-  formatTransferWatchAmount,
-  getTransferTierLabel,
-  getTransferTopicLabel,
-} from "../lib/transferWatch";
-import { useUserPreferences } from "../hooks/useUserPreferences";
-import { toast } from "sonner";
 import { getClubByName } from "../data/clubs";
-
-function getTierClasses(entry: TransferReliabilityEntry): string {
-  if (entry.status === "confirmed") {
-    return "bg-[#16A34A]/10 text-[#16A34A]";
-  }
-
-  if (entry.tier === 1) return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300";
-  if (entry.tier === 2) return "bg-sky-500/10 text-sky-600 dark:text-sky-300";
-  if (entry.tier === 3) return "bg-amber-500/10 text-amber-600 dark:text-amber-300";
-  if (entry.tier === 4) return "bg-orange-500/10 text-orange-600 dark:text-orange-300";
-  return "bg-rose-500/10 text-rose-600 dark:text-rose-300";
-}
+import { getSiteSettings, getSiteSettingsAsync } from "../lib/siteSettingsStorage";
+import { buildTransferReliabilityBoard, type TransferReliabilityEntry } from "../lib/transferReliability";
+import { formatTransferWatchAmount } from "../lib/transferWatch";
+import {
+  buildTransferSourceSnapshot,
+  getTransferSourcesForDossier,
+  type TransferSourceArticle,
+} from "../lib/transferSources";
 
 export function TransferReliabilityPage() {
-  const { favoriteClub } = useClubPreference();
-  const [entries, setEntries] = useState<TransferReliabilityEntry[]>([]);
-  
-  const { followedTransfers, toggleFollowedTransfer } = useUserPreferences();
-
-  const [clubFilter, setClubFilter] = useState("all");
+  const initialSettings = getSiteSettings();
+  const [entries, setEntries] = useState<TransferReliabilityEntry[]>(() => (
+    buildTransferReliabilityBoard(initialSettings.transferWatch)
+  ));
+  const [sources, setSources] = useState<TransferSourceArticle[]>(() => initialSettings.transferSources);
+  const [loading, setLoading] = useState(entries.length === 0);
   const [query, setQuery] = useState("");
+  const [filterClub, setFilterClub] = useState("");
 
   useEffect(() => {
     let isMounted = true;
 
-    getTransferWatchEntriesAsync()
-      .then((transferWatch) => {
+    getSiteSettingsAsync()
+      .then((settings) => {
         if (!isMounted) return;
-        const board = buildTransferReliabilityBoard(transferWatch);
-        setEntries(board);
-        if (favoriteClub && board.some((entry) => entry.club === favoriteClub)) {
-          setClubFilter(favoriteClub);
-        }
+        setEntries(buildTransferReliabilityBoard(settings.transferWatch));
+        setSources(settings.transferSources);
+        setLoading(false);
       })
       .catch(() => {
-        if (isMounted) setEntries([]);
+        if (!isMounted) return;
+        setLoading(false);
       });
 
     return () => {
       isMounted = false;
     };
-  }, [favoriteClub]);
+  }, []);
 
-  const clubs = useMemo(() => Array.from(new Set(entries.map((entry) => entry.club))).sort(), [entries]);
-  const visibleEntries = useMemo(() => {
-    const clubScoped = clubFilter === "all"
-      ? entries
-      : entries.filter((entry) => entry.club === clubFilter);
+  const sourceSnapshotByDossier = useMemo(() => {
+    const next = new Map<string, ReturnType<typeof buildTransferSourceSnapshot>>();
+    for (const entry of entries) {
+      next.set(
+        entry.dossierSlug,
+        buildTransferSourceSnapshot(getTransferSourcesForDossier(sources, entry)),
+      );
+    }
+    return next;
+  }, [entries, sources]);
 
-    if (!query.trim()) return clubScoped;
+  const clubOptions = useMemo(() => {
+    const next = new Set<string>();
+    for (const entry of entries) {
+      next.add(entry.club);
+      if (entry.fromClub) next.add(entry.fromClub);
+    }
+    return Array.from(next).sort((left, right) => left.localeCompare(right));
+  }, [entries]);
 
+  const filteredEntries = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return clubScoped.filter((entry) => (
-      [entry.player, entry.club, entry.boardLabel, getTransferTierLabel(entry.tier, entry.status)]
-        .some((value) => value.toLowerCase().includes(needle))
-    ));
-  }, [clubFilter, entries, query]);
+    return entries.filter((entry) => {
+      const matchesQuery = !needle || [
+        entry.player,
+        entry.club,
+        entry.fromClub || "",
+        entry.boardLabel,
+        entry.reliabilityLabel,
+      ].some((value) => value.toLowerCase().includes(needle));
+      const matchesClub = !filterClub || entry.club === filterClub || entry.fromClub === filterClub;
+      return matchesQuery && matchesClub;
+    });
+  }, [entries, filterClub, query]);
+
+  const stats = useMemo(() => {
+    const sourceBacked = entries.filter((entry) => (sourceSnapshotByDossier.get(entry.dossierSlug)?.coverageCount || 0) > 0).length;
+    return {
+      dossiers: entries.length,
+      strongSignals: entries.filter((entry) => entry.reliabilityScore >= 75).length,
+      confirmed: entries.filter((entry) => entry.status === "confirmed").length,
+      sourceBacked,
+    };
+  }, [entries, sourceSnapshotByDossier]);
 
   return (
     <div className="page-atmosphere min-h-screen transition-colors duration-300">
       <SEO
-        title="Transfer Reliability Board"
-        description="Tiered rumor signals, dossier pages, and a cleaner market board for tracking the strongest football links."
-        url="https://thetouchlinedribble.in/transfers"
+        title="Transfer Watch"
+        description="Track transfer dossiers, reliability signals, and linked external coverage from one board."
+        url="https://pitchside-orcin.vercel.app/transfers"
       />
-      <Header favoriteClub={favoriteClub} />
+      <Header />
 
       <main className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6">
-        <section className="editorial-hero rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8">
+        <section className="editorial-hero relative overflow-hidden rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8">
           <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
           <div className="pointer-events-none absolute right-0 top-0 h-48 w-48 rounded-full bg-[#16A34A]/10 blur-3xl" />
-          <div className="relative">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-              Transfer Market
+
+          <div className="relative max-w-3xl">
+            <p className="inline-flex items-center gap-2 rounded-full bg-[#16A34A]/10 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
+              <Repeat2 className="h-4 w-4" />
+              Transfer Watch
+            </p>
+            <h1 className="mt-5 text-4xl font-black font-outfit text-[#0F172A] dark:text-white md:text-5xl">
+              Source-backed dossiers for the biggest moves in the market
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[#475569] dark:text-gray-300">
+              Follow the live board, open a dossier for the full club-to-club case file, and see which transfer stories already have linked external coverage behind them.
             </p>
           </div>
 
-          <div className="relative mt-4 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-            <div className="max-w-3xl">
-              <h1 className="text-4xl font-black font-outfit text-[#0F172A] dark:text-white md:text-5xl">
-                Reliability tiers now lead into dossier pages, not just a rumor list.
-              </h1>
-              <p className="mt-3 text-base leading-7 text-[#64748B] dark:text-gray-400">
-                Each item carries its 1-5 source tier into the board score, then opens a dedicated dossier with signal context and attached editorial coverage.
-              </p>
+          <div className="relative mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur dark:bg-[#0F172A]/80">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Active dossiers</p>
+              <p className="mt-2 text-3xl font-black text-[#0F172A] dark:text-white">{stats.dossiers}</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[340px]">
-              <div className="rounded-2xl bg-[#16A34A]/8 p-4">
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Items</p>
-                <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">{entries.length}</p>
-              </div>
-              <div className="rounded-2xl bg-[#0F172A]/5 p-4 dark:bg-white/5">
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Visible</p>
-                <p className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">{visibleEntries.length}</p>
-              </div>
-              <div className="rounded-2xl bg-[#0F172A]/5 p-4 dark:bg-white/5">
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Mode</p>
-                <p className="mt-2 text-base font-black font-outfit text-[#0F172A] dark:text-white">Tier + dossier</p>
-              </div>
+            <div className="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur dark:bg-[#0F172A]/80">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Strong signals</p>
+              <p className="mt-2 text-3xl font-black text-[#0F172A] dark:text-white">{stats.strongSignals}</p>
             </div>
-          </div>
-
-          <div className="relative mt-7 flex flex-wrap gap-2">
-            <Link to="/alerts" className="filter-chip">Alert center</Link>
-            <Link to="/archive?topic=Transfers" className="filter-chip">Transfer archive</Link>
-            <div className="filter-chip">
-              <Repeat2 className="h-3.5 w-3.5" />
-              Tier-led scoring
+            <div className="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur dark:bg-[#0F172A]/80">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Confirmed</p>
+              <p className="mt-2 text-3xl font-black text-[#0F172A] dark:text-white">{stats.confirmed}</p>
+            </div>
+            <div className="rounded-2xl bg-white/80 p-4 shadow-sm backdrop-blur dark:bg-[#0F172A]/80">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:text-gray-400">Linked coverage</p>
+              <p className="mt-2 text-3xl font-black text-[#0F172A] dark:text-white">{stats.sourceBacked}</p>
             </div>
           </div>
         </section>
 
-        <section className="section-surface mt-10 rounded-[2rem] border border-gray-200 p-4 shadow-sm dark:border-gray-800 md:p-5">
-          <div className="grid gap-3 lg:grid-cols-[2fr_220px_220px]">
-            <label className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 dark:border-gray-700 dark:bg-[#08111f]">
-              <Search className="h-4 w-4 text-[#94A3B8]" />
+        <section className="mt-8 rounded-[2rem] border border-gray-200 bg-white/90 p-5 shadow-sm dark:border-gray-800 dark:bg-[#111827]/90">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="relative flex-1 max-w-xl">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
               <input
                 type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search player, club, or tier"
-                className="w-full bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-[#94A3B8] dark:text-white"
+                placeholder="Search player, club, or signal..."
+                className="w-full rounded-2xl border border-gray-200 bg-white px-11 py-3 text-sm text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#16A34A] dark:border-gray-700 dark:bg-[#0F172A] dark:text-white"
               />
-            </label>
-            <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 dark:border-gray-700 dark:bg-[#08111f]">
-              <Filter className="h-4 w-4 text-[#16A34A]" />
-              <select
-                value={clubFilter}
-                onChange={(event) => setClubFilter(event.target.value)}
-                className="w-full bg-transparent text-sm text-[#0F172A] outline-none dark:text-white"
-              >
-                <option value="all">All clubs</option>
-                {clubs.map((club) => (
-                  <option key={club} value={club}>{club}</option>
-                ))}
-              </select>
             </div>
-            <div className="rounded-2xl bg-[#16A34A]/10 px-4 py-3 text-sm font-semibold text-[#16A34A]">
-              {visibleEntries.length} dossier{visibleEntries.length === 1 ? "" : "s"}
-            </div>
+
+            <select
+              value={filterClub}
+              onChange={(event) => setFilterClub(event.target.value)}
+              className="rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#16A34A] dark:border-gray-700 dark:bg-[#0F172A] dark:text-white"
+            >
+              <option value="">All clubs</option>
+              {clubOptions.map((club) => (
+                <option key={club} value={club}>{club}</option>
+              ))}
+            </select>
           </div>
         </section>
 
-        <section className="mt-10 space-y-5">
-          {visibleEntries.length > 0 ? visibleEntries.map((entry) => {
-            const followed = followedTransfers.some((topic) => topic === entry.topic);
-            const fromClubInfo = entry.fromClub ? getClubByName(entry.fromClub) : null;
-            const toClubInfo = getClubByName(entry.club);
-
-            return (
-              <article key={entry.id} className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-7">
-                <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
-                  <div className="max-w-3xl">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className={`rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] ${entry.status === "confirmed" ? "bg-[#16A34A]/10 text-[#16A34A]" : "bg-[#0F172A]/5 text-[#475569] dark:bg-white/5 dark:text-gray-300"}`}>
-                        {entry.status}
-                      </span>
-                      <span className={`rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] ${getTierClasses(entry)}`}>
-                        {getTransferTierLabel(entry.tier, entry.status)}
-                      </span>
-                      <span className="rounded-full bg-slate-500/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">
-                        {entry.reliabilityLabel}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 flex items-center gap-4">
-                        {entry.playerImageUrl && (
-                            <img src={entry.playerImageUrl} alt={entry.player} className="w-16 h-16 rounded-full object-cover shadow-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700" />
-                        )}
-                        <h2 className="text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
-                          {entry.player}
-                        </h2>
-                    </div>
-                    
-                    <div className="mt-3 flex items-center gap-3 font-bold text-[#16A34A] bg-[#0F172A]/5 dark:bg-white/5 px-4 py-2.5 rounded-xl w-fit">
-                      {entry.fromClub && (
-                        <>
-                          <div className="flex items-center gap-2">
-                            {fromClubInfo?.logo ? (
-                                <img src={fromClubInfo.logo} alt={entry.fromClub} className="w-5 h-5 object-contain" />
-                            ) : (
-                                <ShieldQuestion className="w-5 h-5 text-gray-400" />
-                            )}
-                            <span className="text-rose-500">{entry.fromClub}</span>
-                          </div>
-                          <ArrowRight className="w-4 h-4 text-gray-400" />
-                        </>
-                      )}
-                      <div className="flex items-center gap-2">
-                        {toClubInfo?.logo ? (
-                            <img src={toClubInfo.logo} alt={entry.club} className="w-5 h-5 object-contain" />
-                        ) : (
-                            <ShieldQuestion className="w-5 h-5 text-gray-400" />
-                        )}
-                        <span className="text-emerald-500">{entry.club}</span>
-                      </div>
-                    </div>
-
-                    <p className="mt-4 text-sm leading-6 text-[#64748B] dark:text-gray-400">
-                      {entry.boardLabel} · {formatTransferWatchAmount(entry)} · Last updated {new Date(entry.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                    </p>
-
-                    <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                      {entry.rationale.map((line, index) => (
-                        <div key={`${entry.id}-${index}`} className="rounded-[1.25rem] bg-[#F8FAFC] px-4 py-3 text-sm leading-6 text-[#334155] dark:bg-[#08111f] dark:text-gray-200">
-                          {line}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[320px] xl:grid-cols-1">
-                    <div className="rounded-[1.5rem] bg-[#0F172A] px-5 py-4 text-white">
-                      <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#4ade80]">Board score</p>
-                      <p className="mt-2 text-4xl font-black font-outfit">{entry.reliabilityScore}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const next = toggleFollowedTransfer(entry.topic);
-                        toast.success(next ? `Following ${getTransferTopicLabel(entry)} alerts` : "Transfer alert removed");
-                      }}
-                      className={`rounded-[1.25rem] border px-4 py-3 text-sm font-bold transition-colors ${followed
-                        ? "border-[#16A34A]/30 bg-[#16A34A]/10 text-[#16A34A]"
-                        : "border-gray-200 text-[#475569] hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-700 dark:text-gray-300"
-                      }`}
-                    >
-                      {followed ? "Following alert" : "Follow transfer"}
-                    </button>
-                    <Link
-                      to={`/transfers/${buildTransferDossierSlug(entry)}`}
-                      className="inline-flex items-center justify-between rounded-[1.25rem] border border-gray-200 px-4 py-3 text-sm font-bold text-[#0F172A] transition-colors hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-700 dark:text-white"
-                    >
-                      Open dossier
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
-                </div>
-
-                <div className="mt-6 grid gap-5 lg:grid-cols-[220px_1fr]">
-                  <div className="rounded-[1.5rem] border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-[#0F172A]">
-                    <div className="mb-3 flex items-center gap-2">
-                      <ShieldCheck className="h-4 w-4 text-[#16A34A]" />
-                      <p className="text-sm font-bold text-[#0F172A] dark:text-white">Reliability read</p>
-                    </div>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-[#E2E8F0] dark:bg-[#1F2937]">
-                      <div className="h-full rounded-full bg-[#16A34A]" style={{ width: `${entry.reliabilityScore}%` }} />
-                    </div>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-[#0F172A]">
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Dossier angle</p>
-                    <p className="mt-3 text-sm leading-7 text-[#475569] dark:text-gray-300">
-                      {entry.status === "confirmed"
-                        ? "This case file is effectively closed, but the dossier still captures how strong the move looked before confirmation."
-                        : "The dossier page breaks the rumor out of the feed so the next update has a place to land without getting lost in the board."}
-                    </p>
-                  </div>
-                </div>
-              </article>
-            );
-          }) : (
+        {loading ? (
+          <section className="mt-8 grid gap-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="h-[220px] animate-pulse rounded-[2rem] bg-gray-200 dark:bg-gray-800" />
+            ))}
+          </section>
+        ) : filteredEntries.length === 0 ? (
+          <section className="mt-8">
             <PageState
               icon={Repeat2}
-              eyebrow="Transfers"
-              title="No transfer dossiers matched"
-              description={query.trim()
-                ? "Try a broader player or club search, or clear the current club filter."
-                : "Add transfer watch entries in admin and they will populate the board automatically."}
+              eyebrow="Transfer Watch"
+              title="No dossiers match that filter"
+              description="Try a different player, club, or signal to reopen the board."
             />
-          )}
-        </section>
+          </section>
+        ) : (
+          <section className="mt-8 grid gap-5">
+            {filteredEntries.map((entry) => {
+              const fromClubInfo = entry.fromClub ? getClubByName(entry.fromClub) : null;
+              const toClubInfo = getClubByName(entry.club);
+              const sourceSnapshot = sourceSnapshotByDossier.get(entry.dossierSlug) || buildTransferSourceSnapshot([]);
+
+              return (
+                <article
+                  key={entry.id}
+                  className="rounded-[2rem] border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-lg dark:border-gray-800 dark:bg-[#111827]"
+                >
+                  <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+                    <div className="flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] ${entry.status === "confirmed" ? "bg-[#16A34A]/10 text-[#16A34A]" : "bg-amber-500/10 text-amber-600 dark:text-amber-300"}`}>
+                          {entry.status}
+                        </span>
+                        <span className="rounded-full bg-slate-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">
+                          {entry.reliabilityLabel}
+                        </span>
+                        <span className="rounded-full bg-[#0F172A]/5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:bg-white/5 dark:text-gray-300">
+                          {entry.reliabilityScore}/99
+                        </span>
+                      </div>
+
+                      <div className="mt-5 flex items-center gap-4">
+                        {entry.playerImageUrl ? (
+                          <img
+                            src={entry.playerImageUrl}
+                            alt={entry.player}
+                            className="h-16 w-16 rounded-full border-2 border-white object-cover shadow-sm dark:border-[#0F172A]"
+                          />
+                        ) : (
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-[#0F172A]">
+                            <ShieldQuestion className="h-7 w-7 text-[#94A3B8]" />
+                          </div>
+                        )}
+
+                        <div>
+                          <h2 className="text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
+                            {entry.player}
+                          </h2>
+                          <p className="mt-1 text-sm font-semibold text-[#64748B] dark:text-gray-400">
+                            {entry.boardLabel}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 flex flex-wrap items-center gap-4">
+                        {entry.fromClub && (
+                          <div className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-[#0F172A]">
+                            {fromClubInfo?.logo ? (
+                              <img src={fromClubInfo.logo} alt={entry.fromClub} className="h-8 w-8 object-contain" />
+                            ) : (
+                              <ShieldQuestion className="h-5 w-5 text-[#94A3B8]" />
+                            )}
+                            <span className="text-sm font-bold text-rose-500">{entry.fromClub}</span>
+                          </div>
+                        )}
+                        <ArrowRight className="hidden h-4 w-4 text-[#94A3B8] md:block" />
+                        <div className="flex items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-[#0F172A]">
+                          {toClubInfo?.logo ? (
+                            <img src={toClubInfo.logo} alt={entry.club} className="h-8 w-8 object-contain" />
+                          ) : (
+                            <ShieldQuestion className="h-5 w-5 text-[#94A3B8]" />
+                          )}
+                          <span className="text-sm font-bold text-[#16A34A]">{entry.club}</span>
+                        </div>
+                        <div className="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm font-bold text-[#0F172A] dark:border-gray-800 dark:bg-[#0F172A] dark:text-white">
+                          {formatTransferWatchAmount(entry)}
+                        </div>
+                      </div>
+
+                      {(entry.punchyLine || entry.myTake) && (
+                        <div className="mt-5 rounded-2xl border border-[#16A34A]/10 bg-[#16A34A]/5 p-4">
+                          <p className="text-sm leading-6 text-[#0F172A] dark:text-white">
+                            {entry.punchyLine || entry.myTake}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <aside className="w-full xl:max-w-[320px]">
+                      <div className="rounded-[1.5rem] border border-gray-100 bg-gray-50 p-5 dark:border-gray-800 dark:bg-[#0F172A]">
+                        <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#16A34A]">External desk</p>
+                        <div className="mt-4 grid grid-cols-2 gap-3">
+                          <div className="rounded-xl bg-white px-3 py-3 dark:bg-[#111827]">
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Coverage</p>
+                            <p className="mt-1 text-2xl font-black text-[#0F172A] dark:text-white">{sourceSnapshot.coverageCount}</p>
+                          </div>
+                          <div className="rounded-xl bg-white px-3 py-3 dark:bg-[#111827]">
+                            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Consensus</p>
+                            <p className="mt-1 text-lg font-black text-[#0F172A] dark:text-white">{sourceSnapshot.consensusLabel}</p>
+                          </div>
+                        </div>
+                        <p className="mt-4 text-sm leading-6 text-[#64748B] dark:text-gray-400">
+                          {sourceSnapshot.coverageCount > 0
+                            ? `${sourceSnapshot.confirmingCount} supporting links and ${sourceSnapshot.contradictingCount} pushback signals are attached so far.`
+                            : "No external links attached yet. This dossier is still running on the internal editorial board alone."}
+                        </p>
+                        <Link
+                          to={`/transfers/${entry.dossierSlug}`}
+                          className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#16A34A] px-4 py-2.5 text-sm font-bold text-white"
+                        >
+                          Open dossier
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </div>
+                    </aside>
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+        )}
       </main>
 
       <Footer />

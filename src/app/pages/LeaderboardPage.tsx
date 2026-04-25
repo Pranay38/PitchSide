@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { Trophy, RefreshCw, Medal, Target, Flame } from "lucide-react";

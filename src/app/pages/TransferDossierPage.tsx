@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "@/lib/router-compat";
 import { ArrowLeft, ArrowRight, Bell, ExternalLink, Lock, Repeat2, ShieldQuestion, Sparkles } from "lucide-react";

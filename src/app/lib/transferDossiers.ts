@@ -2,6 +2,12 @@ import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
 import type { TransferReliabilityEntry } from "./transferReliability";
 import { buildTransferDossierSlug, getTransferTierLabel } from "./transferWatch";
+import {
+  buildTransferSourceSnapshot,
+  formatTransferSourceDate,
+  getTransferSourceStanceLabel,
+  type TransferSourceArticle,
+} from "./transferSources";
 
 function normalize(value: string): string {
   return value.trim().toLowerCase();
@@ -93,4 +99,42 @@ export function getAdjacentTransferEntries(
   return entries
     .filter((entry) => entry.id !== current.id && entry.club === current.club)
     .slice(0, 3);
+}
+
+export function buildTransferCoverageSummary(sources: TransferSourceArticle[]): string {
+  const snapshot = buildTransferSourceSnapshot(sources);
+
+  if (snapshot.coverageCount === 0) {
+    return "No external source links have been attached to this dossier yet. The board is currently running on the internal scouting and editorial read only.";
+  }
+
+  return [
+    `${snapshot.coverageCount} external ${snapshot.coverageCount === 1 ? "source is" : "sources are"} attached to this dossier.`,
+    `${snapshot.confirmingCount} ${snapshot.confirmingCount === 1 ? "link leans" : "links lean"} positive, while ${snapshot.contradictingCount} ${snapshot.contradictingCount === 1 ? "source pushes back" : "sources push back"}.`,
+    snapshot.primarySource ? `${snapshot.primarySource} is currently pinned as the lead signal.` : "",
+  ].filter(Boolean).join(" ");
+}
+
+export function buildTransferSourceTimeline(sources: TransferSourceArticle[]): Array<{
+  label: string;
+  title: string;
+  note: string;
+  url: string;
+  sourceLabel: string;
+  paywalled?: boolean;
+}> {
+  return [...sources]
+    .sort((left, right) => {
+      const rightTime = new Date(right.publishedAt || right.discoveredAt).getTime();
+      const leftTime = new Date(left.publishedAt || left.discoveredAt).getTime();
+      return rightTime - leftTime;
+    })
+    .map((source) => ({
+      label: `${source.sourceLabel} · ${getTransferSourceStanceLabel(source.stance)}`,
+      title: source.title,
+      note: source.claimSummary || `Coverage logged from ${source.sourceLabel}.`,
+      url: source.url,
+      sourceLabel: formatTransferSourceDate(source.publishedAt || source.discoveredAt),
+      paywalled: source.paywalled,
+    }));
 }

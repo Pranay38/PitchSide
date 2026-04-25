@@ -6,12 +6,12 @@ import { useTheme } from "../hooks/useTheme";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationBell } from "./NotificationBell";
 import { DesktopCommandPalette } from "./DesktopCommandPalette";
-import { SearchModal } from "./SearchModal";
 import { getClubByName } from "../data/clubs";
 import { Heart, House, Menu, Search, X, LogIn, ShieldAlert, User, Briefcase } from "lucide-react";
 import { PillNav } from "./PillNav";
 import { BriefcaseDrawer } from "./BriefcaseDrawer";
 import { useUserPreferences } from "../hooks/useUserPreferences";
+import { topicPath } from "../lib/contentPaths";
 import {
   SignInButton,
   UserButton,
@@ -51,7 +51,7 @@ function AuthButtonInner({ compact = false }: { compact?: boolean }) {
             <span>Profile</span>
           </Link>
         )}
-        <UserButton afterSignOutUrl="/">
+        <UserButton>
           <UserButton.MenuItems>
             <UserButton.Link
               label="My Profile"
@@ -102,17 +102,22 @@ interface HeaderProps {
 export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+
   const [briefcaseOpen, setBriefcaseOpen] = useState(false);
   const [archiveQuery, setArchiveQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { savedPosts } = useUserPreferences();
-
   const club = favoriteClub ? getClubByName(favoriteClub) : null;
+  const { savedPosts, fanClub } = useUserPreferences();
+  const activeClubName = favoriteClub || fanClub?.name;
+
   const navLinks = [
     { to: "/", label: "Home", icon: <House className="w-4 h-4" /> },
+    ...(activeClubName ? [{ 
+      to: topicPath(activeClubName), 
+      label: activeClubName.length > 12 ? activeClubName.substring(0, 10) + "..." : activeClubName 
+    }] : []),
     { to: "/archive", label: "Archive" },
     { to: "/stories", label: "Stories" },
     { to: "/transfers", label: "Transfers" },
@@ -319,7 +324,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           )}
         </header>
 
-      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+
     </>
   );
 }

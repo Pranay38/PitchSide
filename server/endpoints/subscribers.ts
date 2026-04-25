@@ -218,6 +218,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(201).json({ message: "Subscribed successfully! Check your inbox for a welcome email ⚽" });
         }
 
+        // ─── GET: Unsubscribe an email ───
+        if (req.method === "GET" && req.query.action === "unsubscribe") {
+            const email = sanitizeString(req.query.email);
+            const normalizedEmail = email && isValidEmail(email) ? email.trim().toLowerCase() : null;
+
+            if (!normalizedEmail) {
+                return res.status(400).send("Invalid email address.");
+            }
+
+            await collection.updateOne(
+                { email: normalizedEmail },
+                { $set: { status: "unsubscribed", updatedAt: new Date().toISOString() } }
+            );
+
+            // Return a simple HTML response
+            res.setHeader("Content-Type", "text/html");
+            return res.status(200).send(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Unsubscribed</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <style>
+                        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0F172A; color: #F8FAFC; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+                        .card { background: #1E293B; padding: 40px; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; }
+                        h1 { margin-top: 0; font-size: 24px; }
+                        p { color: #94A3B8; margin-bottom: 24px; line-height: 1.5; }
+                        a { color: #16A34A; text-decoration: none; font-weight: 600; padding: 10px 20px; border-radius: 6px; background: rgba(22, 163, 74, 0.1); transition: background 0.2s; }
+                        a:hover { background: rgba(22, 163, 74, 0.2); }
+                    </style>
+                </head>
+                <body>
+                    <div class="card">
+                        <h1>You've been unsubscribed</h1>
+                        <p>We're sorry to see you go. You will no longer receive emails from The Touchline Dribble.</p>
+                        <a href="/">Return to Homepage</a>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+
         // ─── GET: List all subscribers (for admin) ───
         if (req.method === "GET") {
             if (!(await requireAuth(req, res))) return;
