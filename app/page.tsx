@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The Touchline Dribble — Football Tactics, Analysis & Bold Opinions",
     description:
-      "Tactical breakdowns your pundit missed. Post-match analysis, bold opinions & the football debates that matter. ⚽🔥",
+      "Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and the bold opinions that fuel your group chat. ⚽",
     type: "website",
     url: "https://thetouchlinedribble.in",
     siteName: "The Touchline Dribble",

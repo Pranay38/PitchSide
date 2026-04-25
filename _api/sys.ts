@@ -30,6 +30,7 @@ import ensureIndexesHandler from "../server/endpoints/ensure-indexes";
 import searchHandler from "../server/endpoints/search";
 import footballDataHandler from "../server/endpoints/football-data";
 import transferSourcePreviewHandler from "../server/endpoints/transfer-source-preview";
+import welcomeSequenceHandler from "../server/endpoints/welcome-sequence";
 import { applyRateLimit, applyStrictRateLimit } from "../server/lib/rateLimit";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -158,6 +159,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return footballDataHandler(req, res);
         case "transfer-source-preview":
             return transferSourcePreviewHandler(req, res);
+        case "welcome-sequence":
+            return welcomeSequenceHandler(req, res);
         default:
             return res.status(404).json({ error: "Route not found: " + route });
     }

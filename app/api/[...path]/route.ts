@@ -57,7 +57,7 @@ const SYS_ROUTES = new Set([
   "polls", "polls-vote", "match-ratings", "match-ratings-vote",
   "sitemap", "notifications", "recommendations", "recommendations-track",
   "daily-features", "error-log", "rss", "ensure-indexes", "search",
-  "football-data", "transfer-source-preview",
+  "football-data", "transfer-source-preview", "welcome-sequence"
 ]);
 
 /**

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: "The Touchline Dribble",
     title: "The Touchline Dribble — Football Tactics & Bold Opinions",
     description:
-      "Tactical breakdowns your pundit missed. Post-match analysis, bold opinions & the football debates that actually matter. ⚽🔥",
+      "Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and bold opinions for die-hard football fans. ⚽",
     images: [
       {
         url: "/og-default.png",

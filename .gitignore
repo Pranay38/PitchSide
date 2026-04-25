@@ -32,3 +32,9 @@ npm-debug.log*
 out/
 next-env.d.ts
 
+node_modules/
+.agent/
+.gemini/
+skills/
+research/
+.vercel/
