@@ -172,6 +172,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const insertedSubscriber = {
                 email: normalizedEmail,
                 subscribedAt: new Date().toISOString(),
+                welcomeSequenceState: 1, // 1 = Received Welcome, waiting for Day 1
                 ...(alertPreferences ? { alertPreferences } : {}),
             };
             const insertResult = await collection.insertOne(insertedSubscriber);
