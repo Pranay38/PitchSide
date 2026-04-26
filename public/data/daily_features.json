@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-04-25T06:19:03.258102",
+  "lastUpdated": "2026-04-26T06:57:14.583568",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Rogers open to European move - Saturday's gossip",
+    "text": "Arsenal in talks with Araujo - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 95
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 90
     },
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 77
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 86
     },
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 74
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 71
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 61
+    },
+    {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 60
     }
   ]
 }
