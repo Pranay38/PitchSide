@@ -43,7 +43,7 @@ import { useReadingTracker } from "../hooks/useReadingTracker";
 import { RecommendedArticles } from "../components/RecommendedArticles";
 import { useUser } from "@clerk/nextjs";
 import { HotTakeHeatIndex } from "../components/HotTakeHeatIndex";
-import { PredictionArenaWidget } from "../components/PredictionArenaWidget";
+
 
 function sortPosts(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
@@ -58,6 +58,8 @@ export function BlogPostPage() {
   const [posts, setPosts] = useState<BlogPost[]>(() => sortPosts(getPublishedPosts()));
   const [previewPost, setPreviewPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(posts.length === 0 || !!previewToken);
+  const [streakUpdated, setStreakUpdated] = useState(false);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
   
   const { isPostSaved, isClubFollowed, isPlayerFollowed, toggleSavedPost, toggleFollowedClub, toggleFollowedPlayer, addReadPost } = useUserPreferences();
   const { user } = useUser();
@@ -148,7 +150,38 @@ export function BlogPostPage() {
     if (post?.id) {
       addReadPost(post.id);
     }
-  }, [post?.id]);
+  }, [post?.id, addReadPost]);
+
+  // Reading streak tracker
+  useEffect(() => {
+    if (!post || streakUpdated || !bottomRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          // Reached the bottom of the article
+          const today = new Date().toDateString();
+          const lastRead = localStorage.getItem("pitchside_last_read_date");
+          
+          if (lastRead !== today) {
+            const currentStreak = parseInt(localStorage.getItem("pitchside_read_streak") || "0", 10);
+            localStorage.setItem("pitchside_read_streak", (currentStreak + 1).toString());
+            localStorage.setItem("pitchside_last_read_date", today);
+            toast.success(`Reading streak extended! You are on a ${currentStreak + 1} day streak. 🔥`, {
+              icon: "🔥"
+            });
+          }
+          setStreakUpdated(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(bottomRef.current);
+
+    return () => observer.disconnect();
+  }, [post, streakUpdated]);
 
   const relatedPosts = useMemo(() => {
     if (!post) return [];
@@ -474,7 +507,7 @@ export function BlogPostPage() {
               </div>
             )}
 
-            <div className="mt-12">
+            <div className="mt-12" ref={bottomRef}>
               <InlineNewsletterCard
                 title="Get the strongest Touchline Dribble reads in one email"
                 description="Use the newsletter as the low-noise way to keep up with new analysis and longform pieces."
@@ -501,19 +534,7 @@ export function BlogPostPage() {
               </div>
             )}
 
-            {/* Prediction Arena Widget for specific articles */}
-            {post.slug === "lamine-yamal-injury-barcelona-tactics" && (
-              <div className="my-10">
-                <PredictionArenaWidget
-                  title="Will Barca win without Yamal?"
-                  subtitle="La Liga Matchday"
-                  date="Upcoming Fixture"
-                  teamA={{ name: "Barcelona", short: "FCB", bgClass: "bg-blue-800", textClass: "text-[#a50044]" }}
-                  teamB={{ name: "Opponent", short: "OPP", bgClass: "bg-gray-800", textClass: "text-white" }}
-                  options={["Barcelona Win", "Draw", "Opponent Win"]}
-                />
-              </div>
-            )}
+
 
             <RecommendedArticles
               articleId={post.id}

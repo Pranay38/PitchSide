@@ -12,8 +12,8 @@ interface InlineNewsletterCardProps {
 }
 
 export function InlineNewsletterCard({
-  title = "The tactical breakdown your pundit missed — every Friday",
-  description = "One email, every Friday. The week's biggest tactical talking point, a bold opinion you can argue about, and a weekend match preview so you know exactly what to watch for.",
+  title = "Stop arguing with emotion. Start arguing with data.",
+  description = "Mainstream pundits won't give you the unadulterated tactical truth. Subscribe to get one brutal, data-backed breakdown every week before the timeline catches on.",
   className = "",
 }: InlineNewsletterCardProps) {
   const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();

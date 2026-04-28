@@ -48,3 +48,6 @@ Allow: /
 
 User-agent: Applebot-Extended
 Allow: /
+
+User-agent: GoogleOther
+Allow: /

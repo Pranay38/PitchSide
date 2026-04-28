@@ -1,0 +1,28 @@
+.next/types/app/managers/[slug]/page.ts(34,29): error TS2344: Type '{ params: { slug: string; }; }' does not satisfy the constraint 'PageProps'.
+  Types of property 'params' are incompatible.
+    Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/managers/[slug]/page.ts(38,31): error TS2344: Type '{ params: { slug: string; }; }' does not satisfy the constraint 'PageProps'.
+  Types of property 'params' are incompatible.
+    Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/matchups/[slug]/page.ts(34,29): error TS2344: Type '{ params: { slug: string; }; }' does not satisfy the constraint 'PageProps'.
+  Types of property 'params' are incompatible.
+    Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+.next/types/app/matchups/[slug]/page.ts(38,31): error TS2344: Type '{ params: { slug: string; }; }' does not satisfy the constraint 'PageProps'.
+  Types of property 'params' are incompatible.
+    Type '{ slug: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+app/managers/[slug]/page.tsx(152,44): error TS7006: Parameter 'match' implicitly has an 'any' type.
+app/managers/[slug]/page.tsx(152,51): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/matchups/[slug]/page.tsx(143,45): error TS7006: Parameter 'res' implicitly has an 'any' type.
+app/matchups/[slug]/page.tsx(143,50): error TS7006: Parameter 'i' implicitly has an 'any' type.
+app/matchups/[slug]/page.tsx(154,45): error TS7006: Parameter 'res' implicitly has an 'any' type.
+app/matchups/[slug]/page.tsx(154,50): error TS7006: Parameter 'i' implicitly has an 'any' type.
+server/endpoints/digest.ts(165,101): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/app/components/PostCard.tsx(63,20): error TS2339: Property 'matchRating' does not exist on type 'BlogPost'.
+src/app/components/PostCard.tsx(63,54): error TS2339: Property 'matchRating' does not exist on type 'BlogPost'.
+src/app/components/PostCard.tsx(66,24): error TS2339: Property 'matchRating' does not exist on type 'BlogPost'.
+src/app/components/PostCard.tsx(134,17): error TS2339: Property 'matchRating' does not exist on type 'BlogPost'.
+src/app/components/PostCard.tsx(134,51): error TS2339: Property 'matchRating' does not exist on type 'BlogPost'.
+src/app/components/PostCard.tsx(137,21): error TS2339: Property 'matchRating' does not exist on type 'BlogPost'.
+src/app/components/PostEditor.tsx(417,34): error TS2739: Type '{ category: string; setCategory: Dispatch<SetStateAction<string>>; club: string; setClub: Dispatch<SetStateAction<string>>; ... 24 more ...; errors: Record<...>; }' is missing the following properties from type 'MetaSettingsProps': matchRating, setMatchRating
+src/app/components/PredictionArenaWidget.tsx(168,34): error TS2304: Cannot find name 'Check'.
+src/app/pages/HomePage.tsx(385,42): error TS7006: Parameter 'e' implicitly has an 'any' type.

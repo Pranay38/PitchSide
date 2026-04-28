@@ -39,7 +39,8 @@ import { QuickTakesSection } from "../components/QuickTakesSection";
 
 import { ChallengeTheTake } from "../components/home/ChallengeTheTake";
 import { ReadingStreakBanner } from "../components/ReadingStreakBanner";
-import { PredictionArenaWidget } from "../components/PredictionArenaWidget";
+import { InnerCircleModal } from "../components/InnerCircleModal";
+
 
 /** Hook: animates elements with class `scroll-reveal` when they enter viewport */
 function useScrollReveal() {
@@ -301,31 +302,43 @@ function TransferSpotlightCard({ entry }: { entry: ReturnType<typeof buildTransf
   );
 }
 
-export function HomePage() {
+interface HomePageProps {
+  serverPosts?: any[];
+  serverStories?: any[];
+  serverSettings?: any;
+}
+
+export function HomePage({ serverPosts, serverStories, serverSettings }: HomePageProps = {}) {
   const scrollRef = useScrollReveal();
   const { isSignedIn, isLoaded: clLoaded } = useUser();
   const clerkAvailable = typeof process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY === "string" && process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.length > 0;
   const { data: posts = [], isLoading: isLoadingPosts, error: postsError } = useQuery({
     queryKey: ['posts'],
     queryFn: async () => sortPosts(await getPublishedPostsAsync()),
-    initialData: () => sortPosts(getPublishedPosts()),
-    initialDataUpdatedAt: 0,
+    initialData: serverPosts && serverPosts.length > 0
+      ? () => sortPosts(serverPosts)
+      : () => sortPosts(getPublishedPosts()),
+    initialDataUpdatedAt: serverPosts && serverPosts.length > 0 ? Date.now() : 0,
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: stories = [], isLoading: isLoadingStories } = useQuery({
     queryKey: ['stories'],
     queryFn: async () => sortStories(await getAllStoriesAsync()),
-    initialData: () => sortStories(getAllStories()),
-    initialDataUpdatedAt: 0,
+    initialData: serverStories && serverStories.length > 0
+      ? () => sortStories(serverStories as any)
+      : () => sortStories(getAllStories()),
+    initialDataUpdatedAt: serverStories && serverStories.length > 0 ? Date.now() : 0,
     staleTime: 1000 * 60 * 5,
   });
 
   const { data: siteSettings = getSiteSettings(), isLoading: isLoadingSettings } = useQuery({
     queryKey: ['siteSettings'],
     queryFn: getSiteSettingsAsync,
-    initialData: getSiteSettings,
-    initialDataUpdatedAt: 0,
+    initialData: serverSettings && serverSettings.id
+      ? () => serverSettings as any
+      : getSiteSettings,
+    initialDataUpdatedAt: serverSettings && serverSettings.id ? Date.now() : 0,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -716,7 +729,7 @@ export function HomePage() {
                   <ManagerPressureWidget data={dailyFeatures.managerPressure} />
                 </div>
               ) : null}
-              <PredictionArenaWidget />
+
             </div>
 
             {/* Latest Analysis Block */}
@@ -926,6 +939,7 @@ export function HomePage() {
       </main>
 
       <Footer />
+      <InnerCircleModal />
     </div>
   );
 }

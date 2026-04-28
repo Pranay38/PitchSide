@@ -21,8 +21,6 @@ import { PostTrackersClient } from "./PostTrackersClient";
 import { PostEmbedHydrationClient } from "./PostEmbedHydrationClient";
 import { AdaptiveArticleHeader } from "@/app/components/AdaptiveArticleHeader";
 import { MilestoneScrubber } from "@/app/components/MilestoneScrubber";
-import { PredictionArenaWidget } from "@/app/components/PredictionArenaWidget";
-
 export const revalidate = 60;
 
 interface Props {
@@ -289,18 +287,6 @@ export default async function BlogPostPage({ params }: Props) {
               )}
             </PostEmbedHydrationClient>
 
-            {(post.id === "lamine-yamal-injury-barcelona-tactics" || post.slug === "lamine-yamal-injury-barcelona-tactics") && (
-              <div className="mt-12">
-                <PredictionArenaWidget 
-                  title="Will Barca win without Yamal?"
-                  subtitle="La Liga Matchday"
-                  date="This Weekend"
-                  teamA={{ name: "Barcelona", short: "FCB", bgClass: "bg-blue-700", textClass: "text-white" }}
-                  teamB={{ name: "Real Madrid", short: "RMA", bgClass: "bg-gray-100", textClass: "text-black" }}
-                  options={["Yes (Barca)", "Draw", "No (Madrid)"]}
-                />
-              </div>
-            )}
 
             <div className="mt-12">
               <InlineNewsletterCard

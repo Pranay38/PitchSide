@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
 import { CSPostHogProvider } from "@/app/components/PostHogProvider";
+import { InnerCircleModal } from "@/app/components/InnerCircleModal";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -122,6 +123,33 @@ export default function RootLayout({
             }),
           }}
         />
+
+        {/* JSON-LD for Organization — Knowledge Panel + brand signals */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "The Touchline Dribble",
+              alternateName: "PitchSide",
+              url: "https://thetouchlinedribble.in",
+              logo: "https://thetouchlinedribble.in/logo.png",
+              description:
+                "Conviction-led football analysis — tactical breakdowns, bold opinions, and the takes your pundit is too safe to make.",
+              foundingDate: "2026",
+              sameAs: [
+                "https://x.com/TouchlineDribbl",
+                "https://www.instagram.com/thetouchlinedribble/",
+              ],
+              contactPoint: {
+                "@type": "ContactPoint",
+                contactType: "editorial",
+                email: "thetouchlinedribble@gmail.com",
+              },
+            }),
+          }}
+        />
       </head>
 
       <body>
@@ -177,7 +205,10 @@ export default function RootLayout({
           }}
         >
           <CSPostHogProvider>
-            <Providers>{children}</Providers>
+            <Providers>
+              {children}
+              <InnerCircleModal />
+            </Providers>
           </CSPostHogProvider>
         </ClerkProvider>
 
