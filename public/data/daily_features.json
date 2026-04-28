@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-04-27T07:32:15.078169",
+  "lastUpdated": "2026-04-28T07:29:15.995899",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Newcastle interested in Jackson - Monday's gossip",
-    "sentimentScore": 62
+    "text": "Newcastle to explore selling Wissa - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 93
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 88
+    },
+    {
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 70
+    },
+    {
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 68
     },
     {
       "name": "Andoni Iraola (BOU)",
-      "pressureScore": 90
+      "pressureScore": 67
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 85
+      "name": "Nuno Esp\u00edrito Santo (WHU)",
+      "pressureScore": 66
     }
   ]
 }
