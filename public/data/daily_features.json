@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-04-28T07:29:15.995899",
+  "lastUpdated": "2026-04-29T07:20:46.356794",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Newcastle to explore selling Wissa - Tuesday's gossip",
+    "text": "Tottenham target Rashford - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 88
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 89
     },
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 70
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 83
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 68
-    },
-    {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 67
-    },
-    {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 66
+      "name": "David Moyes (EVE)",
+      "pressureScore": 63
     }
   ]
 }
