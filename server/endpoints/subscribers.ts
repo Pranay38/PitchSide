@@ -182,6 +182,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             });
 
             // Send welcome email (non-blocking, don't fail the request if email fails)
+            let emailSent = false;
             if (isMailerConfigured()) {
                 try {
                     await sendEmail({
@@ -210,13 +211,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                             </div>
                         `,
                     });
+                    emailSent = true;
                 } catch (emailError) {
                     console.error("Failed to send welcome email:", emailError);
-                    // Don't fail the subscription if email sending fails
+                    // Log to error_logs for admin dashboard visibility
+                    try {
+                        await db.collection("error_logs").insertOne({
+                            type: "welcome_email",
+                            email: normalizedEmail,
+                            error: emailError instanceof Error ? emailError.message : String(emailError),
+                            stack: emailError instanceof Error ? emailError.stack : undefined,
+                            timestamp: new Date().toISOString(),
+                        });
+                    } catch (_logErr) {
+                        // Last resort — don't let logging break the subscribe flow
+                    }
                 }
             }
 
-            return res.status(201).json({ message: "Subscribed successfully! Check your inbox for a welcome email ⚽" });
+            return res.status(201).json({
+                message: emailSent
+                    ? "Subscribed successfully! Check your inbox for a welcome email ⚽"
+                    : "Subscribed successfully! Welcome email may be slightly delayed ⚽",
+                emailSent,
+            });
         }
 
         // ─── GET: Unsubscribe an email ───
