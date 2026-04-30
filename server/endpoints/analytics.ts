@@ -56,40 +56,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         // 5. Subscriber Growth Trend (last 30 days)
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-        const allSubscribers = await db.collection("subscribers")
-            .find({ subscribedAt: { $exists: true } })
-            .project({ subscribedAt: 1 })
-            .toArray();
 
+        // Use aggregation instead of fetching all subscribers into memory
+        const dailyCounts = await db.collection("subscribers").aggregate([
+            { $match: { subscribedAt: { $gte: thirtyDaysAgo } } },
+            { $group: {
+                _id: { $dateToString: { format: "%Y-%m-%d", date: "$subscribedAt" } },
+                count: { $sum: 1 }
+            }},
+            { $sort: { _id: 1 } }
+        ]).toArray();
+
+        const dailyCountMap: Record<string, number> = {};
+        for (const entry of dailyCounts) {
+            dailyCountMap[entry._id] = entry.count;
+        }
+
+        // Build the 30-day growth array with proper typing
         const growthMap: Record<string, number> = {};
         for (let d = 0; d < 30; d++) {
             const date = new Date(Date.now() - d * 24 * 60 * 60 * 1000);
-            growthMap[date.toISOString().split("T")[0]] = 0;
+            const key = date.toISOString().split("T")[0];
+            growthMap[key] = dailyCountMap[key] || 0;
         }
-        for (const sub of allSubscribers) {
-            const day = sub.subscribedAt ? new Date(sub.subscribedAt).toISOString().split("T")[0] : null;
-            if (day && growthMap[day] !== undefined) {
-                growthMap[day]++;
-            }
-        }
-        const subscriberGrowth = Object.entries(growthMap)
-            .sort(([a], [b]) => a.localeCompare(b))
-            .map(([date, count]) => ({ date, newSubscribers: count }));
 
-        // Compute cumulative total per day
-        const totalBefore30d = allSubscribers.filter(s => {
-            const d = s.subscribedAt ? new Date(s.subscribedAt) : null;
-            return d && d < thirtyDaysAgo;
-        }).length;
+        const sortedEntries = Object.entries(growthMap)
+            .sort(([a], [b]) => a.localeCompare(b));
+
+        // Count subscribers before the 30-day window for cumulative baseline
+        const totalBefore30d = await db.collection("subscribers").countDocuments({
+            subscribedAt: { $lt: thirtyDaysAgo }
+        });
+
         let running = totalBefore30d;
-        for (const entry of subscriberGrowth) {
-            running += entry.newSubscribers;
-            (entry as any).cumulativeTotal = running;
-        }
+        const subscriberGrowth = sortedEntries.map(([date, count]) => {
+            running += count;
+            return { date, newSubscribers: count, cumulativeTotal: running };
+        });
 
         // 6. Cron Health
         const cronJobs = await db.collection("cron_logs")
             .find({})
+            .sort({ lastRunAt: -1 })
+            .limit(20)
             .toArray();
 
         // 7. Recent Errors
@@ -129,7 +138,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             })),
             recentErrors: recentErrors.map(e => ({
                 type: e.type,
-                email: e.email,
+                email: e.email ? e.email.replace(/^(.{2})(.*)(@.*)$/, '$1***$3') : null,
                 error: e.error,
                 timestamp: e.timestamp,
             }))
@@ -138,6 +147,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(200).json(analyticsData);
     } catch (error: any) {
         console.error("Analytics API Error:", error);
-        return res.status(500).json({ error: error.message || "Internal server error" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 }

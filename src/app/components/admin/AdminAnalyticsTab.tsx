@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
-import { Users, FileText, MessageSquare, Flame, BarChart3, Mail, RefreshCw, AlertCircle, CheckCircle, XCircle, Clock, TrendingUp, AlertTriangle, Activity } from "lucide-react";
+import { useState, useEffect, type ReactNode } from "react";
+import { Users, FileText, MessageSquare, Flame, BarChart3, Mail, RefreshCw, AlertCircle, CheckCircle, XCircle, Clock, TrendingUp, AlertTriangle, Activity, type LucideIcon } from "lucide-react";
+
+// Cron job staleness threshold: 25 hours (24h cron cycle + 1h buffer)
+const STALE_THRESHOLD_MS = 25 * 60 * 60 * 1000;
 import {
     BarChart,
     Bar,
@@ -60,13 +63,37 @@ interface AnalyticsData {
     recentErrors: ErrorLog[];
 }
 
+interface KpiCardProps {
+    icon: LucideIcon;
+    label: string;
+    value: string;
+    iconBg: string;
+    iconColor: string;
+    valueColor?: string;
+}
+
+function KpiCard({ icon: Icon, label, value, iconBg, iconColor, valueColor = "text-[#0F172A] dark:text-white" }: KpiCardProps) {
+    return (
+        <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
+            <div className="flex items-center gap-3 mb-3">
+                <div className={`p-2 ${iconBg} rounded-lg ${iconColor}`}>
+                    <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">{label}</span>
+            </div>
+            <span className={`text-2xl font-bold ${valueColor} mt-auto`}>{value}</span>
+        </div>
+    );
+}
+
 export function AdminAnalyticsTab() {
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchAnalytics = async () => {
-        setLoading(true);
+    const fetchAnalytics = async (isRefresh = false) => {
+        if (isRefresh) setRefreshing(true); else setLoading(true);
         setError(null);
         try {
             const pwd = localStorage.getItem("pitchside_admin_auth") || "";
@@ -81,6 +108,7 @@ export function AdminAnalyticsTab() {
             setError(e.message || "An error occurred");
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
     };
 
@@ -163,65 +191,22 @@ export function AdminAnalyticsTab() {
                     </p>
                 </div>
                 <button
-                    onClick={fetchAnalytics}
-                    className="p-2 text-gray-400 hover:text-[#16A34A] bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors"
+                    onClick={() => fetchAnalytics(true)}
+                    disabled={refreshing}
+                    className="p-2 text-gray-400 hover:text-[#16A34A] bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
                     title="Refresh Data"
                 >
-                    <RefreshCw className="w-5 h-5" />
+                    <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
                 </button>
             </div>
 
             {/* KPIs Grid */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-lg text-blue-500">
-                            <Users className="w-5 h-5" />
-                        </div>
-                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Subscribers</span>
-                    </div>
-                    <span className="text-2xl font-bold text-[#0F172A] dark:text-white mt-auto">{formatNumber(kpis.totalSubscribers)}</span>
-                </div>
-                
-                <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg text-emerald-500">
-                            <TrendingUp className="w-5 h-5" />
-                        </div>
-                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">30d Growth</span>
-                    </div>
-                    <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-auto">+{totalNewSubs}</span>
-                </div>
-
-                <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg text-emerald-500">
-                            <FileText className="w-5 h-5" />
-                        </div>
-                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Published</span>
-                    </div>
-                    <span className="text-2xl font-bold text-[#0F172A] dark:text-white mt-auto">{formatNumber(kpis.totalPosts)}</span>
-                </div>
-
-                <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-lg text-purple-500">
-                            <MessageSquare className="w-5 h-5" />
-                        </div>
-                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Comments</span>
-                    </div>
-                    <span className="text-2xl font-bold text-[#0F172A] dark:text-white mt-auto">{formatNumber(kpis.totalComments)}</span>
-                </div>
-
-                <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-lg text-orange-500">
-                            <Flame className="w-5 h-5" />
-                        </div>
-                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Debates</span>
-                    </div>
-                    <span className="text-2xl font-bold text-[#0F172A] dark:text-white mt-auto">{formatNumber(kpis.totalDebates)}</span>
-                </div>
+                <KpiCard icon={Users} label="Subscribers" value={formatNumber(kpis.totalSubscribers)} iconBg="bg-blue-50 dark:bg-blue-500/10" iconColor="text-blue-500" />
+                <KpiCard icon={TrendingUp} label="30d Growth" value={`+${totalNewSubs}`} iconBg="bg-emerald-50 dark:bg-emerald-500/10" iconColor="text-emerald-500" valueColor="text-emerald-600 dark:text-emerald-400" />
+                <KpiCard icon={FileText} label="Published" value={formatNumber(kpis.totalPosts)} iconBg="bg-emerald-50 dark:bg-emerald-500/10" iconColor="text-emerald-500" />
+                <KpiCard icon={MessageSquare} label="Comments" value={formatNumber(kpis.totalComments)} iconBg="bg-purple-50 dark:bg-purple-500/10" iconColor="text-purple-500" />
+                <KpiCard icon={Flame} label="Debates" value={formatNumber(kpis.totalDebates)} iconBg="bg-orange-50 dark:bg-orange-500/10" iconColor="text-orange-500" />
             </div>
 
             {/* Subscriber Growth Chart */}
@@ -301,7 +286,7 @@ export function AdminAnalyticsTab() {
                             {cronHealth.map((job) => {
                                 const isHealthy = job.status === "success";
                                 const isStale = job.lastRunAt
-                                    ? (Date.now() - new Date(job.lastRunAt).getTime()) > 25 * 60 * 60 * 1000
+                                    ? (Date.now() - new Date(job.lastRunAt).getTime()) > STALE_THRESHOLD_MS
                                     : true;
                                 return (
                                     <div
@@ -360,7 +345,7 @@ export function AdminAnalyticsTab() {
                     {recentErrors.length > 0 ? (
                         <div className="space-y-3 max-h-[320px] overflow-y-auto">
                             {recentErrors.map((err, i) => (
-                                <div key={i} className="rounded-xl border border-red-100 dark:border-red-500/10 bg-red-50/50 dark:bg-red-500/5 p-3">
+                                <div key={`${err.type}-${err.timestamp}-${i}`} className="rounded-xl border border-red-100 dark:border-red-500/10 bg-red-50/50 dark:bg-red-500/5 p-3">
                                     <div className="flex items-center justify-between mb-1">
                                         <span className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">{err.type}</span>
                                         <span className="text-xs text-[#64748B] dark:text-gray-400">{err.timestamp ? timeAgo(err.timestamp) : ""}</span>
