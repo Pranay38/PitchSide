@@ -54,6 +54,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             ]).toArray();
         const totalPollVotes = totalPollVotesResult.length > 0 ? totalPollVotesResult[0].totalVotes : 0;
 
+        // 5. Subscriber Growth Trend (last 30 days)
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const allSubscribers = await db.collection("subscribers")
+            .find({ subscribedAt: { $exists: true } })
+            .project({ subscribedAt: 1 })
+            .toArray();
+
+        const growthMap: Record<string, number> = {};
+        for (let d = 0; d < 30; d++) {
+            const date = new Date(Date.now() - d * 24 * 60 * 60 * 1000);
+            growthMap[date.toISOString().split("T")[0]] = 0;
+        }
+        for (const sub of allSubscribers) {
+            const day = sub.subscribedAt ? new Date(sub.subscribedAt).toISOString().split("T")[0] : null;
+            if (day && growthMap[day] !== undefined) {
+                growthMap[day]++;
+            }
+        }
+        const subscriberGrowth = Object.entries(growthMap)
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([date, count]) => ({ date, newSubscribers: count }));
+
+        // Compute cumulative total per day
+        const totalBefore30d = allSubscribers.filter(s => {
+            const d = s.subscribedAt ? new Date(s.subscribedAt) : null;
+            return d && d < thirtyDaysAgo;
+        }).length;
+        let running = totalBefore30d;
+        for (const entry of subscriberGrowth) {
+            running += entry.newSubscribers;
+            (entry as any).cumulativeTotal = running;
+        }
+
+        // 6. Cron Health
+        const cronJobs = await db.collection("cron_logs")
+            .find({})
+            .toArray();
+
+        // 7. Recent Errors
+        const recentErrors = await db.collection("error_logs")
+            .find({})
+            .sort({ timestamp: -1 })
+            .limit(10)
+            .toArray();
+
         const analyticsData = {
             kpis: {
                 totalSubscribers,
@@ -72,6 +117,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 sentAt: n.sentAt,
                 sent: n.sent || 0,
                 failed: n.failed || 0
+            })),
+            subscriberGrowth,
+            cronHealth: cronJobs.map(j => ({
+                jobName: j.jobName,
+                lastRunAt: j.lastRunAt,
+                status: j.status,
+                error: j.error || null,
+                ...(j.emailsSent !== undefined ? { emailsSent: j.emailsSent } : {}),
+                ...(j.day1Sent !== undefined ? { day1Sent: j.day1Sent, day3Sent: j.day3Sent } : {}),
+            })),
+            recentErrors: recentErrors.map(e => ({
+                type: e.type,
+                email: e.email,
+                error: e.error,
+                timestamp: e.timestamp,
             }))
         };
 

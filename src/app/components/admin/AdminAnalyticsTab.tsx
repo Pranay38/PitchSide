@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, FileText, MessageSquare, Flame, BarChart3, Mail, RefreshCw, AlertCircle } from "lucide-react";
+import { Users, FileText, MessageSquare, Flame, BarChart3, Mail, RefreshCw, AlertCircle, CheckCircle, XCircle, Clock, TrendingUp, AlertTriangle, Activity } from "lucide-react";
 import {
     BarChart,
     Bar,
@@ -8,8 +8,33 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    Legend
+    Legend,
+    AreaChart,
+    Area,
 } from "recharts";
+
+interface CronJob {
+    jobName: string;
+    lastRunAt: string;
+    status: string;
+    error: string | null;
+    emailsSent?: number;
+    day1Sent?: number;
+    day3Sent?: number;
+}
+
+interface ErrorLog {
+    type: string;
+    email: string;
+    error: string;
+    timestamp: string;
+}
+
+interface GrowthEntry {
+    date: string;
+    newSubscribers: number;
+    cumulativeTotal: number;
+}
 
 interface AnalyticsData {
     kpis: {
@@ -30,6 +55,9 @@ interface AnalyticsData {
         sent: number;
         failed: number;
     }[];
+    subscriberGrowth: GrowthEntry[];
+    cronHealth: CronJob[];
+    recentErrors: ErrorLog[];
 }
 
 export function AdminAnalyticsTab() {
@@ -85,27 +113,42 @@ export function AdminAnalyticsTab() {
         );
     }
 
-    const { kpis, topPosts, newsletters } = data;
+    const { kpis, topPosts, newsletters, subscriberGrowth, cronHealth, recentErrors } = data;
 
-    // Helper to format large numbers (e.g., 1500 -> 1.5k)
     const formatNumber = (num: number) => {
         if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
         if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
         return num.toString();
     };
 
-    // Format date for the newsletter table
     const formatDate = (isoString: string) => {
         return new Date(isoString).toLocaleDateString("en-US", {
             month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
         });
     };
 
-    // Prepare chart data (truncate long titles)
+    const formatShortDate = (dateStr: string) => {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    };
+
+    const timeAgo = (isoString: string) => {
+        const diff = Date.now() - new Date(isoString).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs}h ago`;
+        const days = Math.floor(hrs / 24);
+        return `${days}d ago`;
+    };
+
     const chartData = topPosts.map(p => ({
         ...p,
         shortTitle: p.title.length > 25 ? p.title.substring(0, 25) + "..." : p.title
     }));
+
+    // Calculate 30-day subscriber gain
+    const totalNewSubs = subscriberGrowth.reduce((sum, e) => sum + e.newSubscribers, 0);
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -113,10 +156,10 @@ export function AdminAnalyticsTab() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                        <BarChart3 className="w-6 h-6 text-[#16A34A]" /> Platform Analytics
+                        <BarChart3 className="w-6 h-6 text-[#16A34A]" /> Platform Metrics
                     </h1>
                     <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
-                        A bird's-eye view of your community engagement.
+                        Growth engine visibility — subscribers, cron health, errors.
                     </p>
                 </div>
                 <button
@@ -129,7 +172,7 @@ export function AdminAnalyticsTab() {
             </div>
 
             {/* KPIs Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
                     <div className="flex items-center gap-3 mb-3">
                         <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-lg text-blue-500">
@@ -143,9 +186,19 @@ export function AdminAnalyticsTab() {
                 <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
                     <div className="flex items-center gap-3 mb-3">
                         <div className="p-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg text-emerald-500">
+                            <TrendingUp className="w-5 h-5" />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">30d Growth</span>
+                    </div>
+                    <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-auto">+{totalNewSubs}</span>
+                </div>
+
+                <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg text-emerald-500">
                             <FileText className="w-5 h-5" />
                         </div>
-                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Published Posts</span>
+                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Published</span>
                     </div>
                     <span className="text-2xl font-bold text-[#0F172A] dark:text-white mt-auto">{formatNumber(kpis.totalPosts)}</span>
                 </div>
@@ -155,7 +208,7 @@ export function AdminAnalyticsTab() {
                         <div className="p-2 bg-purple-50 dark:bg-purple-500/10 rounded-lg text-purple-500">
                             <MessageSquare className="w-5 h-5" />
                         </div>
-                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Total Comments</span>
+                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Comments</span>
                     </div>
                     <span className="text-2xl font-bold text-[#0F172A] dark:text-white mt-auto">{formatNumber(kpis.totalComments)}</span>
                 </div>
@@ -165,26 +218,169 @@ export function AdminAnalyticsTab() {
                         <div className="p-2 bg-orange-50 dark:bg-orange-500/10 rounded-lg text-orange-500">
                             <Flame className="w-5 h-5" />
                         </div>
-                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Active Debates</span>
+                        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Debates</span>
                     </div>
                     <span className="text-2xl font-bold text-[#0F172A] dark:text-white mt-auto">{formatNumber(kpis.totalDebates)}</span>
                 </div>
             </div>
 
-            {/* Engagement Metrics row 2 */}
-            <div className="bg-gradient-to-br from-[#16A34A]/10 to-[#15803d]/5 dark:from-[#16A34A]/20 dark:to-transparent border border-[#16A34A]/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
-                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Community Engagement</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Total poll votes cast across the platform.</p>
+            {/* Subscriber Growth Chart */}
+            <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 text-[#16A34A]" /> Subscriber Growth (30 Days)
+                        </h3>
+                        <p className="text-xs text-[#64748B] dark:text-gray-400 mt-1">Cumulative total and daily new sign-ups</p>
+                    </div>
                 </div>
-                <div className="text-4xl font-black text-[#16A34A]">
-                    {formatNumber(kpis.totalPollVotes)} <span className="text-lg font-semibold text-gray-500 dark:text-gray-400">Votes</span>
+                {subscriberGrowth.length > 0 ? (
+                    <div className="w-full h-72">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={subscriberGrowth} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="gradientTotal" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#16A34A" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#16A34A" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" opacity={0.2} />
+                                <XAxis
+                                    dataKey="date"
+                                    tickFormatter={formatShortDate}
+                                    tick={{ fontSize: 10 }}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    stroke="#9CA3AF"
+                                    interval={4}
+                                />
+                                <YAxis yAxisId="left" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} stroke="#9CA3AF" />
+                                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} stroke="#9CA3AF" />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#1E293B', borderColor: '#334155', borderRadius: '8px', color: '#fff', fontSize: '12px' }}
+                                    labelFormatter={formatShortDate}
+                                />
+                                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
+                                <Area
+                                    yAxisId="left"
+                                    type="monotone"
+                                    dataKey="cumulativeTotal"
+                                    name="Total Subs"
+                                    stroke="#16A34A"
+                                    fill="url(#gradientTotal)"
+                                    strokeWidth={2}
+                                />
+                                <Bar
+                                    yAxisId="right"
+                                    dataKey="newSubscribers"
+                                    name="New (daily)"
+                                    fill="#3B82F6"
+                                    radius={[4, 4, 0, 0]}
+                                    barSize={12}
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                ) : (
+                    <div className="h-72 flex items-center justify-center text-sm text-gray-500 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-xl">
+                        Not enough data yet.
+                    </div>
+                )}
+            </div>
+
+            {/* Cron Health + Errors side by side */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Cron Health */}
+                <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Activity className="w-5 h-5 text-[#16A34A]" />
+                        <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Cron Health</h3>
+                    </div>
+                    {cronHealth.length > 0 ? (
+                        <div className="space-y-3">
+                            {cronHealth.map((job) => {
+                                const isHealthy = job.status === "success";
+                                const isStale = job.lastRunAt
+                                    ? (Date.now() - new Date(job.lastRunAt).getTime()) > 25 * 60 * 60 * 1000
+                                    : true;
+                                return (
+                                    <div
+                                        key={job.jobName}
+                                        className={`flex items-center justify-between rounded-xl p-4 border ${
+                                            !isHealthy
+                                                ? "border-red-200 bg-red-50 dark:border-red-500/20 dark:bg-red-500/5"
+                                                : isStale
+                                                ? "border-amber-200 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-500/5"
+                                                : "border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-900"
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            {isHealthy ? (
+                                                isStale ? (
+                                                    <Clock className="w-5 h-5 text-amber-500 flex-shrink-0" />
+                                                ) : (
+                                                    <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                                                )
+                                            ) : (
+                                                <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                                            )}
+                                            <div>
+                                                <p className="text-sm font-bold text-[#0F172A] dark:text-white">{job.jobName}</p>
+                                                <p className="text-xs text-[#64748B] dark:text-gray-400">
+                                                    {job.lastRunAt ? timeAgo(job.lastRunAt) : "Never run"}
+                                                    {job.emailsSent !== undefined && ` · ${job.emailsSent} emails`}
+                                                    {job.day1Sent !== undefined && ` · D1:${job.day1Sent} D3:${job.day3Sent}`}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
+                                            isHealthy
+                                                ? isStale ? "text-amber-700 bg-amber-100 dark:text-amber-300 dark:bg-amber-500/20" : "text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-500/20"
+                                                : "text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-500/20"
+                                        }`}>
+                                            {isHealthy ? (isStale ? "STALE" : "OK") : "FAIL"}
+                                        </span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="h-32 flex items-center justify-center text-sm text-gray-500 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-xl">
+                            No cron jobs have run yet.
+                        </div>
+                    )}
+                </div>
+
+                {/* Error Log */}
+                <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                    <div className="flex items-center gap-2 mb-4">
+                        <AlertTriangle className="w-5 h-5 text-amber-500" />
+                        <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Recent Errors</h3>
+                    </div>
+                    {recentErrors.length > 0 ? (
+                        <div className="space-y-3 max-h-[320px] overflow-y-auto">
+                            {recentErrors.map((err, i) => (
+                                <div key={i} className="rounded-xl border border-red-100 dark:border-red-500/10 bg-red-50/50 dark:bg-red-500/5 p-3">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">{err.type}</span>
+                                        <span className="text-xs text-[#64748B] dark:text-gray-400">{err.timestamp ? timeAgo(err.timestamp) : ""}</span>
+                                    </div>
+                                    {err.email && <p className="text-xs text-[#64748B] dark:text-gray-400 mb-1">→ {err.email}</p>}
+                                    <p className="text-sm text-red-800 dark:text-red-300 font-mono break-all">{err.error}</p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="h-32 flex flex-col items-center justify-center text-sm text-gray-500 border-2 border-dashed border-gray-100 dark:border-gray-800 rounded-xl gap-2">
+                            <CheckCircle className="w-6 h-6 text-emerald-400" />
+                            No errors logged. Clean run.
+                        </div>
+                    )}
                 </div>
             </div>
 
-            {/* Two-column layout for details */}
+            {/* Two-column layout for posts + newsletters */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
                 {/* Top Posts Chart */}
                 <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
                     <h3 className="text-lg font-bold text-[#0F172A] dark:text-white mb-4">Top Performing Posts</h3>
@@ -256,7 +452,17 @@ export function AdminAnalyticsTab() {
                         </div>
                     )}
                 </div>
+            </div>
 
+            {/* Engagement row */}
+            <div className="bg-gradient-to-br from-[#16A34A]/10 to-[#15803d]/5 dark:from-[#16A34A]/20 dark:to-transparent border border-[#16A34A]/20 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Community Engagement</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Total poll votes cast across the platform.</p>
+                </div>
+                <div className="text-4xl font-black text-[#16A34A]">
+                    {formatNumber(kpis.totalPollVotes)} <span className="text-lg font-semibold text-gray-500 dark:text-gray-400">Votes</span>
+                </div>
             </div>
         </div>
     );
