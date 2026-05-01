@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-04-30T07:25:15.826533",
+  "lastUpdated": "2026-05-01T07:23:33.549415",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd consider Leao move - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Delap interest as Everton eye quartet  - Friday's gossip",
+    "sentimentScore": 65
   },
   "managerPressure": [
     {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 75
+    },
+    {
       "name": "Arne Slot (LIV)",
-      "pressureScore": 89
+      "pressureScore": 75
     },
     {
       "name": "Oliver Glasner (CRY)",
-      "pressureScore": 87
-    },
-    {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 62
+      "pressureScore": 63
     }
   ]
 }
