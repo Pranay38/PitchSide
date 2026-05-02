@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-05-01T07:23:33.549415",
+  "lastUpdated": "2026-05-02T06:59:18.808649",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Delap interest as Everton eye quartet  - Friday's gossip",
-    "sentimentScore": 65
+    "text": "Joao Pedro on Barca radar - Saturday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 75
-    },
-    {
       "name": "Arne Slot (LIV)",
-      "pressureScore": 75
+      "pressureScore": 97
     },
     {
       "name": "Oliver Glasner (CRY)",
-      "pressureScore": 63
+      "pressureScore": 93
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 82
+    },
+    {
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 68
+    },
+    {
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 65
     }
   ]
 }
