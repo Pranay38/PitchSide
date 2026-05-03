@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-05-02T06:59:18.808649",
+  "lastUpdated": "2026-05-03T07:15:09.802749",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Joao Pedro on Barca radar - Saturday's gossip",
+    "text": "Liverpool target Napoli's Beukema - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 97
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 92
     },
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 93
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 87
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 82
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 85
+    },
+    {
+      "name": "Mike Jackson (BUR)",
+      "pressureScore": 67
     },
     {
       "name": "Marco Silva (FUL)",
-      "pressureScore": 68
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 65
+      "pressureScore": 62
     }
   ]
 }
