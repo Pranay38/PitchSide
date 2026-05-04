@@ -2,8 +2,8 @@ import subprocess, os, tempfile, json, sys, time, threading
 from datetime import datetime
 sys.stdout.reconfigure(encoding='utf-8')
 
-APIFY_TOKEN = "apify_api_EI3pUb6sKWf8xx7c4Nua0m1mumQvqG33cPQf"
-OPENAI_KEY = "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"
+APIFY_TOKEN = os.environ.get("APIFY_TOKEN", "")
+OPENAI_KEY = os.environ.get("OPENAI_KEY", "")
 TMPDIR = tempfile.gettempdir()
 
 # Settings
