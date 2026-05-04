@@ -27,7 +27,7 @@ import { ReactionUI } from "../components/ReactionUI";
 import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
 import { SeriesNavigator } from "../components/SeriesNavigator";
 import { PageState } from "../components/PageState";
-import { ArticleAudioPlayer } from "../components/ArticleAudioPlayer";
+
 import { TouchlineAudioPlayer } from "../components/TouchlineAudioPlayer";
 import {
   ArticleContentRenderer,
@@ -282,12 +282,12 @@ export function BlogPostPage() {
       name: "The Touchline Dribble",
       logo: {
         "@type": "ImageObject",
-        url: "https://pitchside.vercel.app/logo.png",
+        url: "https://thetouchlinedribble.in/logo.png",
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://thetouchlinedribble.com/post/${post.slug || post.id}`,
+      "@id": `https://thetouchlinedribble.in/post/${post.slug || post.id}`,
     },
     speakable: {
       "@type": "SpeakableSpecification",
@@ -450,13 +450,7 @@ export function BlogPostPage() {
               <TouchlineAudioPlayer audioUrl={post.audioUrl} title={`${post.title} (Audio Breakdown)`} />
             )}
 
-            {articleContentModel && (
-              <ArticleAudioPlayer
-                title={post.title}
-                excerpt={post.excerpt}
-                model={articleContentModel}
-              />
-            )}
+
 
             <div
               ref={articleContentRef}>

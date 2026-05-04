@@ -96,7 +96,7 @@ export function TransferReliabilityPage() {
       <SEO
         title="Transfer Watch"
         description="Track transfer dossiers, reliability signals, and linked external coverage from one board."
-        url="https://pitchside-orcin.vercel.app/transfers"
+        url="https://thetouchlinedribble.in/transfers"
       />
       <Header />
 

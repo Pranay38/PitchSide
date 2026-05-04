@@ -35,9 +35,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const payload = JSON.stringify({
             title,
             body,
-            url: url || "https://pitchside-orcin.vercel.app",
-            icon: icon || "https://pitchside-orcin.vercel.app/pwa-192x192.png",
-            badge: badge || "https://pitchside-orcin.vercel.app/pwa-192x192.png"
+            url: url || "https://thetouchlinedribble.in",
+            icon: icon || "https://thetouchlinedribble.in/logo-192.png",
+            badge: badge || "https://thetouchlinedribble.in/logo-192.png"
         });
 
         const { db } = await connectToDatabase();

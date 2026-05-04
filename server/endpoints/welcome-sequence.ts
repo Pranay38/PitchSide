@@ -134,6 +134,14 @@ export default async function welcomeSequenceHandler(req: VercelRequest, res: Ve
             );
         }
 
+        if (isCronTrigger) {
+            await db.collection("cron_logs").updateOne(
+                { jobName: "welcome-sequence" },
+                { $set: { lastRunAt: new Date().toISOString(), status: "success", day1Sent: day1Batch.length, day3Sent: day3Batch.length } },
+                { upsert: true }
+            );
+        }
+
         return res.status(200).json({ 
             success: true, 
             message: "Welcome sequence emails processed",
@@ -143,6 +151,16 @@ export default async function welcomeSequenceHandler(req: VercelRequest, res: Ve
 
     } catch (error: any) {
         console.error("Welcome Sequence Cron Error:", error);
+        try {
+            const { db } = await connectToDatabase();
+            if (req.method === "GET" && !!req.headers["x-vercel-cron"]) {
+                await db.collection("cron_logs").updateOne(
+                    { jobName: "welcome-sequence" },
+                    { $set: { lastRunAt: new Date().toISOString(), status: "failed", error: String(error) } },
+                    { upsert: true }
+                );
+            }
+        } catch (e) {}
         return res.status(500).json({ error: error.message || "Internal server error" });
     }
 }

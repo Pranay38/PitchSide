@@ -90,7 +90,7 @@ export function InnerCircleModal() {
               </h2>
               
               <p className="text-gray-400 text-center text-sm md:text-base leading-relaxed mb-8">
-                Join 5,000+ tactical nerds. Get our exclusive <strong>"2026 Modern Tactics Cheat Sheet"</strong> PDF and a deep-dive email every Friday. 
+                Join 5,000+ tactical nerds. Get our exclusive deep-dive tactical analysis email every Friday. No fluff, just pure football intelligence.
               </p>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -109,7 +109,7 @@ export function InnerCircleModal() {
                 >
                   {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                     <>
-                      <Send className="w-4 h-4" /> Send me the Cheat Sheet
+                      <Send className="w-4 h-4" /> Join the Inner Circle
                     </>
                   )}
                 </button>
@@ -122,7 +122,7 @@ export function InnerCircleModal() {
             <div className="py-12 flex flex-col items-center text-center">
               <CheckCircle2 className="w-16 h-16 text-[#16A34A] mb-4 animate-bounce" />
               <h2 className="text-2xl font-black font-outfit text-white mb-2">You're in.</h2>
-              <p className="text-gray-400">Check your inbox for the cheat sheet.</p>
+              <p className="text-gray-400">Check your inbox for the welcome email.</p>
             </div>
           )}
         </div>

@@ -162,7 +162,7 @@ export function ArchivePage() {
       <SEO
         title="Archive"
         description="Search every Touchline Dribble article and story by club, league, topic, and format."
-        url="https://pitchside-orcin.vercel.app/archive"
+        url="https://thetouchlinedribble.in/archive"
       />
       <Header />
 

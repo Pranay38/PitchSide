@@ -4,7 +4,7 @@ import { connectToDatabase } from "../../_api/_db";
 /**
  * GET /api/rss
  * Generates an RSS 2.0 feed from the latest published blog posts.
- * Enables RSS readers and podcast apps to discover PitchSide content.
+ * Enables RSS readers and podcast apps to discover The Touchline Dribble content.
  */
 export default async function rssHandler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "GET") {
@@ -20,14 +20,23 @@ export default async function rssHandler(req: VercelRequest, res: VercelResponse
       .limit(30)
       .toArray();
 
-    const siteUrl = "https://pitchside-orcin.vercel.app";
+    const siteUrl = "https://thetouchlinedribble.in";
     const now = new Date().toUTCString();
 
     const items = posts.map((post: any) => {
       const pubDate = post.date ? new Date(post.date).toUTCString() : now;
-      const link = `${siteUrl}/post/${post.id}`;
+      const postPath = post.slug || post.id;
+      const link = `${siteUrl}/post/${postPath}`;
       const escapedTitle = escapeXml(post.title || "Untitled");
       const escapedExcerpt = escapeXml(post.excerpt || "");
+
+      // Deduplicate categories (club + tags)
+      const categories = new Set<string>();
+      if (post.club) categories.add(post.club);
+      if (post.tags) post.tags.forEach((t: string) => categories.add(t));
+      const categoryXml = Array.from(categories)
+        .map((c) => `<category>${escapeXml(c)}</category>`)
+        .join("\n      ");
 
       return `    <item>
       <title>${escapedTitle}</title>
@@ -35,17 +44,16 @@ export default async function rssHandler(req: VercelRequest, res: VercelResponse
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${pubDate}</pubDate>
       <description>${escapedExcerpt}</description>
-      ${post.club ? `<category>${escapeXml(post.club)}</category>` : ""}
-      ${(post.tags || []).map((t: string) => `<category>${escapeXml(t)}</category>`).join("\n      ")}
+      ${categoryXml}
     </item>`;
     });
 
     const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>PitchSide — Football Analysis &amp; Longform Stories</title>
+    <title>The Touchline Dribble — Tactical Breakdowns &amp; Bold Football Opinions</title>
     <link>${siteUrl}</link>
-    <description>Tactical breakdowns, transfer analysis, and longform football storytelling.</description>
+    <description>From the touchline to your timeline — tactical breakdowns, bold football opinions, and the analysis your pundit missed.</description>
     <language>en-us</language>
     <lastBuildDate>${now}</lastBuildDate>
     <atom:link href="${siteUrl}/api/rss" rel="self" type="application/rss+xml"/>

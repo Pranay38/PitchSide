@@ -129,6 +129,14 @@ export default async function dailyFeaturesHandler(req: VercelRequest, res: Verc
         { upsert: true }
       );
 
+      if (isCronTrigger) {
+          await db.collection("cron_logs").updateOne(
+              { jobName: "daily-features" },
+              { $set: { lastRunAt: new Date().toISOString(), status: "success" } },
+              { upsert: true }
+          );
+      }
+
       return res.status(200).json({ success: true, data: doc });
     }
 
@@ -174,6 +182,16 @@ export default async function dailyFeaturesHandler(req: VercelRequest, res: Verc
     return res.status(405).json({ error: "Method not allowed" });
   } catch (error: any) {
     console.error("daily-features error:", error);
+    try {
+        const { db } = await connectToDatabase();
+        if (req.method === "GET" && !!req.headers["x-vercel-cron"]) {
+            await db.collection("cron_logs").updateOne(
+                { jobName: "daily-features" },
+                { $set: { lastRunAt: new Date().toISOString(), status: "failed", error: String(error) } },
+                { upsert: true }
+            );
+        }
+    } catch (e) {}
     return res.status(500).json({ error: error.message || "Internal server error" });
   }
 }

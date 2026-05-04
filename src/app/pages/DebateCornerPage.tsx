@@ -352,7 +352,7 @@ export function DebateCornerPage() {
                 title="Debate Corner"
                 description="Hot takes. Bold opinions. Your vote matters. Join the football debate on The Touchline Dribble."
                 type="website"
-                url="https://pitchside-orcin.vercel.app/debates"
+                url="https://thetouchlinedribble.in/debates"
             />
             <div className="sticky top-0 z-50 bg-[#0a0e1a]/80 backdrop-blur-xl border-b border-white/5">
                 <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">

@@ -219,6 +219,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         await sendBatchEmails(batchList);
 
+        await db.collection("cron_logs").updateOne(
+            { jobName: "digest" },
+            { $set: { lastRunAt: new Date().toISOString(), status: "success", emailsSent: subscribers.length } },
+            { upsert: true }
+        );
+
         return res.status(200).json({ 
             message: "Weekly digest sent successfully", 
             emailsSent: subscribers.length,
@@ -227,6 +233,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     } catch (error) {
         console.error("Cron Digest Error:", error);
+        try {
+            const { db } = await connectToDatabase();
+            await db.collection("cron_logs").updateOne(
+                { jobName: "digest" },
+                { $set: { lastRunAt: new Date().toISOString(), status: "failed", error: String(error) } },
+                { upsert: true }
+            );
+        } catch (e) {}
         return res.status(500).json({ error: "Failed to send digest" });
     }
 }

@@ -12,6 +12,7 @@ import { StoryFeatureCard } from "../components/StoryFeatureCard";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { getSiteSettingsAsync } from "../lib/siteSettingsStorage";
+import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
 import { buildTransferReliabilityBoard, type TransferReliabilityEntry } from "../lib/transferReliability";
 import {
   buildTransferDossierSlug,
@@ -49,7 +50,7 @@ export function TransferDossierPage() {
   const [stories, setStories] = useState(() => getAllStories());
   const [loading, setLoading] = useState(entries.length === 0);
   
-  const { followedTransfers, toggleFollowedTransfer } = useUserPreferences();
+  const { followedTransfers, toggleFollowedTransfer, newsletterOptIn } = useUserPreferences();
 
   useEffect(() => {
     let isMounted = true;
@@ -164,7 +165,7 @@ export function TransferDossierPage() {
       <SEO
         title={title}
         description={buildTransferSummary(dossier)}
-        url={`https://pitchside-orcin.vercel.app/transfers/${buildTransferDossierSlug(dossier)}`}
+        url={`https://thetouchlinedribble.in/transfers/${buildTransferDossierSlug(dossier)}`}
       />
       <Header />
 
@@ -291,7 +292,33 @@ export function TransferDossierPage() {
           </div>
         </section>
 
-        {radarData && radarData.length > 0 && (
+        {!newsletterOptIn ? (
+          <section className="mt-10 relative">
+            <div className="absolute inset-0 z-10 flex items-center justify-center p-4">
+              <InlineNewsletterCard 
+                title="Unlock the Full Dossier" 
+                description="Get access to our complete scouting profile, radar charts, timeline, and external coverage analysis by joining our free newsletter."
+                className="w-full max-w-2xl shadow-2xl relative z-20"
+              />
+              {/* Blur backdrop for the gate */}
+              <div className="absolute inset-0 bg-white/60 dark:bg-[#0F172A]/60 backdrop-blur-md rounded-[2rem] z-10" />
+            </div>
+
+            {/* Blurred preview content to tease the user */}
+            <div className="opacity-40 pointer-events-none filter blur-sm">
+              <div className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8 flex flex-col md:flex-row items-center gap-8 h-[300px]">
+                <div className="flex-1 w-full max-w-sm h-full bg-gray-200 dark:bg-gray-800 rounded-xl animate-pulse"></div>
+                <div className="flex-1 space-y-4">
+                  <div className="h-4 w-32 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                  <div className="h-8 w-64 bg-gray-200 dark:bg-gray-800 rounded-full"></div>
+                  <div className="h-24 w-full bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        ) : (
+          <>
+            {radarData && radarData.length > 0 && (
           <section className="mt-10">
             <div className="section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm dark:border-gray-800 md:p-8 flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1 w-full max-w-sm h-[300px]">
@@ -542,6 +569,8 @@ export function TransferDossierPage() {
               ))}
             </div>
           </section>
+        )}
+        </>
         )}
       </main>
 

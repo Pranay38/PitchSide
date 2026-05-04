@@ -88,7 +88,7 @@ function normalizePostRecord(raw: unknown): unknown {
   if (!raw || typeof raw !== "object") return raw;
 
   const normalized = { ...(raw as Record<string, unknown>) };
-  for (const key of ["previewToken", "publishAt", "mediaUrl", "sofascoreUrl", "playerName", "isDraft", "thisWeek", "mustRead", "editorPick", "mainStory"]) {
+  for (const key of ["previewToken", "publishAt", "mediaUrl", "sofascoreUrl", "playerName", "audioUrl", "isDraft", "thisWeek", "mustRead", "editorPick", "mainStory"]) {
     if (normalized[key] === null) {
       delete normalized[key];
     }

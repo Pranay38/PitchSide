@@ -205,7 +205,7 @@ export function StoryPage() {
       "name": "The Touchline Dribble",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://pitchside-orcin.vercel.app/logo.png"
+        "url": "https://thetouchlinedribble.in/logo.png"
       }
     }
   });
@@ -216,7 +216,7 @@ export function StoryPage() {
         title={isPreviewMode ? `${story.title} Preview` : story.title}
         description={story.excerpt}
         image={story.coverImage}
-        url={`https://pitchside-orcin.vercel.app/stories/${story.slug}`}
+        url={`https://thetouchlinedribble.in/stories/${story.slug}`}
         type="article"
         date={story.date}
         schema={storySchema}

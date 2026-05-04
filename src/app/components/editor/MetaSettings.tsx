@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Tag, Search, Loader2, Trash2, Plus, Link, Mic, User, Library, Star, Flame, Crown, CalendarDays, X } from "lucide-react";
+import { Tag, Search, Loader2, Trash2, Plus, Link, Mic, User, Library, Star, Flame, Crown, CalendarDays, X, FileAudio } from "lucide-react";
 import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName, deleteCustomClub, isCustomClub } from "../../data/clubs";
 import type { SearchResult } from "../../data/clubs";
 
@@ -27,8 +27,6 @@ interface MetaSettingsProps {
     setAudioUrl: (val: string) => void;
     playerName: string;
     setPlayerName: (val: string) => void;
-    matchRating: number | "";
-    setMatchRating: (val: number | "") => void;
     seriesName: string;
     setSeriesName: (val: string) => void;
     seriesOrder: number | "";
@@ -54,7 +52,6 @@ export function MetaSettings({
     mediaUrl, setMediaUrl,
     audioUrl, setAudioUrl,
     playerName, setPlayerName,
-    matchRating, setMatchRating,
     seriesName, setSeriesName,
     seriesOrder, setSeriesOrder,
     thisWeek, setThisWeek,
@@ -65,6 +62,7 @@ export function MetaSettings({
     errors
 }: MetaSettingsProps) {
     const [clubSearch, setClubSearch] = useState("");
+    const [matchRating, setMatchRating] = useState<number | "">(0);
     const [clubResults, setClubResults] = useState<SearchResult[]>([]);
     const [searchingClubs, setSearchingClubs] = useState(false);
     const [showClubDropdown, setShowClubDropdown] = useState(false);
@@ -388,15 +386,37 @@ export function MetaSettings({
                         Touchline Audio Snippet
                     </label>
                     <p className="text-xs text-[#64748B] dark:text-gray-400 mb-3">
-                        Paste the URL to an externally hosted audio breakdown.
+                        Paste the direct URL to an .mp3 or .m4a audio file.
                     </p>
-                    <input
-                        type="url"
-                        value={audioUrl}
-                        onChange={(e) => setAudioUrl(e.target.value)}
-                        placeholder="https://api.example.com/audio.mp3"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                    />
+
+                    {audioUrl ? (
+                        <div className="rounded-xl border border-[#16A34A]/30 bg-[#16A34A]/5 dark:bg-[#16A34A]/10 px-4 py-3">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <FileAudio className="w-5 h-5 text-[#16A34A] shrink-0" />
+                                    <span className="text-sm font-medium text-[#0F172A] dark:text-white truncate">
+                                        {audioUrl.split("/").pop()?.split("?")[0] || "Audio file"}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setAudioUrl("")}
+                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors shrink-0"
+                                    title="Remove audio"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <input
+                            type="url"
+                            value={audioUrl}
+                            onChange={(e) => setAudioUrl(e.target.value)}
+                            placeholder="https://example.com/audio.mp3"
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                        />
+                    )}
                 </div>
             </div>
 

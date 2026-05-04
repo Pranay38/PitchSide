@@ -489,7 +489,7 @@ export function CollectionsPage() {
         title="Reading Lists"
         description="Curated article collections from The Touchline Dribble — deep dives, tactical breakdowns, and more."
         type="website"
-        url="https://pitchside-orcin.vercel.app/collections"
+        url="https://thetouchlinedribble.in/collections"
       />
       <Header />
 

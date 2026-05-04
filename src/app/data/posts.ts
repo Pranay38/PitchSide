@@ -46,6 +46,44 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    id: "16",
+    title: "The Vini Jr Problem: Why Madrid's Tactical Collapse isn't on Mbappe",
+    slug: "the-vini-jr-problem-why-madrids-tactical-collapse-isnt-on-mbappe",
+    excerpt: "Everyone is blaming Kylian Mbappe for Real Madrid's collapse. You're all blind. Tactical data proves Vinicius Jr is the actual structural problem.",
+    coverImage: "https://images.unsplash.com/photo-1616778551732-6dd1289f567d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmb290YmFsbCUyMHRhY3RpY2FsJTIwYm9hcmR8ZW58MXx8fHwxNzcyMjU0Nzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+    club: "Real Madrid",
+    tags: ["Real Madrid", "Tactics", "La Liga", "Instigator"],
+    date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+    readTime: "4 min read",
+    thisWeek: true,
+    mustRead: true,
+    editorPick: true,
+    format: "article",
+    content: `Everyone is blaming Kylian Mbappe for Real Madrid's collapse. You're all blind. The actual problem is Vinicius Jr.
+
+## The Myth
+
+The mainstream narrative is easy: Real Madrid signed the best player in the world, and now the team is broken because his ego doesn't fit. Pundits and emotional fan accounts point to Mbappe's lack of goals or his perceived lack of tracking back as the reason Ancelotti's system is failing. 
+
+But football isn't played on narratives; it's played on grass. And the tactical data tells a completely different, undeniable story. Mbappe is being forced into isolation because the structure around him is fundamentally broken—and that structural collapse starts with Vinicius Jr.
+
+*Want more unfiltered tactical truth? Drop your email below. We send one brutal breakdown a week.*
+
+## The Heatmap
+
+If you look at the touch maps from the last five matches, the problem becomes glaringly obvious. Vinicius Jr is completely hogging the left half-space. He refuses to invert properly or drop deep to link play, effectively cutting off the left flank. 
+
+In a functioning elite system, wingers rotate, create overloads, and open space for the central striker. Instead, Vini's rigid positioning forces the entire Real Madrid attack to tilt awkwardly, leaving Mbappe stranded on an island with no passing angles and three defenders collapsing on him. The mainstream media won't show you this heatmap because it ruins the Ballon d'Or narrative.
+
+## The Defensive Void
+
+It gets worse in transition. Compared to last season, Vinicius Jr's defensive actions per 90 have plummeted by 42%. He is abandoning defensive transitions. When Madrid loses the ball, the left side becomes a gaping void, forcing the midfield to scramble and exposing the backline. 
+
+Ancelotti has lost control of the left wing. Blaming Mbappe for a systemic failure when the data clearly shows Vini is abandoning his structural responsibilities is not just lazy—it's factually incorrect. Stop arguing with emotion. Start arguing with data.
+
+*Want more unfiltered tactical truth? Drop your email below. We send one brutal breakdown a week.*`
+  },
+  {
     id: "1",
     title: "Manchester United's Tactical Evolution Under New Management",
     slug: "manchester-united-s-tactical-evolution-under-new-management-00001",
