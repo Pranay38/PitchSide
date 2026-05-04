@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-05-03T07:15:09.802749",
+  "lastUpdated": "2026-05-04T07:45:25.192958",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool target Napoli's Beukema - Sunday's gossip",
+    "text": "Juventus target Man City's Reijnders - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 92
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 98
     },
     {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 87
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 65
     },
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 85
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 61
     },
     {
-      "name": "Mike Jackson (BUR)",
-      "pressureScore": 67
-    },
-    {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 62
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 60
     }
   ]
 }
