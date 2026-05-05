@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-05-04T07:45:25.192958",
+  "lastUpdated": "2026-05-05T07:14:10.571635",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Juventus target Man City's Reijnders - Monday's gossip",
-    "sentimentScore": 41
+    "text": "Juventus make Alisson top target - Tuesday's gossip",
+    "sentimentScore": 51
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 98
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 90
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 65
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 87
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 61
-    },
-    {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 60
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 81
     }
   ]
 }
