@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-05-06T07:33:06.107513",
+  "lastUpdated": "2026-05-07T07:40:24.598968",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Napoli to make Hojlund's move permanent  - Wednesday's gossip",
-    "sentimentScore": 41
+    "text": "Man Utd have no plans for Rashford - Thursday's gossip",
+    "sentimentScore": 27
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 96
-    },
-    {
-      "name": "Unai Emery (AVL)",
+      "name": "Eddie Howe (NEW)",
       "pressureScore": 92
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 83
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 85
+    },
+    {
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 81
+    },
+    {
+      "name": "Rob Edwards (WOL)",
+      "pressureScore": 76
+    },
+    {
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 70
     }
   ]
 }
