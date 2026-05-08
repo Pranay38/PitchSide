@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-05-07T07:40:24.598968",
+  "lastUpdated": "2026-05-08T06:51:05.450943",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd have no plans for Rashford - Thursday's gossip",
-    "sentimentScore": 27
+    "text": "Man City monitor Vinicius Jr - Friday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 92
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 79
     },
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 85
+      "name": "Mike Jackson (BUR)",
+      "pressureScore": 74
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 81
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 71
     },
     {
-      "name": "Rob Edwards (WOL)",
-      "pressureScore": 76
-    },
-    {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 70
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 68
     }
   ]
 }
