@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-05-08T06:51:05.450943",
+  "lastUpdated": "2026-05-09T07:03:54.667144",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man City monitor Vinicius Jr - Friday's gossip",
+    "text": "Real hold talks over Mourinho return - Saturday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 84
+    },
+    {
       "name": "Keith Andrews (BRE)",
-      "pressureScore": 79
+      "pressureScore": 72
     },
     {
-      "name": "Mike Jackson (BUR)",
-      "pressureScore": 74
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 61
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 71
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 68
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 60
     }
   ]
 }
