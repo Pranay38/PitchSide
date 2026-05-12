@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-05-11T08:22:00.306923",
+  "lastUpdated": "2026-05-12T07:40:25.242097",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Everton target Stones return - Monday's gossip",
+    "text": "Three clubs eyeing Bowen - Tuesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 93
-    },
-    {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 71
-    },
-    {
       "name": "Andoni Iraola (BOU)",
-      "pressureScore": 61
+      "pressureScore": 86
     },
     {
-      "name": "Calum McFarlane (CHE)",
-      "pressureScore": 60
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 73
+    },
+    {
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 70
+    },
+    {
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 62
     }
   ]
 }
