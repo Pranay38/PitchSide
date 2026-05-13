@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-05-12T07:40:25.242097",
+  "lastUpdated": "2026-05-13T07:46:08.754707",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Three clubs eyeing Bowen - Tuesday's gossip",
+    "text": "Man Utd consider Valverde move - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "Andoni Iraola (BOU)",
-      "pressureScore": 86
+      "pressureScore": 91
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 73
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 79
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 70
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 76
     },
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 62
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 67
     }
   ]
 }
