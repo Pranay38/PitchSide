@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-05-13T07:46:08.754707",
+  "lastUpdated": "2026-05-14T07:39:19.362062",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd consider Valverde move - Wednesday's gossip",
-    "sentimentScore": 41
+    "text": "Gordon agrees to Bayern move - Thursday's gossip",
+    "sentimentScore": 51
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 91
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 98
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 79
+      "name": "Rob Edwards (WOL)",
+      "pressureScore": 95
+    },
+    {
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 81
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 73
     },
     {
       "name": "Pep Guardiola (MCI)",
-      "pressureScore": 76
-    },
-    {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 67
+      "pressureScore": 60
     }
   ]
 }
