@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-05-16T07:11:46.074310",
+  "lastUpdated": "2026-05-17T07:31:14.890382",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Newcastle hold out on Gordon - Saturday's gossip",
+    "text": "Juventus to step up Silva efforts - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "Andoni Iraola (BOU)",
-      "pressureScore": 96
+      "pressureScore": 81
     },
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 89
+      "name": "Rob Edwards (WOL)",
+      "pressureScore": 63
     },
     {
-      "name": "Mike Jackson (BUR)",
-      "pressureScore": 88
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 61
     }
   ]
 }
