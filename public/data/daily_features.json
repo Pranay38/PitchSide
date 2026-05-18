@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-05-17T07:31:14.890382",
+  "lastUpdated": "2026-05-18T08:41:48.492065",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Juventus to step up Silva efforts - Sunday's gossip",
-    "sentimentScore": 41
+    "text": "Chelsea keen on Aston Villa's Rogers - Monday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
       "name": "Andoni Iraola (BOU)",
-      "pressureScore": 81
+      "pressureScore": 96
     },
     {
-      "name": "Rob Edwards (WOL)",
-      "pressureScore": 63
+      "name": "Nuno Esp\u00edrito Santo (WHU)",
+      "pressureScore": 85
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 85
     },
     {
       "name": "Mikel Arteta (ARS)",
-      "pressureScore": 61
+      "pressureScore": 66
     }
   ]
 }
