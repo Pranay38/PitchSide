@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-05-18T08:41:48.492065",
+  "lastUpdated": "2026-05-19T08:24:07.669699",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea keen on Aston Villa's Rogers - Monday's gossip",
-    "sentimentScore": 60
+    "text": "Mourinho wants Rashford at Real Madrid - Tuesday gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 96
+      "name": "Mike Jackson (BUR)",
+      "pressureScore": 92
     },
     {
-      "name": "Nuno Esp\u00edrito Santo (WHU)",
-      "pressureScore": 85
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 92
+    },
+    {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 88
     },
     {
       "name": "Eddie Howe (NEW)",
       "pressureScore": 85
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 66
+      "name": "Calum McFarlane (CHE)",
+      "pressureScore": 68
     }
   ]
 }
