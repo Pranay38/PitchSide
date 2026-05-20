@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-05-19T08:24:07.669699",
+  "lastUpdated": "2026-05-20T08:23:12.664197",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Mourinho wants Rashford at Real Madrid - Tuesday gossip",
-    "sentimentScore": 41
+    "text": "Chelsea, Liverpool & Man Utd want Bowen - Wednesday's gossip",
+    "sentimentScore": 44
   },
   "managerPressure": [
     {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 98
+    },
+    {
       "name": "Mike Jackson (BUR)",
-      "pressureScore": 92
+      "pressureScore": 86
+    },
+    {
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 79
     },
     {
       "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 92
-    },
-    {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 88
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 85
-    },
-    {
-      "name": "Calum McFarlane (CHE)",
-      "pressureScore": 68
+      "pressureScore": 74
     }
   ]
 }
