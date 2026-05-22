@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-05-21T08:29:34.187388",
+  "lastUpdated": "2026-05-22T08:19:36.602961",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real eye Rodri amid Guardiola exit - Thursday's gossip",
+    "text": "Chelsea to rival Arsenal for Kroupi - Friday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Eddie Howe (NEW)",
+      "name": "Fabian H\u00fcrzeler (BHA)",
       "pressureScore": 97
     },
     {
       "name": "Mikel Arteta (ARS)",
-      "pressureScore": 76
+      "pressureScore": 85
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 61
+      "name": "Pep Guardiola (MCI)",
+      "pressureScore": 77
+    },
+    {
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 63
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 60
     }
   ]
 }
