@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-05-23T07:28:24.631571",
+  "lastUpdated": "2026-05-24T07:47:04.188598",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Kane on Barcelona shortlist - Saturday's gossip",
-    "sentimentScore": 41
+    "text": "Cut-price Leao interests Man Utd - Sunday's gossip",
+    "sentimentScore": 53
   },
   "managerPressure": [
     {
-      "name": "Rob Edwards (WOL)",
-      "pressureScore": 92
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 95
     },
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 84
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 90
     },
     {
-      "name": "Pep Guardiola (MCI)",
-      "pressureScore": 70
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 89
     }
   ]
 }
