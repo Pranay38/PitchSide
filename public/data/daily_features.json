@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-05-24T07:47:04.188598",
+  "lastUpdated": "2026-05-25T08:53:16.397566",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Cut-price Leao interests Man Utd - Sunday's gossip",
-    "sentimentScore": 53
+    "text": "Man Utd target West Ham's Fernandes - Monday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 95
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 92
     },
     {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 90
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 86
     },
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 89
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 85
+    },
+    {
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 74
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 60
     }
   ]
 }
