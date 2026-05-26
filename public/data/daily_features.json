@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-05-25T08:53:16.397566",
+  "lastUpdated": "2026-05-26T08:29:08.044735",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd target West Ham's Fernandes - Monday's gossip",
-    "sentimentScore": 41
+    "text": "Spurs rekindle Savinho interest - Tuesday's gossip",
+    "sentimentScore": 65
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 92
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 89
     },
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 86
+      "name": "Calum McFarlane (CHE)",
+      "pressureScore": 81
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 85
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
+      "name": "David Moyes (EVE)",
       "pressureScore": 74
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 60
+      "name": "Kieran McKenna (IPS)",
+      "pressureScore": 64
     }
   ]
 }
