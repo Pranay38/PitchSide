@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-05-26T08:29:08.044735",
+  "lastUpdated": "2026-05-27T08:36:17.665941",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs rekindle Savinho interest - Tuesday's gossip",
-    "sentimentScore": 65
+    "text": "Arsenal target Villa's Rogers - Wednesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 89
-    },
-    {
-      "name": "Calum McFarlane (CHE)",
-      "pressureScore": 81
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 74
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 88
     },
     {
       "name": "Kieran McKenna (IPS)",
-      "pressureScore": 64
+      "pressureScore": 84
+    },
+    {
+      "name": "Andoni Iraola (BOU)",
+      "pressureScore": 78
+    },
+    {
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 76
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 70
     }
   ]
 }
