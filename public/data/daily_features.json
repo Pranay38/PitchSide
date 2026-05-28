@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-05-27T08:36:17.665941",
+  "lastUpdated": "2026-05-28T08:39:22.911614",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal target Villa's Rogers - Wednesday's gossip",
-    "sentimentScore": 41
+    "text": "Arsenal demand \u00c2\u00a320m for Jesus - Thursday's gossip",
+    "sentimentScore": 35
   },
   "managerPressure": [
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 88
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 83
     },
     {
-      "name": "Kieran McKenna (IPS)",
-      "pressureScore": 84
+      "name": "Calum McFarlane (CHE)",
+      "pressureScore": 79
     },
     {
-      "name": "Andoni Iraola (BOU)",
-      "pressureScore": 78
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 72
     },
     {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 76
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 68
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 70
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 68
     }
   ]
 }
