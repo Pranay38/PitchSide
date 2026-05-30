@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-05-29T08:39:37.473835",
+  "lastUpdated": "2026-05-30T07:37:58.475397",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barca weigh up move for Hincapie  - Friday's gossip",
-    "sentimentScore": 41
+    "text": "Man Utd want AC Milan winger Leao - Saturday's gossip",
+    "sentimentScore": 44
   },
   "managerPressure": [
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 98
+      "name": "Arne Slot (LIV)",
+      "pressureScore": 97
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 98
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 73
     },
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 65
+      "name": "Calum McFarlane (CHE)",
+      "pressureScore": 63
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 61
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 60
     }
   ]
 }
