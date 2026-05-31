@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-05-30T07:37:58.475397",
+  "lastUpdated": "2026-05-31T08:11:56.051107",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd want AC Milan winger Leao - Saturday's gossip",
-    "sentimentScore": 44
+    "text": "Glasner considered for AC Milan job - Sunday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Arne Slot (LIV)",
-      "pressureScore": 97
-    },
-    {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 73
+      "name": "Marco Silva (FUL)",
+      "pressureScore": 88
     },
     {
       "name": "Calum McFarlane (CHE)",
-      "pressureScore": 63
+      "pressureScore": 86
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 61
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 67
     },
     {
       "name": "Eddie Howe (NEW)",
-      "pressureScore": 60
+      "pressureScore": 63
     }
   ]
 }
