@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-05-31T08:11:56.051107",
+  "lastUpdated": "2026-06-01T10:15:19.423757",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Glasner considered for AC Milan job - Sunday's gossip",
-    "sentimentScore": 41
+    "text": "Arsenal battle PSG for Villa's Rogers - Monday's gossip",
+    "sentimentScore": 24
   },
   "managerPressure": [
     {
-      "name": "Marco Silva (FUL)",
-      "pressureScore": 88
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 97
+    },
+    {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 89
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 89
     },
     {
       "name": "Calum McFarlane (CHE)",
-      "pressureScore": 86
-    },
-    {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 67
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 63
+      "pressureScore": 82
     }
   ]
 }
