@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-06-01T10:15:19.423757",
+  "lastUpdated": "2026-06-02T09:03:51.045347",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal battle PSG for Villa's Rogers - Monday's gossip",
-    "sentimentScore": 24
+    "text": "Barca & Real Madrid eye Cucurella - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 97
+      "name": "Vacant (LIV)",
+      "pressureScore": 98
     },
     {
-      "name": "Michael Carrick (MUN)",
+      "name": "Keith Andrews (BRE)",
       "pressureScore": 89
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 89
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 73
     },
     {
-      "name": "Calum McFarlane (CHE)",
-      "pressureScore": 82
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 68
     }
   ]
 }
