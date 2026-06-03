@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-06-02T09:03:51.045347",
+  "lastUpdated": "2026-06-03T09:23:05.641577",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barca & Real Madrid eye Cucurella - Tuesday's gossip",
+    "text": "Aston Villa intent on keeping Rogers - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Vacant (LIV)",
-      "pressureScore": 98
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 94
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 89
+      "name": "David Moyes (EVE)",
+      "pressureScore": 93
     },
     {
       "name": "Daniel Farke (LEE)",
-      "pressureScore": 73
+      "pressureScore": 72
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 68
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 66
     }
   ]
 }
