@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-06-03T09:23:05.641577",
+  "lastUpdated": "2026-06-04T08:44:35.521306",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Aston Villa intent on keeping Rogers - Wednesday's gossip",
+    "text": "AC Milan chase Summerville - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 94
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 91
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 93
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 81
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 72
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 66
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 77
     }
   ]
 }
