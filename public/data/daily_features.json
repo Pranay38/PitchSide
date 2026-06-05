@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-06-04T08:44:35.521306",
+  "lastUpdated": "2026-06-05T08:41:09.347078",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "AC Milan chase Summerville - Thursday's gossip",
+    "text": "Liverpool step up Diomande pursuit - Friday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 91
+      "pressureScore": 68
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 81
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 66
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 77
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 65
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 63
     }
   ]
 }
