@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-06-06T07:43:59.707071",
+  "lastUpdated": "2026-06-07T08:21:19.392854",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid plan Olise bid - Saturday's gossip",
+    "text": "PSG could rival Arsenal for Gibbs-White - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (LIV)",
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 95
+    },
+    {
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 94
+    },
+    {
+      "name": "Marco Rose (BOU)",
       "pressureScore": 85
+    },
+    {
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 76
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
       "pressureScore": 75
-    },
-    {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 74
     }
   ]
 }
