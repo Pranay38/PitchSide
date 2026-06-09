@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-06-08T09:20:09.270603",
+  "lastUpdated": "2026-06-09T08:28:37.908970",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid to join Fernandes race - Monday's gossip",
-    "sentimentScore": 56
+    "text": "Spurs close in on Man City's Savinho - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 80
+    },
+    {
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 80
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 74
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 69
+    },
+    {
       "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 87
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 85
-    },
-    {
-      "name": "Vacant (FUL)",
-      "pressureScore": 84
+      "pressureScore": 69
     }
   ]
 }
