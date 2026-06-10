@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-06-09T08:28:37.908970",
+  "lastUpdated": "2026-06-10T08:45:52.274438",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs close in on Man City's Savinho - Tuesday's gossip",
+    "text": "Real Madrid eye Arsenal's Calafiori - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 80
-    },
-    {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 80
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 74
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 69
-    },
-    {
       "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 69
+      "pressureScore": 87
+    },
+    {
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 85
+    },
+    {
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 67
     }
   ]
 }
