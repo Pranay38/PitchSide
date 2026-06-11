@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-06-10T08:45:52.274438",
+  "lastUpdated": "2026-06-11T09:10:14.495597",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid eye Arsenal's Calafiori - Wednesday's gossip",
+    "text": "Arsenal in hunt for Williams - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 87
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 98
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 94
+    },
+    {
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 89
+    },
+    {
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 83
     },
     {
       "name": "Oliver Glasner (CRY)",
-      "pressureScore": 85
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 67
+      "pressureScore": 62
     }
   ]
 }
