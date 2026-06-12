@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-06-11T09:10:14.495597",
+  "lastUpdated": "2026-06-12T08:55:01.620755",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal in hunt for Williams - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Newcastle's Hall keen on Man Utd switch - Friday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 98
-    },
-    {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 94
-    },
-    {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 89
-    },
-    {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "name": "Mikel Arteta (ARS)",
       "pressureScore": 83
     },
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 62
+      "name": "Vacant (FUL)",
+      "pressureScore": 81
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 69
+    },
+    {
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 63
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 60
     }
   ]
 }
