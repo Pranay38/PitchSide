@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-06-12T08:55:01.620755",
+  "lastUpdated": "2026-06-13T08:18:41.643611",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Newcastle's Hall keen on Man Utd switch - Friday's gossip",
-    "sentimentScore": 60
+    "text": "Real Madrid close in on Silva signing- Saturday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 83
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 99
     },
     {
-      "name": "Vacant (FUL)",
-      "pressureScore": 81
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 87
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 69
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 63
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 60
+      "name": "Oliver Glasner (CRY)",
+      "pressureScore": 62
     }
   ]
 }
