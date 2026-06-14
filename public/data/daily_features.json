@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-06-13T08:18:41.643611",
+  "lastUpdated": "2026-06-14T08:38:14.074448",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid close in on Silva signing- Saturday's gossip",
+    "text": "Arsenal and Liverpool chase Barcola - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 99
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 93
+    },
+    {
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 89
     },
     {
       "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 87
-    },
-    {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 62
+      "pressureScore": 69
     }
   ]
 }
