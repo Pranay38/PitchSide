@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-06-14T08:38:14.074448",
+  "lastUpdated": "2026-06-15T10:52:15.055674",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal and Liverpool chase Barcola - Sunday's gossip",
+    "text": "Arsenal & Liverpool in Bouaddi talks - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 93
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 92
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 89
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 92
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 69
+      "name": "Vacant (IPS)",
+      "pressureScore": 90
     }
   ]
 }
