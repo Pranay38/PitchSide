@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-06-15T10:52:15.055674",
+  "lastUpdated": "2026-06-16T10:03:49.148704",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal & Liverpool in Bouaddi talks - Monday's gossip",
+    "text": "Real make Fernandes contact - Tuesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 92
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 94
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 92
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 80
+    },
+    {
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 80
+    },
+    {
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 66
     },
     {
       "name": "Vacant (IPS)",
-      "pressureScore": 90
+      "pressureScore": 63
     }
   ]
 }
