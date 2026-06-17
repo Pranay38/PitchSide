@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-06-16T10:03:49.148704",
+  "lastUpdated": "2026-06-17T09:27:32.173657",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real make Fernandes contact - Tuesday's gossip",
-    "sentimentScore": 41
+    "text": "Spurs join three-way Tonali fight - Wednesday's gossip",
+    "sentimentScore": 36
   },
   "managerPressure": [
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 94
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 80
-    },
-    {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 80
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 66
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 95
     },
     {
       "name": "Vacant (IPS)",
-      "pressureScore": 63
+      "pressureScore": 94
+    },
+    {
+      "name": "Calum McFarlane (CHE)",
+      "pressureScore": 82
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 70
     }
   ]
 }
