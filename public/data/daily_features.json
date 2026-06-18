@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-06-17T09:27:32.173657",
+  "lastUpdated": "2026-06-18T09:11:35.482773",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs join three-way Tonali fight - Wednesday's gossip",
-    "sentimentScore": 36
+    "text": "Man Utd & Spurs move for Summerville - Thursday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 95
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 91
     },
     {
-      "name": "Vacant (IPS)",
-      "pressureScore": 94
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 89
     },
     {
-      "name": "Calum McFarlane (CHE)",
-      "pressureScore": 82
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 86
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 70
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 73
     }
   ]
 }
