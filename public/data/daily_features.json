@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-06-18T09:11:35.482773",
+  "lastUpdated": "2026-06-19T09:26:07.898213",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd & Spurs move for Summerville - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Arsenal's first bid for Monga rejected - Friday's gossip",
+    "sentimentScore": 19
   },
   "managerPressure": [
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 91
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 89
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 86
-    },
-    {
       "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 73
+      "pressureScore": 98
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 95
+    },
+    {
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 95
     }
   ]
 }
