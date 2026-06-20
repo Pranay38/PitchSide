@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-06-19T09:26:07.898213",
+  "lastUpdated": "2026-06-20T08:18:54.958945",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal's first bid for Monga rejected - Friday's gossip",
-    "sentimentScore": 19
+    "text": "Spurs to enter Wharton chase - Saturday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 98
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 79
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 95
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 72
     },
     {
       "name": "Andoni Iraola (LIV)",
-      "pressureScore": 95
+      "pressureScore": 66
+    },
+    {
+      "name": "Vacant (FUL)",
+      "pressureScore": 60
+    },
+    {
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 60
     }
   ]
 }
