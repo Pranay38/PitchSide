@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-06-20T08:18:54.958945",
+  "lastUpdated": "2026-06-21T08:55:16.896726",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs to enter Wharton chase - Saturday's gossip",
+    "text": "Chelsea weigh up Wirtz move - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 79
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 88
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 72
+      "name": "Vacant (MCI)",
+      "pressureScore": 78
     },
     {
-      "name": "Andoni Iraola (LIV)",
+      "name": "V\u00edtor Pereira (NFO)",
       "pressureScore": 66
-    },
-    {
-      "name": "Vacant (FUL)",
-      "pressureScore": 60
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 60
     }
   ]
 }
