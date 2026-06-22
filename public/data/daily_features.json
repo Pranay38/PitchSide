@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-06-21T08:55:16.896726",
+  "lastUpdated": "2026-06-22T10:34:56.254319",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea weigh up Wirtz move - Sunday's gossip",
-    "sentimentScore": 41
+    "text": "Rashford might still join Barca - Monday's gossip",
+    "sentimentScore": 56
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 88
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 96
     },
     {
-      "name": "Vacant (MCI)",
-      "pressureScore": 78
+      "name": "Vacant (FUL)",
+      "pressureScore": 77
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 66
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 73
     }
   ]
 }
