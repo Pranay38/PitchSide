@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-06-22T10:34:56.254319",
+  "lastUpdated": "2026-06-23T08:26:35.543069",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Rashford might still join Barca - Monday's gossip",
-    "sentimentScore": 56
+    "text": "Rogers keen on Arsenal move - Tuesday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
       "name": "Michael Carrick (MUN)",
-      "pressureScore": 96
+      "pressureScore": 87
     },
     {
-      "name": "Vacant (FUL)",
-      "pressureScore": 77
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 81
     },
     {
       "name": "Andoni Iraola (LIV)",
-      "pressureScore": 73
+      "pressureScore": 79
+    },
+    {
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 68
     }
   ]
 }
