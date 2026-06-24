@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-06-23T08:26:35.543069",
+  "lastUpdated": "2026-06-24T08:19:14.908127",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Rogers keen on Arsenal move - Tuesday's gossip",
-    "sentimentScore": 60
+    "text": "Man Utd & Arsenal track Scott - Wednesday gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 87
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 95
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 81
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 90
     },
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 79
-    },
-    {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 68
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 73
     }
   ]
 }
