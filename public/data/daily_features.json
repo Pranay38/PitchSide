@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-06-25T08:19:56.312501",
+  "lastUpdated": "2026-06-26T08:27:28.537693",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Scotland keeper Gunn on Man Utd radar - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Arsenal keen on Guimaraes move - Friday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 96
+    },
+    {
       "name": "David Moyes (EVE)",
-      "pressureScore": 94
+      "pressureScore": 83
     },
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 69
-    },
-    {
-      "name": "Vacant (FUL)",
-      "pressureScore": 61
-    },
-    {
-      "name": "Calum McFarlane (CHE)",
-      "pressureScore": 60
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 77
     }
   ]
 }
