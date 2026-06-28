@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-06-27T07:45:54.050865",
+  "lastUpdated": "2026-06-28T08:17:53.765281",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea close in on Lacroix - Saturday's gossip",
+    "text": "Como bid for Chelsea's Chalobah - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 99
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 93
+    },
+    {
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 84
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 73
     },
     {
       "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 82
+      "pressureScore": 72
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 68
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 66
     }
   ]
 }
