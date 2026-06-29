@@ -1,32 +1,24 @@
 {
-  "lastUpdated": "2026-06-28T08:17:53.765281",
+  "lastUpdated": "2026-06-29T09:23:48.637922",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Como bid for Chelsea's Chalobah - Sunday's gossip",
+    "text": "Diomande picks PSG over Liverpool - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "Mikel Arteta (ARS)",
-      "pressureScore": 93
+      "pressureScore": 81
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 84
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 67
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 73
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 72
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
+      "name": "Daniel Farke (LEE)",
       "pressureScore": 66
     }
   ]
