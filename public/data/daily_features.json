@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-06-30T08:26:43.001416",
+  "lastUpdated": "2026-07-01T08:46:54.055450",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Kane will sign new Bayern deal - Tuesday's gossip",
+    "text": "PSG set Barcola price - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 96
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 98
     },
     {
-      "name": "Calum McFarlane (CHE)",
-      "pressureScore": 85
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 92
     },
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 76
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 87
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 74
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 80
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 73
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 71
     }
   ]
 }
