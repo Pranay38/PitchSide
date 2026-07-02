@@ -1,32 +1,28 @@
 {
-  "lastUpdated": "2026-07-01T08:46:54.055450",
+  "lastUpdated": "2026-07-02T08:09:27.827952",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "PSG set Barcola price - Wednesday's gossip",
+    "text": "Spurs target West Ham's Summerville - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 98
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 94
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 92
+      "name": "David Moyes (EVE)",
+      "pressureScore": 89
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 87
-    },
-    {
-      "name": "Mikel Arteta (ARS)",
+      "name": "Eddie Howe (NEW)",
       "pressureScore": 80
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
+      "name": "V\u00edtor Pereira (NFO)",
       "pressureScore": 71
     }
   ]
