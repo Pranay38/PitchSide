@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-07-02T08:09:27.827952",
+  "lastUpdated": "2026-07-03T08:06:12.609065",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs target West Ham's Summerville - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Man Utd ready for Baleba move - Friday gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 94
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 85
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 89
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 85
     },
     {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 80
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 83
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 71
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 78
+    },
+    {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 73
     }
   ]
 }
