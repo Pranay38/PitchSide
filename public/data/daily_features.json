@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-07-03T08:06:12.609065",
+  "lastUpdated": "2026-07-04T07:42:09.339927",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd ready for Baleba move - Friday gossip",
-    "sentimentScore": 60
+    "text": "Liverpool open to Van Dijk offers - Saturday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 85
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 89
     },
     {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 85
+      "pressureScore": 88
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 83
+      "name": "David Moyes (EVE)",
+      "pressureScore": 87
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 78
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 72
     },
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 73
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 66
     }
   ]
 }
