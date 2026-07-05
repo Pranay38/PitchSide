@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-07-04T07:42:09.339927",
+  "lastUpdated": "2026-07-05T07:53:09.535634",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool open to Van Dijk offers - Saturday's gossip",
-    "sentimentScore": 41
+    "text": "Premier League quartet want Scott - Sunday's gossip",
+    "sentimentScore": 44
   },
   "managerPressure": [
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 89
-    },
-    {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 88
-    },
-    {
       "name": "David Moyes (EVE)",
-      "pressureScore": 87
+      "pressureScore": 86
     },
     {
       "name": "Mikel Arteta (ARS)",
-      "pressureScore": 72
+      "pressureScore": 82
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 66
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 81
+    },
+    {
+      "name": "V\u00edtor Pereira (NFO)",
+      "pressureScore": 64
     }
   ]
 }
