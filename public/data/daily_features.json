@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-07-05T07:53:09.535634",
+  "lastUpdated": "2026-07-06T08:57:51.885921",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Premier League quartet want Scott - Sunday's gossip",
-    "sentimentScore": 44
+    "text": "Real Madrid plot \u00c2\u00a3188m Olise deal - Monday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 86
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 90
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 82
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 66
     },
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 81
-    },
-    {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 64
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 60
     }
   ]
 }
