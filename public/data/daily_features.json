@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-07-06T08:57:51.885921",
+  "lastUpdated": "2026-07-07T08:18:59.732083",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid plot \u00c2\u00a3188m Olise deal - Monday's gossip",
+    "text": "Tottenham to bid for Kroupi - Tuesday gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 90
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 99
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 66
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 89
+    },
+    {
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 76
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 75
     },
     {
       "name": "Enzo Maresca (MCI)",
-      "pressureScore": 60
+      "pressureScore": 66
     }
   ]
 }
