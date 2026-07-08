@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-07-07T08:18:59.732083",
+  "lastUpdated": "2026-07-08T07:24:52.193910",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Tottenham to bid for Kroupi - Tuesday gossip",
+    "text": "Rogers is Arsenal's main target - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 99
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 89
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 93
     },
     {
       "name": "Gary O'Neil (IPS)",
-      "pressureScore": 76
+      "pressureScore": 88
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 75
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 79
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 66
+      "name": "David Moyes (EVE)",
+      "pressureScore": 78
     }
   ]
 }
