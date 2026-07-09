@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-07-08T07:24:52.193910",
+  "lastUpdated": "2026-07-09T08:34:02.001498",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Rogers is Arsenal's main target - Wednesday's gossip",
-    "sentimentScore": 41
+    "text": "Rashford dilemma for Man Utd - Thursday's gossip",
+    "sentimentScore": 32
   },
   "managerPressure": [
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 93
-    },
-    {
       "name": "Gary O'Neil (IPS)",
-      "pressureScore": 88
+      "pressureScore": 96
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 79
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 87
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 78
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 60
     }
   ]
 }
