@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-07-10T08:18:00.551022",
+  "lastUpdated": "2026-07-11T07:08:56.934559",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs make offer for Kolo Muani - Friday gossip",
-    "sentimentScore": 41
+    "text": "Salah demands put Saudi switch in doubt - Saturday's gossip",
+    "sentimentScore": 25
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
+      "name": "R\u00e9gis Le Bris (SUN)",
       "pressureScore": 89
     },
     {
       "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 85
+      "pressureScore": 87
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 79
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 62
     }
   ]
 }
