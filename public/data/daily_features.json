@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-07-12T07:26:33.812652",
+  "lastUpdated": "2026-07-13T08:13:20.984016",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd and Liverpool want Gomes - Sunday's gossip",
+    "text": "Arsenal want Argentina's Alvarez - Monday's gossip",
     "sentimentScore": 44
   },
   "managerPressure": [
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 83
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 95
     },
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 72
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 92
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 69
+      "name": "David Moyes (EVE)",
+      "pressureScore": 75
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 70
+    },
+    {
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 64
     }
   ]
 }
