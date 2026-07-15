@@ -1,20 +1,24 @@
 {
-  "lastUpdated": "2026-07-14T07:08:24.109424",
+  "lastUpdated": "2026-07-15T07:12:19.739456",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Villa assess Estupinan move - Tuesday's gossip",
+    "text": "Gyokeres part of Alvarez offer - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 99
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 88
     },
     {
-      "name": "Michael Carrick (MUN)",
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 87
+    },
+    {
+      "name": "David Moyes (EVE)",
       "pressureScore": 87
     },
     {
@@ -22,12 +26,8 @@
       "pressureScore": 84
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 80
-    },
-    {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 70
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 82
     }
   ]
 }
