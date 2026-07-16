@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-07-15T07:12:19.739456",
+  "lastUpdated": "2026-07-16T07:20:20.546809",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Gyokeres part of Alvarez offer - Wednesday's gossip",
+    "text": "Man Utd target Summerville - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "Pierre Sage (CRY)",
-      "pressureScore": 88
+      "pressureScore": 96
     },
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 87
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 91
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 87
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 86
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 84
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 79
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 82
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 71
     }
   ]
 }
