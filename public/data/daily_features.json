@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-07-16T07:20:20.546809",
+  "lastUpdated": "2026-07-17T07:13:11.585282",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd target Summerville - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Inter interested in Spence - Friday's gossip",
+    "sentimentScore": 62
   },
   "managerPressure": [
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 96
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 97
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 91
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 95
+    },
+    {
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 94
     },
     {
       "name": "Oliver Glasner (NFO)",
-      "pressureScore": 86
-    },
-    {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 79
-    },
-    {
-      "name": "Eddie Howe (NEW)",
-      "pressureScore": 71
+      "pressureScore": 93
     }
   ]
 }
