@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-07-18T06:58:25.475439",
+  "lastUpdated": "2026-07-19T07:24:28.625915",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal want Villa's Rogers - Saturday's gossip",
-    "sentimentScore": 44
+    "text": "Tottenham confident of Savinho signing - Sunday's gossip",
+    "sentimentScore": 68
   },
   "managerPressure": [
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 92
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 82
     },
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 92
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 80
     },
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 79
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 69
+    },
+    {
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 69
     }
   ]
 }
