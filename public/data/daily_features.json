@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-07-19T07:24:28.625915",
+  "lastUpdated": "2026-07-20T07:55:06.463114",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Tottenham confident of Savinho signing - Sunday's gossip",
-    "sentimentScore": 68
+    "text": "Arsenal line up Stones free transfer - Monday's gossip",
+    "sentimentScore": 69
   },
   "managerPressure": [
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 82
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 99
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 80
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 69
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 93
     },
     {
       "name": "Andoni Iraola (LIV)",
-      "pressureScore": 69
+      "pressureScore": 86
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 62
+    },
+    {
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 60
     }
   ]
 }
