@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-07-20T07:55:06.463114",
+  "lastUpdated": "2026-07-21T07:29:53.328339",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal line up Stones free transfer - Monday's gossip",
-    "sentimentScore": 69
+    "text": "Man Utd and Arsenal fight over Kone - Tuesday's gossip",
+    "sentimentScore": 24
   },
   "managerPressure": [
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 99
-    },
     {
       "name": "Oliver Glasner (NFO)",
       "pressureScore": 93
     },
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 86
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 84
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 62
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 78
     },
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 60
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 75
+    },
+    {
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 65
     }
   ]
 }
