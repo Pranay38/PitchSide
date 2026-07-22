@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-07-21T07:29:53.328339",
+  "lastUpdated": "2026-07-22T07:31:33.816869",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd and Arsenal fight over Kone - Tuesday's gossip",
-    "sentimentScore": 24
+    "text": "Chelsea, Arsenal and Spurs all want Rashford - Wednesday's gossip",
+    "sentimentScore": 44
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 93
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 96
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 73
     },
     {
       "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 84
+      "pressureScore": 69
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 78
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 64
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 75
-    },
-    {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 65
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 63
     }
   ]
 }
