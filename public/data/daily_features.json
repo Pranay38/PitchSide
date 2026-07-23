@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-05-04T07:45:25.192958",
+  "lastUpdated": "2026-07-23T07:28:59.420329",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Juventus target Man City's Reijnders - Monday's gossip",
-    "sentimentScore": 41
+    "text": "Liverpool confident of signing Barcola - Thursday's gossip",
+    "sentimentScore": 68
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (CRY)",
-      "pressureScore": 98
-    },
-    {
       "name": "Keith Andrews (BRE)",
-      "pressureScore": 65
+      "pressureScore": 76
     },
     {
-      "name": "V\u00edtor Pereira (NFO)",
-      "pressureScore": 61
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 75
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 60
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 72
+    },
+    {
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 71
+    },
+    {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 64
     }
   ]
 }
