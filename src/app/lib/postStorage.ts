@@ -43,9 +43,9 @@ function generateDraftPreviewToken(): string {
 }
 
 export function calculateReadTime(text: string): string {
-  const wpm = 225;
-  const words = text.trim().split(/\s+/).length;
-  const time = Math.ceil(words / wpm);
+  const wpm = 238;
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const time = Math.max(1, Math.ceil(words / wpm));
   return `${time} min read`;
 }
 

@@ -1,4 +1,6 @@
 import { Node, mergeAttributes } from "@tiptap/core";
+import { ReactNodeViewRenderer } from "@tiptap/react";
+import { ResizableImageNodeView } from "./ResizableImageNodeView";
 
 export interface EmbeddedImageOptions {
     HTMLAttributes: Record<string, unknown>;
@@ -14,6 +16,8 @@ declare module "@tiptap/core" {
                 src: string;
                 creditText?: string;
                 creditUrl?: string;
+                width?: number;
+                alt?: string;
             }) => ReturnType;
         };
     }
@@ -40,6 +44,13 @@ export const EmbeddedImage = Node.create<EmbeddedImageOptions>({
                     return img?.getAttribute("src") || null;
                 },
             },
+            alt: {
+                default: "",
+                parseHTML: (element) => {
+                    const img = element.querySelector("img");
+                    return img?.getAttribute("alt") || "";
+                },
+            },
             creditText: {
                 default: "",
                 parseHTML: (element) => {
@@ -54,6 +65,18 @@ export const EmbeddedImage = Node.create<EmbeddedImageOptions>({
                     return link?.getAttribute("href") || "";
                 },
             },
+            width: {
+                default: null,
+                parseHTML: (element) => {
+                    const img = element.querySelector("img");
+                    const style = img?.getAttribute("style") || "";
+                    const widthMatch = style.match(/width:\s*(\d+)px/);
+                    if (widthMatch) return parseInt(widthMatch[1], 10);
+                    const attrWidth = img?.getAttribute("width");
+                    if (attrWidth) return parseInt(attrWidth, 10);
+                    return null;
+                },
+            },
         };
     },
 
@@ -66,7 +89,7 @@ export const EmbeddedImage = Node.create<EmbeddedImageOptions>({
     },
 
     renderHTML({ HTMLAttributes }) {
-        const { src, creditText, creditUrl, ...rest } = HTMLAttributes;
+        const { src, creditText, creditUrl, width, alt, ...rest } = HTMLAttributes;
 
         const figureAttrs = mergeAttributes(this.options.HTMLAttributes, rest, {
             "data-embedded-image": "true",
@@ -74,10 +97,12 @@ export const EmbeddedImage = Node.create<EmbeddedImageOptions>({
                 "margin: 2rem 0; display: block; border: none; background: transparent;",
         });
 
+        const widthStyle = width ? `width: ${width}px; max-width: 100%;` : "width: 100%; max-width: 100%;";
         const imgAttrs: Record<string, string> = {
             src: src as string,
+            alt: (alt as string) || "",
             style:
-                "display: block; width: 100%; max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);",
+                `display: block; ${widthStyle} height: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);`,
         };
 
         const captionStyle =
@@ -124,6 +149,10 @@ export const EmbeddedImage = Node.create<EmbeddedImageOptions>({
                 creditText || "",
             ],
         ];
+    },
+
+    addNodeView() {
+        return ReactNodeViewRenderer(ResizableImageNodeView);
     },
 
     addCommands() {

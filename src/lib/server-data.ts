@@ -59,6 +59,15 @@ function sanitizePost(post: Record<string, any>) {
   for (const [key, value] of Object.entries(normalized)) {
     if (value === null) delete normalized[key];
   }
+  
+  // Dynamically calculate read time to ensure accuracy (238 wpm) for legacy posts
+  if (normalized.content) {
+    const plainText = normalized.content.replace(/<[^>]*>/g, " ").trim();
+    const words = plainText.split(/\s+/).filter(Boolean).length;
+    const time = Math.max(1, Math.ceil(words / 238));
+    normalized.readTime = `${time} min read`;
+  }
+  
   return normalized;
 }
 

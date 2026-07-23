@@ -8,8 +8,17 @@ import { toast } from "sonner";
 export function InnerCircleModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
+  const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const CLUBS = ["Arsenal", "Chelsea", "Liverpool", "Man City", "Man United", "Spurs", "Real Madrid", "Barcelona"];
+
+  const toggleClub = (club: string) => {
+    setSelectedClubs((prev) =>
+      prev.includes(club) ? prev.filter((c) => c !== club) : [...prev, club]
+    );
+  };
   const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
 
   useEffect(() => {
@@ -44,7 +53,7 @@ export function InnerCircleModal() {
       const res = await fetch("/api/subscribers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), clubPreferences: selectedClubs }),
       });
       
       if (!res.ok) throw new Error("Failed to subscribe");
@@ -102,6 +111,27 @@ export function InnerCircleModal() {
                   placeholder="your@email.com"
                   className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-[#16A34A] transition-colors"
                 />
+                
+                <div className="mt-1 mb-2">
+                  <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider text-left">Optional: Select your clubs</p>
+                  <div className="flex flex-wrap gap-2">
+                    {CLUBS.map((club) => (
+                      <button
+                        key={club}
+                        type="button"
+                        onClick={() => toggleClub(club)}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200 border ${
+                          selectedClubs.includes(club)
+                            ? "bg-[#16A34A]/20 border-[#16A34A] text-[#4ade80]"
+                            : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        {club}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <button 
                   type="submit"
                   disabled={submitting}

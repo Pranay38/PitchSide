@@ -95,6 +95,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
 
+        {/* Preconnect to frequently used external services */}
+        <link rel="preconnect" href="https://api.football-data.org" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://api.football-data.org" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+
         {/* Inline theme script to prevent FOUC */}
         <script
           dangerouslySetInnerHTML={{

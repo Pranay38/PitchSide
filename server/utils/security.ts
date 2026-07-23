@@ -1,8 +1,16 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "fallback_dev_secret_do_not_use_in_prod";
-const ADMIN_PASSWORD = process.env.VITE_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || "pitchside2026";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET && process.env.NODE_ENV === "production") {
+    throw new Error("FATAL: JWT_SECRET environment variable is required in production");
+}
+const EFFECTIVE_JWT_SECRET = JWT_SECRET || "local_dev_only_" + Date.now();
+
+const ADMIN_PASSWORD = process.env.VITE_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+if (!ADMIN_PASSWORD && process.env.NODE_ENV === "production") {
+    throw new Error("FATAL: ADMIN_PASSWORD environment variable is required in production");
+}
 const ADMIN_SESSION_COOKIE = "pitchside_admin_session";
 
 // ──────────────────────────────────────────
@@ -99,7 +107,7 @@ function isValidAdminCredential(token: string | null | undefined): boolean {
     if (!token) return false;
 
     try {
-        jwt.verify(token, JWT_SECRET);
+        jwt.verify(token, EFFECTIVE_JWT_SECRET);
         return true;
     } catch {
         return false;
@@ -112,7 +120,7 @@ export async function hasAdminAuth(req: VercelRequest): Promise<boolean> {
         // Support VercelRequest objects
         const nextAuthToken = await getToken({ 
             req: req as any, 
-            secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || "fallback_secret_for_local_dev" 
+            secret: process.env.NEXTAUTH_SECRET || EFFECTIVE_JWT_SECRET 
         });
         if (nextAuthToken) {
             return true;

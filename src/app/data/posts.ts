@@ -12,6 +12,7 @@ export interface BlogPost {
   mustRead?: boolean;
   editorPick?: boolean;
   mainStory?: boolean;
+  matchRating?: number;
   mediaUrl?: string;
   sofascoreUrl?: string; // Legacy support
   sofascoreWidget?: any; // Structured WidgetConfig
@@ -21,6 +22,7 @@ export interface BlogPost {
   slug?: string;
   previewToken?: string; // Secret token for sharing draft previews
   publishAt?: string; // ISO date string for scheduled publishing
+  updatedAt?: string;
   poll?: {
     question: string;
     options: { text: string; votes: number }[];

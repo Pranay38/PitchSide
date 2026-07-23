@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import { Mail, Send, BarChart3, RadioTower, Layout, Trash2, Sparkles } from "lucide-react";
+import { Mail, Send, BarChart3, RadioTower, Layout, Trash2, Sparkles, Wand2 } from "lucide-react";
 import { PollWidget } from "../PollWidget";
 import type { BlogPost } from "../../data/posts";
 import type { StoryFeature } from "../../data/stories";
@@ -540,6 +540,175 @@ export function AdminSettingsTab({
                             {savingSiteSettings ? "Saving..." : "Save Social Wall"}
                         </button>
                     </div>
+                </div>
+            </section>
+
+            {/* FANTASY CORNER */}
+            <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6 mb-6">
+                <div className="flex items-start justify-between gap-4 mb-6">
+                    <div>
+                        <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                            <Wand2 className="w-5 h-5 text-purple-500" /> Fantasy Football Corner
+                        </h2>
+                        <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
+                            Manage the weekly FPL picks widget for the homepage.
+                        </p>
+                    </div>
+                    <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                        <span className="text-sm font-medium text-[#0F172A] dark:text-white">Enabled</span>
+                        <input
+                            type="checkbox"
+                            checked={siteSettings.fantasyCorner?.enabled || false}
+                            onChange={(e) => setSiteSettings((prev) => ({
+                                ...prev,
+                                fantasyCorner: { ...(prev.fantasyCorner || {}), enabled: e.target.checked }
+                            }))}
+                            className="h-4 w-4 accent-purple-500"
+                        />
+                    </label>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Gameweek</label>
+                        <input
+                            type="number"
+                            min="1"
+                            max="38"
+                            value={siteSettings.fantasyCorner?.gameweek || 1}
+                            onChange={(e) => setSiteSettings((prev) => ({
+                                ...prev,
+                                fantasyCorner: { ...(prev.fantasyCorner || {}), gameweek: parseInt(e.target.value) || 1 }
+                            }))}
+                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Deadline (e.g. "Sat 11:00 AM")</label>
+                        <input
+                            type="text"
+                            value={siteSettings.fantasyCorner?.deadline || ""}
+                            onChange={(e) => setSiteSettings((prev) => ({
+                                ...prev,
+                                fantasyCorner: { ...(prev.fantasyCorner || {}), deadline: e.target.value }
+                            }))}
+                            className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
+                    {/* Captain */}
+                    <div className="space-y-4 p-4 border border-purple-100 dark:border-purple-900/30 rounded-xl bg-purple-50/50 dark:bg-purple-900/5">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-purple-500 mb-2">Captain Pick</h3>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Player Name</label>
+                            <input
+                                type="text"
+                                value={siteSettings.fantasyCorner?.captainPick?.name || ""}
+                                onChange={(e) => setSiteSettings((prev) => ({
+                                    ...prev,
+                                    fantasyCorner: { ...prev.fantasyCorner, captainPick: { ...prev.fantasyCorner?.captainPick, name: e.target.value } }
+                                }))}
+                                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Club</label>
+                            <input
+                                type="text"
+                                value={siteSettings.fantasyCorner?.captainPick?.club || ""}
+                                onChange={(e) => setSiteSettings((prev) => ({
+                                    ...prev,
+                                    fantasyCorner: { ...prev.fantasyCorner, captainPick: { ...prev.fantasyCorner?.captainPick, club: e.target.value } }
+                                }))}
+                                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Reason / Analysis</label>
+                            <textarea
+                                value={siteSettings.fantasyCorner?.captainPick?.reason || ""}
+                                onChange={(e) => setSiteSettings((prev) => ({
+                                    ...prev,
+                                    fantasyCorner: { ...prev.fantasyCorner, captainPick: { ...prev.fantasyCorner?.captainPick, reason: e.target.value } }
+                                }))}
+                                rows={2}
+                                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Image URL (Optional)</label>
+                            <input
+                                type="url"
+                                value={siteSettings.fantasyCorner?.captainPick?.imageUrl || ""}
+                                onChange={(e) => setSiteSettings((prev) => ({
+                                    ...prev,
+                                    fantasyCorner: { ...prev.fantasyCorner, captainPick: { ...prev.fantasyCorner?.captainPick, imageUrl: e.target.value } }
+                                }))}
+                                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Differential */}
+                    <div className="space-y-4 p-4 border border-emerald-100 dark:border-emerald-900/30 rounded-xl bg-emerald-50/50 dark:bg-emerald-900/5">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-emerald-500 mb-2">Differential Pick</h3>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Player Name</label>
+                            <input
+                                type="text"
+                                value={siteSettings.fantasyCorner?.differentialPick?.name || ""}
+                                onChange={(e) => setSiteSettings((prev) => ({
+                                    ...prev,
+                                    fantasyCorner: { ...prev.fantasyCorner, differentialPick: { ...prev.fantasyCorner?.differentialPick, name: e.target.value } }
+                                }))}
+                                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Club</label>
+                            <input
+                                type="text"
+                                value={siteSettings.fantasyCorner?.differentialPick?.club || ""}
+                                onChange={(e) => setSiteSettings((prev) => ({
+                                    ...prev,
+                                    fantasyCorner: { ...prev.fantasyCorner, differentialPick: { ...prev.fantasyCorner?.differentialPick, club: e.target.value } }
+                                }))}
+                                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Reason / Analysis</label>
+                            <textarea
+                                value={siteSettings.fantasyCorner?.differentialPick?.reason || ""}
+                                onChange={(e) => setSiteSettings((prev) => ({
+                                    ...prev,
+                                    fantasyCorner: { ...prev.fantasyCorner, differentialPick: { ...prev.fantasyCorner?.differentialPick, reason: e.target.value } }
+                                }))}
+                                rows={2}
+                                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-slate-500 mb-1">Image URL (Optional)</label>
+                            <input
+                                type="url"
+                                value={siteSettings.fantasyCorner?.differentialPick?.imageUrl || ""}
+                                onChange={(e) => setSiteSettings((prev) => ({
+                                    ...prev,
+                                    fantasyCorner: { ...prev.fantasyCorner, differentialPick: { ...prev.fantasyCorner?.differentialPick, imageUrl: e.target.value } }
+                                }))}
+                                className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-3 py-2 text-sm text-[#0F172A] dark:text-white"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <button onClick={() => {}} disabled={savingSiteSettings} className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] disabled:opacity-50">
+                        {savingSiteSettings ? "Saving..." : "Save Settings (Use main save button)"}
+                    </button>
                 </div>
             </section>
 

@@ -18,6 +18,7 @@ import sitemapHandler from "../server/endpoints/sitemap";
 import transfersHandler from "../server/endpoints/transfers";
 import { getPolls, createPoll, updatePoll, deletePoll, votePoll } from "../server/endpoints/polls";
 import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRating, voteMatchRating } from "../server/endpoints/matchRatings";
+import { getArmchairRatings, voteArmchairRatings } from "../server/endpoints/armchairRatings";
 import { recordArticleView, getRecommendations, getTagBasedFallback } from "./_recommendations-lib";
 import { connectToDatabase } from "./_db";
 import notificationsHandler from "../server/endpoints/notifications";
@@ -108,6 +109,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(405).json({ error: "Method not allowed" });
         case "match-ratings-vote":
             if (req.method === "POST") return await voteMatchRating(req as any, res as any);
+            return res.status(405).json({ error: "Method not allowed" });
+        case "armchair-ratings":
+            if (req.method === "GET") return await getArmchairRatings(req as any, res as any);
+            return res.status(405).json({ error: "Method not allowed" });
+        case "armchair-ratings-vote":
+            if (req.method === "POST") return await voteArmchairRatings(req as any, res as any);
             return res.status(405).json({ error: "Method not allowed" });
         case "sitemap":
             return sitemapHandler(req, res);

@@ -3,7 +3,7 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
+import { ResizableImage } from "./extensions/ResizableImageExtension";
 import { SocialEmbed, detectPlatform } from "./extensions/SocialEmbedExtension";
 import { EmbeddedImage } from "./extensions/EmbeddedImageExtension";
 import type { SocialPlatform } from "./extensions/SocialEmbedExtension";
@@ -109,6 +109,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
     const [embedSrc, setEmbedSrc] = useState("");
     const [embedCreditText, setEmbedCreditText] = useState("");
     const [embedCreditUrl, setEmbedCreditUrl] = useState("");
+    const [embedAltText, setEmbedAltText] = useState("");
     const [embedHeight, setEmbedHeight] = useState("");
     const [detectedPlatform, setDetectedPlatform] = useState<SocialPlatform>("twitter"); // default to twitter now
     const [isSofascoreModal, setIsSofascoreModal] = useState(false);
@@ -151,7 +152,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                     class: "text-[#16A34A] underline cursor-pointer",
                 },
             }),
-            Image.configure({
+            ResizableImage.configure({
                 inline: false,
                 allowBase64: true,
                 HTMLAttributes: {
@@ -445,6 +446,22 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                 >
                     <AlignRight className="w-4 h-4" />
                 </ToolbarButton>
+
+                {/* Word count indicator */}
+                <div className="ml-auto pl-2 flex items-center gap-2 text-[11px] font-medium text-[#94A3B8] dark:text-gray-500 select-none" title="Word count & estimated reading time">
+                    {(() => {
+                        const text = editor.getText();
+                        const words = text.split(/\s+/).filter(Boolean).length;
+                        const mins = Math.max(1, Math.ceil(words / 238));
+                        return (
+                            <>
+                                <span>{words.toLocaleString()} words</span>
+                                <span className="text-gray-300 dark:text-gray-700">•</span>
+                                <span>~{mins} min read</span>
+                            </>
+                        );
+                    })()}
+                </div>
             </div>
 
             {showEditorialMenu && (
@@ -534,7 +551,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                                 )}
                             </h3>
                             <button
-                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("twitter"); setIsSofascoreModal(false); setIsImageUploadModal(false); setIsTweetModal(false); }}
+                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setEmbedAltText(""); setDetectedPlatform("twitter"); setIsSofascoreModal(false); setIsImageUploadModal(false); setIsTweetModal(false); }}
                                 className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] transition-colors"
                             >
                                 <X className="w-4 h-4" />
@@ -580,6 +597,15 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                             {detectedPlatform === "image" && (
                                 <>
                                     <div>
+                                        <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1.5">Alt Text (SEO & Accessibility)</label>
+                                        <input
+                                            value={embedAltText}
+                                            onChange={(e) => setEmbedAltText(e.target.value)}
+                                            placeholder="Describe the image for search engines & screen readers"
+                                            className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all"
+                                        />
+                                    </div>
+                                    <div>
                                         <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1.5">Credit Text</label>
                                         <input
                                             value={embedCreditText}
@@ -603,7 +629,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                         <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A]/50">
                             <button
                                 type="button"
-                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setDetectedPlatform("twitter"); setIsSofascoreModal(false); setIsImageUploadModal(false); setIsTweetModal(false); }}
+                                onClick={() => { setShowEmbedModal(false); setEmbedSrc(""); setEmbedHeight(""); setEmbedCreditText(""); setEmbedCreditUrl(""); setEmbedAltText(""); setDetectedPlatform("twitter"); setIsSofascoreModal(false); setIsImageUploadModal(false); setIsTweetModal(false); }}
                                 className="px-4 py-2 text-sm font-medium text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors"
                             >
                                 Cancel
@@ -621,6 +647,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                                                 src: embedSrc.trim(),
                                                 creditText: embedCreditText.trim(),
                                                 creditUrl: embedCreditUrl.trim(),
+                                                alt: embedAltText.trim(),
                                             }).run();
                                         } else {
                                             chain.setSocialEmbed({
@@ -635,6 +662,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                                         setEmbedHeight("");
                                         setEmbedCreditText("");
                                         setEmbedCreditUrl("");
+                                        setEmbedAltText("");
                                         setDetectedPlatform("twitter");
                                         setSavedSelection(null);
                                         setShowEmbedModal(false);

@@ -16,6 +16,7 @@ import { ArticleAudioPlayer } from "@/app/components/ArticleAudioPlayer";
 import { InlineNewsletterCard } from "@/app/components/InlineNewsletterCard";
 import { RecommendedArticles } from "@/app/components/RecommendedArticles";
 import { SupportBanner } from "@/app/components/SupportBanner";
+import { ShareBar } from "@/app/components/ShareBar";
 import { PostActionsClient } from "./PostActionsClient";
 import { PostTrackersClient } from "./PostTrackersClient";
 import { PostEmbedHydrationClient } from "./PostEmbedHydrationClient";
@@ -250,6 +251,13 @@ export default async function BlogPostPage({ params }: Props) {
                   <Clock className="h-4 w-4" />
                   {post.readTime}
                 </span>
+              </div>
+
+              <div className="mt-4">
+                <ShareBar
+                  title={post.title}
+                  url={`https://thetouchlinedribble.in/post/${post.slug || post.id}`}
+                />
               </div>
             </div>
           </div>

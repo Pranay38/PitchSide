@@ -145,6 +145,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const email = sanitizeString(req.body?.email);
 
             const alertPreferences = req.body?.alertPreferences;
+            const clubPreferences = req.body?.clubPreferences;
 
             if (!email || !isValidEmail(email)) {
                 return res.status(400).json({ error: "Please enter a valid email address." });
@@ -160,6 +161,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     {
                         $set: {
                             ...(alertPreferences ? { alertPreferences } : {}),
+                            ...(clubPreferences ? { clubPreferences } : {}),
                             updatedAt: new Date().toISOString(),
                         },
                     },
@@ -174,6 +176,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 subscribedAt: new Date().toISOString(),
                 welcomeSequenceState: 1, // 1 = Received Welcome, waiting for Day 1
                 ...(alertPreferences ? { alertPreferences } : {}),
+                ...(clubPreferences ? { clubPreferences } : {}),
             };
             const insertResult = await collection.insertOne(insertedSubscriber);
             await issueSubscriberCookie(req, res, collection, {
@@ -308,7 +311,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
 
             // Fetch active subscribers
-            const subscribers = await collection.find({}).toArray();
+            const query: any = {};
+            const targetClub = req.query.club;
+            if (targetClub && typeof targetClub === "string" && targetClub !== "All") {
+                query.clubPreferences = targetClub;
+            }
+            const subscribers = await collection.find(query).toArray();
             if (subscribers.length === 0) {
                 return res.status(400).json({ error: "No subscribers found." });
             }

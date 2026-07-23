@@ -71,7 +71,7 @@ export function Footer() {
   return (
     <footer className="mt-20 relative overflow-hidden bg-[#0F172A] dark:bg-[#020617] text-white transition-colors duration-300">
       {/* Gradient top accent line */}
-      <div className="gradient-accent-line w-full" />
+
 
       <div className="max-w-[1100px] mx-auto px-6 py-14">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">

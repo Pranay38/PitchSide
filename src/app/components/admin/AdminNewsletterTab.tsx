@@ -18,7 +18,10 @@ export function AdminNewsletterTab() {
   const [loading, setLoading] = useState(true);
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("<p>Welcome to this week's digest!</p>");
+  const [targetClub, setTargetClub] = useState("All");
   const [sending, setSending] = useState(false);
+
+  const CLUBS = ["All", "Arsenal", "Chelsea", "Liverpool", "Man City", "Man United", "Spurs", "Real Madrid", "Barcelona"];
 
   useEffect(() => {
     void fetchSubscribers();
@@ -55,7 +58,11 @@ export function AdminNewsletterTab() {
 
     setSending(true);
     try {
-      const res = await fetch("/api/subscribers?action=send-digest", {
+      const url = targetClub !== "All"
+        ? `/api/subscribers?action=send-digest&club=${encodeURIComponent(targetClub)}`
+        : "/api/subscribers?action=send-digest";
+
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -143,7 +150,19 @@ export function AdminNewsletterTab() {
                 </p>
               </div>
 
-              <div className="pt-2 flex justify-end">
+              <div className="pt-2 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Target Club:</label>
+                  <select
+                    value={targetClub}
+                    onChange={(e) => setTargetClub(e.target.value)}
+                    className="px-3 py-2 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white"
+                  >
+                    {CLUBS.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
                 <button
                   onClick={handleSendDigest}
                   disabled={sending || subscribers.length === 0}

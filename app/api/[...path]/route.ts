@@ -17,6 +17,9 @@ import { NextRequest, NextResponse } from "next/server";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { IncomingMessage, ServerResponse } from "http";
 
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
 // Import existing handlers
 // NOTE: Directory renamed from api/ to _api/ to prevent Vercel from
 // auto-detecting these files as standalone Serverless Functions.
@@ -32,6 +35,22 @@ import storiesHandler from "../../../_api/stories";
 import sysHandler from "../../../_api/sys";
 import seasonTransfersHandler from "../../../_api/season-transfers";
 import transfersTickerHandler from "../../../_api/transfers-ticker";
+
+// Global Upstash Rate Limiter
+let globalRatelimit: Ratelimit | null = null;
+function getGlobalRatelimit() {
+  if (globalRatelimit) return globalRatelimit;
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  globalRatelimit = new Ratelimit({
+    redis: new Redis({ url, token }),
+    limiter: Ratelimit.slidingWindow(30, "60 s"),
+    analytics: true,
+    prefix: "pitchside:global:ratelimit",
+  });
+  return globalRatelimit;
+}
 
 // Map of direct API routes to their handlers
 const DIRECT_HANDLERS: Record<string, (req: any, res: any) => Promise<any>> = {
@@ -55,6 +74,7 @@ const SYS_ROUTES = new Set([
   "subscribers", "digest", "analytics", "generate-carousel", "ai-generate",
   "tactics", "og", "club-season", "transfers", "user-prefs",
   "polls", "polls-vote", "match-ratings", "match-ratings-vote",
+  "armchair-ratings", "armchair-ratings-vote",
   "sitemap", "notifications", "recommendations", "recommendations-track",
   "daily-features", "error-log", "rss", "ensure-indexes", "search",
   "football-data", "transfer-source-preview", "welcome-sequence"
@@ -174,6 +194,32 @@ async function handleRequest(
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
     });
+  }
+
+  // Apply Global Upstash Rate Limiting
+  const limiter = getGlobalRatelimit();
+  if (limiter) {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0] || request.headers.get("x-real-ip") || "unknown";
+    try {
+      const { success, limit, remaining, reset } = await limiter.limit(ip);
+      if (!success) {
+        return new NextResponse(
+          JSON.stringify({ error: "Too many requests", retryAfter: Math.ceil((reset - Date.now()) / 1000) }),
+          {
+            status: 429,
+            headers: {
+              "Content-Type": "application/json",
+              "X-RateLimit-Limit": limit.toString(),
+              "X-RateLimit-Remaining": remaining.toString(),
+              "X-RateLimit-Reset": reset.toString(),
+            },
+          }
+        );
+      }
+    } catch (err) {
+      console.error("[Global RateLimit] Upstash error:", err);
+      // Fail-open
+    }
   }
 
   // Direct handler (posts, comments, likes, etc.)

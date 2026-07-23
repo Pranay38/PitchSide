@@ -103,6 +103,8 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [usePoll, setUsePoll] = useState(!!post?.poll);
     const [hotTakes, setHotTakes] = useState<{id: string; statement: string}[]>(post?.hotTakes || []);
     const [useHotTakes, setUseHotTakes] = useState(!!(post?.hotTakes && post.hotTakes.length > 0));
+    const [armchairRatings, setArmchairRatings] = useState<{name: string; position: string; authorRating: number; imageUrl?: string}[]>(post?.armchairRatings || []);
+    const [useArmchairRatings, setUseArmchairRatings] = useState(!!(post?.armchairRatings && post.armchairRatings.length > 0));
     const [seriesName, setSeriesName] = useState(post?.seriesName || "");
     const [seriesOrder, setSeriesOrder] = useState<number | "">(post?.seriesOrder ?? "");
     const [publishAt, setPublishAt] = useState(post?.publishAt || "");
@@ -220,6 +222,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             isDraft,
             poll: usePoll && poll.question.trim() ? poll : undefined,
             hotTakes: useHotTakes && hotTakes.filter(t => t.statement.trim()).length > 0 ? hotTakes.filter(t => t.statement.trim()) : undefined,
+            armchairRatings: useArmchairRatings && armchairRatings.filter(r => r.name.trim() && r.authorRating > 0).length > 0 ? armchairRatings.filter(r => r.name.trim() && r.authorRating > 0) : undefined,
             seriesName: seriesName.trim() || undefined,
             seriesOrder: seriesOrder === "" ? undefined : seriesOrder,
             publishAt: publishAt || undefined,
@@ -455,6 +458,10 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                     setUseHotTakes={setUseHotTakes}
                                     hotTakes={hotTakes}
                                     setHotTakes={setHotTakes}
+                                    useArmchairRatings={useArmchairRatings}
+                                    setUseArmchairRatings={setUseArmchairRatings}
+                                    armchairRatings={armchairRatings}
+                                    setArmchairRatings={setArmchairRatings}
                                 />
                             </SidebarSettings>
                         </div>

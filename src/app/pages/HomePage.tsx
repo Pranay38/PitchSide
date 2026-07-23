@@ -7,7 +7,7 @@ import { ArrowRight, BookOpen, Library, Newspaper, Repeat2, ScrollText, Trophy, 
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
-import { NewsTicker } from "../components/NewsTicker";
+
 import { PollOfTheWeekPanel } from "../components/PollOfTheWeekPanel";
 import type { RumorMill } from "../components/RumorMillWidget";
 import type { ManagerPressure } from "../components/ManagerPressureWidget";
@@ -31,15 +31,15 @@ import { getClubByName } from "../data/clubs";
 const OnThisDayWidget = lazy(() => import("../components/OnThisDayWidget").then(m => ({ default: m.OnThisDayWidget })));
 const RumorMillWidget = lazy(() => import("../components/RumorMillWidget").then(m => ({ default: m.RumorMillWidget })));
 const ManagerPressureWidget = lazy(() => import("../components/ManagerPressureWidget").then(m => ({ default: m.ManagerPressureWidget })));
-const PlatformFeaturesBento = lazy(() => import("../components/PlatformFeaturesBento").then(m => ({ default: m.PlatformFeaturesBento })));
+const FantasyCornerWidget = lazy(() => import("../components/FantasyCornerWidget").then(m => ({ default: m.FantasyCornerWidget })));
+
 const InlineNewsletterCard = lazy(() => import("../components/InlineNewsletterCard").then(m => ({ default: m.InlineNewsletterCard })));
 const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m => ({ default: m.BlogPostsGrid })));
-import { TransferTicker } from "../components/TransferTicker";
+
 import { QuickTakesSection } from "../components/QuickTakesSection";
 
 import { ChallengeTheTake } from "../components/home/ChallengeTheTake";
-import { ReadingStreakBanner } from "../components/ReadingStreakBanner";
-import { InnerCircleModal } from "../components/InnerCircleModal";
+
 
 
 /** Hook: animates elements with class `scroll-reveal` when they enter viewport */
@@ -537,7 +537,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
   return (
     <div ref={scrollRef} className="page-atmosphere min-h-screen transition-colors duration-300">
-      <ReadingStreakBanner />
+
       <SEO
         title="Home"
         description="A sharper front page for the day's best football analysis, deep reads, stories, and transfer coverage."
@@ -605,58 +605,9 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
         <section className="scroll-reveal">
 
         </section>
-        {/* --- DISCOVERY BUBBLES --- */}
-        <section className="mb-12 scroll-reveal text-center relative z-20">
-          <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide px-2 justify-start sm:justify-center">
-            {[
-              { label: "Tactical Trends", link: "/archive?search=tactical" },
-              { label: "Deep Dives", link: "/premium" },
-              { label: "Transfer Watch", link: "/transfers" },
-              { label: "Wonderkids", link: "/archive?search=wonderkids" },
-              { label: "Debates", link: "/debates" }
-            ].map((bubble) => (
-              <Link
-                key={bubble.label}
-                to={bubble.link}
-                className="flex-shrink-0 snap-start px-5 py-2.5 rounded-full bg-white/60 dark:bg-[#0b1326]/60 backdrop-blur-md ghost-border-dark dark:ghost-border text-[11px] font-black uppercase tracking-widest text-[#0F172A] dark:text-gray-200 hover:text-[#16A34A] dark:hover:text-[#16A34A] transition-all ambient-shadow cursor-pointer hover:-translate-y-0.5"
-              >
-                {bubble.label}
-              </Link>
-            ))}
-          </div>
-        </section>
 
-        {/* --- LIVE PULSE WIDGET --- */}
-        {siteSettings.transferWatch && siteSettings.transferWatch.length > 0 && (
-          <section className="mb-16 scroll-reveal relative z-10 w-full max-w-[1000px] mx-auto">
-             <div className="mb-4 flex items-center justify-between px-2">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#16A34A] flex items-center gap-1.5 ml-1">
-                    <Flame className="w-3.5 h-3.5" />
-                    Live Pulse
-                  </p>
-                </div>
-             </div>
-             <div className="w-full ghost-border-dark dark:ghost-border rounded-[1.5rem] overflow-hidden depth-card ambient-shadow bg-white dark:bg-[#0b1326]">
-                 <TransferTicker entries={siteSettings.transferWatch} />
-             </div>
-          </section>
-        )}
 
-        {/* --- DAILY BRIEFING CAROUSEL (DECLUTTERED) --- */}
-        <section className="mb-24 scroll-reveal w-full">
-          <div className="mb-8 flex items-center justify-between">
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-                Daily Briefing
-              </p>
-              <h2 className="mt-2 text-3xl font-black font-outfit text-[#0F172A] dark:text-white">
-                Today's pulse
-              </h2>
-            </div>
-          </div>
-          <NewsTicker />
-        </section>
+
 
         {/* --- SPACIOUS MAIN LAYOUT --- */}
         <section className="mb-32 scroll-reveal">
@@ -729,7 +680,11 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                   <ManagerPressureWidget data={dailyFeatures.managerPressure} />
                 </div>
               ) : null}
-
+              {siteSettings?.fantasyCorner?.enabled ? (
+                <div className="h-full">
+                  <FantasyCornerWidget data={siteSettings.fantasyCorner} />
+                </div>
+              ) : null}
             </div>
 
             {/* Latest Analysis Block */}
@@ -903,43 +858,11 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
           <ProSubscriptionScroll />
         </section> */}
 
-        <div className="scroll-reveal">
-          <PlatformFeaturesBento />
-        </div>
 
-        {/* Show CTA when Clerk says user is not signed in, OR when Clerk isn't available at all */}
-        {((!clerkAvailable) || (clLoaded && !isSignedIn)) && (
-          <section className="mt-24 mb-12">
-            <div className="rounded-[2.5rem] bg-[linear-gradient(135deg,#0f172a,#0B1120)] border border-gray-800 p-8 sm:p-12 md:p-16 text-center shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-96 h-96 bg-[#16A34A]/10 rounded-full blur-[100px] pointer-events-none translate-x-1/2 -translate-y-1/2"></div>
-              <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -translate-x-1/2 translate-y-1/2"></div>
-              
-              <div className="relative z-10 max-w-2xl mx-auto">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-outfit text-white mb-6">
-                  Join the <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#16A34A] to-emerald-300">Inner Circle</span>
-                </h2>
-                <p className="text-lg text-gray-400 mb-10 leading-relaxed">
-                  Sign in to personalize your feed, save your favorite clubs, join the debates, and vote for the Player of the Season.
-                </p>
-                {clerkAvailable ? (
-                  <SignInButton mode="modal">
-                    <button className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-[#16A34A] hover:bg-[#15803d] text-white font-black uppercase tracking-widest text-sm shadow-[0_0_40px_-10px_rgba(22,163,74,0.5)] transition-all duration-300 hover:scale-105 active:scale-95">
-                      Sign In or Create Account
-                    </button>
-                  </SignInButton>
-                ) : (
-                  <Link to="/admin" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-[#16A34A] hover:bg-[#15803d] text-white font-black uppercase tracking-widest text-sm shadow-[0_0_40px_-10px_rgba(22,163,74,0.5)] transition-all duration-300 hover:scale-105 active:scale-95">
-                    Sign In or Create Account
-                  </Link>
-                )}
-              </div>
-            </div>
-          </section>
-        )}
+
       </main>
 
       <Footer />
-      <InnerCircleModal />
     </div>
   );
 }

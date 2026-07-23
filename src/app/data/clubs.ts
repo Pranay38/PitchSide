@@ -37,6 +37,28 @@ const DEFAULT_CLUBS: Club[] = [
   { name: "PSG", league: "Ligue 1", logo: "https://crests.football-data.org/524.png" },
   { name: "Marseille", league: "Ligue 1", logo: "https://crests.football-data.org/516.png" },
   { name: "Lyon", league: "Ligue 1", logo: "https://crests.football-data.org/523.png" },
+
+  // World Cup 2026 — National Teams
+  { name: "Argentina", league: "World Cup 2026", logo: "https://crests.football-data.org/762.png" },
+  { name: "France", league: "World Cup 2026", logo: "https://crests.football-data.org/773.png" },
+  { name: "Brazil", league: "World Cup 2026", logo: "https://crests.football-data.org/764.png" },
+  { name: "Germany", league: "World Cup 2026", logo: "https://crests.football-data.org/759.png" },
+  { name: "England", league: "World Cup 2026", logo: "https://crests.football-data.org/770.png" },
+  { name: "Spain", league: "World Cup 2026", logo: "https://crests.football-data.org/760.png" },
+  { name: "Portugal", league: "World Cup 2026", logo: "https://crests.football-data.org/765.png" },
+  { name: "Netherlands", league: "World Cup 2026", logo: "https://crests.football-data.org/8601.png" },
+  { name: "Italy", league: "World Cup 2026", logo: "https://crests.football-data.org/784.png" },
+  { name: "USA", league: "World Cup 2026", logo: "https://crests.football-data.org/771.png" },
+  { name: "Mexico", league: "World Cup 2026", logo: "https://crests.football-data.org/769.png" },
+  { name: "Canada", league: "World Cup 2026", logo: "https://crests.football-data.org/CAN.png" },
+  { name: "Uruguay", league: "World Cup 2026", logo: "https://crests.football-data.org/URU.png" },
+  { name: "Colombia", league: "World Cup 2026", logo: "https://crests.football-data.org/COL.png" },
+  { name: "Japan", league: "World Cup 2026", logo: "https://crests.football-data.org/766.png" },
+  { name: "South Korea", league: "World Cup 2026", logo: "https://crests.football-data.org/KOR.png" },
+  { name: "Morocco", league: "World Cup 2026", logo: "https://crests.football-data.org/MAR.png" },
+  { name: "Nigeria", league: "World Cup 2026", logo: "https://crests.football-data.org/NGA.png" },
+  { name: "Croatia", league: "World Cup 2026", logo: "https://crests.football-data.org/799.png" },
+  { name: "Belgium", league: "World Cup 2026", logo: "https://crests.football-data.org/805.png" },
 ];
 
 const CUSTOM_CLUBS_KEY = "pitchside_custom_clubs";

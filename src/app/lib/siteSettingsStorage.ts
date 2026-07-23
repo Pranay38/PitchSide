@@ -55,6 +55,21 @@ export interface AuthorsTake {
   updatedAt: string;
 }
 
+export interface FantasyPick {
+  name: string;
+  club: string;
+  reason: string;
+  imageUrl?: string;
+}
+
+export interface FantasyCorner {
+  enabled: boolean;
+  gameweek: number;
+  deadline: string;
+  captainPick: FantasyPick;
+  differentialPick: FantasyPick;
+}
+
 export interface SiteSettings {
   socialWallEnabled: boolean;
   socialWallTitle: string;
@@ -67,6 +82,7 @@ export interface SiteSettings {
   homepageCuration: HomepageCuration;
   supplementalEvents: SupplementalEvent[];
   authorsTake: AuthorsTake;
+  fantasyCorner: FantasyCorner;
   updatedAt: string;
 }
 
@@ -96,6 +112,13 @@ const DEFAULT_SETTINGS: SiteSettings = {
     body: "",
     enabled: false,
     updatedAt: "",
+  },
+  fantasyCorner: {
+    enabled: false,
+    gameweek: 1,
+    deadline: "",
+    captainPick: { name: "", club: "", reason: "" },
+    differentialPick: { name: "", club: "", reason: "" },
   },
   updatedAt: "",
 };
@@ -188,6 +211,26 @@ function normalizeAuthorsTake(input?: Partial<AuthorsTake> | null): AuthorsTake 
   };
 }
 
+function normalizeFantasyCorner(input?: Partial<FantasyCorner> | null): FantasyCorner {
+  return {
+    enabled: input?.enabled ?? false,
+    gameweek: Number(input?.gameweek) || 1,
+    deadline: String(input?.deadline || "").trim(),
+    captainPick: {
+      name: String(input?.captainPick?.name || "").trim(),
+      club: String(input?.captainPick?.club || "").trim(),
+      reason: String(input?.captainPick?.reason || "").trim(),
+      imageUrl: input?.captainPick?.imageUrl ? String(input?.captainPick?.imageUrl).trim() : undefined,
+    },
+    differentialPick: {
+      name: String(input?.differentialPick?.name || "").trim(),
+      club: String(input?.differentialPick?.club || "").trim(),
+      reason: String(input?.differentialPick?.reason || "").trim(),
+      imageUrl: input?.differentialPick?.imageUrl ? String(input?.differentialPick?.imageUrl).trim() : undefined,
+    },
+  };
+}
+
 function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
   return {
     socialWallEnabled: input?.socialWallEnabled ?? DEFAULT_SETTINGS.socialWallEnabled,
@@ -201,6 +244,7 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     homepageCuration: normalizeHomepageCuration(input?.homepageCuration),
     supplementalEvents: normalizeSupplementalEvents(input?.supplementalEvents),
     authorsTake: normalizeAuthorsTake(input?.authorsTake),
+    fantasyCorner: normalizeFantasyCorner(input?.fantasyCorner),
     updatedAt: input?.updatedAt || DEFAULT_SETTINGS.updatedAt,
   };
 }

@@ -20,10 +20,10 @@ import { Breadcrumbs } from "../components/Breadcrumbs";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
-import { ReadingProgress } from "../components/ReadingProgress";
+
 import { CommentSection } from "../components/CommentSection";
 import { PollWidget } from "../components/PollWidget";
-import { ReactionUI } from "../components/ReactionUI";
+
 import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
 import { SeriesNavigator } from "../components/SeriesNavigator";
 import { PageState } from "../components/PageState";
@@ -41,8 +41,9 @@ import { topicPath } from "../lib/contentPaths";
 import { scheduleEmbedHydration } from "../lib/embedHydration";
 import { useReadingTracker } from "../hooks/useReadingTracker";
 import { RecommendedArticles } from "../components/RecommendedArticles";
+import { ArmchairRatingsPanel } from "../components/ArmchairRatingsPanel";
 import { useUser } from "@clerk/nextjs";
-import { HotTakeHeatIndex } from "../components/HotTakeHeatIndex";
+
 
 
 function sortPosts(posts: BlogPost[]): BlogPost[] {
@@ -310,7 +311,7 @@ export function BlogPostPage() {
         club={post.club}
         date={post.date}
       />
-      <ReadingProgress />
+
       <Header />
 
       {isPreview && (
@@ -370,7 +371,7 @@ export function BlogPostPage() {
           </div>
         </section>
 
-        <section className="mx-auto grid w-full max-w-[1180px] gap-10 px-4 py-10 sm:px-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <section className="mx-auto w-full max-w-[860px] px-4 py-10 sm:px-6">
           <article className="min-w-0">
             <div className="mb-6 flex flex-wrap gap-3">
               <button
@@ -501,6 +502,10 @@ export function BlogPostPage() {
               </div>
             )}
 
+            {post.armchairRatings && post.armchairRatings.length > 0 && (
+              <ArmchairRatingsPanel postId={post.id} ratings={post.armchairRatings} />
+            )}
+
             <div className="mt-12" ref={bottomRef}>
               <InlineNewsletterCard
                 title="Get the strongest Touchline Dribble reads in one email"
@@ -512,21 +517,7 @@ export function BlogPostPage() {
               <PollWidget pollId={post.id} poll={post.poll} title="Reader Poll" />
             )}
 
-            <ReactionUI itemId={post.id} itemType="post" initialReactions={post.reactions} />
 
-            {/* Hot Take Heat Index — shown per bold claim/take */}
-            {post.hotTakes && post.hotTakes.length > 0 && (
-              <div className="my-8 space-y-4">
-                {post.hotTakes.map((take) => (
-                  <HotTakeHeatIndex
-                    key={take.id}
-                    postId={post.id}
-                    takeId={take.id}
-                    statement={take.statement}
-                  />
-                ))}
-              </div>
-            )}
 
 
 
@@ -597,27 +588,6 @@ export function BlogPostPage() {
               ) : <div />}
             </div>
           </article>
-
-          <aside className="hidden xl:block">
-            <div className="sticky top-24 space-y-6">
-              <div className="rounded-[2rem] border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#0F172A]">
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-                  Share
-                </p>
-                <div className="mt-4 grid gap-3">
-                  <button onClick={() => handleShare("whatsapp")} className="rounded-full bg-[#25D366] px-4 py-2.5 text-sm font-bold text-white">
-                    WhatsApp
-                  </button>
-                  <button onClick={() => handleShare("copy")} className="rounded-full bg-[#16A34A] px-4 py-2.5 text-sm font-bold text-white">
-                    Copy link
-                  </button>
-                  <button onClick={() => handleShare("twitter")} className="rounded-full border border-gray-200 px-4 py-2.5 text-sm font-bold text-[#0F172A] dark:border-gray-700 dark:text-white">
-                    Share on X
-                  </button>
-                </div>
-              </div>
-            </div>
-          </aside>
         </section>
 
         {relatedPosts.length > 0 && (

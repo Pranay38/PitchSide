@@ -66,6 +66,29 @@ export function PostCard({ post, featured = false }: PostCardProps) {
                  {post.matchRating}/10 Rating
                </div>
              )}
+             {(() => {
+               const publishDate = new Date(post.date);
+               const now = new Date();
+               const hoursAgo = (now.getTime() - publishDate.getTime()) / (1000 * 60 * 60);
+               const updatedAt = (post as any).updatedAt;
+               const wasUpdated = updatedAt && new Date(updatedAt).toDateString() !== publishDate.toDateString();
+               
+               if (hoursAgo < 24) {
+                 return (
+                   <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white bg-red-500 rounded-full shadow-md animate-pulse">
+                     🔴 New
+                   </div>
+                 );
+               }
+               if (wasUpdated) {
+                 return (
+                   <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-[#0F172A] bg-[#4ade80]/90 rounded-full shadow-md">
+                     ✏️ Updated
+                   </div>
+                 );
+               }
+               return null;
+             })()}
           </div>
           
           <button 
@@ -137,6 +160,29 @@ export function PostCard({ post, featured = false }: PostCardProps) {
               {post.matchRating}/10 Rating
             </div>
           )}
+          {(() => {
+            const publishDate = new Date(post.date);
+            const now = new Date();
+            const hoursAgo = (now.getTime() - publishDate.getTime()) / (1000 * 60 * 60);
+            const updatedAt = (post as any).updatedAt;
+            const wasUpdated = updatedAt && new Date(updatedAt).toDateString() !== publishDate.toDateString();
+            
+            if (hoursAgo < 24) {
+              return (
+                <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white bg-red-500 rounded-full shadow-md animate-pulse">
+                  🔴 New
+                </div>
+              );
+            }
+            if (wasUpdated) {
+              return (
+                <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-[#0F172A] bg-[#4ade80]/90 rounded-full shadow-md">
+                  ✏️ Updated
+                </div>
+              );
+            }
+            return null;
+          })()}
           <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-md bg-black/50 border border-white/20 rounded-full shadow-sm">
               {clubData?.logo && <img src={clubData.logo} alt="" className="w-3.5 h-3.5 object-contain" />}

@@ -1,6 +1,13 @@
 import React from "react";
 import { FileText, Star, Flame, X, Plus } from "lucide-react";
 
+interface ArmchairRatingEntry {
+    name: string;
+    position: string;
+    authorRating: number;
+    imageUrl?: string;
+}
+
 interface InteractiveWidgetsProps {
     usePoll: boolean;
     setUsePoll: (val: boolean) => void;
@@ -13,11 +20,17 @@ interface InteractiveWidgetsProps {
     setUseHotTakes: (val: boolean) => void;
     hotTakes: { id: string; statement: string }[];
     setHotTakes: (val: { id: string; statement: string }[]) => void;
+
+    useArmchairRatings: boolean;
+    setUseArmchairRatings: (val: boolean) => void;
+    armchairRatings: ArmchairRatingEntry[];
+    setArmchairRatings: (val: ArmchairRatingEntry[]) => void;
 }
 
 export function InteractiveWidgets({
     usePoll, setUsePoll, poll, setPoll,
-    useHotTakes, setUseHotTakes, hotTakes, setHotTakes
+    useHotTakes, setUseHotTakes, hotTakes, setHotTakes,
+    useArmchairRatings, setUseArmchairRatings, armchairRatings, setArmchairRatings
 }: InteractiveWidgetsProps) {
     return (
         <>
@@ -128,6 +141,75 @@ export function InteractiveWidgets({
                             className="flex items-center gap-1.5 text-sm font-medium text-orange-500 hover:text-orange-400"
                         >
                             <Plus className="w-4 h-4" /> Add Take
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* Armchair Ratings */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                <div className="flex items-center justify-between mb-3">
+                    <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white">
+                        <Star className="w-4 h-4 text-amber-500" />
+                        Armchair Ratings
+                    </label>
+                    <button
+                        type="button"
+                        onClick={() => setUseArmchairRatings(!useArmchairRatings)}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${useArmchairRatings ? 'bg-[#16A34A]' : 'bg-gray-300 dark:bg-gray-600'}`}
+                    >
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${useArmchairRatings ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                    </button>
+                </div>
+                <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">Rate each player 1-10. Readers will be able to submit their own ratings and see the fan average vs yours.</p>
+                {useArmchairRatings && (
+                    <div className="space-y-3">
+                        {armchairRatings.map((entry, idx) => (
+                            <div key={idx} className="bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700 p-3 space-y-2">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={entry.name}
+                                        onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], name: e.target.value }; setArmchairRatings(r); }}
+                                        placeholder="Player name"
+                                        className="flex-1 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={entry.position}
+                                        onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], position: e.target.value }; setArmchairRatings(r); }}
+                                        placeholder="Position (e.g. CM)"
+                                        className="w-24 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white"
+                                    />
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="10"
+                                        step="0.5"
+                                        value={entry.authorRating || ""}
+                                        onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], authorRating: parseFloat(e.target.value) || 0 }; setArmchairRatings(r); }}
+                                        placeholder="/10"
+                                        className="w-16 px-2 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white text-center font-bold"
+                                    />
+                                    <button type="button" onClick={() => setArmchairRatings(armchairRatings.filter((_, i) => i !== idx))} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex-shrink-0">
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <input
+                                    type="url"
+                                    value={entry.imageUrl || ""}
+                                    onChange={(e) => { const r = [...armchairRatings]; r[idx] = { ...r[idx], imageUrl: e.target.value }; setArmchairRatings(r); }}
+                                    placeholder="Image URL (optional headshot)"
+                                    className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-[#0F172A] text-xs text-[#0F172A] dark:text-white"
+                                />
+                            </div>
+                        ))}
+                        <button
+                            type="button"
+                            onClick={() => setArmchairRatings([...armchairRatings, { name: "", position: "", authorRating: 0 }])}
+                            className="flex items-center gap-1.5 text-sm font-medium text-amber-500 hover:text-amber-400"
+                        >
+                            <Plus className="w-4 h-4" /> Add Player
                         </button>
                     </div>
                 )}
