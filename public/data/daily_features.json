@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-07-22T07:31:33.816869",
+  "lastUpdated": "2026-07-23T07:28:59.420329",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea, Arsenal and Spurs all want Rashford - Wednesday's gossip",
-    "sentimentScore": 44
+    "text": "Liverpool confident of signing Barcola - Thursday's gossip",
+    "sentimentScore": 68
   },
   "managerPressure": [
     {
       "name": "Keith Andrews (BRE)",
-      "pressureScore": 96
+      "pressureScore": 76
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 73
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 75
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 69
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 72
     },
     {
-      "name": "Mikel Arteta (ARS)",
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 71
+    },
+    {
+      "name": "Michael Carrick (MUN)",
       "pressureScore": 64
-    },
-    {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 63
     }
   ]
 }
