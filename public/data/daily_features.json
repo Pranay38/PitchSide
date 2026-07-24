@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-07-23T07:28:59.420329",
+  "lastUpdated": "2026-07-24T07:28:00.786541",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool confident of signing Barcola - Thursday's gossip",
-    "sentimentScore": 68
+    "text": "Man Utd handed Tchouameni boost - Friday's gossip",
+    "sentimentScore": 62
   },
   "managerPressure": [
     {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 95
+    },
+    {
       "name": "Keith Andrews (BRE)",
-      "pressureScore": 76
+      "pressureScore": 87
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 75
-    },
-    {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 72
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 71
-    },
-    {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 64
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 85
     }
   ]
 }
