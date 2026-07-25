@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-07-24T07:28:00.786541",
+  "lastUpdated": "2026-07-25T07:11:54.028283",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd handed Tchouameni boost - Friday's gossip",
-    "sentimentScore": 62
+    "text": "Real Madrid confident of signing Rodri  - Saturday's gossip",
+    "sentimentScore": 68
   },
   "managerPressure": [
     {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 90
+    },
+    {
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 86
+    },
+    {
       "name": "David Moyes (EVE)",
-      "pressureScore": 95
+      "pressureScore": 81
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 87
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 71
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 85
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 71
     }
   ]
 }
