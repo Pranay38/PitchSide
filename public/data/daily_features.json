@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-07-25T07:11:54.028283",
+  "lastUpdated": "2026-07-26T07:32:51.175302",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid confident of signing Rodri  - Saturday's gossip",
-    "sentimentScore": 68
+    "text": "Arsenal explore Vinicius Jr move - Sunday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "Michael Carrick (MUN)",
-      "pressureScore": 90
-    },
-    {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 86
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 81
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 71
+      "pressureScore": 98
     },
     {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 71
+      "pressureScore": 68
+    },
+    {
+      "name": "Eddie Howe (NEW)",
+      "pressureScore": 66
     }
   ]
 }
