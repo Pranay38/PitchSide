@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-07-27T08:26:12.278259",
+  "lastUpdated": "2026-07-28T07:34:48.837634",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "PSG want \u00c2\u00a3145m for Barcola - Monday's gossip",
-    "sentimentScore": 44
+    "text": "Man City brace for Rodri bid - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 90
-    },
-    {
       "name": "Andoni Iraola (LIV)",
-      "pressureScore": 83
-    },
-    {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 81
+      "pressureScore": 98
     },
     {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 77
+      "pressureScore": 97
+    },
+    {
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 91
+    },
+    {
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 84
+    },
+    {
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 78
     }
   ]
 }
