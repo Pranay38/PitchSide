@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-07-28T07:34:48.837634",
+  "lastUpdated": "2026-07-29T07:40:01.386686",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man City brace for Rodri bid - Tuesday's gossip",
-    "sentimentScore": 41
+    "text": "Barcola agrees Liverpool move - Wednesday's gossip",
+    "sentimentScore": 51
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 98
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 90
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 97
+      "name": "David Moyes (EVE)",
+      "pressureScore": 71
     },
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 91
-    },
-    {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 84
-    },
-    {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 78
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 69
     }
   ]
 }
