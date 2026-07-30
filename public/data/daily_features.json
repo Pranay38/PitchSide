@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-07-29T07:40:01.386686",
+  "lastUpdated": "2026-07-30T07:31:29.202692",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barcola agrees Liverpool move - Wednesday's gossip",
-    "sentimentScore": 51
+    "text": "Real Madrid confident of Rodri deal - Thursday's gossip",
+    "sentimentScore": 68
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 91
+    },
+    {
+      "name": "Gary O'Neil (IPS)",
       "pressureScore": 90
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 71
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 85
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 69
+      "name": "David Moyes (EVE)",
+      "pressureScore": 73
     }
   ]
 }
