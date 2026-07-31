@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-07-30T07:31:29.202692",
+  "lastUpdated": "2026-07-31T07:47:41.731520",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid confident of Rodri deal - Thursday's gossip",
-    "sentimentScore": 68
+    "text": "Three clubs monitoring Delap - Friday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 91
-    },
-    {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 90
-    },
-    {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 85
-    },
-    {
       "name": "David Moyes (EVE)",
-      "pressureScore": 73
+      "pressureScore": 86
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 86
+    },
+    {
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 75
+    },
+    {
+      "name": " (NEW)",
+      "pressureScore": 67
+    },
+    {
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 62
     }
   ]
 }
