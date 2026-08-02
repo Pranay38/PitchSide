@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-08-01T07:24:42.000493",
+  "lastUpdated": "2026-08-02T07:29:02.487687",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal agree Guimaraes fee - Saturday's gossip",
-    "sentimentScore": 60
+    "text": "Salah close to Trabzonspor move - Sunday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 99
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 90
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 89
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 64
     },
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 71
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 71
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 68
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 60
     }
   ]
 }
