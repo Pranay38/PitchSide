@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-08-03T08:24:13.986937",
+  "lastUpdated": "2026-08-04T07:34:30.049416",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs make Osimhen approach - Monday's gossip",
-    "sentimentScore": 41
+    "text": "Fenerbahce ready huge Rashford offer - Tuesday's gossip",
+    "sentimentScore": 73
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 91
-    },
-    {
-      "name": "David Moyes (EVE)",
+      "name": "Andoni Iraola (LIV)",
       "pressureScore": 80
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 80
+      "name": "Vacant (NEW)",
+      "pressureScore": 71
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 60
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 65
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 61
     }
   ]
 }
