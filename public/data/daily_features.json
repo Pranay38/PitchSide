@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-08-04T07:34:30.049416",
+  "lastUpdated": "2026-08-05T07:35:06.587660",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Fenerbahce ready huge Rashford offer - Tuesday's gossip",
-    "sentimentScore": 73
+    "text": "Forest target Reijnders - Wednesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "Andoni Iraola (LIV)",
-      "pressureScore": 80
+      "pressureScore": 98
     },
     {
-      "name": "Vacant (NEW)",
-      "pressureScore": 71
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 97
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 65
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 88
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 61
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 69
     }
   ]
 }
