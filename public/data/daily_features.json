@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-08-06T07:35:27.395073",
+  "lastUpdated": "2026-08-07T06:06:37.426013",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid agree \u00c2\u00a3120m Diomande deal - Thursday's gossip",
-    "sentimentScore": 60
+    "text": "Liverpool not pursuing Spence move - Friday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 96
-    },
-    {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 90
-    },
-    {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 80
-    },
-    {
       "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 80
+      "pressureScore": 79
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 73
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 78
+    },
+    {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 61
     }
   ]
 }
