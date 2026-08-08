@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-08-07T06:06:37.426013",
+  "lastUpdated": "2026-08-08T05:39:10.455810",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool not pursuing Spence move - Friday's gossip",
+    "text": "Man City explore Fernandez move - Saturday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 79
+      "name": "David Moyes (EVE)",
+      "pressureScore": 97
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 78
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 82
     },
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 61
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 71
+    },
+    {
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 66
     }
   ]
 }
