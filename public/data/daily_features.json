@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-08-08T05:39:10.455810",
+  "lastUpdated": "2026-08-09T05:43:03.865034",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man City explore Fernandez move - Saturday's gossip",
+    "text": "Barca make second bid for Rodri - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 97
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 80
     },
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 82
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 73
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 71
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 72
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 66
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 63
     }
   ]
 }
