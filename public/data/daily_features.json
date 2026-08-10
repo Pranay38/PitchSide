@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-08-09T05:43:03.865034",
+  "lastUpdated": "2026-08-10T06:07:44.125045",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barca make second bid for Rodri - Sunday's gossip",
-    "sentimentScore": 41
+    "text": "Villa interested in Endrick loan - Monday's gossip",
+    "sentimentScore": 62
   },
   "managerPressure": [
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 80
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 88
     },
     {
       "name": "Pierre Sage (CRY)",
-      "pressureScore": 73
+      "pressureScore": 82
     },
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 72
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 78
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 63
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 68
     }
   ]
 }
