@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-08-10T06:07:44.125045",
+  "lastUpdated": "2026-08-11T05:50:00.188002",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Villa interested in Endrick loan - Monday's gossip",
-    "sentimentScore": 62
+    "text": "Man City close in on Bouaddi - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 88
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 81
     },
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 82
+      "name": "David Moyes (EVE)",
+      "pressureScore": 79
     },
     {
-      "name": "Andoni Iraola (LIV)",
+      "name": "Mikel Arteta (ARS)",
       "pressureScore": 78
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 68
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 65
     }
   ]
 }
