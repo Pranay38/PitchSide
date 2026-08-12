@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-08-11T05:50:00.188002",
+  "lastUpdated": "2026-08-12T06:09:42.693424",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man City close in on Bouaddi - Tuesday's gossip",
+    "text": "Coventry eye Mudryk on loan - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 81
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 79
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 88
     },
     {
       "name": "Mikel Arteta (ARS)",
-      "pressureScore": 78
+      "pressureScore": 84
     },
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 65
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 81
+    },
+    {
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 62
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 62
     }
   ]
 }
