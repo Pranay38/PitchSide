@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-08-13T06:12:55.329395",
+  "lastUpdated": "2026-08-14T06:09:29.964192",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Galatasaray submit Martinelli bid - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Man City reject fresh Rodri bid - Friday's gossip",
+    "sentimentScore": 36
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 90
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 76
     },
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 87
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 73
     },
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 84
-    },
-    {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 68
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 70
     }
   ]
 }
