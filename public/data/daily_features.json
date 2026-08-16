@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-08-15T05:20:26.157918",
+  "lastUpdated": "2026-08-16T05:23:20.704097",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal lead Hinshelwood race - Saturday's gossip",
+    "text": "Villa begin Suzuki talks - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 90
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 93
     },
     {
-      "name": "Unai Emery (AVL)",
+      "name": "Daniel Farke (LEE)",
       "pressureScore": 85
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 79
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 80
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 69
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 76
     }
   ]
 }
