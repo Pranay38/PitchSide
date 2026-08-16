@@ -40,12 +40,12 @@
             "Midfield structural collapse",
             "Poor substitutions"
         ],
-        "lastUpdated": "2026-08-16T00:49:33.646720"
+        "lastUpdated": "2026-08-16T06:25:29.874774"
     },
     "mauricio-pochettino": {
         "name": "Mauricio Pochettino",
         "club": "Chelsea",
-        "pressureScore": 74,
+        "pressureScore": 60,
         "status": "Under Fire",
         "trend": "down",
         "sackingOdds": "4/1",
@@ -83,6 +83,6 @@
             "Defensive set-piece vulnerabilities",
             "Game management"
         ],
-        "lastUpdated": "2026-08-16T00:49:33.646730"
+        "lastUpdated": "2026-08-16T06:25:29.874784"
     }
 }
