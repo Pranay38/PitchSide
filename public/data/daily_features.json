@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-08-17T05:30:52.044013",
+  "lastUpdated": "2026-08-18T05:23:32.259996",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Martinez Juventus move now off - Monday's gossip",
+    "text": "Fernandez will cost Man City more than \u00c2\u00a3120m - Tuesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 99
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 94
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 83
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 94
     },
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 67
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 68
+    },
+    {
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 68
+    },
+    {
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 66
     }
   ]
 }
