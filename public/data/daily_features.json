@@ -1,32 +1,28 @@
 {
-  "lastUpdated": "2026-08-18T05:23:32.259996",
+  "lastUpdated": "2026-08-19T05:24:32.822247",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Fernandez will cost Man City more than \u00c2\u00a3120m - Tuesday's gossip",
+    "text": "Al Hilal target England's Kane - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 94
+      "name": "David Moyes (EVE)",
+      "pressureScore": 89
     },
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 94
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 88
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 68
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 75
     },
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 68
-    },
-    {
-      "name": "Pierre Sage (CRY)",
+      "name": "Roberto De Zerbi (TOT)",
       "pressureScore": 66
     }
   ]
