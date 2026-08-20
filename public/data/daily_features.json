@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-08-19T05:24:32.822247",
+  "lastUpdated": "2026-08-20T05:25:32.317498",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Al Hilal target England's Kane - Wednesday's gossip",
-    "sentimentScore": 41
+    "text": "Man City join Man Utd in Kone race - Thursday's gossip",
+    "sentimentScore": 56
   },
   "managerPressure": [
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 89
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 95
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 88
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 90
     },
     {
-      "name": "Unai Emery (AVL)",
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 76
+    },
+    {
+      "name": "Andoni Iraola (LIV)",
       "pressureScore": 75
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 66
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 61
     }
   ]
 }
