@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-08-20T05:25:32.317498",
+  "lastUpdated": "2026-08-21T05:27:34.502435",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man City join Man Utd in Kone race - Thursday's gossip",
-    "sentimentScore": 56
+    "text": "Arsenal exploring Yildiz move - Friday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 95
+      "name": "David Moyes (EVE)",
+      "pressureScore": 91
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 90
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 76
-    },
-    {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 75
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 83
     },
     {
       "name": "Keith Andrews (BRE)",
-      "pressureScore": 61
+      "pressureScore": 75
+    },
+    {
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 64
     }
   ]
 }
