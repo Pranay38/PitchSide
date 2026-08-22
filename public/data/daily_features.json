@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-08-21T05:27:34.502435",
+  "lastUpdated": "2026-08-22T05:22:07.049961",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal exploring Yildiz move - Friday's gossip",
+    "text": "Liverpool make Endrick enquiry - Saturday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 91
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 88
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
+      "name": "Marco Rose (BOU)",
       "pressureScore": 83
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 75
-    },
-    {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 64
+      "name": "David Moyes (EVE)",
+      "pressureScore": 82
     }
   ]
 }
