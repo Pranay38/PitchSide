@@ -69,9 +69,10 @@ const AdminCalendarTab = dynamic(() => import('../components/admin/AdminCalendar
 const AdminNotificationsTab = dynamic(() => import('../components/admin/AdminNotificationsTab').then(m => m.AdminNotificationsTab));
 const AdminPOTSTab = dynamic(() => import('../components/admin/AdminPOTSTab').then(m => m.AdminPOTSTab));
 const AdminPostsTab = dynamic(() => import('../components/admin/AdminPostsTab').then(m => m.AdminPostsTab));
+const AdminReportCardTab = dynamic(() => import('../components/admin/AdminReportCardTab').then(m => m.AdminReportCardTab));
 
 type View = "list" | "create" | "edit";
-type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "transfer-watch" | "transfer-tracker" | "on-this-day" | "settings" | "polls" | "newsletter" | "analytics" | "carousel-generator" | "quick-take-video" | "draft-assistant" | "tweet-generator" | "calendar";
+type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "transfer-watch" | "transfer-tracker" | "report-cards" | "on-this-day" | "settings" | "polls" | "newsletter" | "analytics" | "carousel-generator" | "quick-take-video" | "draft-assistant" | "tweet-generator" | "calendar";
 
 type TransferDraft = {
     player: string;
@@ -903,6 +904,12 @@ export function AdminPage() {
                         <Repeat2 className="w-4 h-4" /> Transfer Watch
                     </button>
                     <button
+                        onClick={() => setActiveTab("report-cards")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "report-cards" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <span className="text-base leading-none">📝</span> Report Cards
+                    </button>
+                    <button
                         onClick={() => setActiveTab("on-this-day")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "on-this-day" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
@@ -1033,6 +1040,15 @@ export function AdminPage() {
                 {/* TRANSFER TRACKER TAB */}
                 {activeTab === "transfer-tracker" && (
                     <AdminTransferTrackerTab />
+                )}
+
+                {/* TRANSFER REPORT CARDS TAB */}
+                {activeTab === "report-cards" && (
+                    <AdminReportCardTab
+                        siteSettings={siteSettings}
+                        setSiteSettings={setSiteSettings}
+                        updateSiteSettingsAsync={updateSiteSettingsAsync}
+                    />
                 )}
 
                 {/* TRANSFER WATCH TAB */}

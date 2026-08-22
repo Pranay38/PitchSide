@@ -23,6 +23,11 @@ import {
   createDefaultPOTSSettings,
   normalizePOTSSettings,
 } from "./pots";
+import {
+  type TransferReportCards,
+  defaultTransferReportCards,
+  normalizeTransferReportCards,
+} from "./transferReportCards";
 
 export interface SupplementalEvent {
   id: string;
@@ -83,6 +88,7 @@ export interface SiteSettings {
   supplementalEvents: SupplementalEvent[];
   authorsTake: AuthorsTake;
   fantasyCorner: FantasyCorner;
+  transferReportCards: TransferReportCards;
   updatedAt: string;
 }
 
@@ -120,6 +126,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     captainPick: { name: "", club: "", reason: "" },
     differentialPick: { name: "", club: "", reason: "" },
   },
+  transferReportCards: defaultTransferReportCards,
   updatedAt: "",
 };
 
@@ -245,6 +252,7 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     supplementalEvents: normalizeSupplementalEvents(input?.supplementalEvents),
     authorsTake: normalizeAuthorsTake(input?.authorsTake),
     fantasyCorner: normalizeFantasyCorner(input?.fantasyCorner),
+    transferReportCards: normalizeTransferReportCards(input?.transferReportCards),
     updatedAt: input?.updatedAt || DEFAULT_SETTINGS.updatedAt,
   };
 }

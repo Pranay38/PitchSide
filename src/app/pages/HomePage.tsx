@@ -35,10 +35,14 @@ const FantasyCornerWidget = lazy(() => import("../components/FantasyCornerWidget
 
 const InlineNewsletterCard = lazy(() => import("../components/InlineNewsletterCard").then(m => ({ default: m.InlineNewsletterCard })));
 const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m => ({ default: m.BlogPostsGrid })));
+const TransferReportCardCarousel = lazy(() => import("../components/TransferReportCardCarousel").then(m => ({ default: m.TransferReportCardCarousel })));
 
 import { QuickTakesSection } from "../components/QuickTakesSection";
 
 import { ChallengeTheTake } from "../components/home/ChallengeTheTake";
+
+const PitchXI = lazy(() => import("../components/PitchXI").then(m => ({ default: m.PitchXI })));
+import { WORLD_CUP_XI } from "../data/worldCupXI";
 
 
 
@@ -606,7 +610,34 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
         </section>
 
-
+        {/* --- WORLD CUP XI / TEAM OF THE WEEK --- */}
+        <section className="my-16 scroll-reveal">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
+                🏆 Editor&apos;s Pick
+              </p>
+              <h2 className="mt-2 text-3xl sm:text-4xl font-black font-outfit text-[#0F172A] dark:text-white">
+                Our World Cup XI.
+              </h2>
+              <p className="mt-2 text-sm text-[#64748B] dark:text-gray-400">
+                Tap any player to see why they made the cut.
+              </p>
+            </div>
+            <Link
+              to="/world-cup-xi"
+              className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
+            >
+              Full breakdown
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <Suspense fallback={
+            <div className="mx-auto max-w-[440px] aspect-[3/4.2] rounded-[2rem] bg-[#1a5c2a]/20 animate-pulse" />
+          }>
+            <PitchXI team={WORLD_CUP_XI} compact />
+          </Suspense>
+        </section>
 
 
         {/* --- SPACIOUS MAIN LAYOUT --- */}
@@ -685,6 +716,18 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                   <FantasyCornerWidget data={siteSettings.fantasyCorner} />
                 </div>
               ) : null}
+            </div>
+
+            {/* --- TRANSFER REPORT CARD CAROUSEL --- */}
+            <div className="scroll-reveal">
+              <Suspense fallback={
+                <div className="tinted-panel rounded-[2rem] border border-gray-200 p-5 shadow-sm dark:border-gray-800 animate-pulse">
+                  <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded mb-6"></div>
+                  <div className="h-[400px] bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+                </div>
+              }>
+                <TransferReportCardCarousel />
+              </Suspense>
             </div>
 
             {/* Latest Analysis Block */}
