@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-08-22T05:22:07.049961",
+  "lastUpdated": "2026-08-23T05:24:11.782985",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool make Endrick enquiry - Saturday's gossip",
+    "text": "Alvarez open to Arsenal transfer - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 88
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 98
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 83
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 70
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 82
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 68
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 60
     }
   ]
 }
