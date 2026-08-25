@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-08-24T05:33:53.511404",
+  "lastUpdated": "2026-08-25T05:26:56.207866",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Monday's gossip: Man City ready to meet Chelsea's Fernandez demand",
-    "sentimentScore": 53
+    "text": "Man City enter race for Gakpo - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 89
-    },
-    {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 87
+      "pressureScore": 95
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 75
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 81
     },
     {
       "name": "Keith Andrews (BRE)",
-      "pressureScore": 60
+      "pressureScore": 73
     }
   ]
 }
