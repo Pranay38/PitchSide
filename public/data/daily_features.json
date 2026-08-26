@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-08-25T05:26:56.207866",
+  "lastUpdated": "2026-08-26T05:29:36.904502",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man City enter race for Gakpo - Tuesday's gossip",
+    "text": "Villa make offer for Mateta - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 95
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 91
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 82
+    },
+    {
+      "name": "Gary O'Neil (IPS)",
       "pressureScore": 81
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 73
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 64
     }
   ]
 }
