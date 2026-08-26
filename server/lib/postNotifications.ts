@@ -16,8 +16,8 @@ export function isPostLive(post: { isDraft?: boolean | null; publishAt?: string 
 }
 
 function buildPostUrl(postId?: string): string {
-  if (!postId) return "https://thetouchlinedribble.in";
-  return `https://thetouchlinedribble.in/post/${postId}`;
+  if (!postId) return "https://www.thetouchlinedribble.in";
+  return `https://www.thetouchlinedribble.in/post/${postId}`;
 }
 
 function buildPostEmailHtml(title: string, excerpt: string | undefined, postUrl: string): string {

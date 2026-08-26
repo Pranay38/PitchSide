@@ -3,7 +3,7 @@ import { connectToDatabase } from "../_db";
 import { sendBatchEmails, isMailerConfigured } from "../_mailer";
 import { requireAuth } from "../utils/security";
 
-const SITE_URL = "https://thetouchlinedribble.in";
+const SITE_URL = "https://www.thetouchlinedribble.in";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 1. Authentication Check

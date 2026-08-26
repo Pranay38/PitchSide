@@ -105,7 +105,7 @@ function SharePopover({ title, onClose }: { title: string; onClose: () => void }
         <button
           onClick={() => {
             const slug = url.split("/post/")[1] || "";
-            const embedCode = `<iframe src="https://thetouchlinedribble.in/api/embed/card/${slug}" width="480" height="220" style="border:none;border-radius:16px;" loading="lazy"></iframe>`;
+            const embedCode = `<iframe src="https://www.thetouchlinedribble.in/api/embed/card/${slug}" width="480" height="220" style="border:none;border-radius:16px;" loading="lazy"></iframe>`;
             navigator.clipboard.writeText(embedCode);
             toast.success("Embed code copied!");
           }}

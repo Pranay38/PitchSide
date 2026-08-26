@@ -114,7 +114,7 @@ export function AlertsPage() {
       <SEO
         title="Alerts"
         description="Follow clubs, players, and transfer topics to see a site alert feed and save email alert preferences."
-        url="https://thetouchlinedribble.in/alerts"
+        url="https://www.thetouchlinedribble.in/alerts"
       />
       <Header favoriteClub={favoriteClub} />
 

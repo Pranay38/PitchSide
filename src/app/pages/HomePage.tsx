@@ -545,15 +545,15 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
       <SEO
         title="Home"
         description="A sharper front page for the day's best football analysis, deep reads, stories, and transfer coverage."
-        url="https://thetouchlinedribble.in/"
+        url="https://www.thetouchlinedribble.in/"
         schema={JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
           "name": "The Touchline Dribble",
-          "url": "https://thetouchlinedribble.in/",
+          "url": "https://www.thetouchlinedribble.in/",
           "potentialAction": {
             "@type": "SearchAction",
-            "target": "https://thetouchlinedribble.in/archive?search={search_term_string}",
+            "target": "https://www.thetouchlinedribble.in/archive?search={search_term_string}",
             "query-input": "required name=search_term_string"
           }
         })}

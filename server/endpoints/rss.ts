@@ -20,7 +20,7 @@ export default async function rssHandler(req: VercelRequest, res: VercelResponse
       .limit(30)
       .toArray();
 
-    const siteUrl = "https://thetouchlinedribble.in";
+    const siteUrl = "https://www.thetouchlinedribble.in";
     const now = new Date().toUTCString();
 
     const items = posts.map((post: any) => {

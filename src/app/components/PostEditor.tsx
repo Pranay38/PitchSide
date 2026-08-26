@@ -18,6 +18,7 @@ import { CoverImageUpload } from "./editor/CoverImageUpload";
 import { RichTextCanvas } from "./editor/RichTextCanvas";
 import { SeoTools } from "./editor/SeoTools";
 import { SidebarSettings } from "./editor/SidebarSettings";
+import { VersionHistoryPanel } from "./admin/VersionHistoryPanel";
 
 const GENERAL_CATEGORIES = [
     "General",
@@ -110,6 +111,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [publishAt, setPublishAt] = useState(post?.publishAt || "");
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
+    const [showHistory, setShowHistory] = useState(false);
     const previewContentRef = useRef<HTMLDivElement | null>(null);
 
     const [copiedThread, setCopiedThread] = useState(false);
@@ -341,7 +343,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     };
 
     const draftButtonLabel = post?.isDraft ? "Update Draft" : "Save as Draft";
-    const publishButtonLabel = post && !post.isDraft ? "Update Published" : "Publish Post";
+    const publishButtonLabel = post && !post.isDraft ? "Update Published" : (publishAt ? "Schedule" : "Publish Post");
     const draftSubmitLabel = submitAction === "back"
         ? "Saving draft..."
         : submitAction === "draft"
@@ -367,6 +369,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                 saveStatus={saveStatus}
                 post={post}
                 setShowPreview={setShowPreview}
+                setShowHistory={setShowHistory}
                 handleDraftSave={handleDraftSave}
                 draftButtonLabel={draftButtonLabel}
                 handlePublish={handlePublish}
@@ -652,6 +655,16 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                     </div>
                 )
             }
+
+            {showHistory && post && (
+                <VersionHistoryPanel 
+                    postId={post.id} 
+                    onClose={() => setShowHistory(false)} 
+                    onRestore={() => {
+                        window.location.reload();
+                    }} 
+                />
+            )}
         </div >
     );
 }

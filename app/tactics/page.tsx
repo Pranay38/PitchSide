@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "Interactive tactical board with formations, heat maps, and positional analysis.",
     type: "website",
-    url: "https://thetouchlinedribble.in/tactics",
+    url: "https://www.thetouchlinedribble.in/tactics",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/tactics" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/tactics" },
 };
 
 export default function TacticsPage() {

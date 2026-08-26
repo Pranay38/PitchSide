@@ -96,7 +96,7 @@ export function TransferReliabilityPage() {
       <SEO
         title="Transfer Watch"
         description="Track transfer dossiers, reliability signals, and linked external coverage from one board."
-        url="https://thetouchlinedribble.in/transfers"
+        url="https://www.thetouchlinedribble.in/transfers"
       />
       <Header />
 

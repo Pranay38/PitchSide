@@ -1,4 +1,4 @@
-import { ArrowLeft, Loader2, CheckCircle2, CloudOff, Link, Eye } from "lucide-react";
+import { ArrowLeft, Loader2, CheckCircle2, CloudOff, Link, Eye, Clock } from "lucide-react";
 import { toast } from "sonner";
 import type { BlogPost } from "../../data/posts";
 
@@ -10,6 +10,7 @@ interface EditorTopBarProps {
     saveStatus: "idle" | "saving" | "saved" | "error";
     post?: BlogPost | null;
     setShowPreview: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowHistory: React.Dispatch<React.SetStateAction<boolean>>;
     handleDraftSave: () => Promise<void> | void;
     draftButtonLabel: string;
     handlePublish: () => Promise<void> | void;
@@ -25,6 +26,7 @@ export function EditorTopBar({
     saveStatus,
     post,
     setShowPreview,
+    setShowHistory,
     handleDraftSave,
     draftButtonLabel,
     handlePublish,
@@ -86,6 +88,17 @@ export function EditorTopBar({
                         >
                             <Link className="w-4 h-4" />
                             Copy Preview Link
+                        </button>
+                    )}
+                    {post && (
+                        <button
+                            type="button"
+                            onClick={() => setShowHistory(true)}
+                            className="flex items-center gap-2 px-3 py-1.5 border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white rounded-lg font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200"
+                            title="Version History"
+                        >
+                            <Clock className="w-4 h-4" />
+                            <span className="hidden sm:inline">History</span>
                         </button>
                     )}
                     <button

@@ -24,13 +24,13 @@ The Touchline Dribble is a football tactics and opinion blog by Pranay Agrawal. 
 
 ## Key Pages
 
-- Homepage: https://thetouchlinedribble.in
-- Tactical Board: https://thetouchlinedribble.in/tactics
-- Stories: https://thetouchlinedribble.in/stories
-- Transfer Watch: https://thetouchlinedribble.in/transfers
-- Debates: https://thetouchlinedribble.in/debates
-- Archive: https://thetouchlinedribble.in/archive
-- About: https://thetouchlinedribble.in/about
+- Homepage: https://www.thetouchlinedribble.in
+- Tactical Board: https://www.thetouchlinedribble.in/tactics
+- Stories: https://www.thetouchlinedribble.in/stories
+- Transfer Watch: https://www.thetouchlinedribble.in/transfers
+- Debates: https://www.thetouchlinedribble.in/debates
+- Archive: https://www.thetouchlinedribble.in/archive
+- About: https://www.thetouchlinedribble.in/about
 
 ## Author
 

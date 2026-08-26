@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "Browse the complete archive — every tactical breakdown, transfer analysis, and opinion piece.",
     type: "website",
-    url: "https://thetouchlinedribble.in/archive",
+    url: "https://www.thetouchlinedribble.in/archive",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/archive" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/archive" },
 };
 
 export default function ArchivePage() {

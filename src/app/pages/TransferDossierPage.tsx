@@ -165,7 +165,7 @@ export function TransferDossierPage() {
       <SEO
         title={title}
         description={buildTransferSummary(dossier)}
-        url={`https://thetouchlinedribble.in/transfers/${buildTransferDossierSlug(dossier)}`}
+        url={`https://www.thetouchlinedribble.in/transfers/${buildTransferDossierSlug(dossier)}`}
       />
       <Header />
 

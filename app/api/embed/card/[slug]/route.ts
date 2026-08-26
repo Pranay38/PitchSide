@@ -3,7 +3,7 @@ import { getPostByIdServer } from "@/lib/server-data";
 
 /**
  * Serves a standalone, embeddable HTML card for any article.
- * Usage: <iframe src="https://thetouchlinedribble.in/api/embed/card/SLUG" width="480" height="280"></iframe>
+ * Usage: <iframe src="https://www.thetouchlinedribble.in/api/embed/card/SLUG" width="480" height="280"></iframe>
  */
 export async function GET(
   request: NextRequest,
@@ -16,8 +16,8 @@ export async function GET(
     return new NextResponse("Post not found", { status: 404 });
   }
 
-  const postUrl = `https://thetouchlinedribble.in/post/${post.slug || post.id}`;
-  const ogImage = `https://thetouchlinedribble.in/api/og?title=${encodeURIComponent(post.title)}${post.club ? `&club=${encodeURIComponent(post.club)}` : ""}`;
+  const postUrl = `https://www.thetouchlinedribble.in/post/${post.slug || post.id}`;
+  const ogImage = `https://www.thetouchlinedribble.in/api/og?title=${encodeURIComponent(post.title)}${post.club ? `&club=${encodeURIComponent(post.club)}` : ""}`;
 
   const html = `<!DOCTYPE html>
 <html lang="en">

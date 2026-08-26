@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "@/lib/router-compat";
-import { ArrowRight, Search, Heart, Shield, Flame, Target } from "lucide-react";
+import { ArrowRight, Search, Heart, Shield, Flame, Target, Briefcase, Calendar, Trophy, Users, MessageSquare, Activity } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -14,6 +14,12 @@ import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
 import { toast } from "sonner";
 import { getClubByName } from "../data/clubs";
+import { getTransferWatchEntriesAsync } from "../lib/siteSettingsStorage";
+import type { TransferWatchEntry } from "../lib/transferWatch";
+import { formatTransferWatchAmount } from "../lib/transferWatch";
+import { getRecentFixturesForClub, getUpcomingFixturesForClub } from "../lib/clubFixtures";
+import type { ClubFixture } from "../lib/clubFixtures";
+import { PollWidget } from "../components/PollWidget";
 
 function sortPosts(posts: BlogPost[], sort: string): BlogPost[] {
   const ordered = [...posts];
@@ -35,6 +41,10 @@ export function ClubHubPage() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("newest");
   const [isFavorite, setIsFavorite] = useState(false);
+  const [transfers, setTransfers] = useState<TransferWatchEntry[]>([]);
+  const [recentFixtures, setRecentFixtures] = useState<ClubFixture[]>([]);
+  const [nextFixtures, setNextFixtures] = useState<ClubFixture[]>([]);
+  const [fanZoneTab, setFanZoneTab] = useState<"polls" | "debates">("polls");
 
   const normalizedSlug = slug.toLowerCase();
   const clubLabel = deslugify(slug);
@@ -54,6 +64,25 @@ export function ClubHubPage() {
         if (!isMounted) return;
         setLoading(false);
       });
+
+    // Fetch club specific data
+    const fetchClubData = async () => {
+      try {
+        const [transferData, recentF, nextF] = await Promise.all([
+          getTransferWatchEntriesAsync(clubLabel),
+          getRecentFixturesForClub(clubLabel, clubData?.league || "PL"),
+          getUpcomingFixturesForClub(clubLabel, clubData?.league || "PL")
+        ]);
+        if (isMounted) {
+          setTransfers(transferData.slice(0, 3)); // Only top 3 for the widget
+          setRecentFixtures(recentF);
+          setNextFixtures(nextF);
+        }
+      } catch (e) {
+        console.error("Failed to fetch club widgets data:", e);
+      }
+    };
+    fetchClubData();
 
     // Check favorite status
     const currentFav = localStorage.getItem("favoriteClub");
@@ -183,6 +212,163 @@ export function ClubHubPage() {
             </div>
           </div>
         </section>
+
+        {/* Enhanced Club Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+            {/* Quick Stats Bar (Spans full width or 2/3) */}
+            <div className="lg:col-span-3 flex flex-col sm:flex-row items-center gap-4 bg-[#1E293B] border border-white/5 rounded-[16px] p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex-1 flex items-center justify-center sm:justify-start gap-4 border-b sm:border-b-0 sm:border-r border-white/5 pb-4 sm:pb-0 sm:pr-4">
+                    <div className="w-12 h-12 rounded-full bg-[#16A34A]/10 flex items-center justify-center text-[#16A34A]">
+                        <Trophy className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-400 font-medium">League Position</p>
+                        <p className="text-xl font-bold text-white">4th <span className="text-xs font-normal text-gray-500">(Placeholder)</span></p>
+                    </div>
+                </div>
+                
+                <div className="flex-1 flex items-center justify-center sm:justify-start gap-4 border-b sm:border-b-0 sm:border-r border-white/5 pb-4 sm:pb-0 sm:pr-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+                        <Activity className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-400 font-medium mb-1">Recent Form</p>
+                        <div className="flex items-center gap-1">
+                            {recentFixtures.length > 0 ? recentFixtures.slice(-5).map((f, i) => {
+                                // Dummy W/D/L logic if score is available
+                                const isHome = f.homeTeam.name.toLowerCase().includes(clubLabel.toLowerCase());
+                                const homeScore = f.score.home || 0;
+                                const awayScore = f.score.away || 0;
+                                let res = 'D';
+                                let color = 'bg-gray-500';
+                                if (isHome) {
+                                    if (homeScore > awayScore) { res = 'W'; color = 'bg-green-500'; }
+                                    else if (homeScore < awayScore) { res = 'L'; color = 'bg-red-500'; }
+                                } else {
+                                    if (awayScore > homeScore) { res = 'W'; color = 'bg-green-500'; }
+                                    else if (awayScore < homeScore) { res = 'L'; color = 'bg-red-500'; }
+                                }
+                                return (
+                                    <span key={i} className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white ${color}`}>
+                                        {res}
+                                    </span>
+                                )
+                            }) : (
+                                <>
+                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-green-500">W</span>
+                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-green-500">W</span>
+                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-gray-500">D</span>
+                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-red-500">L</span>
+                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-green-500">W</span>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex-1 flex items-center justify-center sm:justify-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
+                        <Calendar className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-400 font-medium">Next Fixture</p>
+                        {nextFixtures.length > 0 ? (
+                            <p className="text-sm font-bold text-white truncate max-w-[150px]">
+                                vs {nextFixtures[0].homeTeam.name.toLowerCase().includes(clubLabel.toLowerCase()) ? nextFixtures[0].awayTeam.name : nextFixtures[0].homeTeam.name}
+                            </p>
+                        ) : (
+                            <p className="text-sm font-bold text-white">vs TBD</p>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Transfer Activity Section */}
+            <div className="lg:col-span-2 bg-[#1E293B] border border-white/5 rounded-[16px] p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                        <Briefcase className="w-5 h-5 text-[#16A34A]" />
+                        Transfer Watch
+                    </h3>
+                    <Link to="/transfer-tracker" className="text-sm text-[#16A34A] hover:underline flex items-center gap-1 font-medium">
+                        View all <ArrowRight className="w-4 h-4" />
+                    </Link>
+                </div>
+                
+                <div className="grid gap-3 sm:grid-cols-2">
+                    {transfers.length > 0 ? transfers.map(t => (
+                        <div key={t.id} className="bg-[#0F172A] border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                            {t.playerImageUrl ? (
+                                <img src={t.playerImageUrl} alt={t.player} className="w-10 h-10 rounded-full object-cover border border-white/10" />
+                            ) : (
+                                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
+                                    <Users className="w-5 h-5" />
+                                </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-bold text-white truncate">{t.player}</p>
+                                <p className="text-xs text-gray-400 truncate">
+                                    {t.fromClub ? `${t.fromClub} → ${t.club}` : t.club}
+                                </p>
+                            </div>
+                            <div className="text-right shrink-0">
+                                <p className="text-xs font-black text-[#16A34A]">{formatTransferWatchAmount(t)}</p>
+                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{t.status}</p>
+                            </div>
+                        </div>
+                    )) : (
+                        <div className="col-span-2 text-center py-6 text-gray-400 text-sm">
+                            No active transfer rumors for this club right now.
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Fan Zone Widget */}
+            <div className="lg:col-span-1 bg-[#1E293B] border border-white/5 rounded-[16px] shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+                <div className="flex border-b border-white/5">
+                    <button 
+                        onClick={() => setFanZoneTab("polls")}
+                        className={`flex-1 py-3 text-sm font-bold transition-colors ${fanZoneTab === "polls" ? "text-[#16A34A] border-b-2 border-[#16A34A]" : "text-gray-400 hover:text-white"}`}
+                    >
+                        Polls
+                    </button>
+                    <button 
+                        onClick={() => setFanZoneTab("debates")}
+                        className={`flex-1 py-3 text-sm font-bold transition-colors ${fanZoneTab === "debates" ? "text-[#16A34A] border-b-2 border-[#16A34A]" : "text-gray-400 hover:text-white"}`}
+                    >
+                        Debates
+                    </button>
+                </div>
+                
+                <div className="p-4 flex-1">
+                    {fanZoneTab === "polls" ? (
+                        <PollWidget 
+                            pollId="dummy-club-poll"
+                            title="Fan Verdict"
+                            className="!my-0 !border-none !bg-transparent !shadow-none"
+                            poll={{
+                                question: `Who is ${clubLabel}'s most important player right now?`,
+                                options: [
+                                    { id: "opt1", text: "The Star Striker", votes: 450 },
+                                    { id: "opt2", text: "The Playmaker", votes: 320 },
+                                    { id: "opt3", text: "The Rock at the Back", votes: 150 },
+                                ]
+                            }}
+                        />
+                    ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                            <MessageSquare className="w-8 h-8 text-gray-500 mb-2" />
+                            <p className="text-sm font-bold text-white mb-1">Join the Debate</p>
+                            <p className="text-xs text-gray-400">Head over to the Debate Arena to have your say on recent tactics.</p>
+                            <Link to="/debates" className="mt-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-white font-medium transition-colors border border-white/10">
+                                View Debates
+                            </Link>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
 
         {/* Stories Section (if any) */}
         {matchingStories.length > 0 && (

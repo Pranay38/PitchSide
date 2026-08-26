@@ -15,7 +15,7 @@ const COLLECTION = "posts";
  * Fire-and-forget — errors are silently swallowed so publishing never fails.
  */
 async function pingSitemapToSearchEngines() {
-    const sitemapUrl = encodeURIComponent("https://thetouchlinedribble.in/sitemap.xml");
+    const sitemapUrl = encodeURIComponent("https://www.thetouchlinedribble.in/sitemap.xml");
     const endpoints = [
         `https://www.google.com/ping?sitemap=${sitemapUrl}`,
         `https://www.bing.com/ping?sitemap=${sitemapUrl}`,
@@ -164,6 +164,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (!id) return res.status(400).json({ error: "Missing post id" });
 
             const existing = await collection.findOne(buildIdFilter(id));
+            
+            if (existing) {
+                try {
+                    const postVersionsCollection = db.collection("post_versions");
+                    const currentVersionCount = await postVersionsCollection.countDocuments({ postId: id });
+                    await postVersionsCollection.insertOne({
+                        postId: id,
+                        version: currentVersionCount + 1,
+                        title: existing.title,
+                        content: existing.content,
+                        excerpt: existing.excerpt,
+                        coverImage: existing.coverImage,
+                        tags: existing.tags,
+                        savedAt: new Date().toISOString()
+                    });
+                } catch (e) {
+                    console.error("Failed to save post version", e);
+                }
+            }
+
             const setUpdates = { ...updates } as Record<string, any>;
             const unsetUpdates: Record<string, "" | 1> = {};
 

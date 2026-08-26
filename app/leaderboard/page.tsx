@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "See who's leading the Touchline Dribble community.",
     type: "website",
-    url: "https://thetouchlinedribble.in/leaderboard",
+    url: "https://www.thetouchlinedribble.in/leaderboard",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/leaderboard" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/leaderboard" },
 };
 
 export default function LeaderboardPage() {

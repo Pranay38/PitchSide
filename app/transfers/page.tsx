@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "Track football transfers with reliability ratings. Know which rumours to trust.",
     type: "website",
-    url: "https://thetouchlinedribble.in/transfers",
+    url: "https://www.thetouchlinedribble.in/transfers",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/transfers" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/transfers" },
 };
 
 export default function TransfersPage() {

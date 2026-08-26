@@ -3,5 +3,6 @@ export default function ProfilePage() { return <ProfilePageOriginal />; }
 
 export const metadata = {
   title: 'Profile | The Touchline Dribble',
-  description: 'Explore Profile on The Touchline Dribble, your go-to pitch for the beautiful game.'
+  description: 'Explore Profile on The Touchline Dribble, your go-to pitch for the beautiful game.',
+  robots: { index: false, follow: false },
 };

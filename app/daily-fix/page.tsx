@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "Your daily football briefing — biggest stories, results, and tactical talking points.",
     type: "website",
-    url: "https://thetouchlinedribble.in/daily-fix",
+    url: "https://www.thetouchlinedribble.in/daily-fix",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/daily-fix" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/daily-fix" },
 };
 
 export default function DailyFixRoute() {

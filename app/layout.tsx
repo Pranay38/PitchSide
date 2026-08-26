@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
   description:
     "Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and bold opinions for die-hard football fans. ⚽",
-  metadataBase: new URL("https://thetouchlinedribble.in"),
+  metadataBase: new URL("https://www.thetouchlinedribble.in"),
   alternates: {
     types: {
       "application/rss+xml": "/api/rss",
@@ -117,13 +117,13 @@ export default function RootLayout({
               "@type": "WebSite",
               name: "The Touchline Dribble",
               alternateName: "PitchSide",
-              url: "https://thetouchlinedribble.in",
+              url: "https://www.thetouchlinedribble.in",
               description:
                 "From the touchline to your timeline — tactical breakdowns, bold football opinions, and the analysis your pundit missed.",
               potentialAction: {
                 "@type": "SearchAction",
                 target:
-                  "https://thetouchlinedribble.in/archive?q={search_term_string}",
+                  "https://www.thetouchlinedribble.in/archive?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             }),
@@ -139,8 +139,8 @@ export default function RootLayout({
               "@type": "Organization",
               name: "The Touchline Dribble",
               alternateName: "PitchSide",
-              url: "https://thetouchlinedribble.in",
-              logo: "https://thetouchlinedribble.in/logo.png",
+              url: "https://www.thetouchlinedribble.in",
+              logo: "https://www.thetouchlinedribble.in/logo.png",
               description:
                 "Conviction-led football analysis — tactical breakdowns, bold opinions, and the takes your pundit is too safe to make.",
               foundingDate: "2026",

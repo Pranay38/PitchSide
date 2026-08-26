@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "The tactical writer behind The Touchline Dribble — post-match breakdowns and bold football opinions.",
     type: "profile",
-    url: "https://thetouchlinedribble.in/about",
+    url: "https://www.thetouchlinedribble.in/about",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/about" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/about" },
 };
 
 export default function AboutPage() {

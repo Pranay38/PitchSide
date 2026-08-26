@@ -7,7 +7,7 @@ import { getManagerPressureData } from "@/app/lib/data-fetcher";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const data = await getManagerPressureData(params.slug);
-  const pageUrl = `https://thetouchlinedribble.in/managers/${params.slug}`;
+  const pageUrl = `https://www.thetouchlinedribble.in/managers/${params.slug}`;
   return {
     title: `${data.name} Pressure Gauge & Job Security at ${data.club} | Touchline Dribble`,
     description: `Live tracking of ${data.name}'s job security at ${data.club}. Current pressure score: ${data.pressureScore}/100. Will they be sacked? Have your say.`,
@@ -50,13 +50,13 @@ export default async function ManagerPressurePage({ params }: { params: { slug: 
             "@type": "Article",
             headline: `${data.name} Pressure Gauge & Job Security at ${data.club}`,
             description: `Live tracking of ${data.name}'s job security at ${data.club}. Current pressure score: ${data.pressureScore}/100.`,
-            url: `https://thetouchlinedribble.in/managers/${params.slug}`,
+            url: `https://www.thetouchlinedribble.in/managers/${params.slug}`,
             publisher: {
               "@type": "Organization",
               name: "The Touchline Dribble",
-              url: "https://thetouchlinedribble.in",
+              url: "https://www.thetouchlinedribble.in",
             },
-            mainEntityOfPage: `https://thetouchlinedribble.in/managers/${params.slug}`,
+            mainEntityOfPage: `https://www.thetouchlinedribble.in/managers/${params.slug}`,
           }),
         }}
       />
@@ -68,8 +68,8 @@ export default async function ManagerPressurePage({ params }: { params: { slug: 
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://thetouchlinedribble.in" },
-              { "@type": "ListItem", position: 2, name: data.club, item: `https://thetouchlinedribble.in/club/${data.club.toLowerCase().replace(' ', '-')}` },
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://www.thetouchlinedribble.in" },
+              { "@type": "ListItem", position: 2, name: data.club, item: `https://www.thetouchlinedribble.in/club/${data.club.toLowerCase().replace(' ', '-')}` },
               { "@type": "ListItem", position: 3, name: "Manager Pressure" },
             ],
           }),

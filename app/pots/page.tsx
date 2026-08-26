@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "Vote for your Player of the Season. Community-driven rankings.",
     type: "website",
-    url: "https://thetouchlinedribble.in/pots",
+    url: "https://www.thetouchlinedribble.in/pots",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/pots" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/pots" },
 };
 
 export default function POTSPage() {

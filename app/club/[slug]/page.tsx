@@ -17,9 +17,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${clubName} — Latest News & Analysis`,
       description: `All ${clubName} coverage from The Touchline Dribble.`,
       type: "website",
-      url: `https://thetouchlinedribble.in/club/${slug}`,
+      url: `https://www.thetouchlinedribble.in/club/${slug}`,
     },
-    alternates: { canonical: `https://thetouchlinedribble.in/club/${slug}` },
+    alternates: { canonical: `https://www.thetouchlinedribble.in/club/${slug}` },
   };
 }
 

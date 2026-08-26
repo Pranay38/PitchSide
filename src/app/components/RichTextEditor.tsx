@@ -12,6 +12,8 @@ import type { BlogPost } from "../data/posts";
 import { InternalLinkSuggestion } from "./InternalLinkSuggestion";
 import { EditorialBlockExtension } from "./extensions/EditorialBlockExtension";
 import type { EditorialBlockKind } from "./extensions/EditorialBlockExtension";
+import { GlossaryHighlightExtension } from "./extensions/GlossaryHighlightPlugin";
+import { GlossaryHighlightTooltip } from "./extensions/GlossaryHighlightTooltip";
 import {
     Bold,
     Italic,
@@ -36,6 +38,7 @@ import {
     Sparkles,
     BarChart2,
     MessageCircle, // using as a generic tweet icon since lucide might not have X logo natively
+    BookOpen,
 } from "lucide-react";
 
 interface RichTextEditorProps {
@@ -162,6 +165,9 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
             SocialEmbed,
             EmbeddedImage,
             EditorialBlockExtension,
+            GlossaryHighlightExtension.configure({
+                active: true,
+            }),
         ],
         content: content || "",
         onUpdate: ({ editor }) => {
@@ -175,7 +181,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                     "prose-strong:text-[#0F172A] dark:prose-strong:text-white " +
                     "prose-blockquote:border-l-4 prose-blockquote:border-[#16A34A] prose-blockquote:text-[#64748B] dark:prose-blockquote:text-gray-400 " +
                     "prose-a:text-[#16A34A] " +
-                    "prose-img:rounded-lg prose-img:max-w-full prose-img:mx-auto",
+                    "prose-img:rounded-lg prose-img:max-w-full prose-img:mx-auto [&_.glossary-highlight]:border-b-2 [&_.glossary-highlight]:border-dotted [&_.glossary-highlight]:border-[#16A34A] [&_.glossary-highlight]:cursor-help",
             },
         },
     });
@@ -407,6 +413,13 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                 }} title="Embed Sofascore Widget">
                     <BarChart2 className="w-4 h-4" />
                 </ToolbarButton>
+                <ToolbarButton 
+                    onClick={() => editor.chain().focus().toggleGlossaryHighlight().run()} 
+                    isActive={editor.storage.glossaryHighlight?.active} 
+                    title="Toggle Glossary Highlights"
+                >
+                    <BookOpen className="w-4 h-4" />
+                </ToolbarButton>
                 {/* Editorial Blocks — prominent labeled button */}
                 <button
                     type="button"
@@ -516,6 +529,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
 
             {/* Editor */}
             <EditorContent editor={editor} />
+            <GlossaryHighlightTooltip />
 
             {/* Internal Link Suggestions */}
             {existingPosts.length > 0 && (

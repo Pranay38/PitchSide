@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Post Not Found" };
   }
 
-  const ogImageUrl = `https://thetouchlinedribble.in/api/og?title=${encodeURIComponent(post.title)}${post.club ? `&club=${encodeURIComponent(post.club)}` : ""}${post.date ? `&date=${encodeURIComponent(post.date)}` : ""}`;
+  const ogImageUrl = `https://www.thetouchlinedribble.in/api/og?title=${encodeURIComponent(post.title)}${post.club ? `&club=${encodeURIComponent(post.club)}` : ""}${post.date ? `&date=${encodeURIComponent(post.date)}` : ""}`;
 
   return {
     title: post.title,
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: post.title,
       description: post.excerpt || "",
       type: "article",
-      url: `https://thetouchlinedribble.in/post/${post.slug || post.id}`,
+      url: `https://www.thetouchlinedribble.in/post/${post.slug || post.id}`,
       images: [
         {
           url: ogImageUrl,
@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       creator: "@TouchlineDribbl",
     },
     alternates: {
-      canonical: `https://thetouchlinedribble.in/post/${post.slug || post.id}`,
+      canonical: `https://www.thetouchlinedribble.in/post/${post.slug || post.id}`,
     },
   };
 }
@@ -132,7 +132,7 @@ export default async function BlogPostPage({ params }: Props) {
         {
           "@type": "Person",
           name: post.author,
-          url: "https://thetouchlinedribble.in/about",
+          url: "https://www.thetouchlinedribble.in/about",
           sameAs: ["https://x.com/TouchlineDribbl", "https://www.instagram.com/thetouchlinedribble/"],
         },
       ]
@@ -141,7 +141,7 @@ export default async function BlogPostPage({ params }: Props) {
         {
           "@type": "Person",
           name: "Pranay Agrawal",
-          url: "https://thetouchlinedribble.in/about",
+          url: "https://www.thetouchlinedribble.in/about",
           sameAs: ["https://x.com/TouchlineDribbl", "https://www.instagram.com/thetouchlinedribble/"],
         },
       ]
@@ -151,12 +151,12 @@ export default async function BlogPostPage({ params }: Props) {
       name: "The Touchline Dribble",
       logo: {
         "@type": "ImageObject",
-        url: "https://thetouchlinedribble.in/logo.png",
+        url: "https://www.thetouchlinedribble.in/logo.png",
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://thetouchlinedribble.in/post/${post.slug || post.id}`,
+      "@id": `https://www.thetouchlinedribble.in/post/${post.slug || post.id}`,
     },
   };
 
@@ -165,12 +165,12 @@ export default async function BlogPostPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://thetouchlinedribble.in" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.thetouchlinedribble.in" },
       ...(post.tags?.[0] || post.club ? [{
         "@type": "ListItem",
         position: 2,
         name: post.tags?.[0] || post.club,
-        item: `https://thetouchlinedribble.in/topic/${encodeURIComponent((post.tags?.[0] || post.club || "").toLowerCase().replace(/\s+/g, "-"))}`,
+        item: `https://www.thetouchlinedribble.in/topic/${encodeURIComponent((post.tags?.[0] || post.club || "").toLowerCase().replace(/\s+/g, "-"))}`,
       }] : []),
       { "@type": "ListItem", position: post.tags?.[0] || post.club ? 3 : 2, name: post.title },
     ],
@@ -256,7 +256,7 @@ export default async function BlogPostPage({ params }: Props) {
               <div className="mt-4">
                 <ShareBar
                   title={post.title}
-                  url={`https://thetouchlinedribble.in/post/${post.slug || post.id}`}
+                  url={`https://www.thetouchlinedribble.in/post/${post.slug || post.id}`}
                 />
               </div>
             </div>

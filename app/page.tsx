@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     description:
       "Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and the bold opinions that fuel your group chat. ⚽",
     type: "website",
-    url: "https://thetouchlinedribble.in",
+    url: "https://www.thetouchlinedribble.in",
     siteName: "The Touchline Dribble",
     images: [
       {
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     creator: "@TouchlineDribbl",
   },
   alternates: {
-    canonical: "https://thetouchlinedribble.in",
+    canonical: "https://www.thetouchlinedribble.in",
   },
 };
 

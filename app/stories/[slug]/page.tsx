@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Story Not Found' };
   }
 
-  const ogImageUrl = `https://thetouchlinedribble.in/api/og?title=${encodeURIComponent(story.title)}&club=${encodeURIComponent(story.eyebrow || '')}&date=${encodeURIComponent(story.date || '')}`;
+  const ogImageUrl = `https://www.thetouchlinedribble.in/api/og?title=${encodeURIComponent(story.title)}&club=${encodeURIComponent(story.eyebrow || '')}&date=${encodeURIComponent(story.date || '')}`;
 
   return {
     title: story.title,
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: story.title,
       description: story.excerpt || '',
       type: 'article',
-      url: `https://thetouchlinedribble.in/stories/${story.slug}`,
+      url: `https://www.thetouchlinedribble.in/stories/${story.slug}`,
       images: [
         {
           url: story.coverImage || ogImageUrl,
@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       creator: '@TouchlineDribbl',
     },
     alternates: {
-      canonical: `https://thetouchlinedribble.in/stories/${story.slug}`,
+      canonical: `https://www.thetouchlinedribble.in/stories/${story.slug}`,
     },
   };
 }

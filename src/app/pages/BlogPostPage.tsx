@@ -283,12 +283,12 @@ export function BlogPostPage() {
       name: "The Touchline Dribble",
       logo: {
         "@type": "ImageObject",
-        url: "https://thetouchlinedribble.in/logo.png",
+        url: "https://www.thetouchlinedribble.in/logo.png",
       },
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://thetouchlinedribble.in/post/${post.slug || post.id}`,
+      "@id": `https://www.thetouchlinedribble.in/post/${post.slug || post.id}`,
     },
     speakable: {
       "@type": "SpeakableSpecification",

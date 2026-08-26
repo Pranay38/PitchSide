@@ -109,7 +109,7 @@ export function LeaderboardPage() {
       <SEO
         title="Predictions Leaderboard"
         description="See who knows football best. Make predictions, rank up, and top the The Touchline Dribble global leaderboard."
-        url="https://thetouchlinedribble.in/leaderboard"
+        url="https://www.thetouchlinedribble.in/leaderboard"
       />
       <Header />
 

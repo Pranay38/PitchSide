@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "Hand-picked reading lists grouping the best football analysis by theme.",
     type: "website",
-    url: "https://thetouchlinedribble.in/collections",
+    url: "https://www.thetouchlinedribble.in/collections",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/collections" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/collections" },
 };
 
 export default function CollectionsPage() {

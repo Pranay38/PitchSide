@@ -20,7 +20,7 @@ export function AboutPage() {
                         "@context": "https://schema.org",
                         "@type": "Person",
                         name: "Pranay Agrawal",
-                        url: "https://thetouchlinedribble.in/about",
+                        url: "https://www.thetouchlinedribble.in/about",
                         jobTitle: "Football Tactics Writer & Analyst",
                         description: "Tactical writer and football obsessive. Founder of The Touchline Dribble — post-match breakdowns, formation deep dives, and the bold opinions your pundit won't give you.",
                         sameAs: [
@@ -30,8 +30,8 @@ export function AboutPage() {
                         worksFor: {
                             "@type": "Organization",
                             name: "The Touchline Dribble",
-                            url: "https://thetouchlinedribble.in",
-                            logo: "https://thetouchlinedribble.in/logo.png"
+                            url: "https://www.thetouchlinedribble.in",
+                            logo: "https://www.thetouchlinedribble.in/logo.png"
                         },
                     }),
                 }}

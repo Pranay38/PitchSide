@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     description:
       "Our definitive XI of the 2026 FIFA World Cup. Tap each player to see the editorial reasoning behind every pick.",
     type: "article",
-    url: "https://thetouchlinedribble.in/world-cup-xi",
+    url: "https://www.thetouchlinedribble.in/world-cup-xi",
     siteName: "The Touchline Dribble",
     images: [
       {
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     creator: "@TouchlineDribbl",
   },
   alternates: {
-    canonical: "https://thetouchlinedribble.in/world-cup-xi",
+    canonical: "https://www.thetouchlinedribble.in/world-cup-xi",
   },
 };
 

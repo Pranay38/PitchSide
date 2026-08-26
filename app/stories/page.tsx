@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "Deep-dive football stories, immersive longform narratives, and premium visual features.",
     type: "website",
-    url: "https://thetouchlinedribble.in/stories",
+    url: "https://www.thetouchlinedribble.in/stories",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/stories" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/stories" },
 };
 
 export default function StoriesPage() {

@@ -275,8 +275,8 @@ export function CollectionsPage() {
           title={`${collection.title} | Reading Lists`}
           description={collection.description || `A curated collection of ${collection.posts.length} articles on The Touchline Dribble.`}
           type="website"
-          url={`https://thetouchlinedribble.in/collections`}
-          image={`https://thetouchlinedribble.in/api/og?title=${encodeURIComponent(collection.title)}&subtitle=${encodeURIComponent(`${collection.postCount} articles · Reading List`)}`}
+          url={`https://www.thetouchlinedribble.in/collections`}
+          image={`https://www.thetouchlinedribble.in/api/og?title=${encodeURIComponent(collection.title)}&subtitle=${encodeURIComponent(`${collection.postCount} articles · Reading List`)}`}
         />
         <Header />
 
@@ -489,7 +489,7 @@ export function CollectionsPage() {
         title="Reading Lists"
         description="Curated article collections from The Touchline Dribble — deep dives, tactical breakdowns, and more."
         type="website"
-        url="https://thetouchlinedribble.in/collections"
+        url="https://www.thetouchlinedribble.in/collections"
       />
       <Header />
 

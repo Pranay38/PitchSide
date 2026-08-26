@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "The most comprehensive football glossary — gegenpressing, xG, false 9, and 100+ terms explained simply.",
     type: "website",
-    url: "https://thetouchlinedribble.in/glossary",
+    url: "https://www.thetouchlinedribble.in/glossary",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/glossary" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/glossary" },
 };
 
 export default function GlossaryPage() {

@@ -71,7 +71,7 @@ export function StoriesPage() {
       <SEO
         title="Stories"
         description="Scroll-driven football stories built for deeper, visual longform reading."
-        url="https://thetouchlinedribble.in/stories"
+        url="https://www.thetouchlinedribble.in/stories"
       />
       <Header />
 

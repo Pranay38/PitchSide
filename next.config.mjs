@@ -51,12 +51,6 @@ const nextConfig = {
     ];
   },
 
-  // Redirects / rewrites for backwards compatibility
-  async rewrites() {
-    return [
-      { source: '/sitemap.xml', destination: '/api/sys?route=sitemap' },
-    ];
-  },
 };
 
 export default nextConfig;

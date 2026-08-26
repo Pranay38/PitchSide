@@ -10,9 +10,9 @@ export const metadata: Metadata = {
     description:
       "Vote on football's most divisive questions. GOAT debates, tactical controversies, and hot takes.",
     type: "website",
-    url: "https://thetouchlinedribble.in/debates",
+    url: "https://www.thetouchlinedribble.in/debates",
   },
-  alternates: { canonical: "https://thetouchlinedribble.in/debates" },
+  alternates: { canonical: "https://www.thetouchlinedribble.in/debates" },
 };
 
 export default function DebatesPage() {

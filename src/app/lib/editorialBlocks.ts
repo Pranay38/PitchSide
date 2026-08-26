@@ -622,7 +622,7 @@ export function renderEditorialBlockHtml(block: EditorialBlock): string {
     const s = themeStyles[theme] || themeStyles.dark;
 
     const shareText = encodeURIComponent(`"${text}" — ${attribution}`);
-    const shareUrl = encodeURIComponent(typeof window !== "undefined" ? window.location.href : "https://thetouchlinedribble.in");
+    const shareUrl = encodeURIComponent(typeof window !== "undefined" ? window.location.href : "https://www.thetouchlinedribble.in");
 
     return `
       <section class="not-prose my-10" style="border-radius:2rem;${s.bg};${s.border};padding:32px;box-shadow:0 20px 40px rgba(0,0,0,0.15)">

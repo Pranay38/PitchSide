@@ -69,7 +69,7 @@ export default async function welcomeSequenceHandler(req: VercelRequest, res: Ve
                     </div>
                     <div style="padding: 16px 32px; border-top: 1px solid #1E293B; text-align: center;">
                         <p style="color: #64748B; font-size: 12px; margin: 0;">© 2026 The Touchline Dribble</p>
-                        <p style="margin-top: 10px;"><a href="https://thetouchlinedribble.in/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}" style="color: #64748b; text-decoration: underline; font-size: 12px;">Unsubscribe</a></p>
+                        <p style="margin-top: 10px;"><a href="https://www.thetouchlinedribble.in/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}" style="color: #64748b; text-decoration: underline; font-size: 12px;">Unsubscribe</a></p>
                     </div>
                 </div>
             `
@@ -120,7 +120,7 @@ export default async function welcomeSequenceHandler(req: VercelRequest, res: Ve
                     </div>
                     <div style="padding: 16px 32px; border-top: 1px solid #1E293B; text-align: center;">
                         <p style="color: #64748B; font-size: 12px; margin: 0;">© 2026 The Touchline Dribble</p>
-                        <p style="margin-top: 10px;"><a href="https://thetouchlinedribble.in/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}" style="color: #64748b; text-decoration: underline; font-size: 12px;">Unsubscribe</a></p>
+                        <p style="margin-top: 10px;"><a href="https://www.thetouchlinedribble.in/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}" style="color: #64748b; text-decoration: underline; font-size: 12px;">Unsubscribe</a></p>
                     </div>
                 </div>
             `

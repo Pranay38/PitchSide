@@ -7,7 +7,7 @@ import { getMatchupData } from "@/app/lib/data-fetcher";
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const data = await getMatchupData(params.slug);
-  const pageUrl = `https://thetouchlinedribble.in/matchups/${params.slug}`;
+  const pageUrl = `https://www.thetouchlinedribble.in/matchups/${params.slug}`;
   return {
     title: `${data.homeTeam} vs ${data.awayTeam} Tactics & Predicted Lineups | Touchline Dribble`,
     description: `Tactical preview for ${data.homeTeam} vs ${data.awayTeam}. We break down formations, the key battles like ${data.keyBattle.homePlayer} vs ${data.keyBattle.awayPlayer}, and how the match will be won.`,
@@ -47,7 +47,7 @@ export default async function MatchupPreviewPage({ params }: { params: { slug: s
             "@type": "SportsEvent",
             name: `${data.homeTeam} vs ${data.awayTeam}`,
             description: data.tacticalTakeaway,
-            url: `https://thetouchlinedribble.in/matchups/${params.slug}`,
+            url: `https://www.thetouchlinedribble.in/matchups/${params.slug}`,
             location: { "@type": "Place", name: data.venue },
             homeTeam: { "@type": "SportsTeam", name: data.homeTeam },
             awayTeam: { "@type": "SportsTeam", name: data.awayTeam },
@@ -63,8 +63,8 @@ export default async function MatchupPreviewPage({ params }: { params: { slug: s
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://thetouchlinedribble.in" },
-              { "@type": "ListItem", position: 2, name: "Matchups", item: "https://thetouchlinedribble.in/matchups" },
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://www.thetouchlinedribble.in" },
+              { "@type": "ListItem", position: 2, name: "Matchups", item: "https://www.thetouchlinedribble.in/matchups" },
               { "@type": "ListItem", position: 3, name: `${data.homeTeam} vs ${data.awayTeam}` },
             ],
           }),
