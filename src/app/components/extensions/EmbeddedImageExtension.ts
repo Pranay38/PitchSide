@@ -1,6 +1,18 @@
+/**
+ * EmbeddedImage — block node that wraps an image inside a <figure> with
+ * credit/caption support, MS-Word-style drag-resize handles, text wrapping
+ * layout, alignment, spacing, and keyboard nudging.
+ */
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { ResizableImageNodeView } from "./ResizableImageNodeView";
+import {
+    getImageLayoutAttributes,
+    getImageDataAttributes,
+    computeLayoutStyleString,
+    nudgeImageNode,
+    adjustImageSpacing,
+} from "./imageLayoutUtils";
 
 export interface EmbeddedImageOptions {
     HTMLAttributes: Record<string, unknown>;
@@ -18,6 +30,9 @@ declare module "@tiptap/core" {
                 creditUrl?: string;
                 width?: number;
                 alt?: string;
+                layout?: string;
+                alignment?: string;
+                spacing?: number;
             }) => ReturnType;
         };
     }
@@ -77,6 +92,38 @@ export const EmbeddedImage = Node.create<EmbeddedImageOptions>({
                     return null;
                 },
             },
+            /* Layout attributes parse from the figure element */
+            layout: {
+                default: "inline" as string,
+                parseHTML: (element) =>
+                    element.getAttribute("data-layout") || "inline",
+            },
+            alignment: {
+                default: "center" as string,
+                parseHTML: (element) =>
+                    element.getAttribute("data-alignment") || "center",
+            },
+            spacing: {
+                default: 16 as number,
+                parseHTML: (element) => {
+                    const val = element.getAttribute("data-spacing");
+                    return val ? parseInt(val, 10) : 16;
+                },
+            },
+            offsetX: {
+                default: 0 as number,
+                parseHTML: (element) => {
+                    const val = element.getAttribute("data-offset-x");
+                    return val ? parseInt(val, 10) : 0;
+                },
+            },
+            offsetY: {
+                default: 0 as number,
+                parseHTML: (element) => {
+                    const val = element.getAttribute("data-offset-y");
+                    return val ? parseInt(val, 10) : 0;
+                },
+            },
         };
     },
 
@@ -89,20 +136,47 @@ export const EmbeddedImage = Node.create<EmbeddedImageOptions>({
     },
 
     renderHTML({ HTMLAttributes }) {
-        const { src, creditText, creditUrl, width, alt, ...rest } = HTMLAttributes;
+        const {
+            src,
+            creditText,
+            creditUrl,
+            width,
+            alt,
+            layout,
+            alignment,
+            spacing,
+            offsetX,
+            offsetY,
+            ...rest
+        } = HTMLAttributes;
+
+        const layoutStyle = computeLayoutStyleString({
+            layout: layout as string,
+            alignment: alignment as string,
+            spacing: spacing as number,
+            offsetX: offsetX as number,
+            offsetY: offsetY as number,
+        });
 
         const figureAttrs = mergeAttributes(this.options.HTMLAttributes, rest, {
             "data-embedded-image": "true",
-            style:
-                "margin: 2rem 0; display: block; border: none; background: transparent;",
+            style: `display: block; border: none; background: transparent; ${layoutStyle}`,
+            ...getImageDataAttributes({
+                layout,
+                alignment,
+                spacing,
+                offsetX,
+                offsetY,
+            }),
         });
 
-        const widthStyle = width ? `width: ${width}px; max-width: 100%;` : "width: 100%; max-width: 100%;";
+        const widthStyle = width
+            ? `width: ${width}px; max-width: 100%;`
+            : "width: 100%; max-width: 100%;";
         const imgAttrs: Record<string, string> = {
             src: src as string,
             alt: (alt as string) || "",
-            style:
-                `display: block; ${widthStyle} height: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);`,
+            style: `display: block; ${widthStyle} height: auto; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);`,
         };
 
         const captionStyle =
@@ -113,8 +187,7 @@ export const EmbeddedImage = Node.create<EmbeddedImageOptions>({
                 href: creditUrl as string,
                 target: "_blank",
                 rel: "noopener noreferrer",
-                style:
-                    "color: #16a34a; text-decoration: none; font-weight: 600; transition: opacity 0.2s;",
+                style: "color: #16a34a; text-decoration: none; font-weight: 600; transition: opacity 0.2s;",
             };
 
             return [
@@ -165,6 +238,34 @@ export const EmbeddedImage = Node.create<EmbeddedImageOptions>({
                             attrs: options,
                         });
                     },
+        };
+    },
+
+    addKeyboardShortcuts() {
+        const name = this.name;
+        return {
+            ArrowUp: ({ editor }) => nudgeImageNode(editor, name, "y", -4),
+            ArrowDown: ({ editor }) => nudgeImageNode(editor, name, "y", 4),
+            ArrowLeft: ({ editor }) => nudgeImageNode(editor, name, "x", -4),
+            ArrowRight: ({ editor }) => nudgeImageNode(editor, name, "x", 4),
+            "Shift-ArrowUp": ({ editor }) =>
+                nudgeImageNode(editor, name, "y", -1),
+            "Shift-ArrowDown": ({ editor }) =>
+                nudgeImageNode(editor, name, "y", 1),
+            "Shift-ArrowLeft": ({ editor }) =>
+                nudgeImageNode(editor, name, "x", -1),
+            "Shift-ArrowRight": ({ editor }) =>
+                nudgeImageNode(editor, name, "x", 1),
+            "Alt-ArrowUp": ({ editor }) =>
+                nudgeImageNode(editor, name, "y", -16),
+            "Alt-ArrowDown": ({ editor }) =>
+                nudgeImageNode(editor, name, "y", 16),
+            "Alt-ArrowLeft": ({ editor }) =>
+                nudgeImageNode(editor, name, "x", -16),
+            "Alt-ArrowRight": ({ editor }) =>
+                nudgeImageNode(editor, name, "x", 16),
+            " ": ({ editor }) => nudgeImageNode(editor, name, "x", 4),
+            "Shift- ": ({ editor }) => nudgeImageNode(editor, name, "x", -4),
         };
     },
 });

@@ -1,7 +1,10 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { NodeViewProps } from "@tiptap/react";
 import { NodeViewWrapper } from "@tiptap/react";
+import { ImageLayoutToolbar } from "./ImageLayoutToolbar";
+import { getLayoutWrapperStyles } from "./imageLayoutUtils";
+import type { ImageLayout, ImageAlignment } from "./imageLayoutUtils";
 
 type Handle = "nw" | "ne" | "sw" | "se" | "e" | "w";
 
@@ -27,18 +30,43 @@ const HANDLE_POSITIONS: Record<Handle, React.CSSProperties> = {
   w: { top: "50%", left: -HANDLE_SIZE / 2, transform: "translateY(-50%)" },
 };
 
+/**
+ * NodeView for embedded images (with credit/caption) — provides MS-Word-style
+ * drag-to-resize handles, text wrapping layout, alignment, spacing controls,
+ * and keyboard nudging.
+ */
 export function ResizableImageNodeView({
   node,
   updateAttributes,
   selected,
 }: NodeViewProps) {
-  const { src, creditText, creditUrl, width: savedWidth, alt } = node.attrs;
+  const {
+    src,
+    creditText,
+    creditUrl,
+    width: savedWidth,
+    alt,
+    layout: rawLayout,
+    alignment: rawAlignment,
+    spacing: rawSpacing,
+    offsetX: rawOffsetX,
+    offsetY: rawOffsetY,
+  } = node.attrs;
+
+  const layout = (rawLayout || "inline") as ImageLayout;
+  const alignment = (rawAlignment || "center") as ImageAlignment;
+  const spacing = (rawSpacing ?? 16) as number;
+  const currentOffsetX = (rawOffsetX ?? 0) as number;
+  const currentOffsetY = (rawOffsetY ?? 0) as number;
+
   const containerRef = useRef<HTMLElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [currentWidth, setCurrentWidth] = useState<number | null>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [naturalAspectRatio, setNaturalAspectRatio] = useState<number | null>(null);
+  const [naturalAspectRatio, setNaturalAspectRatio] = useState<number | null>(
+    null,
+  );
 
   // Parse initial width from saved attrs
   const parsedSavedWidth = savedWidth ? parseInt(String(savedWidth), 10) : null;
@@ -63,8 +91,11 @@ export function ResizableImageNodeView({
       const container = containerRef.current;
       if (!container) return;
 
-      const figureEl = container.closest("[data-embedded-image]") as HTMLElement | null;
-      const parentWidth = figureEl?.parentElement?.clientWidth || container.clientWidth || 600;
+      const figureEl = container.closest(
+        "[data-embedded-image]",
+      ) as HTMLElement | null;
+      const parentWidth =
+        figureEl?.parentElement?.clientWidth || container.clientWidth || 600;
       const startWidth =
         effectiveWidth ??
         (imgRef.current?.getBoundingClientRect().width || parentWidth);
@@ -80,7 +111,10 @@ export function ResizableImageNodeView({
         }
 
         let newWidth = Math.round(startWidth + deltaX);
-        newWidth = Math.max(MIN_WIDTH, Math.min(newWidth, parentWidth * MAX_WIDTH_RATIO));
+        newWidth = Math.max(
+          MIN_WIDTH,
+          Math.min(newWidth, parentWidth * MAX_WIDTH_RATIO),
+        );
 
         setCurrentWidth(newWidth);
       };
@@ -106,12 +140,28 @@ export function ResizableImageNodeView({
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
     },
-    [effectiveWidth, updateAttributes]
+    [effectiveWidth, updateAttributes],
   );
 
   const showHandles = selected || isHovered || isResizing;
+  const hasOffset = currentOffsetX !== 0 || currentOffsetY !== 0;
 
-  // Build image style
+  /* ── Wrapper styles (layout-aware) ────────────────────────────────── */
+
+  const wrapperStyles: React.CSSProperties = {
+    ...getLayoutWrapperStyles({
+      layout,
+      alignment,
+      spacing,
+      offsetX: currentOffsetX,
+      offsetY: currentOffsetY,
+    }),
+    background: "transparent",
+    border: "none",
+  };
+
+  /* ── Image styles ─────────────────────────────────────────────────── */
+
   const imageStyle: React.CSSProperties = {
     display: "block",
     width: effectiveWidth ? `${effectiveWidth}px` : "100%",
@@ -133,16 +183,25 @@ export function ResizableImageNodeView({
       as="figure"
       data-embedded-image="true"
       ref={containerRef}
-      style={{
-        margin: "2rem 0",
-        display: "block",
-        background: "transparent",
-        border: "none",
-        position: "relative",
-      }}
+      style={wrapperStyles}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !isResizing && setIsHovered(false)}
     >
+      {/* ── Layout toolbar (shown when selected) ────────────────────── */}
+      {selected && (
+        <ImageLayoutToolbar
+          layout={layout}
+          alignment={alignment}
+          spacing={spacing}
+          offsetX={currentOffsetX}
+          offsetY={currentOffsetY}
+          onLayoutChange={(l) => updateAttributes({ layout: l })}
+          onAlignmentChange={(a) => updateAttributes({ alignment: a })}
+          onSpacingChange={(s) => updateAttributes({ spacing: s })}
+          onResetOffset={() => updateAttributes({ offsetX: 0, offsetY: 0 })}
+        />
+      )}
+
       {/* Image wrapper for positioning handles */}
       <div
         style={{
@@ -160,7 +219,7 @@ export function ResizableImageNodeView({
           style={imageStyle}
         />
 
-        {/* Resize handles */}
+        {/* ── Resize handles ────────────────────────────────────────── */}
         {showHandles &&
           (Object.keys(HANDLE_POSITIONS) as Handle[]).map((handle) => (
             <div
@@ -187,13 +246,13 @@ export function ResizableImageNodeView({
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLElement).style.transform =
-                  HANDLE_POSITIONS[handle].transform as string || "";
+                  (HANDLE_POSITIONS[handle].transform as string) || "";
                 (e.currentTarget as HTMLElement).style.opacity = "0.85";
               }}
             />
           ))}
 
-        {/* Width badge during resize */}
+        {/* ── Width badge during resize ─────────────────────────────── */}
         {isResizing && currentWidth && (
           <div
             style={{
@@ -217,9 +276,36 @@ export function ResizableImageNodeView({
             {currentWidth}px
           </div>
         )}
+
+        {/* ── Offset badge (when nudged) ────────────────────────────── */}
+        {hasOffset && selected && !isResizing && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "rgba(15, 23, 42, 0.8)",
+              color: "#94A3B8",
+              padding: "2px 8px",
+              borderRadius: 5,
+              fontSize: 10,
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+              zIndex: 20,
+              backdropFilter: "blur(6px)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            ↕ {currentOffsetY > 0 ? "+" : ""}
+            {currentOffsetY} &nbsp; ↔ {currentOffsetX > 0 ? "+" : ""}
+            {currentOffsetX}
+          </div>
+        )}
       </div>
 
-      {/* Credit / Caption */}
+      {/* ── Credit / Caption ────────────────────────────────────────── */}
       {(creditText || creditUrl) && (
         <figcaption
           style={{

@@ -2,6 +2,9 @@
 import { useCallback, useRef, useState } from "react";
 import type { NodeViewProps } from "@tiptap/react";
 import { NodeViewWrapper } from "@tiptap/react";
+import { ImageLayoutToolbar } from "./ImageLayoutToolbar";
+import { getLayoutWrapperStyles } from "./imageLayoutUtils";
+import type { ImageLayout, ImageAlignment } from "./imageLayoutUtils";
 
 type Handle = "nw" | "ne" | "sw" | "se" | "e" | "w";
 
@@ -28,16 +31,33 @@ const HANDLE_POSITIONS: Record<Handle, React.CSSProperties> = {
 };
 
 /**
- * NodeView for standard images (added via URL) — provides the same
- * drag-to-resize experience as the EmbeddedImage version but without
- * the credit/caption section.
+ * NodeView for standard images (added via URL) — provides MS-Word-style
+ * drag-to-resize handles, text wrapping layout, alignment, spacing controls,
+ * and keyboard nudging.
  */
 export function ResizableStandardImageNodeView({
   node,
   updateAttributes,
   selected,
 }: NodeViewProps) {
-  const { src, alt, title, width: savedWidth } = node.attrs;
+  const {
+    src,
+    alt,
+    title,
+    width: savedWidth,
+    layout: rawLayout,
+    alignment: rawAlignment,
+    spacing: rawSpacing,
+    offsetX: rawOffsetX,
+    offsetY: rawOffsetY,
+  } = node.attrs;
+
+  const layout = (rawLayout || "inline") as ImageLayout;
+  const alignment = (rawAlignment || "center") as ImageAlignment;
+  const spacing = (rawSpacing ?? 16) as number;
+  const currentOffsetX = (rawOffsetX ?? 0) as number;
+  const currentOffsetY = (rawOffsetY ?? 0) as number;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [isResizing, setIsResizing] = useState(false);
@@ -56,7 +76,8 @@ export function ResizableStandardImageNodeView({
       const container = containerRef.current;
       if (!container) return;
 
-      const parentWidth = container.parentElement?.clientWidth || container.clientWidth || 600;
+      const parentWidth =
+        container.parentElement?.clientWidth || container.clientWidth || 600;
       const startWidth =
         effectiveWidth ??
         (imgRef.current?.getBoundingClientRect().width || parentWidth);
@@ -70,7 +91,10 @@ export function ResizableStandardImageNodeView({
         }
 
         let newWidth = Math.round(startWidth + deltaX);
-        newWidth = Math.max(MIN_WIDTH, Math.min(newWidth, parentWidth * MAX_WIDTH_RATIO));
+        newWidth = Math.max(
+          MIN_WIDTH,
+          Math.min(newWidth, parentWidth * MAX_WIDTH_RATIO),
+        );
         setCurrentWidth(newWidth);
       };
 
@@ -94,10 +118,25 @@ export function ResizableStandardImageNodeView({
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
     },
-    [effectiveWidth, updateAttributes]
+    [effectiveWidth, updateAttributes],
   );
 
   const showHandles = selected || isHovered || isResizing;
+  const hasOffset = currentOffsetX !== 0 || currentOffsetY !== 0;
+
+  /* ── Wrapper styles (layout-aware) ────────────────────────────────── */
+
+  const wrapperStyles: React.CSSProperties = {
+    ...getLayoutWrapperStyles({
+      layout,
+      alignment,
+      spacing,
+      offsetX: currentOffsetX,
+      offsetY: currentOffsetY,
+    }),
+  };
+
+  /* ── Image styles ─────────────────────────────────────────────────── */
 
   const imageStyle: React.CSSProperties = {
     display: "block",
@@ -105,7 +144,6 @@ export function ResizableStandardImageNodeView({
     maxWidth: "100%",
     height: "auto",
     borderRadius: 8,
-    margin: "1rem auto",
     transition: isResizing ? "none" : "box-shadow 0.2s",
     ...(showHandles && !isResizing
       ? { boxShadow: "0 0 0 2px #16A34A" }
@@ -119,10 +157,25 @@ export function ResizableStandardImageNodeView({
     <NodeViewWrapper
       as="div"
       ref={containerRef}
-      style={{ position: "relative", display: "block" }}
+      style={wrapperStyles}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => !isResizing && setIsHovered(false)}
     >
+      {/* ── Layout toolbar (shown when selected) ────────────────────── */}
+      {selected && (
+        <ImageLayoutToolbar
+          layout={layout}
+          alignment={alignment}
+          spacing={spacing}
+          offsetX={currentOffsetX}
+          offsetY={currentOffsetY}
+          onLayoutChange={(l) => updateAttributes({ layout: l })}
+          onAlignmentChange={(a) => updateAttributes({ alignment: a })}
+          onSpacingChange={(s) => updateAttributes({ spacing: s })}
+          onResetOffset={() => updateAttributes({ offsetX: 0, offsetY: 0 })}
+        />
+      )}
+
       <div
         style={{
           position: "relative",
@@ -139,6 +192,7 @@ export function ResizableStandardImageNodeView({
           style={imageStyle}
         />
 
+        {/* ── Resize handles ────────────────────────────────────────── */}
         {showHandles &&
           (Object.keys(HANDLE_POSITIONS) as Handle[]).map((handle) => (
             <div
@@ -171,6 +225,7 @@ export function ResizableStandardImageNodeView({
             />
           ))}
 
+        {/* ── Width badge during resize ─────────────────────────────── */}
         {isResizing && currentWidth && (
           <div
             style={{
@@ -192,6 +247,33 @@ export function ResizableStandardImageNodeView({
             }}
           >
             {currentWidth}px
+          </div>
+        )}
+
+        {/* ── Offset badge (when nudged) ────────────────────────────── */}
+        {hasOffset && selected && !isResizing && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: 8,
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "rgba(15, 23, 42, 0.8)",
+              color: "#94A3B8",
+              padding: "2px 8px",
+              borderRadius: 5,
+              fontSize: 10,
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+              zIndex: 20,
+              backdropFilter: "blur(6px)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            ↕ {currentOffsetY > 0 ? "+" : ""}
+            {currentOffsetY} &nbsp; ↔ {currentOffsetX > 0 ? "+" : ""}
+            {currentOffsetX}
           </div>
         )}
       </div>
