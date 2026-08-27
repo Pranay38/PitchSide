@@ -449,179 +449,77 @@
   /* Article content styling (for both WYSIWYG HTML output and legacy text) */
   .pitchside-article-content {
     max-width: none;
-    color: #1E293B;
-    line-height: 1.85;
-    font-size: 1.1rem;
+    color: #0F172A;
+    line-height: 1.8;
+    font-size: 1.05rem;
     font-family: var(--font-newsreader);
-    letter-spacing: -0.005em;
   }
 
   .dark .pitchside-article-content {
-    color: #CBD5E1;
-  }
-
-  /* ── Drop cap on the very first paragraph ── */
-  .pitchside-article-content > p:first-of-type::first-letter {
-    float: left;
-    font-family: var(--font-outfit);
-    font-size: 3.8em;
-    line-height: 0.78;
-    font-weight: 900;
-    color: #16A34A;
-    padding-right: 0.08em;
-    margin-top: 0.08em;
-  }
-
-  .pitchside-article-content > p:first-of-type {
-    font-size: 1.2rem;
-    line-height: 1.9;
-    color: #0F172A;
-  }
-
-  .dark .pitchside-article-content > p:first-of-type {
     color: #E2E8F0;
   }
 
-  /* ── Headings — editorial accent bar ── */
   .pitchside-article-content h1 {
-    font-family: var(--font-outfit);
     font-size: 2rem;
-    font-weight: 800;
-    margin-top: 3rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
     margin-bottom: 1rem;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    color: #0F172A;
+    line-height: 1.3;
   }
 
   .pitchside-article-content h2 {
-    font-family: var(--font-outfit);
-    font-size: 1.55rem;
-    font-weight: 800;
-    margin-top: 2.8rem;
-    margin-bottom: 0.85rem;
-    line-height: 1.25;
-    letter-spacing: -0.015em;
-    color: #0F172A;
-    padding-left: 0.85rem;
-    border-left: 4px solid #16A34A;
-    position: relative;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
   }
 
   .pitchside-article-content h3 {
-    font-family: var(--font-outfit);
-    font-size: 0.85rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-top: 2rem;
-    margin-bottom: 0.6rem;
-    line-height: 1.35;
-    color: #334155;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
   }
 
   .dark .pitchside-article-content h1,
-  .dark .pitchside-article-content h2 {
-    color: #F8FAFC;
-  }
-
+  .dark .pitchside-article-content h2,
   .dark .pitchside-article-content h3 {
-    color: #94A3B8;
+    color: #fff;
   }
 
-  .dark .pitchside-article-content h2 {
-    border-left-color: #4ade80;
-  }
-
-  /* ── Paragraphs ── */
   .pitchside-article-content p {
-    margin-bottom: 1.4rem;
-    line-height: 1.85;
+    margin-bottom: 1.25rem;
+    line-height: 1.8;
   }
 
-  /* ── Bold / Strong — slightly brighter in dark ── */
-  .pitchside-article-content strong {
-    font-weight: 700;
-    color: #0F172A;
-  }
-
-  .dark .pitchside-article-content strong {
-    color: #F1F5F9;
-  }
-
-  /* ── Italic / Emphasis — subtle color shift ── */
-  .pitchside-article-content em {
-    color: #475569;
-  }
-
-  .dark .pitchside-article-content em {
-    color: #94A3B8;
-  }
-
-  /* ── Lists — custom bullet styling ── */
   .pitchside-article-content ul {
-    list-style: none;
+    list-style-type: disc;
     padding-left: 1.5rem;
-    margin: 1.25rem 0;
-  }
-
-  .pitchside-article-content ul li {
-    position: relative;
-    padding-left: 0.25rem;
-    margin-bottom: 0.6rem;
-    line-height: 1.75;
-  }
-
-  .pitchside-article-content ul li::before {
-    content: '';
-    position: absolute;
-    left: -1.15rem;
-    top: 0.65em;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #16A34A;
+    margin: 1rem 0;
   }
 
   .pitchside-article-content ol {
+    list-style-type: decimal;
     padding-left: 1.5rem;
-    margin: 1.25rem 0;
-    list-style: none;
-    counter-reset: article-ol;
+    margin: 1rem 0;
   }
 
-  .pitchside-article-content ol li {
-    position: relative;
-    padding-left: 0.5rem;
-    margin-bottom: 0.6rem;
-    line-height: 1.75;
-    counter-increment: article-ol;
+  .pitchside-article-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
   }
 
-  .pitchside-article-content ol li::before {
-    content: counter(article-ol) '.';
-    position: absolute;
-    left: -1.4rem;
-    font-family: var(--font-outfit);
-    font-weight: 800;
-    font-size: 0.85rem;
-    color: #16A34A;
-  }
-
-  /* ── Blockquote — pull-quote / tactical insight card ── */
   .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
-    padding: 1.75rem 2rem;
+    padding: 1.5rem 2rem;
     margin: 2.5rem 0;
     font-style: italic;
-    font-size: 1.12rem;
-    color: #334155;
-    background: linear-gradient(135deg, rgba(22, 163, 74, 0.04), rgba(255, 255, 255, 0.95));
+    color: #475569;
+    background: #ffffff;
     border-radius: 1rem;
-    border: 1px solid rgba(22, 163, 74, 0.12);
-    border-left: 4px solid #16A34A;
-    box-shadow:
-      0 10px 25px rgba(0, 0, 0, 0.04),
-      0 4px 10px rgba(22, 163, 74, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
     position: relative;
     overflow: hidden;
   }
@@ -634,133 +532,72 @@
     font-family: var(--font-outfit);
     text-transform: uppercase;
     letter-spacing: 0.22em;
-    color: #16A34A;
+    color: var(--primary);
     margin-bottom: 1rem;
     text-shadow: 0 0 12px rgba(22, 163, 74, 0.2);
   }
 
-  .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media)::after {
-    content: '\201C';
-    position: absolute;
-    top: -0.15em;
-    right: 0.25em;
-    font-size: 8rem;
-    font-family: var(--font-outfit);
-    font-weight: 900;
-    line-height: 1;
-    color: rgba(22, 163, 74, 0.06);
-    pointer-events: none;
-  }
-
   .dark .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
-    color: #E2E8F0;
-    background:
-      linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(11, 19, 38, 0.95));
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-      linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(11, 19, 38, 0.95));
-    background-size: 20px 20px, 20px 20px, 100% 100%;
-    border: 1px solid rgba(74, 222, 128, 0.12);
-    border-left: 4px solid #4ade80;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(22, 163, 74, 0.04);
+    color: #f8fafc;
+    background-color: #0b1326;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 40px rgba(22, 163, 74, 0.05);
   }
-
+  
   .dark .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media)::before {
     text-shadow: 0 0 16px rgba(22, 163, 74, 0.4);
-    color: #4ade80;
   }
 
-  .dark .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media)::after {
-    color: rgba(74, 222, 128, 0.06);
-  }
-
-  /* ── Links ── */
   .pitchside-article-content a {
     color: #16A34A;
-    text-decoration: none;
-    border-bottom: 1.5px solid rgba(22, 163, 74, 0.25);
-    transition: border-color 0.2s ease, color 0.2s ease;
+    text-decoration: underline;
   }
 
   .pitchside-article-content a:hover {
     color: #15803d;
-    border-bottom-color: #16A34A;
   }
 
-  /* ── Horizontal rules — editorial section divider ── */
   .pitchside-article-content hr {
     border: none;
-    height: 1px;
-    margin: 3rem auto;
-    max-width: 200px;
-    background: linear-gradient(90deg,
-      transparent,
-      rgba(22, 163, 74, 0.3) 30%,
-      rgba(22, 163, 74, 0.5) 50%,
-      rgba(22, 163, 74, 0.3) 70%,
-      transparent
-    );
-    position: relative;
-  }
-
-  .pitchside-article-content hr::before {
-    content: '\2B27';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.65rem;
-    color: #16A34A;
-    background: #F8FAFC;
-    padding: 0 0.5rem;
+    border-top: 1px solid #E2E8F0;
+    margin: 2rem 0;
   }
 
   .dark .pitchside-article-content hr {
-    background: linear-gradient(90deg,
-      transparent,
-      rgba(74, 222, 128, 0.2) 30%,
-      rgba(74, 222, 128, 0.4) 50%,
-      rgba(74, 222, 128, 0.2) 70%,
-      transparent
-    );
+    border-color: #334155;
   }
 
-  .dark .pitchside-article-content hr::before {
-    color: #4ade80;
-    background: #0B1120;
+  .pitchside-article-content strong {
+    font-weight: 700;
+    color: inherit;
   }
 
-  /* ── Images & Figures ── */
+  .pitchside-article-content [data-social-embed] {
+    margin: 1.5rem 0;
+    line-height: 0;
+    font-size: 0;
+  }
+
   .pitchside-article-content img {
     display: block;
     max-width: 100%;
     height: auto;
-    border-radius: 0.75rem;
-    margin: 1.5rem 0;
   }
 
   .pitchside-article-content figure {
-    margin: 2rem 0;
+    margin: 1.5rem 0;
     line-height: 0;
   }
 
   .pitchside-article-content figure figcaption {
     line-height: 1.5;
-    font-family: var(--font-outfit);
-    font-size: 0.8rem;
-    font-weight: 500;
-    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
     color: #64748B;
-    padding-left: 0.5rem;
-    border-left: 2px solid rgba(22, 163, 74, 0.3);
-  }
-
-  /* ── Social embeds & iframes ── */
-  .pitchside-article-content [data-social-embed] {
-    margin: 1.5rem 0;
-    line-height: 0;
-    font-size: 0;
   }
 
   .pitchside-article-content iframe {
@@ -842,170 +679,6 @@
 
   .pitchside-article-content s {
     text-decoration: line-through;
-  }
-
-  /* ── Magazine Layout Enhancements ── */
-  .article-magazine-wrapper {
-    position: relative;
-  }
-
-  /* ── Author Card — magazine byline block ── */
-  .author-card-magazine {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem;
-    margin-top: 3rem;
-    border-radius: 1rem;
-    background: linear-gradient(135deg, rgba(22, 163, 74, 0.04), rgba(248, 250, 252, 0.98));
-    border: 1px solid rgba(22, 163, 74, 0.1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .author-card-magazine::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #16A34A, #4ade80, #16A34A);
-  }
-
-  .dark .author-card-magazine {
-    background: linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(15, 23, 42, 0.95));
-    border-color: rgba(74, 222, 128, 0.1);
-  }
-
-  .dark .author-card-magazine::before {
-    background: linear-gradient(90deg, #4ade80, #16A34A, #4ade80);
-  }
-
-  /* ── Section Label — magazine kicker ── */
-  .article-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-outfit);
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: #16A34A;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 2px solid rgba(22, 163, 74, 0.15);
-  }
-
-  .dark .article-kicker {
-    color: #4ade80;
-    border-bottom-color: rgba(74, 222, 128, 0.2);
-  }
-
-  /* ── Pull-quote breakout — magazine style ── */
-  .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
-    margin-left: -1rem;
-    margin-right: -1rem;
-  }
-
-  @media (min-width: 768px) {
-    .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
-      margin-left: -2rem;
-      margin-right: -2rem;
-      padding: 2rem 2.5rem;
-    }
-  }
-
-  /* ── Article end flourish ── */
-  .article-end-mark {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin: 3rem 0 2rem;
-    color: #16A34A;
-    font-family: var(--font-outfit);
-    font-size: 0.65rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.3em;
-  }
-
-  .article-end-mark::before,
-  .article-end-mark::after {
-    content: '';
-    flex: 1;
-    max-width: 60px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(22, 163, 74, 0.3));
-  }
-
-  .article-end-mark::after {
-    background: linear-gradient(90deg, rgba(22, 163, 74, 0.3), transparent);
-  }
-
-  .dark .article-end-mark {
-    color: #4ade80;
-  }
-
-  .dark .article-end-mark::before {
-    background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.2));
-  }
-
-  .dark .article-end-mark::after {
-    background: linear-gradient(90deg, rgba(74, 222, 128, 0.2), transparent);
-  }
-
-  /* ── Tags strip — magazine bottom tags ── */
-  .article-tags-strip {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-  }
-
-  .dark .article-tags-strip {
-    border-top-color: rgba(255, 255, 255, 0.06);
-  }
-
-  .article-tags-strip a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.75rem;
-    border-radius: 9999px;
-    font-family: var(--font-outfit);
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #475569;
-    background: rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    transition: all 0.2s ease;
-    text-decoration: none;
-  }
-
-  .article-tags-strip a:hover {
-    color: #16A34A;
-    border-color: rgba(22, 163, 74, 0.25);
-    background: rgba(22, 163, 74, 0.06);
-    transform: translateY(-1px);
-  }
-
-  .dark .article-tags-strip a {
-    color: #94A3B8;
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.08);
-  }
-
-  .dark .article-tags-strip a:hover {
-    color: #4ade80;
-    border-color: rgba(74, 222, 128, 0.3);
-    background: rgba(22, 163, 74, 0.12);
   }
 
   /* TipTap editor: placeholder */

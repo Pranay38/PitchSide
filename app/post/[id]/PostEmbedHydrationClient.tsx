@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { scheduleEmbedHydration } from "@/app/lib/embedHydration";
+import { ReadingProgress } from "@/app/components/ReadingProgress";
 
 export function PostEmbedHydrationClient({ children }: { children: React.ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -12,6 +13,7 @@ export function PostEmbedHydrationClient({ children }: { children: React.ReactNo
 
   return (
     <>
+      <ReadingProgress />
       <div ref={containerRef}>
         {children}
       </div>
