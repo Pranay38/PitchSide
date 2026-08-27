@@ -22,6 +22,7 @@ import { PostTrackersClient } from "./PostTrackersClient";
 import { PostEmbedHydrationClient } from "./PostEmbedHydrationClient";
 import { AdaptiveArticleHeader } from "@/app/components/AdaptiveArticleHeader";
 import { MilestoneScrubber } from "@/app/components/MilestoneScrubber";
+import { HotTakeHeatIndex } from "@/app/components/HotTakeHeatIndex";
 export const revalidate = 60;
 
 interface Props {
@@ -295,6 +296,19 @@ export default async function BlogPostPage({ params }: Props) {
               )}
             </PostEmbedHydrationClient>
 
+            {/* Hot Take Heat Index — interactive polls from the editor */}
+            {post.hotTakes && post.hotTakes.length > 0 && (
+              <div className="mt-10 space-y-6">
+                {post.hotTakes.map((take: { id: string; statement: string }) => (
+                  <HotTakeHeatIndex
+                    key={take.id}
+                    postId={post.id}
+                    takeId={take.id}
+                    statement={take.statement}
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="mt-12">
               <InlineNewsletterCard
