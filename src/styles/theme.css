@@ -844,6 +844,203 @@
     text-decoration: line-through;
   }
 
+  /* ── Magazine Layout Enhancements ── */
+  .article-magazine-wrapper {
+    position: relative;
+  }
+
+  .article-magazine-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      #16A34A 0%,
+      rgba(22, 163, 74, 0.3) 40%,
+      transparent 100%
+    );
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  @media (min-width: 1280px) {
+    .article-magazine-wrapper::before {
+      opacity: 1;
+    }
+  }
+
+  .dark .article-magazine-wrapper::before {
+    background: linear-gradient(
+      180deg,
+      #4ade80 0%,
+      rgba(74, 222, 128, 0.3) 40%,
+      transparent 100%
+    );
+  }
+
+  /* ── Author Card — magazine byline block ── */
+  .author-card-magazine {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    margin-top: 3rem;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.04), rgba(248, 250, 252, 0.98));
+    border: 1px solid rgba(22, 163, 74, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .author-card-magazine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #16A34A, #4ade80, #16A34A);
+  }
+
+  .dark .author-card-magazine {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.08), rgba(15, 23, 42, 0.95));
+    border-color: rgba(74, 222, 128, 0.1);
+  }
+
+  .dark .author-card-magazine::before {
+    background: linear-gradient(90deg, #4ade80, #16A34A, #4ade80);
+  }
+
+  /* ── Section Label — magazine kicker ── */
+  .article-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-outfit);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: #16A34A;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid rgba(22, 163, 74, 0.15);
+  }
+
+  .dark .article-kicker {
+    color: #4ade80;
+    border-bottom-color: rgba(74, 222, 128, 0.2);
+  }
+
+  /* ── Pull-quote breakout — magazine style ── */
+  .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+
+  @media (min-width: 768px) {
+    .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
+      margin-left: -2rem;
+      margin-right: -2rem;
+      padding: 2rem 2.5rem;
+    }
+  }
+
+  /* ── Article end flourish ── */
+  .article-end-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 3rem 0 2rem;
+    color: #16A34A;
+    font-family: var(--font-outfit);
+    font-size: 0.65rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+  }
+
+  .article-end-mark::before,
+  .article-end-mark::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(22, 163, 74, 0.3));
+  }
+
+  .article-end-mark::after {
+    background: linear-gradient(90deg, rgba(22, 163, 74, 0.3), transparent);
+  }
+
+  .dark .article-end-mark {
+    color: #4ade80;
+  }
+
+  .dark .article-end-mark::before {
+    background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.2));
+  }
+
+  .dark .article-end-mark::after {
+    background: linear-gradient(90deg, rgba(74, 222, 128, 0.2), transparent);
+  }
+
+  /* ── Tags strip — magazine bottom tags ── */
+  .article-tags-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .dark .article-tags-strip {
+    border-top-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .article-tags-strip a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-family: var(--font-outfit);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .article-tags-strip a:hover {
+    color: #16A34A;
+    border-color: rgba(22, 163, 74, 0.25);
+    background: rgba(22, 163, 74, 0.06);
+    transform: translateY(-1px);
+  }
+
+  .dark .article-tags-strip a {
+    color: #94A3B8;
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .dark .article-tags-strip a:hover {
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.3);
+    background: rgba(22, 163, 74, 0.12);
+  }
+
   /* TipTap editor: placeholder */
   .tiptap p.is-editor-empty:first-child::before {
     color: #94A3B8;

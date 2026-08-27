@@ -4,7 +4,7 @@ import { getPostByIdServer, getPublishedPostsServer } from "@/lib/server-data";
 import { Header } from "@/app/components/Header";
 import { Footer } from "@/app/components/Footer";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
-import { Clock, Tag } from "lucide-react";
+import { Clock, Tag, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { topicPath } from "@/app/lib/contentPaths";
 import { 
@@ -289,12 +289,23 @@ export default async function BlogPostPage({ params }: Props) {
               />
             )}
 
-            {/* Content Renderer (Renders static HTML for crawlers, hydrating glossary on mount) */}
-            <PostEmbedHydrationClient>
-              {articleContentModel && (
-                 <ArticleContentRenderer model={articleContentModel} />
-              )}
-            </PostEmbedHydrationClient>
+            {/* Magazine kicker — section label */}
+            <div className="article-kicker">
+              <BookOpen className="h-3.5 w-3.5" />
+              <span>{post.tags?.[0] || post.club || "Analysis"}</span>
+              <span className="text-[#94A3B8] dark:text-gray-600 font-normal">·</span>
+              <span className="text-[#64748B] dark:text-gray-500 font-semibold normal-case tracking-normal text-[0.72rem]">{post.readTime}</span>
+            </div>
+
+            {/* Magazine content wrapper with left accent line */}
+            <div className="article-magazine-wrapper pl-0 xl:pl-5">
+              {/* Content Renderer (Renders static HTML for crawlers, hydrating glossary on mount) */}
+              <PostEmbedHydrationClient>
+                {articleContentModel && (
+                   <ArticleContentRenderer model={articleContentModel} />
+                )}
+              </PostEmbedHydrationClient>
+            </div>
 
             {/* Hot Take Heat Index — interactive polls from the editor */}
             {post.hotTakes && post.hotTakes.length > 0 && (
@@ -310,7 +321,38 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
             )}
 
-            <div className="mt-12">
+            {/* Article end flourish */}
+            <div className="article-end-mark">⬥ End ⬥</div>
+
+            {/* Magazine tags strip */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="article-tags-strip">
+                {post.tags.map((tag: string) => (
+                  <Link key={tag} href={topicPath(tag)}>
+                    <Tag className="h-3 w-3" />
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Author card — magazine byline */}
+            <div className="author-card-magazine">
+              <div className="h-12 w-12 flex-shrink-0 rounded-full bg-gradient-to-br from-[#16A34A] to-[#4ade80] flex items-center justify-center shadow-lg shadow-[#16A34A]/20">
+                <span className="text-lg font-black text-white font-outfit">P</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-[#16A34A] dark:text-[#4ade80] mb-1">Written By</div>
+                <Link href="/about" className="text-base font-bold text-[#0F172A] dark:text-white hover:text-[#16A34A] dark:hover:text-[#4ade80] transition-colors font-outfit">
+                  {post.author || "Pranay Agrawal"}
+                </Link>
+                <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1 leading-relaxed">
+                  Tactical breakdowns your pundit missed. Bold opinions backed by data, not vibes.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10">
               <InlineNewsletterCard
                 title="Get the strongest Touchline Dribble reads in one email"
                 description="Use the newsletter as the low-noise way to keep up with new analysis and longform pieces."
