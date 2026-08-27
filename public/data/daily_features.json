@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-08-26T05:29:36.904502",
+  "lastUpdated": "2026-08-27T16:04:05.676770",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Villa make offer for Mateta - Wednesday's gossip",
+    "text": "Chelsea line up Bournemouth's Scott - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 91
-    },
-    {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 82
-    },
-    {
       "name": "Gary O'Neil (IPS)",
-      "pressureScore": 81
+      "pressureScore": 95
     },
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 64
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 76
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 76
+    },
+    {
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 73
+    },
+    {
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 61
     }
   ]
 }
