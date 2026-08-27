@@ -153,10 +153,10 @@
 /* ─── Glassmorphism & Premium Utilities ─── */
 
 .glass {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .dark .glass {
@@ -165,10 +165,10 @@
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
@@ -223,6 +223,21 @@
 
 .animate-float-in {
   animation: float-in 0.5s ease-out forwards;
+}
+
+@keyframes scroll-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-reveal {
+  animation: scroll-reveal 0.2s ease-out forwards;
 }
 
 @keyframes pulse-glow {
@@ -450,8 +465,8 @@
   .pitchside-article-content {
     max-width: none;
     color: #0F172A;
-    line-height: 1.8;
-    font-size: 1.05rem;
+    line-height: 1.85;
+    font-size: 1.15rem;
     font-family: var(--font-newsreader);
   }
 
@@ -459,28 +474,36 @@
     color: #E2E8F0;
   }
 
+
+
   .pitchside-article-content h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    line-height: 1.3;
+    font-family: var(--font-outfit);
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-top: 3rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
 
   .pitchside-article-content h2 {
+    font-family: var(--font-outfit);
+    font-size: 1.875rem;
+    font-weight: 800;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+
+  .pitchside-article-content h3 {
+    font-family: var(--font-outfit);
     font-size: 1.5rem;
     font-weight: 700;
     margin-top: 2rem;
     margin-bottom: 0.75rem;
     line-height: 1.3;
-  }
-
-  .pitchside-article-content h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
+    letter-spacing: -0.01em;
   }
 
   .dark .pitchside-article-content h1,
@@ -512,16 +535,18 @@
   }
 
   .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
-    padding: 1.5rem 2rem;
-    margin: 2.5rem 0;
+    padding: 2rem 2.5rem;
+    margin: 3rem -1rem; /* Negative margin to break the grid */
     font-style: italic;
-    color: #475569;
+    color: #0F172A;
+    font-size: 1.35rem;
+    line-height: 1.6;
     background: #ffffff;
-    border-radius: 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 0; /* Sharp edges */
+    border-left: 6px solid var(--primary);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media)::before {

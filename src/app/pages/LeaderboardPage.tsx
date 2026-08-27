@@ -105,7 +105,7 @@ export function LeaderboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+    <div className="page-atmosphere min-h-screen transition-colors duration-300">
       <SEO
         title="Predictions Leaderboard"
         description="See who knows football best. Make predictions, rank up, and top the The Touchline Dribble global leaderboard."
@@ -114,21 +114,25 @@ export function LeaderboardPage() {
       <Header />
 
       <main className="max-w-[1180px] mx-auto px-4 sm:px-6 py-8 md:py-12">
-        <section className="mb-12 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center justify-center p-3 sm:p-4 rounded-full bg-orange-500/10 text-orange-500 mb-6 border border-orange-500/20">
-            <Trophy className="w-8 h-8 sm:w-10 sm:h-10" />
+        <section className="editorial-hero rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8 mb-12 text-center max-w-3xl mx-auto overflow-hidden relative">
+          <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+          <div className="pointer-events-none absolute left-1/2 top-0 h-48 w-48 -translate-x-1/2 rounded-full bg-orange-500/10 blur-3xl" />
+          <div className="relative">
+            <div className="inline-flex items-center justify-center p-3 sm:p-4 rounded-full bg-orange-500/10 text-orange-500 mb-6 border border-orange-500/20">
+              <Trophy className="w-8 h-8 sm:w-10 sm:h-10" />
+            </div>
+            <h1 className="text-3xl md:text-5xl font-black font-outfit text-[#0F172A] dark:text-white leading-tight">
+              Global Predictor Standings
+            </h1>
+            <p className="text-base text-[#64748B] dark:text-gray-400 mt-4 leading-7">
+              Think you know ball? Make match predictions below and climb the global ranks. The most accurate predictors earn the gold tier.
+            </p>
           </div>
-          <h1 className="text-3xl md:text-5xl font-black font-outfit text-[#0F172A] dark:text-white leading-tight">
-            Global Predictor Standings
-          </h1>
-          <p className="text-base text-[#64748B] dark:text-gray-400 mt-4">
-            Think you know ball? Make match predictions below and climb the global ranks. The most accurate predictors earn the gold tier.
-          </p>
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 xl:gap-12">
           {/* Main Leaderboard */}
-          <div className="bg-white dark:bg-[#0F172A] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-[#0F172A] rounded-[1.75rem] border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
             <div className="p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-white/[0.02]">
               <h2 className="text-xl font-black font-outfit text-[#0F172A] dark:text-white">Top 10 Predictors</h2>
               <div className="flex items-center gap-2 text-xs font-bold text-[#64748B] dark:text-gray-400">
@@ -196,7 +200,7 @@ export function LeaderboardPage() {
 
           {/* Sidebar / Interaction */}
           <div className="space-y-8">
-            <div className="bg-white dark:bg-[#0F172A] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 lg:p-8 relative overflow-hidden">
+            <div className="bg-white dark:bg-[#0F172A] rounded-[1.75rem] border border-gray-200 dark:border-gray-800 shadow-sm p-6 lg:p-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#16A34A]/10 rounded-bl-full -mr-8 -mt-8" />
                 <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-2">

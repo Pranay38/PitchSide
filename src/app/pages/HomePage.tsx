@@ -505,7 +505,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
         </div>
 
         {/* Skeleton for Editor's Picks / Latest */}
-        <main className="mx-auto w-full max-w-[1240px] px-4 py-16 sm:px-6">
+        <main className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
           <div className="grid gap-6 sm:gap-8 md:grid-cols-2 xl:grid-cols-3">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5 h-96 animate-pulse flex flex-col gap-4 shadow-sm">
@@ -526,7 +526,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
     return (
       <div className="page-atmosphere min-h-screen transition-colors duration-300">
         <Header />
-        <main className="mx-auto w-full max-w-[1180px] px-4 py-16 sm:px-6">
+        <main className="mx-auto w-full max-w-[1180px] px-4 py-10 md:py-16 sm:px-6">
           <PageState
             icon={Library}
             eyebrow="Homepage"
@@ -599,7 +599,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
         </div>
       </section>
 
-      <main className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 md:py-12">
+      <main className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
         {/* --- QUICK TAKES --- */}
         <section className="mb-8 scroll-reveal">
           <QuickTakesSection posts={posts} />

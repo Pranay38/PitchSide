@@ -110,7 +110,7 @@ export function AlertsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+    <div className="page-atmosphere min-h-screen transition-colors duration-300">
       <SEO
         title="Alerts"
         description="Follow clubs, players, and transfer topics to see a site alert feed and save email alert preferences."
@@ -119,15 +119,21 @@ export function AlertsPage() {
       <Header favoriteClub={favoriteClub} />
 
       <main className="max-w-[1180px] mx-auto px-4 sm:px-6 py-8">
-        <section className="mb-10">
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-3">Alert Center</p>
-          <h1 className="text-3xl md:text-5xl font-black font-outfit text-[#0F172A] dark:text-white">
-            Club Alerting
-          </h1>
-          <p className="text-base text-[#64748B] dark:text-gray-400 max-w-3xl mt-3">
-            Follow clubs, players, and transfer topics. The page turns that into a lightweight alert feed so your site has a reason to bring fans back even when they miss a publishing day.
-          </p>
-          <div className="flex flex-wrap gap-3 mt-5">
+        <section className="editorial-hero rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8 mb-10 overflow-hidden relative">
+          <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+          <div className="pointer-events-none absolute left-0 top-0 h-48 w-48 rounded-full bg-[#16A34A]/10 blur-3xl" />
+          <div className="relative">
+            <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-3">
+              Alert Center
+            </p>
+            <h1 className="text-3xl md:text-5xl font-black font-outfit text-[#0F172A] dark:text-white leading-tight">
+              Club Alerting
+            </h1>
+            <p className="text-base text-[#64748B] dark:text-gray-400 max-w-3xl mt-3 leading-7">
+              Follow clubs, players, and transfer topics. The page turns that into a lightweight alert feed so your site has a reason to bring fans back even when they miss a publishing day.
+            </p>
+          </div>
+          <div className="relative flex flex-wrap gap-3 mt-6">
             <Link
               to="/transfers"
               className="px-4 py-2.5 rounded-xl bg-[#16A34A] text-white text-sm font-bold hover:bg-[#15803d]"
@@ -150,7 +156,7 @@ export function AlertsPage() {
         </section>
 
         <section className="grid grid-cols-1 xl:grid-cols-[0.95fr_1.05fr] gap-8 mb-10">
-          <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 p-6 space-y-6">
+          <div className="rounded-[1.75rem] shadow-sm bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 p-6 space-y-6">
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <ShieldAlert className="w-4 h-4 text-[#16A34A]" />
@@ -261,7 +267,9 @@ export function AlertsPage() {
               </div>
             </div>
 
-            <form onSubmit={saveEmailAlerts} className="rounded-2xl border border-[#16A34A]/20 bg-[#16A34A]/5 p-5">
+            <form onSubmit={saveEmailAlerts} className="rounded-2xl border border-[#16A34A]/20 bg-[#16A34A]/5 p-5 relative overflow-hidden">
+              <div className="pointer-events-none absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-[#16A34A]/20 blur-3xl" />
+              <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
                 <Mail className="w-4 h-4 text-[#16A34A]" />
                 <h3 className="text-base font-black font-outfit text-[#0F172A] dark:text-white">Email alert preferences</h3>
@@ -284,10 +292,11 @@ export function AlertsPage() {
                   Save Email Alerts
                 </button>
               </div>
+              </div>
             </form>
           </div>
 
-          <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 p-6">
+          <div className="rounded-[1.75rem] shadow-sm bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 p-6">
             <div className="flex items-center gap-2 mb-4">
               <Bell className="w-4 h-4 text-[#16A34A]" />
               <h2 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white">Site Alerts</h2>

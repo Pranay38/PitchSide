@@ -206,14 +206,16 @@ export function ProfilePage() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0a0e1a] transition-colors">
+        <div className="page-atmosphere min-h-screen transition-colors duration-300">
             <SEO title="Your Profile" description="Manage your saved articles, activity, and preferences." />
             <Header />
 
             <div className="max-w-3xl mx-auto px-4 py-8">
                 {/* Profile header */}
-                <div className="relative rounded-2xl bg-gradient-to-br from-[#16A34A]/10 via-emerald-500/5 to-transparent border border-[#16A34A]/10 p-6 mb-6">
-                    <div className="flex items-center gap-4">
+                <div className="editorial-hero rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 mb-6 overflow-hidden relative">
+                    <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+                    <div className="pointer-events-none absolute left-0 top-0 h-48 w-48 rounded-full bg-[#16A34A]/10 blur-3xl" />
+                    <div className="relative flex items-center gap-4">
                         <div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden shadow-lg shadow-[#16A34A]/20 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                             <img src={getAvatarUrl(user?.id, userName)} alt={userName} className="w-full h-full object-cover" />
                         </div>
@@ -235,7 +237,7 @@ export function ProfilePage() {
                         </div>
                     </div>
 
-                    <div className="flex gap-6 mt-6 pt-4 border-t border-[#16A34A]/10">
+                    <div className="relative flex gap-6 mt-6 pt-4 border-t border-[#16A34A]/10">
                         <div className="text-center">
                             <p className="text-lg font-black text-[#0F172A] dark:text-white">{historyArticles.length}</p>
                             <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">History</p>
@@ -257,7 +259,7 @@ export function ProfilePage() {
 
                 {/* The Touchline Dribble Wrapped Banner (Only from June 16th onwards each year) */}
                 {(new Date().getMonth() > 5 || (new Date().getMonth() === 5 && new Date().getDate() >= 16) || (typeof window !== 'undefined' && localStorage.getItem("dev_force_wrapped") === "true")) && (
-                    <div className="mb-6 p-6 rounded-2xl bg-gradient-to-r from-gray-900 via-[#0F172A] to-[#1E293B] border border-gray-800 relative overflow-hidden group">
+                    <div className="mb-6 p-6 rounded-[1.75rem] bg-gradient-to-r from-gray-900 via-[#0F172A] to-[#1E293B] border border-gray-800 relative overflow-hidden group shadow-sm">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#16A34A] opacity-10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
                         
                         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">

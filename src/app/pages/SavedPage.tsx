@@ -22,21 +22,25 @@ export function SavedPage() {
   }, [allPosts, savedPostIds]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+    <div className="page-atmosphere min-h-screen transition-colors duration-300">
       <SEO title="Saved" description="Your saved reads and followed clubs." />
       <Header favoriteClub={favoriteClub} />
 
       <main className="max-w-[1100px] mx-auto px-4 sm:px-6 py-8">
-        <section className="mb-10">
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-3">
-            Personal Library
-          </p>
-          <h1 className="text-3xl md:text-5xl font-black font-outfit text-[#0F172A] dark:text-white">
-            Saved & Followed
-          </h1>
-          <p className="text-base text-[#64748B] dark:text-gray-400 mt-3 max-w-2xl">
-            A lightweight account-free way to keep track of the articles and clubs you care about.
-          </p>
+        <section className="editorial-hero rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8 mb-10 overflow-hidden relative">
+          <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+          <div className="pointer-events-none absolute left-0 top-0 h-48 w-48 rounded-full bg-[#16A34A]/10 blur-3xl" />
+          <div className="relative">
+            <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-3">
+              Personal Library
+            </p>
+            <h1 className="text-3xl md:text-5xl font-black font-outfit text-[#0F172A] dark:text-white leading-tight">
+              Saved & Followed
+            </h1>
+            <p className="text-base text-[#64748B] dark:text-gray-400 mt-3 max-w-2xl leading-7">
+              A lightweight account-free way to keep track of the articles and clubs you care about.
+            </p>
+          </div>
         </section>
 
         <section className="mb-10">

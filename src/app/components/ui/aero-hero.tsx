@@ -10,7 +10,7 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
   if (!post) return null;
 
   return (
-    <section className="relative flex min-h-[75vh] w-full items-end justify-center">
+    <section className="relative flex min-h-[75vh] w-full items-end justify-center editorial-hero grid-fade">
       <div className="absolute inset-0 h-full">
         <Image 
           src={post.coverImage} 

@@ -11,7 +11,7 @@ export function AboutPage() {
     const { favoriteClub } = useClubPreference();
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
+        <div className="page-atmosphere min-h-screen transition-colors duration-300">
             {/* Person JSON-LD for E-E-A-T author entity */}
             <script
                 type="application/ld+json"
@@ -38,37 +38,41 @@ export function AboutPage() {
             />
             <Header favoriteClub={favoriteClub} />
 
-            <main className="max-w-[720px] mx-auto px-6 py-12">
+            <main className="max-w-[800px] mx-auto px-6 py-12">
                 {/* Hero */}
-                <div className="text-center mb-12">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#16A34A]/10 mb-6">
-                        <img src="/logo.png" alt="The Touchline Dribble" className="w-12 h-12 object-contain rounded" />
+                <div className="editorial-hero rounded-[2rem] border border-gray-200 p-8 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-12 mb-12 text-center overflow-hidden relative">
+                    <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
+                    <div className="pointer-events-none absolute left-1/2 top-0 h-48 w-48 -translate-x-1/2 rounded-full bg-[#16A34A]/10 blur-3xl" />
+                    <div className="relative">
+                        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#16A34A]/10 mb-6">
+                            <img src="/logo.png" alt="The Touchline Dribble" className="w-12 h-12 object-contain rounded" />
+                        </div>
+                        <h1 className="text-3xl md:text-5xl font-black font-outfit text-[#0F172A] dark:text-white mb-4 leading-tight">
+                            About The Touchline Dribble
+                        </h1>
+                        <p className="text-lg text-[#64748B] dark:text-gray-400 leading-relaxed max-w-lg mx-auto">
+                            We break down what actually happened on the pitch — the tactical shifts, the managerial gambles, the moments your pundit missed. Sharp analysis. Bold opinions. No PR fluff.
+                        </p>
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-[#0F172A] dark:text-white mb-4">
-                        About The Touchline Dribble
-                    </h1>
-                    <p className="text-lg text-[#64748B] dark:text-gray-400 leading-relaxed max-w-lg mx-auto">
-                        We break down what actually happened on the pitch — the tactical shifts, the managerial gambles, the moments your pundit missed. Sharp analysis. Bold opinions. No PR fluff.
-                    </p>
                 </div>
 
                 {/* What We Do */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                    <div className="bg-white dark:bg-[#1E293B] rounded-xl p-6 border border-gray-100 dark:border-gray-800 text-center">
+                    <div className="bg-white dark:bg-[#0F172A] rounded-[1.75rem] p-6 border border-gray-200 dark:border-gray-800 text-center shadow-sm">
                         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#16A34A]/10 mb-4">
                             <Crosshair className="w-5 h-5 text-[#16A34A]" />
                         </div>
                         <h3 className="font-bold text-[#0F172A] dark:text-white mb-2">Tactical Breakdowns</h3>
                         <p className="text-sm text-[#64748B] dark:text-gray-400">Post-match autopsies that explain the <em>why</em> behind every result. Formations, pressing triggers, and the moments that changed the game.</p>
                     </div>
-                    <div className="bg-white dark:bg-[#1E293B] rounded-xl p-6 border border-gray-100 dark:border-gray-800 text-center">
+                    <div className="bg-white dark:bg-[#0F172A] rounded-[1.75rem] p-6 border border-gray-200 dark:border-gray-800 text-center shadow-sm">
                         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#16A34A]/10 mb-4">
                             <Swords className="w-5 h-5 text-[#16A34A]" />
                         </div>
                         <h3 className="font-bold text-[#0F172A] dark:text-white mb-2">Bold Opinions</h3>
                         <p className="text-sm text-[#64748B] dark:text-gray-400">Hot takes backed by tactical reasoning, not vibes. The kind of arguments that fuel your group chat.</p>
                     </div>
-                    <div className="bg-white dark:bg-[#1E293B] rounded-xl p-6 border border-gray-100 dark:border-gray-800 text-center">
+                    <div className="bg-white dark:bg-[#0F172A] rounded-[1.75rem] p-6 border border-gray-200 dark:border-gray-800 text-center shadow-sm">
                         <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#16A34A]/10 mb-4">
                             <MessageSquare className="w-5 h-5 text-[#16A34A]" />
                         </div>
@@ -78,7 +82,7 @@ export function AboutPage() {
                 </div>
 
                 {/* Author */}
-                <div className="bg-white dark:bg-[#1E293B] rounded-2xl p-8 border border-gray-100 dark:border-gray-800 mb-12">
+                <div className="bg-white dark:bg-[#0F172A] rounded-[1.75rem] p-8 border border-gray-200 dark:border-gray-800 mb-12 shadow-sm">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                         <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#16A34A] to-[#4ade80] flex items-center justify-center flex-shrink-0">
                             <span className="text-4xl font-bold text-white">P</span>

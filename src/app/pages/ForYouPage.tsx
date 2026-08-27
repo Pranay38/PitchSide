@@ -103,7 +103,7 @@ export function ForYouPage() {
       <Header />
 
       <main className="mx-auto w-full max-w-[1180px] px-4 py-8 sm:px-6">
-        <section className="editorial-hero rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8 mb-10">
+        <section className="editorial-hero rounded-[2rem] border border-gray-200 p-6 shadow-xl shadow-[#0F172A]/[0.04] dark:border-gray-800 md:p-8 mb-10 relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0 grid-fade opacity-40" />
           <div className="pointer-events-none absolute left-0 top-0 h-48 w-48 rounded-full bg-[#16A34A]/10 blur-3xl" />
           <div className="relative">
