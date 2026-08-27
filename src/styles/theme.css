@@ -849,39 +849,6 @@
     position: relative;
   }
 
-  .article-magazine-wrapper::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    background: linear-gradient(
-      180deg,
-      #16A34A 0%,
-      rgba(22, 163, 74, 0.3) 40%,
-      transparent 100%
-    );
-    border-radius: 2px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  @media (min-width: 1280px) {
-    .article-magazine-wrapper::before {
-      opacity: 1;
-    }
-  }
-
-  .dark .article-magazine-wrapper::before {
-    background: linear-gradient(
-      180deg,
-      #4ade80 0%,
-      rgba(74, 222, 128, 0.3) 40%,
-      transparent 100%
-    );
-  }
-
   /* ── Author Card — magazine byline block ── */
   .author-card-magazine {
     display: flex;
