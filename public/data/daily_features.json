@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-08-27T16:04:05.676770",
+  "lastUpdated": "2026-08-28T17:07:30.215783",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea line up Bournemouth's Scott - Thursday's gossip",
+    "text": "Arsenal continue Alvarez pursuit - Friday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 95
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 76
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 76
-    },
-    {
-      "name": "Pierre Sage (CRY)",
+      "name": "Michael Carrick (MUN)",
       "pressureScore": 73
     },
     {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 70
+    },
+    {
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 67
+    },
+    {
       "name": "Andoni Iraola (LIV)",
-      "pressureScore": 61
+      "pressureScore": 63
     }
   ]
 }
