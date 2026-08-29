@@ -103,25 +103,25 @@ function SubjectRow({
 
   return (
     <div
-      className="py-3 border-b border-[#3B82F6]/10 dark:border-[#3B82F6]/5 last:border-b-0"
+      className="py-3 border-b border-[#3B82F6]/10 last:border-b-0"
       style={{ animation: `rcFadeIn 0.4s ease-out ${delay}s both` }}
     >
       {/* Label + Score */}
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-2">
-          <Icon className="w-3.5 h-3.5 text-[#6B7280] dark:text-gray-500" />
-          <span className="text-[13px] font-bold font-serif text-[#1E293B] dark:text-gray-200 tracking-wide">
+          <Icon className="w-3.5 h-3.5 text-[#6B7280]" />
+          <span className="text-[13px] font-bold font-serif text-[#1E293B] tracking-wide">
             {label}
           </span>
         </div>
         <span className={`text-[15px] font-black tabular-nums ${getScoreColor(score)}`}>
           {score}
-          <span className="text-[11px] font-bold text-[#9CA3AF] dark:text-gray-500">/10</span>
+          <span className="text-[11px] font-bold text-[#9CA3AF]">/10</span>
         </span>
       </div>
 
       {/* Score bar */}
-      <div className="h-[5px] rounded-full bg-[#E5E7EB]/60 dark:bg-gray-700/40 overflow-hidden mb-1.5">
+      <div className="h-[5px] rounded-full bg-[#E5E7EB]/60 overflow-hidden mb-1.5">
         <div
           className={`h-full rounded-full ${getScoreBarColor(score)} transition-all duration-700 ease-out`}
           style={{ width: `${pct}%`, animation: `rcBarGrow 0.6s ease-out ${delay + 0.1}s both` }}
@@ -129,7 +129,7 @@ function SubjectRow({
       </div>
 
       {/* Comment */}
-      <p className="text-[12px] italic leading-[1.55] text-[#1a365d] dark:text-[#93c5fd] font-serif pl-5">
+      <p className="text-[12px] italic leading-[1.55] text-[#1a365d] font-serif pl-5">
         {entry.comment}
       </p>
 
@@ -139,7 +139,7 @@ function SubjectRow({
           {entry.names.map((n) => (
             <span
               key={n}
-              className="px-2 py-0.5 rounded-full bg-[#F1F5F9] dark:bg-gray-800 text-[9px] font-bold text-[#475569] dark:text-gray-400 border border-gray-200/60 dark:border-gray-700/60"
+              className="px-2 py-0.5 rounded-full bg-[#F1F5F9] text-[9px] font-bold text-[#475569] border border-gray-200/60"
             >
               {n}
             </span>
@@ -180,7 +180,7 @@ function ClubSlide({
         className="relative mx-auto max-w-[420px] transform -rotate-[0.4deg] hover:rotate-0 transition-transform duration-300 select-none"
       >
         <div
-          className="relative overflow-hidden rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.12)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.5)]"
+          className="relative overflow-hidden rounded-sm shadow-[0_4px_24px_rgba(0,0,0,0.12)](0,0,0,0.5)]"
           style={{
             background: "var(--rc-paper-bg, #FFFDF7)",
             backgroundImage: `
@@ -190,13 +190,13 @@ function ClubSlide({
           }}
         >
           {/* Hole punches */}
-          <div className="absolute left-[20px] top-[60px] w-[14px] h-[14px] rounded-full bg-white dark:bg-[#0a0a1a] border-2 border-gray-300 dark:border-gray-600 shadow-inner z-20" />
-          <div className="absolute left-[20px] top-[220px] w-[14px] h-[14px] rounded-full bg-white dark:bg-[#0a0a1a] border-2 border-gray-300 dark:border-gray-600 shadow-inner z-20" />
-          <div className="absolute left-[20px] bottom-[100px] w-[14px] h-[14px] rounded-full bg-white dark:bg-[#0a0a1a] border-2 border-gray-300 dark:border-gray-600 shadow-inner z-20" />
+          <div className="absolute left-[20px] top-[60px] w-[14px] h-[14px] rounded-full bg-white border-2 border-gray-300 shadow-inner z-20" />
+          <div className="absolute left-[20px] top-[220px] w-[14px] h-[14px] rounded-full bg-white border-2 border-gray-300 shadow-inner z-20" />
+          <div className="absolute left-[20px] bottom-[100px] w-[14px] h-[14px] rounded-full bg-white border-2 border-gray-300 shadow-inner z-20" />
 
           {/* Coffee stain */}
           <div
-            className="absolute bottom-20 right-6 w-20 h-20 rounded-full pointer-events-none opacity-[0.12] dark:opacity-[0.06] mix-blend-multiply dark:mix-blend-screen z-10"
+            className="absolute bottom-20 right-6 w-20 h-20 rounded-full pointer-events-none opacity-[0.12].06] mix-blend-multiply z-10"
             style={{
               background:
                 "radial-gradient(circle, transparent 35%, #8B5A2B 85%, #6b4423 100%)",
@@ -228,17 +228,17 @@ function ClubSlide({
             <div className="flex items-start justify-between mb-5">
               <div>
                 <div className="flex items-center gap-2 mb-0.5">
-                  <GraduationCap className="w-4 h-4 text-[#6B7280] dark:text-gray-400" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9CA3AF] dark:text-gray-500">
+                  <GraduationCap className="w-4 h-4 text-[#6B7280]" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9CA3AF]">
                     {windowLabel}
                   </span>
                 </div>
-                <h3 className="font-serif text-[17px] font-black uppercase tracking-wider text-[#1E293B] dark:text-gray-200 leading-tight">
+                <h3 className="font-serif text-[17px] font-black uppercase tracking-wider text-[#1E293B] leading-tight">
                   Transfer Window
                   <br />
                   Report Card
                 </h3>
-                <div className="mt-1 text-[12px] font-semibold text-[#6B7280] dark:text-gray-400">
+                <div className="mt-1 text-[12px] font-semibold text-[#6B7280]">
                   {card.club} • {card.league}
                 </div>
               </div>
@@ -271,69 +271,74 @@ function ClubSlide({
             </div>
 
             {/* ─── OVERALL GRADE — stamp animation ─── */}
-            <div className="mt-3 pt-4 border-t-2 border-dashed border-[#1E293B]/20 dark:border-gray-600/40 flex items-center justify-between gap-3">
+            <div className="mt-3 pt-4 border-t-2 border-dashed border-[#1E293B]/20 flex items-center justify-between gap-3">
               <div className="flex-1">
-                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#9CA3AF] dark:text-gray-500 mb-1">
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-[#9CA3AF] mb-1">
                   Overall Grade
                 </div>
-                <p className="text-[13px] font-bold italic font-serif text-[#1a365d] dark:text-[#93c5fd] leading-snug">
+                <p className="text-[13px] font-bold italic font-serif text-[#1a365d] leading-snug">
                   &ldquo;{overall.comment}&rdquo;
                 </p>
               </div>
               <div
-                className={`flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center text-white font-black text-2xl shadow-lg ring-[3px] ring-white/80 dark:ring-gray-900/80 ${getGradeBg(overall.grade)}`}
+                className="flex-shrink-0 relative w-16 h-16 flex items-center justify-center -rotate-6"
                 style={{
                   animation: "rcGradeStamp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both",
-                  boxShadow: "0 0 0 3px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.15)",
                 }}
               >
-                {overall.grade}
+                <svg className="absolute inset-0 w-full h-full drop-shadow-sm" viewBox="0 0 100 100" style={{ transform: "rotate(-10deg)" }}>
+                  <path d="M 50,5 C 75,5 95,25 95,50 C 95,75 70,90 50,90 C 25,90 10,75 10,50 C 10,25 30,10 50,10" fill="none" stroke="currentColor" strokeWidth="4" className={getScoreColor(gradeToScore(overall.grade))} strokeLinecap="round" />
+                  <path d="M 45,5 C 70,8 90,28 92,52 C 94,76 68,92 48,93 C 23,94 8,78 6,53 C 4,28 25,12 45,8" fill="none" stroke="currentColor" strokeWidth="2.5" className={getScoreColor(gradeToScore(overall.grade))} strokeLinecap="round" style={{ opacity: 0.6 }} />
+                </svg>
+                <span className={`font-black text-[32px] ${getScoreColor(gradeToScore(overall.grade))}`} style={{ fontFamily: "'Caveat', 'Comic Sans MS', 'Chalkboard SE', cursive", transform: "rotate(-5deg)", WebkitTextStroke: "1px currentColor" }}>
+                  {overall.grade}
+                </span>
               </div>
             </div>
 
             {/* Teacher's Comment */}
             <div className="mt-5 pt-3 relative">
-              <div className="text-[9px] font-black uppercase tracking-[0.2em] text-[#9CA3AF] dark:text-gray-500 mb-2 font-serif">
+              <div className="text-[9px] font-black uppercase tracking-[0.2em] text-[#9CA3AF] mb-2 font-serif">
                 Teacher&apos;s Comments
               </div>
-              <p className="font-serif italic text-[13px] leading-[1.7] text-[#1a365d] dark:text-[#93c5fd]">
+              <p className="font-serif italic text-[13px] leading-[1.7] text-[#1a365d]">
                 &ldquo;{card.teachersComment}&rdquo;
               </p>
             </div>
           </div>
 
           {/* Financial footer — registrar stamp feel */}
-          <div className="bg-[#F8F5EE] dark:bg-[#111827] border-t border-[#D1C9B8]/60 dark:border-gray-700/50 pl-[66px] pr-5 py-3 text-center">
+          <div className="bg-[#F8F5EE] border-t border-[#D1C9B8]/60 pl-[66px] pr-5 py-3 text-center">
             <div className="flex items-center justify-between">
               <div className="flex flex-col items-start">
-                <span className="text-[8px] font-black uppercase tracking-[0.15em] text-[#9CA3AF] dark:text-gray-500">
+                <span className="text-[8px] font-black uppercase tracking-[0.15em] text-[#9CA3AF]">
                   Spend
                 </span>
-                <span className="text-[13px] font-bold text-[#1E293B] dark:text-gray-200 tabular-nums">
+                <span className="text-[13px] font-bold text-[#1E293B] tabular-nums">
                   {card.totalSpend}
                 </span>
               </div>
-              <div className="w-px h-6 bg-[#D1C9B8]/60 dark:bg-gray-700/40" />
+              <div className="w-px h-6 bg-[#D1C9B8]/60" />
               <div className="flex flex-col items-center">
-                <span className="text-[8px] font-black uppercase tracking-[0.15em] text-[#9CA3AF] dark:text-gray-500">
+                <span className="text-[8px] font-black uppercase tracking-[0.15em] text-[#9CA3AF]">
                   Income
                 </span>
-                <span className="text-[13px] font-bold text-[#1E293B] dark:text-gray-200 tabular-nums">
+                <span className="text-[13px] font-bold text-[#1E293B] tabular-nums">
                   {card.totalIncome}
                 </span>
               </div>
-              <div className="w-px h-6 bg-[#D1C9B8]/60 dark:bg-gray-700/40" />
+              <div className="w-px h-6 bg-[#D1C9B8]/60" />
               <div className="flex flex-col items-end">
-                <span className="text-[8px] font-black uppercase tracking-[0.15em] text-[#9CA3AF] dark:text-gray-500">
+                <span className="text-[8px] font-black uppercase tracking-[0.15em] text-[#9CA3AF]">
                   Net
                 </span>
-                <span className="text-[13px] font-bold text-[#1E293B] dark:text-gray-200 tabular-nums">
+                <span className="text-[13px] font-bold text-[#1E293B] tabular-nums">
                   {card.netSpend}
                 </span>
               </div>
             </div>
             {/* Watermark branding */}
-            <div className="mt-2 text-[8px] font-bold tracking-[0.25em] uppercase text-[#C4B99A] dark:text-gray-600">
+            <div className="mt-2 text-[8px] font-bold tracking-[0.25em] uppercase text-[#C4B99A]">
               pitchside • touchlinedribble.com
             </div>
           </div>
@@ -348,11 +353,10 @@ function ClubSlide({
 /* ------------------------------------------------------------------ */
 async function captureCardAsBlob(element: HTMLElement): Promise<Blob | null> {
   try {
-    const isDark = document.documentElement.classList.contains("dark");
     const canvas = await html2canvas(element, {
       scale: 3,
       useCORS: true,
-      backgroundColor: isDark ? "#0f0f23" : "#FFFDF7",
+      backgroundColor: "#FFFDF7",
       logging: false,
     });
     return new Promise<Blob | null>((resolve) => {
@@ -520,6 +524,7 @@ export function TransferReportCardCarousel() {
   const [isHidden, setIsHidden] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const cardCaptureRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -535,6 +540,26 @@ export function TransferReportCardCarousel() {
       .catch((err) => console.error("Failed to load transfer report cards:", err))
       .finally(() => setLoading(false));
   }, []);
+
+  /* Dot click scrolls to that slide */
+  const scrollToSlide = useCallback((idx: number) => {
+    const el = slideRefs.current[idx];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, []);
+
+  /* Auto-swipe */
+  useEffect(() => {
+    if (!data || isHidden || isHovered) return;
+    
+    const interval = setInterval(() => {
+      if (slideRefs.current.length > 0) {
+        const nextIdx = (activeSlide + 1) % data.clubs.length;
+        scrollToSlide(nextIdx);
+      }
+    }, 4000); // 4 seconds per slide
+
+    return () => clearInterval(interval);
+  }, [data, isHidden, isHovered, activeSlide, scrollToSlide]);
 
   /* IntersectionObserver to track which slide is visible */
   useEffect(() => {
@@ -559,12 +584,6 @@ export function TransferReportCardCarousel() {
 
     return () => observer.disconnect();
   }, [data, isHidden]);
-
-  /* Dot click scrolls to that slide */
-  const scrollToSlide = useCallback((idx: number) => {
-    const el = slideRefs.current[idx];
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-  }, []);
 
   const toggleVisibility = () => {
     const next = !isHidden;
@@ -625,7 +644,13 @@ export function TransferReportCardCarousel() {
         }}
       />
 
-      <div className="tinted-panel rounded-[2rem] border border-gray-200 shadow-sm dark:border-gray-800 overflow-hidden">
+      <div 
+        className="tinted-panel rounded-[2rem] border border-gray-200 shadow-sm dark:border-gray-800 overflow-hidden"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onTouchStart={() => setIsHovered(true)}
+        onTouchEnd={() => setIsHovered(false)}
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-2">
           <div className="flex items-center gap-3">
