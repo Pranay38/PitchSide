@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
-import { Save, LoaderCircle, Eye, EyeOff, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Save, LoaderCircle, Eye, EyeOff, ChevronDown, ChevronUp, Plus, Trash2, Download } from "lucide-react";
 import { toast } from "sonner";
+import html2canvas from "html2canvas";
 import type { SiteSettings } from "../../lib/siteSettingsStorage";
 import type { TransferReportCards } from "../../lib/transferReportCards";
 import type { ClubReportCard, GradeEntry } from "../TransferReportCard";
+import { InstagramTransferReportCard } from "../TransferReportCardCarousel";
 
 interface AdminReportCardTabProps {
   siteSettings: SiteSettings;
@@ -21,6 +23,7 @@ export function AdminReportCardTab({
   const [saving, setSaving] = useState(false);
   const [reportCards, setReportCards] = useState<TransferReportCards>(siteSettings.transferReportCards);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const previewRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     setReportCards(siteSettings.transferReportCards);
@@ -98,6 +101,31 @@ export function AdminReportCardTab({
       newClubs.splice(index, 1);
       setReportCards({ ...reportCards, clubs: newClubs });
       if (expandedIndex === index) setExpandedIndex(null);
+    }
+  };
+
+  const downloadClubImage = async (clubIndex: number) => {
+    const element = previewRefs.current[clubIndex];
+    if (!element) return;
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 1080 / element.getBoundingClientRect().width,
+        useCORS: true,
+        backgroundColor: "#fffdf7",
+        logging: false,
+      });
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
+      if (!blob) throw new Error("Image generation failed");
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${reportCards.clubs[clubIndex].club.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-transfer-report.png`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success("1080 x 1350 Instagram PNG downloaded");
+    } catch (error) {
+      console.error(error);
+      toast.error("Could not export this report image");
     }
   };
 
@@ -376,10 +404,37 @@ export function AdminReportCardTab({
                           value={club.teachersComment}
                           onChange={(e) => updateClub(idx, { teachersComment: e.target.value })}
                           rows={3}
+                          maxLength={145}
                           className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-[#16A34A] resize-none"
                           placeholder="Longer summary paragraph explaining the grade..."
                         />
+                        <p className="mt-1 text-right text-xs text-gray-400">{club.teachersComment.length}/145</p>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Delete Button */}
+                  <div className="border-t border-gray-200 pt-6 dark:border-gray-800">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <h4 className="font-bold text-sm text-gray-900 dark:text-white">Instagram export preview</h4>
+                        <p className="mt-1 text-xs text-gray-500">Exports as a portrait 1080 x 1350 PNG.</p>
+                      </div>
+                      <button
+                        onClick={() => downloadClubImage(idx)}
+                        className="flex items-center gap-2 bg-[#16A34A] px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-green-600"
+                      >
+                        <Download className="h-4 w-4" /> Download PNG
+                      </button>
+                    </div>
+                    <div className="mx-auto max-w-[360px] overflow-hidden border border-gray-200 shadow-lg dark:border-gray-700">
+                      <InstagramTransferReportCard
+                        ref={(node) => { previewRefs.current[idx] = node; }}
+                        card={club}
+                        windowLabel={reportCards.window}
+                        season={reportCards.season}
+                        index={idx}
+                      />
                     </div>
                   </div>
 
