@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-08-29T11:27:22.046862",
+  "lastUpdated": "2026-08-30T10:14:34.379285",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal & Barca monitor Rashford - Saturday's gossip",
-    "sentimentScore": 41
+    "text": "Napoli interested in Woltemade loan - Sunday's gossip",
+    "sentimentScore": 62
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 83
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 92
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 82
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 89
     },
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 82
-    },
-    {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 76
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 80
     }
   ]
 }
