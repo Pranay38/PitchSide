@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-08-30T10:14:34.379285",
+  "lastUpdated": "2026-08-31T11:18:43.312385",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Napoli interested in Woltemade loan - Sunday's gossip",
-    "sentimentScore": 62
+    "text": "Tottenham enquire about Pulisic - Monday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 92
-    },
-    {
       "name": "Xabi Alonso (CHE)",
-      "pressureScore": 89
+      "pressureScore": 98
     },
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 80
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 87
+    },
+    {
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 84
+    },
+    {
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 75
     }
   ]
 }
