@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-08-31T11:18:43.312385",
+  "lastUpdated": "2026-09-01T09:43:10.070433",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Tottenham enquire about Pulisic - Monday's gossip",
+    "text": "Arsenal explore late move for Alvarez - Tuesday gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 98
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 76
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 87
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 72
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 84
-    },
-    {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 75
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 64
     }
   ]
 }
