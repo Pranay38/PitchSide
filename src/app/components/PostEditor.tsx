@@ -37,29 +37,14 @@ const GENERAL_CATEGORIES = [
 
 
 
-/** Compress and convert an image file to a base64 data URL */
-function compressImage(file: File, maxWidth = 1200, quality = 0.8): Promise<string> {
+/** Read an image file as a full-quality base64 data URL (no compression) */
+function readImageAsDataURL(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => {
-            const img = new window.Image();
-            img.onload = () => {
-                const canvas = document.createElement("canvas");
-                let w = img.width;
-                let h = img.height;
-                if (w > maxWidth) {
-                    h = (h * maxWidth) / w;
-                    w = maxWidth;
-                }
-                canvas.width = w;
-                canvas.height = h;
-                const ctx = canvas.getContext("2d");
-                if (!ctx) return reject(new Error("Canvas not supported"));
-                ctx.drawImage(img, 0, 0, w, h);
-                resolve(canvas.toDataURL("image/webp", quality));
-            };
-            img.onerror = reject;
-            img.src = e.target?.result as string;
+            const result = e.target?.result as string;
+            if (result) resolve(result);
+            else reject(new Error("Failed to read file"));
         };
         reader.onerror = reject;
         reader.readAsDataURL(file);
@@ -135,7 +120,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
         if (!file.type.startsWith("image/")) return;
         setUploading(true);
         try {
-            const dataUrl = await compressImage(file);
+            const dataUrl = await readImageAsDataURL(file);
             setCoverImage(dataUrl);
         } catch {
             console.error("Failed to process image");

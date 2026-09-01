@@ -43,7 +43,7 @@ import {
 from "../lib/transferWatch";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { createDefaultPollOfWeek, normalizePollOfWeek } from "../lib/pollOfWeek";
-import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon, Mic, MessageSquare, Calendar, BarChart2, PenLine, Bell, Trophy, Zap } from "lucide-react";
+import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon, Mic, MessageSquare, Calendar, BarChart2, PenLine, Bell, Trophy, Zap, Newspaper } from "lucide-react";
 import { toast } from "sonner";
 import { AdminRunInEditor } from "../components/AdminRunInEditor";
 import { AdminTitleRaceTab } from "../components/admin/AdminTitleRaceTab";
@@ -70,9 +70,10 @@ const AdminNotificationsTab = dynamic(() => import('../components/admin/AdminNot
 const AdminPOTSTab = dynamic(() => import('../components/admin/AdminPOTSTab').then(m => m.AdminPOTSTab));
 const AdminPostsTab = dynamic(() => import('../components/admin/AdminPostsTab').then(m => m.AdminPostsTab));
 const AdminReportCardTab = dynamic(() => import('../components/admin/AdminReportCardTab').then(m => m.AdminReportCardTab));
+const AdminWeeklyRoundupTab = dynamic(() => import('../components/admin/AdminWeeklyRoundupTab').then(m => m.AdminWeeklyRoundupTab));
 
 type View = "list" | "create" | "edit";
-type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "transfer-watch" | "transfer-tracker" | "report-cards" | "on-this-day" | "settings" | "polls" | "newsletter" | "analytics" | "carousel-generator" | "quick-take-video" | "draft-assistant" | "tweet-generator" | "calendar";
+type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "transfer-watch" | "transfer-tracker" | "report-cards" | "weekly-roundup" | "on-this-day" | "settings" | "polls" | "newsletter" | "analytics" | "carousel-generator" | "quick-take-video" | "draft-assistant" | "tweet-generator" | "calendar";
 
 type TransferDraft = {
     player: string;
@@ -910,6 +911,12 @@ export function AdminPage() {
                         <span className="text-base leading-none">📝</span> Report Cards
                     </button>
                     <button
+                        onClick={() => setActiveTab("weekly-roundup")}
+                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "weekly-roundup" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
+                    >
+                        <Newspaper className="w-4 h-4" /> Weekly Roundup
+                    </button>
+                    <button
                         onClick={() => setActiveTab("on-this-day")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "on-this-day" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
                     >
@@ -1045,6 +1052,14 @@ export function AdminPage() {
                 {/* TRANSFER REPORT CARDS TAB */}
                 {activeTab === "report-cards" && (
                     <AdminReportCardTab
+                        siteSettings={siteSettings}
+                        setSiteSettings={setSiteSettings}
+                        updateSiteSettingsAsync={updateSiteSettingsAsync}
+                    />
+                )}
+
+                {activeTab === "weekly-roundup" && (
+                    <AdminWeeklyRoundupTab
                         siteSettings={siteSettings}
                         setSiteSettings={setSiteSettings}
                         updateSiteSettingsAsync={updateSiteSettingsAsync}

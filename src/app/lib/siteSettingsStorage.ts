@@ -28,6 +28,7 @@ import {
   defaultTransferReportCards,
   normalizeTransferReportCards,
 } from "./transferReportCards";
+import { defaultWeeklyRoundup, normalizeWeeklyRoundup, type WeeklyRoundup } from "./weeklyRoundup";
 
 export interface SupplementalEvent {
   id: string;
@@ -89,6 +90,7 @@ export interface SiteSettings {
   authorsTake: AuthorsTake;
   fantasyCorner: FantasyCorner;
   transferReportCards: TransferReportCards;
+  weeklyRoundup: WeeklyRoundup;
   updatedAt: string;
 }
 
@@ -127,6 +129,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     differentialPick: { name: "", club: "", reason: "" },
   },
   transferReportCards: defaultTransferReportCards,
+  weeklyRoundup: defaultWeeklyRoundup,
   updatedAt: "",
 };
 
@@ -253,6 +256,7 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     authorsTake: normalizeAuthorsTake(input?.authorsTake),
     fantasyCorner: normalizeFantasyCorner(input?.fantasyCorner),
     transferReportCards: normalizeTransferReportCards(input?.transferReportCards),
+    weeklyRoundup: normalizeWeeklyRoundup(input?.weeklyRoundup),
     updatedAt: input?.updatedAt || DEFAULT_SETTINGS.updatedAt,
   };
 }

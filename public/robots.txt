@@ -11,6 +11,7 @@ Sitemap: https://www.thetouchlinedribble.in/sitemap.xml
 Disallow: /pitchside-manage-x7k9
 
 # Block API endpoints
+Allow: /api/og
 Disallow: /api/
 
 # Block user-specific pages (not useful for search)
@@ -32,6 +33,7 @@ Disallow: /match-center/embed/
 
 User-agent: GPTBot
 Allow: /
+Allow: /api/og
 Disallow: /api/
 Disallow: /pitchside-manage-x7k9
 Disallow: /saved

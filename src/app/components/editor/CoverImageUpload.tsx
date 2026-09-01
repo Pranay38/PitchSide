@@ -95,7 +95,7 @@ export function CoverImageUpload({
                                         Click to upload or drag & drop
                                     </p>
                                     <p className="text-xs text-[#94A3B8] mt-1">
-                                        PNG, JPG, WEBP up to 10MB — auto-compressed
+                                        PNG, JPG, WEBP up to 10MB — original quality
                                     </p>
                                 </div>
                             </>
@@ -127,11 +127,11 @@ export function CoverImageUpload({
             {/* Preview */}
             {coverImage && (
                 <div className="mt-4 relative">
-                    <div className="aspect-[21/9] rounded-xl overflow-hidden">
+                    <div className="rounded-xl overflow-hidden">
                         <img
                             src={coverImage}
                             alt="Cover preview"
-                            className="w-full h-full object-cover"
+                            className="w-full h-auto max-h-[500px] object-contain rounded-xl"
                             onError={(e) => (e.currentTarget.style.display = "none")}
                         />
                     </div>
