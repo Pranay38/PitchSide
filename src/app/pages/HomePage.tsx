@@ -377,9 +377,9 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
   }, [posts]);
 
   const fallbackFeaturedPost = useMemo(() => {
-    const mustReads = standardPosts.filter((post) => post.mustRead);
     const flagged = standardPosts.filter((post) => post.mainStory);
-    return mustReads[0] || flagged[0] || standardPosts[0] || null;
+    const mustReads = standardPosts.filter((post) => post.mustRead);
+    return flagged[0] || mustReads[0] || null;
   }, [standardPosts]);
 
   // If the admin generated an AI Punchy Line for a Transfer Watch entry, use it to override the daily_features.json!
