@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-09-01T09:43:10.070433",
+  "lastUpdated": "2026-09-02T09:15:44.721206",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal explore late move for Alvarez - Tuesday gossip",
+    "text": "Liverpool tried to sign Gusto - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 99
+    },
+    {
       "name": "Michael Carrick (MUN)",
-      "pressureScore": 76
+      "pressureScore": 85
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 72
-    },
-    {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 64
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 70
     }
   ]
 }
