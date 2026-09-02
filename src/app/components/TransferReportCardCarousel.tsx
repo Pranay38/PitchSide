@@ -9,6 +9,37 @@ import { getSiteSettingsAsync } from "../lib/siteSettingsStorage";
 import type { TransferReportCards } from "../lib/transferReportCards";
 import type { ClubReportCard, GradeEntry } from "./TransferReportCard";
 
+/** Convert an external image URL to a base64 data URL to avoid CORS issues with html2canvas */
+function useProxiedLogo(url: string | undefined): string | undefined {
+  const [dataUrl, setDataUrl] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (!url) { setDataUrl(undefined); return; }
+    let cancelled = false;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      if (cancelled) return;
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          setDataUrl(canvas.toDataURL("image/png"));
+        }
+      } catch {
+        // CORS tainted — fall back to original URL for on-screen display
+        setDataUrl(url);
+      }
+    };
+    img.onerror = () => { if (!cancelled) setDataUrl(url); };
+    img.src = url;
+    return () => { cancelled = true; };
+  }, [url]);
+  return dataUrl;
+}
+
 const SUBJECTS: { key: keyof ClubReportCard["grades"]; label: string }[] = [
   { key: "incomings", label: "INCOMINGS" },
   { key: "outgoings", label: "OUTGOINGS" },
@@ -36,15 +67,16 @@ export const InstagramTransferReportCard = forwardRef<HTMLDivElement, { card: Cl
   const overall = card.grades.overall;
   const stampColor = gradeTone(overall.grade);
   const clubData = getClubByName(card.club);
-  return <div ref={ref} className="report-instagram-card relative aspect-[4/5] w-full overflow-hidden bg-[#fffdf7] text-[#172030]" style={{ fontFamily: "Georgia, serif" }}>
+  const logoSrc = useProxiedLogo(clubData?.logo);
+  return <div ref={ref} className="report-instagram-card relative w-full bg-[#fffdf7] text-[#172030]" style={{ fontFamily: "Georgia, serif", aspectRatio: "4 / 5" }}>
     <div className="absolute inset-0 opacity-70" style={{ backgroundImage: "repeating-linear-gradient(to bottom, transparent 0, transparent 47px, rgba(109, 154, 199, 0.22) 48px, transparent 49px)" }} />
     <div className="absolute inset-y-0 left-[13.5%] w-px bg-[#e96f6f]/70" />
     <div className="absolute left-0 right-0 top-0 h-3 bg-[#172030]" />
     <div className="relative flex h-full flex-col px-[17%] pb-[5%] pt-[7%]">
-      <div className="flex items-start justify-between gap-3 border-b-2 border-[#172030] pb-4"><div><div className="mb-2 flex items-center gap-2 text-[9px] font-bold tracking-[0.18em] text-[#617083]"><GraduationCap className="h-[1em] w-[1em]" /> {windowLabel.toUpperCase()} / {season}</div><h3 className="text-[25px] font-black leading-[0.92]">TRANSFER<br />REPORT</h3></div><span className="mt-1 border-2 border-[#172030] px-2 py-1 text-[9px] font-black tracking-[0.14em]">TERM {index + 1}</span></div>
-      <div className="flex items-end justify-between gap-4 py-3"><div className="flex items-end gap-3"><div><p className="text-[9px] font-bold tracking-[0.2em] text-[#687588]">CLUB</p><p className="text-[25px] font-black leading-none">{card.club}</p><p className="mt-1 text-[11px] font-bold italic text-[#607082]">{card.league}</p></div>{clubData?.logo && <img src={clubData.logo} alt="" crossOrigin="anonymous" className="mb-1 h-12 w-12 object-contain" />}</div><div className={`${animated ? "report-stamp" : ""} relative grid h-[68px] w-[68px] shrink-0 place-items-center rounded-full border-[3px]`} style={{ borderColor: stampColor, color: stampColor }}><span className="absolute inset-1 rounded-full border border-current opacity-70" /><span className="relative text-[40px] font-black leading-none" style={{ fontFamily: "Comic Sans MS, Chalkboard, cursive" }}>{overall.grade}</span></div></div>
-      <div className="border-y-2 border-[#172030]">{SUBJECTS.map(({ key, label }) => { const entry = card.grades[key] as GradeEntry; const mark = score(entry.grade); return <div key={key} className="grid grid-cols-[1fr_auto] gap-3 border-b border-[#172030]/25 py-2 last:border-b-0"><div><div className="flex items-baseline justify-between gap-2"><p className="text-[10px] font-black tracking-[0.1em]">{label}</p><span className="text-[13px] font-bold text-[#687588]">{mark}/10</span><span className="text-[18px] font-black" style={{ color: gradeTone(entry.grade), fontFamily: "Comic Sans MS, Chalkboard, cursive" }}>{entry.grade}</span></div><div className="mt-1 h-[3px] bg-[#172030]/15"><div className={`${animated ? "report-mark" : ""} h-full origin-left`} style={{ width: `${mark * 10}%`, backgroundColor: gradeTone(entry.grade) }} /></div><p className="mt-1 line-clamp-1 text-[9px] leading-[1.25] text-[#344457]">{entry.comment}</p></div></div>; })}</div>
-      <div className="mt-auto border-t-2 border-dashed border-[#172030]/45 pt-3"><p className="text-[9px] font-bold tracking-[0.18em] text-[#687588]">TEACHER'S NOTE</p><p className="mt-1 line-clamp-3 min-h-[50px] text-[12px] font-bold italic leading-[1.4]">&ldquo;{formatTeacherNote(card.teachersComment)}&rdquo;</p><div className="mt-3 grid grid-cols-3 border-t border-[#172030]/30 pt-2 text-center text-[10px] font-bold"><span>SPEND <b className="block text-[13px]">{card.totalSpend}</b></span><span>INCOME <b className="block text-[13px]">{card.totalIncome}</b></span><span>NET <b className="block text-[13px]">{card.netSpend}</b></span></div>{showWatermark && <p className="mt-3 text-center text-[8px] font-black tracking-[0.2em] text-[#64748b]">TOUCHLINE DRIBBLE</p>}</div>
+      <div className="flex items-start justify-between gap-3 border-b-2 border-[#172030] pb-3"><div><div className="mb-1.5 flex items-center gap-2 text-[9px] font-bold tracking-[0.18em] text-[#617083]"><GraduationCap className="h-[1em] w-[1em]" /> {windowLabel.toUpperCase()} / {season}</div><h3 className="text-[22px] font-black leading-[0.92]">TRANSFER<br />REPORT</h3></div><span className="mt-1 border-2 border-[#172030] px-2 py-1 text-[9px] font-black tracking-[0.14em]">TERM {index + 1}</span></div>
+      <div className="flex items-end justify-between gap-4 py-2.5"><div className="flex items-end gap-3"><div><p className="text-[9px] font-bold tracking-[0.2em] text-[#687588]">CLUB</p><p className="text-[22px] font-black leading-none">{card.club}</p><p className="mt-1 text-[10px] font-bold italic text-[#607082]">{card.league}</p></div>{logoSrc && <img src={logoSrc} alt="" className="mb-1 h-12 w-12 object-contain" />}</div><div className={`${animated ? "report-stamp" : ""} relative grid h-[62px] w-[62px] shrink-0 place-items-center rounded-full border-[3px]`} style={{ borderColor: stampColor, color: stampColor }}><span className="absolute inset-1 rounded-full border border-current opacity-70" /><span className="relative text-[36px] font-black leading-none" style={{ fontFamily: "Comic Sans MS, Chalkboard, cursive" }}>{overall.grade}</span></div></div>
+      <div className="border-y-2 border-[#172030]">{SUBJECTS.map(({ key, label }) => { const entry = card.grades[key] as GradeEntry; const mark = score(entry.grade); return <div key={key} className="grid grid-cols-[1fr_auto] gap-3 border-b border-[#172030]/25 py-1.5 last:border-b-0"><div><div className="flex items-baseline justify-between gap-2"><p className="text-[10px] font-black tracking-[0.1em]">{label}</p><span className="text-[12px] font-bold text-[#687588]">{mark}/10</span><span className="text-[17px] font-black" style={{ color: gradeTone(entry.grade), fontFamily: "Comic Sans MS, Chalkboard, cursive" }}>{entry.grade}</span></div><div className="mt-0.5 h-[3px] bg-[#172030]/15"><div className={`${animated ? "report-mark" : ""} h-full origin-left`} style={{ width: `${mark * 10}%`, backgroundColor: gradeTone(entry.grade) }} /></div><p className="mt-0.5 line-clamp-2 text-[9px] leading-[1.3] text-[#344457]">{entry.comment}</p></div></div>; })}</div>
+      <div className="mt-auto border-t-2 border-dashed border-[#172030]/45 pt-2.5"><p className="text-[9px] font-bold tracking-[0.18em] text-[#687588]">TEACHER'S NOTE</p><p className="mt-1 line-clamp-3 min-h-[40px] text-[11px] font-bold italic leading-[1.4]">&ldquo;{formatTeacherNote(card.teachersComment)}&rdquo;</p><div className="mt-2.5 grid grid-cols-3 border-t border-[#172030]/30 pt-2 text-center text-[10px] font-bold"><span>SPEND <b className="block text-[13px]">{card.totalSpend}</b></span><span>INCOME <b className="block text-[13px]">{card.totalIncome}</b></span><span>NET <b className="block text-[13px]">{card.netSpend}</b></span></div>{showWatermark && <p className="mt-2.5 text-center text-[8px] font-black tracking-[0.2em] text-[#64748b]">TOUCHLINE DRIBBLE</p>}</div>
     </div>
   </div>;
 });
