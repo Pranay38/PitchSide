@@ -15,6 +15,31 @@ interface AdminReportCardTabProps {
 
 const GRADES = ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "F"];
 
+/** Controlled text input that stores raw text locally and only parses to string[] on blur */
+function NamesInput({ value, onChange, placeholder }: { value: string[]; onChange: (names: string[]) => void; placeholder: string }) {
+  const [raw, setRaw] = useState(value.join(", "));
+  // Sync from parent when the value changes externally (e.g. on save/load)
+  useEffect(() => { setRaw(value.join(", ")); }, [value.join(",")]);
+  return (
+    <div>
+      <label className="block text-xs font-semibold text-gray-500 mb-1">
+        Key Signings/Departures (comma separated)
+      </label>
+      <input
+        type="text"
+        value={raw}
+        onChange={(e) => setRaw(e.target.value)}
+        onBlur={() => {
+          const arr = raw.split(",").map(s => s.trim()).filter(Boolean);
+          onChange(arr);
+        }}
+        className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#16A34A]"
+        placeholder={placeholder}
+      />
+    </div>
+  );
+}
+
 export function AdminReportCardTab({
   siteSettings,
   updateSiteSettingsAsync,
@@ -165,21 +190,11 @@ export function AdminReportCardTab({
         </div>
 
         {showNames && (
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">
-              Key Signings/Departures (comma separated)
-            </label>
-            <input
-              type="text"
-              value={entry.names?.join(", ") || ""}
-              onChange={(e) => {
-                const arr = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
-                updateGrade(clubIndex, subject, "names", arr);
-              }}
-              className="w-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#16A34A]"
-              placeholder="e.g. M. Salah (Free), V. Osimhen (€75M)"
-            />
-          </div>
+          <NamesInput
+            value={entry.names || []}
+            onChange={(arr) => updateGrade(clubIndex, subject, "names", arr)}
+            placeholder="e.g. M. Salah (Free), V. Osimhen (€75M)"
+          />
         )}
       </div>
     );
