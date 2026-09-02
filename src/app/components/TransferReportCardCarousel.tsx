@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Download, GraduationCap, Loader2, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, GraduationCap, Link2, Loader2, Share2, X } from "lucide-react";
 import html2canvas from "html2canvas";
 import { toast } from "sonner";
 import { getClubByName } from "../data/clubs";
@@ -92,13 +92,75 @@ async function exportCard(element: HTMLElement, filename: string) {
   const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = filename; link.click(); URL.revokeObjectURL(url);
 }
 
+
+const SITE_URL = "https://www.thetouchlinedribble.in";
+
+function buildShareText(club: string, grade: string, window: string) {
+  return `${club} gets a ${grade} on their ${window} Transfer Report Card 📋\n\nFull breakdown on The Touchline Dribble 👇\n${SITE_URL}`;
+}
+
 export function TransferReportCardCarousel() {
   const [data, setData] = useState<TransferReportCards | null>(null); const [active, setActive] = useState(0); const [dismissed, setDismissed] = useState(false); const [downloading, setDownloading] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const scroller = useRef<HTMLDivElement>(null); const cards = useRef<(HTMLDivElement | null)[]>([]);
   useEffect(() => { getSiteSettingsAsync().then((settings) => setData(settings.transferReportCards)).catch(() => toast.error("Could not load transfer report")); }, []);
   const go = useCallback((index: number) => { scroller.current?.children[index]?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" }); }, []);
   const onScroll = () => { const node = scroller.current; if (node) setActive(Math.round(node.scrollLeft / node.clientWidth)); };
   if (!data || !data.enabled || !data.clubs.length || dismissed) return null;
   const current = data.clubs[active] ?? data.clubs[0];
-  return <section className="relative overflow-hidden border-y border-[#172030]/10 bg-[#eef3f4] py-10 dark:bg-[#0d1720]"><style>{`@keyframes report-stamp { 0%{transform:scale(2.1) rotate(-18deg);opacity:0} 65%{transform:scale(.88) rotate(4deg)} 100%{transform:scale(1) rotate(-5deg);opacity:1} } @keyframes report-mark { from{transform:scaleX(0)} to{transform:scaleX(1)} } .report-stamp{animation:report-stamp .65s cubic-bezier(.2,.9,.2,1) both} .report-mark{animation:report-mark .75s .18s ease-out both} .report-instagram-card[data-exporting="true"] .report-stamp,.report-instagram-card[data-exporting="true"] .report-mark{animation:none!important;transform:none!important} @media (prefers-reduced-motion: reduce){.report-stamp,.report-mark{animation:none}}`}</style><div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="mb-5 flex items-end justify-between gap-4"><div><p className="text-xs font-black tracking-[0.22em] text-[#16834b]">THE MARKBOOK</p><h2 className="mt-1 text-2xl font-black text-[#172030] dark:text-white sm:text-3xl">Transfer Report Cards</h2></div><button onClick={() => setDismissed(true)} aria-label="Hide transfer reports" className="grid h-9 w-9 place-items-center border border-[#172030]/15 bg-white text-[#172030] dark:bg-[#172030] dark:text-white"><X className="h-4 w-4" /></button></div><div ref={scroller} onScroll={onScroll} className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none]">{data.clubs.map((club, index) => <div key={`${club.club}-${index}`} className="w-full shrink-0 snap-start px-[max(0px,calc((100%-430px)/2))]"><InstagramTransferReportCard ref={(node) => { cards.current[index] = node; }} card={club} windowLabel={data.window} season={data.season} index={index} animated={index === active} showWatermark /></div>)}</div><div className="mt-5 flex items-center justify-between gap-3"><div className="flex gap-2">{data.clubs.map((club, index) => <button key={club.club} aria-label={`Show ${club.club}`} onClick={() => go(index)} className={`h-2.5 w-2.5 rounded-full ${index === active ? "bg-[#16834b]" : "bg-[#172030]/20 dark:bg-white/25"}`} />)}</div><div className="flex items-center gap-2"><button onClick={() => go((active - 1 + data.clubs.length) % data.clubs.length)} aria-label="Previous club" className="grid h-10 w-10 place-items-center border border-[#172030]/15 bg-white text-[#172030] dark:bg-[#172030] dark:text-white"><ChevronLeft className="h-5 w-5" /></button><button onClick={() => go((active + 1) % data.clubs.length)} aria-label="Next club" className="grid h-10 w-10 place-items-center border border-[#172030]/15 bg-white text-[#172030] dark:bg-[#172030] dark:text-white"><ChevronRight className="h-5 w-5" /></button><button disabled={downloading} onClick={async () => { const card = cards.current[active]; if (!card) return; setDownloading(true); try { await exportCard(card, `${current.club.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-transfer-report.png`); toast.success("Instagram PNG downloaded"); } catch { toast.error("Could not export image"); } finally { setDownloading(false); } }} className="flex h-10 items-center gap-2 bg-[#16834b] px-4 text-xs font-black text-white disabled:opacity-60">{downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} SAVE PNG</button></div></div></div></section>;
+  const shareText = buildShareText(current.club, current.grades.overall.grade, data.window);
+
+  const copyLink = async () => {
+    await navigator.clipboard.writeText(SITE_URL);
+    toast.success("Link copied!");
+    setShareOpen(false);
+  };
+
+  const handleNativeShare = async () => {
+    if (!navigator.share) return;
+    try { await navigator.share({ title: `${current.club} Transfer Report Card`, text: shareText, url: SITE_URL }); } catch { /* user cancelled */ }
+    setShareOpen(false);
+  };
+
+  const shareToX = () => {
+    const text = encodeURIComponent(`${current.club} gets a ${current.grades.overall.grade} on their ${data.window} Transfer Report Card 📋\n\nFull breakdown 👇`);
+    const url = encodeURIComponent(SITE_URL);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank", "width=550,height=420");
+    setShareOpen(false);
+  };
+
+  const shareToWhatsApp = () => {
+    const text = encodeURIComponent(shareText);
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+    setShareOpen(false);
+  };
+
+  return <section className="relative overflow-hidden border-y border-[#172030]/10 bg-[#eef3f4] py-10 dark:bg-[#0d1720]"><style>{`@keyframes report-stamp { 0%{transform:scale(2.1) rotate(-18deg);opacity:0} 65%{transform:scale(.88) rotate(4deg)} 100%{transform:scale(1) rotate(-5deg);opacity:1} } @keyframes report-mark { from{transform:scaleX(0)} to{transform:scaleX(1)} } .report-stamp{animation:report-stamp .65s cubic-bezier(.2,.9,.2,1) both} .report-mark{animation:report-mark .75s .18s ease-out both} .report-instagram-card[data-exporting="true"] .report-stamp,.report-instagram-card[data-exporting="true"] .report-mark{animation:none!important;transform:none!important} @media (prefers-reduced-motion: reduce){.report-stamp,.report-mark{animation:none}}`}</style><div className="mx-auto max-w-6xl px-4 sm:px-6"><div className="mb-5 flex items-end justify-between gap-4"><div><p className="text-xs font-black tracking-[0.22em] text-[#16834b]">THE MARKBOOK</p><h2 className="mt-1 text-2xl font-black text-[#172030] dark:text-white sm:text-3xl">Transfer Report Cards</h2></div><button onClick={() => setDismissed(true)} aria-label="Hide transfer reports" className="grid h-9 w-9 place-items-center border border-[#172030]/15 bg-white text-[#172030] dark:bg-[#172030] dark:text-white"><X className="h-4 w-4" /></button></div><div ref={scroller} onScroll={onScroll} className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none]">{data.clubs.map((club, index) => <div key={`${club.club}-${index}`} className="w-full shrink-0 snap-start px-[max(0px,calc((100%-430px)/2))]"><InstagramTransferReportCard ref={(node) => { cards.current[index] = node; }} card={club} windowLabel={data.window} season={data.season} index={index} animated={index === active} showWatermark /></div>)}</div><div className="mt-5 flex items-center justify-between gap-3"><div className="flex gap-2">{data.clubs.map((club, index) => <button key={club.club} aria-label={`Show ${club.club}`} onClick={() => go(index)} className={`h-2.5 w-2.5 rounded-full ${index === active ? "bg-[#16834b]" : "bg-[#172030]/20 dark:bg-white/25"}`} />)}</div><div className="flex items-center gap-2"><button onClick={() => go((active - 1 + data.clubs.length) % data.clubs.length)} aria-label="Previous club" className="grid h-10 w-10 place-items-center border border-[#172030]/15 bg-white text-[#172030] dark:bg-[#172030] dark:text-white"><ChevronLeft className="h-5 w-5" /></button><button onClick={() => go((active + 1) % data.clubs.length)} aria-label="Next club" className="grid h-10 w-10 place-items-center border border-[#172030]/15 bg-white text-[#172030] dark:bg-[#172030] dark:text-white"><ChevronRight className="h-5 w-5" /></button><button disabled={downloading} onClick={async () => { const card = cards.current[active]; if (!card) return; setDownloading(true); try { await exportCard(card, `${current.club.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-transfer-report.png`); toast.success("Instagram PNG downloaded"); } catch { toast.error("Could not export image"); } finally { setDownloading(false); } }} className="flex h-10 items-center gap-2 bg-[#16834b] px-4 text-xs font-black text-white disabled:opacity-60">{downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} SAVE PNG</button>
+    {/* Share Dropdown */}
+    <div className="relative">
+      <button onClick={() => setShareOpen(!shareOpen)} aria-label="Share report card" className="grid h-10 w-10 place-items-center border border-[#172030]/15 bg-white text-[#172030] dark:bg-[#172030] dark:text-white"><Share2 className="h-4 w-4" /></button>
+      {shareOpen && <>
+        <div className="fixed inset-0 z-40" onClick={() => setShareOpen(false)} />
+        <div className="absolute bottom-full right-0 z-50 mb-2 w-48 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-[#172030]">
+          <button onClick={shareToX} className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold text-[#172030] transition-colors hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+            Post on X
+          </button>
+          <button onClick={shareToWhatsApp} className="flex w-full items-center gap-3 border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-[#172030] transition-colors hover:bg-gray-50 dark:border-gray-700/50 dark:text-white dark:hover:bg-white/5">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+            WhatsApp
+          </button>
+          <button onClick={copyLink} className="flex w-full items-center gap-3 border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-[#172030] transition-colors hover:bg-gray-50 dark:border-gray-700/50 dark:text-white dark:hover:bg-white/5">
+            <Link2 className="h-4 w-4" />
+            Copy Link
+          </button>
+          {typeof navigator !== "undefined" && navigator.share && <button onClick={handleNativeShare} className="flex w-full items-center gap-3 border-t border-gray-100 px-4 py-3 text-left text-sm font-bold text-[#172030] transition-colors hover:bg-gray-50 dark:border-gray-700/50 dark:text-white dark:hover:bg-white/5">
+            <Share2 className="h-4 w-4" />
+            More...
+          </button>}
+        </div>
+      </>}
+    </div>
+  </div></div></div></section>;
 }
+
