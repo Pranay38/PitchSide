@@ -1,5 +1,5 @@
 import { Link } from "@/lib/router-compat";
-import { BookOpen, Repeat2, Activity, Newspaper, Search } from "lucide-react";
+import { BookOpen, Activity, Newspaper, Search } from "lucide-react";
 import { GlowingEffect } from "./ui/glowing-effect";
 import { cn } from "./ui/utils";
 
@@ -17,18 +17,11 @@ export function PlatformFeaturesBento() {
 
       <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2 p-0 m-0">
         <GridItem
-          area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
+          area="md:[grid-area:1/1/2/13] xl:[grid-area:1/1/3/5]"
           icon={<BookOpen className="h-5 w-5 text-[#16A34A]" />}
           title="Deep Reads & Narratives"
           description="Immersive longform stories built for slower reading. Step away from the breaking news cycle."
           href="/stories"
-        />
-        <GridItem
-          area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
-          icon={<Repeat2 className="h-5 w-5 text-[#16A34A]" />}
-          title="Transfer Reliability Hub"
-          description="Track the market with confidence. We vet rumors so you don't have to guess who to believe."
-          href="/transfers"
         />
         <GridItem
           area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"

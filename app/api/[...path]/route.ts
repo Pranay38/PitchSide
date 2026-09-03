@@ -33,8 +33,7 @@ import reactHandler from "../../../_api/react";
 import standingsHandler from "../../../_api/standings";
 import storiesHandler from "../../../_api/stories";
 import sysHandler from "../../../_api/sys";
-import seasonTransfersHandler from "../../../_api/season-transfers";
-import transfersTickerHandler from "../../../_api/transfers-ticker";
+
 
 // Global Upstash Rate Limiter
 let globalRatelimit: Ratelimit | null = null;
@@ -63,8 +62,7 @@ const DIRECT_HANDLERS: Record<string, (req: any, res: any) => Promise<any>> = {
   react: reactHandler,
   standings: standingsHandler,
   stories: storiesHandler,
-  "season-transfers": seasonTransfersHandler,
-  "transfers-ticker": transfersTickerHandler,
+
 };
 
 // Routes that go through sys.ts consolidated handler
@@ -72,12 +70,12 @@ const SYS_ROUTES = new Set([
   "auth", "on-this-day", "predictions", "run-in", "title-race",
   "poll-of-week", "collections", "debates", "notify", "settings",
   "subscribers", "digest", "analytics", "generate-carousel", "ai-generate",
-  "tactics", "og", "club-season", "transfers", "user-prefs",
+  "tactics", "og", "club-season", "user-prefs",
   "polls", "polls-vote", "match-ratings", "match-ratings-vote",
   "armchair-ratings", "armchair-ratings-vote",
   "sitemap", "notifications", "recommendations", "recommendations-track",
   "daily-features", "error-log", "rss", "ensure-indexes", "search",
-  "football-data", "transfer-source-preview", "welcome-sequence"
+  "football-data", "welcome-sequence"
 ]);
 
 /**

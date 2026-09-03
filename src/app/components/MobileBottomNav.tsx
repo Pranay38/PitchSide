@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@/lib/router-compat";
-import { Home, Newspaper, ArrowLeftRight, Flame, User, Shield } from "lucide-react";
+import { Home, Newspaper, Flame, User, Shield } from "lucide-react";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { topicPath } from "../lib/contentPaths";
 
@@ -13,7 +13,6 @@ export function MobileBottomNav() {
     const tabs = [
         { to: "/", label: "Home", icon: Home },
         { to: "/stories", label: "Stories", icon: Newspaper },
-        { to: "/transfers", label: "Transfers", icon: ArrowLeftRight },
     ];
 
     if (fanClub?.name) {

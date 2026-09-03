@@ -24,7 +24,6 @@ import { topicPath } from "../lib/contentPaths";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { getSiteSettings, getSiteSettingsAsync } from "../lib/siteSettingsStorage";
-import { buildTransferReliabilityBoard } from "../lib/transferReliability";
 
 function buildTopicItems(entries: ReturnType<typeof buildArchiveEntries>) {
   const counts = new Map<string, number>();
@@ -51,7 +50,6 @@ export function DesktopCommandPalette() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [entries, setEntries] = useState(() => buildArchiveEntries(getPublishedPosts(), getAllStories()));
-  const [transferEntries, setTransferEntries] = useState(() => buildTransferReliabilityBoard(getSiteSettings().transferWatch));
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -74,7 +72,6 @@ export function DesktopCommandPalette() {
       .then(([posts, stories, settings]) => {
         if (!mounted) return;
         setEntries(buildArchiveEntries(posts, stories));
-        setTransferEntries(buildTransferReliabilityBoard(settings.transferWatch));
       })
       .catch(() => {});
 
@@ -93,7 +90,6 @@ export function DesktopCommandPalette() {
     { title: "Home", subtitle: "Front page", href: "/" },
     { title: "Archive", subtitle: "Search every article and story", href: "/archive" },
     { title: "Stories", subtitle: "Premium longform", href: "/stories" },
-    { title: "Transfers", subtitle: "Reliability board and dossiers", href: "/transfers" },
     { title: "Collections", subtitle: "Editorial reading lists", href: "/collections" },
   ];
 
@@ -123,7 +119,7 @@ export function DesktopCommandPalette() {
         title="Search the site"
         description="Jump to articles, stories, dossiers, and topic pages."
       >
-        <CommandInput placeholder="Search articles, stories, transfers, or topic pages..." />
+        <CommandInput placeholder="Search articles, stories, or topic pages..." />
         <CommandList>
           <CommandEmpty>No matching result found.</CommandEmpty>
 
@@ -160,27 +156,6 @@ export function DesktopCommandPalette() {
               </CommandItem>
             ))}
           </CommandGroup>
-
-          {transferEntries.length > 0 && (
-            <>
-              <CommandSeparator />
-              <CommandGroup heading="Transfer Dossiers">
-                {transferEntries.slice(0, 6).map((entry) => (
-                  <CommandItem
-                    key={entry.id}
-                    value={`${entry.player} ${entry.club} ${entry.boardLabel} ${entry.rationale.join(" ")}`}
-                    onSelect={() => openPath(`/transfers/${entry.dossierSlug}`)}
-                  >
-                    <Repeat2 className="h-4 w-4 text-[#16A34A]" />
-                    <div className="flex flex-col">
-                      <span className="font-medium">{entry.player} to {entry.club}</span>
-                      <span className="text-xs text-[#64748B]">{entry.boardLabel} · {entry.reliabilityScore}</span>
-                    </div>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </>
-          )}
 
           <CommandSeparator />
 

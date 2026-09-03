@@ -9,7 +9,7 @@ import { useClubPreference } from "../hooks/useClubPreference";
 import { getPublishedPosts } from "../lib/postStorage";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { buildSiteAlerts, type SiteAlert } from "../lib/alertCenter";
-import { getTransferWatchEntriesAsync } from "../lib/siteSettingsStorage";
+
 import { toast } from "sonner";
 
 export function AlertsPage() {
@@ -19,10 +19,7 @@ export function AlertsPage() {
   const {
     followedClubs,
     followedPlayers,
-    followedTransfers,
-    toggleFollowedClub,
     toggleFollowedPlayer,
-    toggleFollowedTransfer,
     markAlertsSeen,
     setNewsletterOptIn,
   } = useUserPreferences();
@@ -37,13 +34,10 @@ export function AlertsPage() {
 
     const loadAlerts = async () => {
       try {
-        const transferWatch = await getTransferWatchEntriesAsync();
         const nextAlerts = await buildSiteAlerts({
           followedClubs,
           followedPlayers,
-          followedTransfers,
           posts,
-          transferWatch,
         });
         if (!isMounted) return;
         setAlerts(nextAlerts);
@@ -53,7 +47,7 @@ export function AlertsPage() {
       }
     };
 
-    if (followedClubs.length === 0 && followedPlayers.length === 0 && followedTransfers.length === 0) {
+    if (followedClubs.length === 0 && followedPlayers.length === 0) {
       setAlerts([]);
       return () => {
         isMounted = false;
@@ -64,7 +58,7 @@ export function AlertsPage() {
     return () => {
       isMounted = false;
     };
-  }, [followedClubs, followedPlayers, followedTransfers, posts]);
+  }, [followedClubs, followedPlayers, posts]);
 
   const addClub = () => {
     if (!clubDraft.trim()) return;
@@ -94,7 +88,6 @@ export function AlertsPage() {
           alertPreferences: {
             clubs: followedClubs,
             players: followedPlayers,
-            transfers: followedTransfers,
             emailAlerts: true,
           },
         }),
@@ -134,12 +127,7 @@ export function AlertsPage() {
             </p>
           </div>
           <div className="relative flex flex-wrap gap-3 mt-6">
-            <Link
-              to="/transfers"
-              className="px-4 py-2.5 rounded-xl bg-[#16A34A] text-white text-sm font-bold hover:bg-[#15803d]"
-            >
-              Transfer Reliability Board
-            </Link>
+
             {favoriteClub && !followedClubs.includes(favoriteClub) && (
               <button
                 type="button"
@@ -163,7 +151,7 @@ export function AlertsPage() {
                 <h2 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white">What You Follow</h2>
               </div>
               <p className="text-sm text-[#64748B] dark:text-gray-400">
-                Clubs and players can be added here. Transfer topics are followed from the Transfer Reliability board.
+                Clubs and players can be added here.
               </p>
             </div>
 
@@ -243,28 +231,7 @@ export function AlertsPage() {
                 </div>
               </div>
 
-              <div>
-                <p className="text-sm font-bold text-[#0F172A] dark:text-white mb-2">Transfer topics</p>
-                <div className="flex flex-wrap gap-2">
-                  {followedTransfers.length > 0 ? followedTransfers.map((topic) => (
-                    <button
-                      key={topic}
-                      type="button"
-                      onClick={() => {
-                        toggleFollowedTransfer(topic);
 
-                      }}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-sm font-semibold text-[#64748B] dark:text-gray-300"
-                    >
-                      <Repeat2 className="w-3.5 h-3.5 text-[#16A34A]" />
-                      {topic.replace(":", " -> ")}
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )) : (
-                    <p className="text-sm text-[#64748B] dark:text-gray-400">No transfer topics followed yet.</p>
-                  )}
-                </div>
-              </div>
             </div>
 
             <form onSubmit={saveEmailAlerts} className="rounded-2xl border border-[#16A34A]/20 bg-[#16A34A]/5 p-5 relative overflow-hidden">

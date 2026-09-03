@@ -14,9 +14,6 @@ import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
 import { toast } from "sonner";
 import { getClubByName } from "../data/clubs";
-import { getTransferWatchEntriesAsync } from "../lib/siteSettingsStorage";
-import type { TransferWatchEntry } from "../lib/transferWatch";
-import { formatTransferWatchAmount } from "../lib/transferWatch";
 import { getRecentFixturesForClub, getUpcomingFixturesForClub } from "../lib/clubFixtures";
 import type { ClubFixture } from "../lib/clubFixtures";
 import { PollWidget } from "../components/PollWidget";
@@ -41,7 +38,6 @@ export function ClubHubPage() {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("newest");
   const [isFavorite, setIsFavorite] = useState(false);
-  const [transfers, setTransfers] = useState<TransferWatchEntry[]>([]);
   const [recentFixtures, setRecentFixtures] = useState<ClubFixture[]>([]);
   const [nextFixtures, setNextFixtures] = useState<ClubFixture[]>([]);
   const [fanZoneTab, setFanZoneTab] = useState<"polls" | "debates">("polls");
@@ -68,13 +64,11 @@ export function ClubHubPage() {
     // Fetch club specific data
     const fetchClubData = async () => {
       try {
-        const [transferData, recentF, nextF] = await Promise.all([
-          getTransferWatchEntriesAsync(clubLabel),
+        const [recentF, nextF] = await Promise.all([
           getRecentFixturesForClub(clubLabel, clubData?.league || "PL"),
           getUpcomingFixturesForClub(clubLabel, clubData?.league || "PL")
         ]);
         if (isMounted) {
-          setTransfers(transferData.slice(0, 3)); // Only top 3 for the widget
           setRecentFixtures(recentF);
           setNextFixtures(nextF);
         }
@@ -283,46 +277,7 @@ export function ClubHubPage() {
                 </div>
             </div>
 
-            {/* Transfer Activity Section */}
-            <div className="lg:col-span-2 bg-[#1E293B] border border-white/5 rounded-[16px] p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                        <Briefcase className="w-5 h-5 text-[#16A34A]" />
-                        Transfer Watch
-                    </h3>
-                    <Link to="/transfer-tracker" className="text-sm text-[#16A34A] hover:underline flex items-center gap-1 font-medium">
-                        View all <ArrowRight className="w-4 h-4" />
-                    </Link>
-                </div>
-                
-                <div className="grid gap-3 sm:grid-cols-2">
-                    {transfers.length > 0 ? transfers.map(t => (
-                        <div key={t.id} className="bg-[#0F172A] border border-white/5 rounded-xl p-3 flex items-center gap-3">
-                            {t.playerImageUrl ? (
-                                <img src={t.playerImageUrl} alt={t.player} className="w-10 h-10 rounded-full object-cover border border-white/10" />
-                            ) : (
-                                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
-                                    <Users className="w-5 h-5" />
-                                </div>
-                            )}
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-white truncate">{t.player}</p>
-                                <p className="text-xs text-gray-400 truncate">
-                                    {t.fromClub ? `${t.fromClub} → ${t.club}` : t.club}
-                                </p>
-                            </div>
-                            <div className="text-right shrink-0">
-                                <p className="text-xs font-black text-[#16A34A]">{formatTransferWatchAmount(t)}</p>
-                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{t.status}</p>
-                            </div>
-                        </div>
-                    )) : (
-                        <div className="col-span-2 text-center py-6 text-gray-400 text-sm">
-                            No active transfer rumors for this club right now.
-                        </div>
-                    )}
-                </div>
-            </div>
+
 
             {/* Fan Zone Widget */}
             <div className="lg:col-span-1 bg-[#1E293B] border border-white/5 rounded-[16px] shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">

@@ -86,8 +86,6 @@ export const UserPreferencesSchema = z.object({
   userId: z.string().optional(),
   savedPosts: z.array(z.string()).default([]),
   followedClubs: z.array(z.string()).default([]),
-  followedPlayers: z.array(z.string()).default([]),
-  followedTransfers: z.array(z.string()).default([]),
   followedTags: z.array(z.string()).default([]),
   seenAlerts: z.array(z.string()).default([]),
   fanClub: z.object({

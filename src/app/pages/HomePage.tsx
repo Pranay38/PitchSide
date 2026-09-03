@@ -19,8 +19,6 @@ import { PageState } from "../components/PageState";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { getSiteSettings, getSiteSettingsAsync, type SiteSettings } from "../lib/siteSettingsStorage";
-import { buildTransferReliabilityBoard } from "../lib/transferReliability";
-import { formatTransferWatchAmount, getTransferTierLabel } from "../lib/transferWatch";
 import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
 import { safeParse, DailyFeaturesSchema } from "../lib/schemas";
@@ -35,7 +33,7 @@ const FantasyCornerWidget = lazy(() => import("../components/FantasyCornerWidget
 
 const InlineNewsletterCard = lazy(() => import("../components/InlineNewsletterCard").then(m => ({ default: m.InlineNewsletterCard })));
 const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m => ({ default: m.BlogPostsGrid })));
-const TransferReportCardCarousel = lazy(() => import("../components/TransferReportCardCarousel").then(m => ({ default: m.TransferReportCardCarousel })));
+
 
 import { QuickTakesSection } from "../components/QuickTakesSection";
 
@@ -229,82 +227,7 @@ function YourVoiceSection() {
   );
 }
 
-function TransferSpotlightCard({ entry }: { entry: ReturnType<typeof buildTransferReliabilityBoard>[number] }) {
-  const fromClubInfo = entry.fromClub ? getClubByName(entry.fromClub) : null;
-  const toClubInfo = getClubByName(entry.club);
 
-  return (
-    <Link
-      to={`/transfers/${entry.dossierSlug}`}
-      className="group block section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800"
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="inline-flex items-center gap-2 rounded-full bg-[#16A34A]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-            <Repeat2 className="h-3.5 w-3.5" />
-            Transfer Dossier
-          </p>
-          <div className="mt-4 flex items-center gap-3">
-            {entry.playerImageUrl && (
-              <img 
-                 src={entry.playerImageUrl} 
-                 alt={entry.player} 
-                 className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-[#16A34A]/30 shadow-sm shrink-0 bg-gray-100 dark:bg-gray-800"
-              />
-            )}
-            <h3 className="text-2xl font-black font-outfit text-[#0F172A] transition-colors group-hover:text-[#16A34A] dark:text-white">
-              {entry.player}
-            </h3>
-          </div>
-          <div className="mt-2 flex items-center gap-2 text-sm font-bold">
-            {entry.fromClub && (
-              <>
-                <div className="flex items-center gap-1.5 text-rose-500">
-                    {fromClubInfo?.logo ? (
-                        <img src={fromClubInfo.logo} alt={entry.fromClub} className="w-4 h-4 object-contain" />
-                    ) : (
-                        <ShieldQuestion className="w-4 h-4" />
-                    )}
-                    <span>{entry.fromClub}</span>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-gray-400" />
-              </>
-            )}
-            <div className="flex items-center gap-1.5 text-emerald-500">
-                {toClubInfo?.logo ? (
-                    <img src={toClubInfo.logo} alt={entry.club} className="w-4 h-4 object-contain" />
-                ) : (
-                    <ShieldQuestion className="w-4 h-4" />
-                )}
-                <span>{entry.club}</span>
-            </div>
-          </div>
-        </div>
-        <div className="rounded-[1.25rem] bg-[#0F172A] px-4 py-3 text-white dark:bg-[#08111f]">
-          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#4ade80]">Reliability</p>
-          <p className="mt-1 text-2xl font-black font-outfit">{entry.reliabilityScore}</p>
-        </div>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        <span className="rounded-full bg-[#16A34A]/10 px-3 py-1 text-xs font-bold text-[#16A34A]">
-          {entry.boardLabel}
-        </span>
-        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-[#475569] dark:bg-white/5 dark:text-gray-300">
-          {entry.status === "confirmed" ? "Official" : getTransferTierLabel(entry.tier, entry.status)}
-        </span>
-        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-[#475569] dark:bg-white/5 dark:text-gray-300">
-          {formatTransferWatchAmount(entry)}
-        </span>
-      </div>
-
-      <p className="mt-4 text-sm leading-6 text-[#64748B] dark:text-gray-400">
-        {entry.rationale[0]}
-      </p>
-      <p className="mt-4 text-sm font-bold text-[#16A34A]">Open dossier</p>
-    </Link>
-  );
-}
 
 interface HomePageProps {
   serverPosts?: any[];
@@ -382,28 +305,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
     return flagged[0] || mustReads[0] || null;
   }, [standardPosts]);
 
-  // If the admin generated an AI Punchy Line for a Transfer Watch entry, use it to override the daily_features.json!
-  const rumorMillCandidate = useMemo(() => {
-    const entries = siteSettings?.transferWatch || [];
-    // Find all entries with a punchyLine that aren't confirmed
-    const validEntries = entries.filter((e) => e.status === "rumor" && !!e.punchyLine);
 
-    if (validEntries.length === 0) return null;
-
-    // Pick a random entry to keep it fresh
-    const randomIndex = Math.floor(Math.random() * validEntries.length);
-    const entryWithAI = validEntries[randomIndex];
-
-    // Use higher sentiment if it's a reliable tier
-    const sentimentScore = entryWithAI.tier === 1 ? 85 : entryWithAI.tier === 2 ? 65 : 45;
-
-    return {
-      text: `${entryWithAI.player} to ${entryWithAI.club} (${entryWithAI.feeMode === "not-disclosed" ? "undisclosed fee" : `$${entryWithAI.feeMillions}m`})`,
-      sentimentScore,
-      punchyLine: entryWithAI.punchyLine,
-      playerImageUrl: entryWithAI.playerImageUrl
-    };
-  }, [siteSettings]);
 
   const fallbackFeaturedStory = useMemo(() => stories[0] || null, [stories]);
   const heroSelection = useMemo(() => {
@@ -471,11 +373,6 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
     }
     return pickOrderedItems(stories, siteSettings.homepageCuration.featuredStoryIds, 3, excludedIds);
   }, [heroSelection, siteSettings.homepageCuration.featuredStoryIds, stories]);
-  const transferSpotlights = useMemo(() => {
-    const board = buildTransferReliabilityBoard(siteSettings.transferWatch);
-    if (board.length === 0) return [];
-    return pickOrderedItems(board, siteSettings.homepageCuration.transferSpotlightIds, 2);
-  }, [siteSettings.homepageCuration.transferSpotlightIds, siteSettings.transferWatch]);
   const issueDate = useMemo(() => (
     dailyFeatures?.lastUpdated
       ? new Date(dailyFeatures.lastUpdated).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
@@ -718,17 +615,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
               ) : null}
             </div>
 
-            {/* --- TRANSFER REPORT CARD CAROUSEL --- */}
-            <div className="scroll-reveal">
-              <Suspense fallback={
-                <div className="tinted-panel rounded-[2rem] border border-gray-200 p-5 shadow-sm dark:border-gray-800 animate-pulse">
-                  <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded mb-6"></div>
-                  <div className="h-[400px] bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
-                </div>
-              }>
-                <TransferReportCardCarousel />
-              </Suspense>
-            </div>
+
 
             {/* Latest Analysis Block */}
             <div id="latest-articles" className="pt-8 border-t border-gray-100 dark:border-gray-800/50">
@@ -849,27 +736,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-1">
-              {transferSpotlights.length > 0 ? (
-                transferSpotlights.map((entry) => (
-                  <TransferSpotlightCard key={entry.id} entry={entry} />
-                ))
-              ) : (
-                <Link
-                  to="/transfers"
-                  className="group section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800"
-                >
-                  <p className="inline-flex items-center gap-2 rounded-full bg-[#16A34A]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-                    <Repeat2 className="h-3.5 w-3.5" />
-                    Transfer Reliability
-                  </p>
-                  <h3 className="mt-4 text-2xl font-black font-outfit text-[#0F172A] transition-colors group-hover:text-[#16A34A] dark:text-white">
-                    Track the market without reading a raw rumor feed.
-                  </h3>
-                  <p className="mt-3 text-sm leading-6 text-[#64748B] dark:text-gray-400">
-                    The reliability board remains the fast path into transfer coverage from the homepage.
-                  </p>
-                </Link>
-              )}
+
               <Link
                 to="/archive?type=story"
                 className="group block section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800"

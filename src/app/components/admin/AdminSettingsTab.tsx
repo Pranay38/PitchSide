@@ -5,7 +5,7 @@ import type { BlogPost } from "../../data/posts";
 import type { StoryFeature } from "../../data/stories";
 import type { ClubIntelligence, ClubIntelligenceSummary } from "../../lib/clubIntelligence";
 import type { SiteSettings } from "../../lib/siteSettingsStorage";
-import { getTransferTierLabel } from "../../lib/transferWatch";
+
 
 interface AdminSettingsTabProps {
     siteSettings: SiteSettings;
@@ -225,11 +225,7 @@ export function AdminSettingsTab({
                                     <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Featured Stories</p>
                                     <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.featuredStoryIds.length}</p>
                                 </div>
-                                <div className="rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Transfer Spotlights</p>
-                                    <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.transferSpotlightIds.length}</p>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
 
@@ -307,42 +303,7 @@ export function AdminSettingsTab({
                             </div>
                         </div>
 
-                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
-                            <div className="flex items-center justify-between gap-4 mb-4">
-                                <div>
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane Three</p>
-                                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Transfer Spotlights</h3>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setSiteSettings((prev) => ({
-                                        ...prev,
-                                        homepageCuration: { ...prev.homepageCuration, transferSpotlightIds: [] },
-                                    }))}
-                                    className="text-sm font-medium text-[#64748B] hover:text-[#16A34A]"
-                                >
-                                    Clear
-                                </button>
-                            </div>
-                            <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1 md:grid-cols-2">
-                                {siteSettings.transferWatch.map((entry) => (
-                                    <SelectionCard
-                                        key={entry.id}
-                                        title={`${entry.player} to ${entry.club}`}
-                                        meta={`${entry.status === "confirmed" ? "Confirmed" : getTransferTierLabel(entry.tier, entry.status)} · ${entry.updatedAt.slice(0, 10)}`}
-                                        description="Shows as a dossier-led transfer spotlight on the homepage."
-                                        selectedIndex={siteSettings.homepageCuration.transferSpotlightIds.indexOf(entry.id)}
-                                        onClick={() => setSiteSettings((prev) => ({
-                                            ...prev,
-                                            homepageCuration: {
-                                                ...prev.homepageCuration,
-                                                transferSpotlightIds: toggleSelection(prev.homepageCuration.transferSpotlightIds, entry.id, 2),
-                                            },
-                                        }))}
-                                    />
-                                ))}
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </section>

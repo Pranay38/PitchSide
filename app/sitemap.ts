@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getPublishedPostsServer, getSiteSettingsServer, getStoriesServer } from '@/lib/server-data';
 import { slugify } from '@/app/lib/contentPaths';
-import { buildTransferReliabilityBoard } from '@/app/lib/transferReliability';
+
 import fs from 'fs';
 import path from 'path';
 
@@ -40,12 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
-    {
-      url: `${baseUrl}/transfers`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
+
     {
       url: `${baseUrl}/tactics`,
       lastModified: now,
@@ -66,7 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/debates`, priority: 0.7, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/daily-fix`, priority: 0.8, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/quick-takes`, priority: 0.7, changeFrequency: 'daily' as const },
-    { url: `${baseUrl}/transfer-tracker`, priority: 0.7, changeFrequency: 'daily' as const },
+
     { url: `${baseUrl}/glossary`, priority: 0.6, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/collections`, priority: 0.6, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/pots`, priority: 0.6, changeFrequency: 'weekly' as const },
@@ -125,13 +120,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const transferDossierRoutes: MetadataRoute.Sitemap = buildTransferReliabilityBoard(siteSettings.transferWatch || [])
-    .map((entry) => ({
-      url: `${baseUrl}/transfers/${entry.dossierSlug}`,
-      lastModified: entry.updatedAt ? new Date(entry.updatedAt) : now,
-      changeFrequency: 'daily' as const,
-      priority: entry.reliabilityScore >= 75 ? 0.8 : 0.6,
-    }));
+
 
   // ─── Programmatic SEO: Manager Pressure Pages ───
   let managerRoutes: MetadataRoute.Sitemap = [];
@@ -167,5 +156,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Sitemap: Failed to load matchup data', e);
   }
 
-  return [...routes, ...staticPages, ...postRoutes, ...storyRoutes, ...tagRoutes, ...clubRoutes, ...transferDossierRoutes, ...managerRoutes, ...matchupRoutes];
+  return [...routes, ...staticPages, ...postRoutes, ...storyRoutes, ...tagRoutes, ...clubRoutes, ...managerRoutes, ...matchupRoutes];
 }

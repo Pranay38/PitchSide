@@ -42,7 +42,7 @@ export function Footer() {
   };
 
   // Construct personalized categories for the footer
-  let categories = ["Tactical Breakdowns", "Bold Takes", "Manager Watch", "Premier League", "Transfers", "Champions League"];
+  let categories = ["Tactical Breakdowns", "Bold Takes", "Manager Watch", "Premier League", "Champions League", "World Cup"];
   
   if (fanClub?.name || (followedClubs && followedClubs.length > 0)) {
     const customCategories: string[] = [];
@@ -58,7 +58,7 @@ export function Footer() {
     }
     
     // Fill the rest with default categories, up to 6 total
-    const defaultCategories = ["Tactical Breakdowns", "Bold Takes", "Manager Watch", "Premier League", "Transfers"];
+    const defaultCategories = ["Tactical Breakdowns", "Bold Takes", "Manager Watch", "Premier League", "Champions League"];
     for (const cat of defaultCategories) {
       if (!customCategories.includes(cat) && customCategories.length < 6) {
          customCategories.push(cat);
@@ -109,7 +109,6 @@ export function Footer() {
               <li><Link to="/" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Home</Link></li>
               <li><Link to="/archive" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Archive</Link></li>
               <li><Link to="/stories" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Stories</Link></li>
-              <li><Link to="/transfers" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Transfer Reliability</Link></li>
               <li><Link to="/collections" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Reading Lists</Link></li>
               <li><Link to="/about" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">About</Link></li>
               <li><a href="mailto:thetouchlinedribble@gmail.com" className="text-sm text-gray-400 hover:text-[#4ade80] transition-colors duration-200">Contact</a></li>

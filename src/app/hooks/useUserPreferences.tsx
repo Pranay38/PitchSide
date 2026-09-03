@@ -6,7 +6,6 @@ interface UserPreferences {
   savedPosts: string[];
   followedClubs: string[];
   followedPlayers: string[];
-  followedTransfers: string[];
   followedTags: string[];
   seenAlerts: string[];
   fanClub: { name: string; logoUrl: string | null; league?: string } | null;
@@ -18,7 +17,6 @@ interface UserPreferencesContextType extends UserPreferences {
   toggleSavedPost: (postId: string) => boolean;
   toggleFollowedClub: (club: string) => boolean;
   toggleFollowedPlayer: (player: string) => boolean;
-  toggleFollowedTransfer: (transferTopic: string) => boolean;
   toggleFollowedTag: (tag: string) => boolean;
   markAlertsSeen: (alertIds: string[]) => void;
   setFanClub: (club: { name: string; logoUrl: string | null; league?: string } | null) => void;
@@ -26,7 +24,6 @@ interface UserPreferencesContextType extends UserPreferences {
   isPostSaved: (postId: string) => boolean;
   isClubFollowed: (club: string) => boolean;
   isPlayerFollowed: (player: string) => boolean;
-  isTransferFollowed: (transferTopic: string) => boolean;
   isTagFollowed: (tag: string) => boolean;
   hasSeenAlert: (alertId: string) => boolean;
   addReadPost: (postId: string) => void;
@@ -39,7 +36,6 @@ const EMPTY_PREFS: UserPreferences = {
   savedPosts: [],
   followedClubs: [],
   followedPlayers: [],
-  followedTransfers: [],
   followedTags: [],
   seenAlerts: [],
   fanClub: null,
@@ -127,7 +123,6 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
           savedPosts: validated.savedPosts,
           followedClubs: validated.followedClubs,
           followedPlayers: validated.followedPlayers,
-          followedTransfers: validated.followedTransfers,
           followedTags: validated.followedTags,
           seenAlerts: validated.seenAlerts,
           fanClub: validated.fanClub,
@@ -195,14 +190,7 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
     return newPrefs.followedPlayers.some((i) => normalizeValue(i) === normalizeValue(player));
   };
 
-  const toggleFollowedTransfer = (topic: string) => {
-    if (!userId) return false;
-    const nextTransfers = toggleArrayItem(prefs.followedTransfers, topic);
-    const newPrefs = { ...prefs, followedTransfers: nextTransfers };
-    setPrefs(newPrefs);
-    updateServer(newPrefs);
-    return newPrefs.followedTransfers.some((i) => normalizeValue(i) === normalizeValue(topic));
-  };
+
 
   const toggleFollowedTag = (tag: string) => {
     if (!userId) return false;
@@ -255,8 +243,7 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
   const isPlayerFollowed = (player: string) =>
     prefs.followedPlayers.some((i) => normalizeValue(i) === normalizeValue(player));
 
-  const isTransferFollowed = (topic: string) =>
-    prefs.followedTransfers.some((i) => normalizeValue(i) === normalizeValue(topic));
+
 
   const isTagFollowed = (tag: string) =>
     prefs.followedTags.some((i) => normalizeValue(i) === normalizeValue(tag));
@@ -290,7 +277,6 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
         toggleSavedPost,
         toggleFollowedClub,
         toggleFollowedPlayer,
-        toggleFollowedTransfer,
         toggleFollowedTag,
         markAlertsSeen,
         setFanClub,
@@ -298,7 +284,6 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
         isPostSaved,
         isClubFollowed,
         isPlayerFollowed,
-        isTransferFollowed,
         isTagFollowed,
         hasSeenAlert,
         addReadPost,

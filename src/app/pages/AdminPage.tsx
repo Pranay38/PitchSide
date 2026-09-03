@@ -30,17 +30,7 @@ import {
     normalizeClubIntelligence,
     type ClubIntelligence,
 } from "../lib/clubIntelligence";
-import {
-    buildTransferDossierSlug,
-    buildTransferTopic,
-    formatTransferWatchAmount,
-    normalizeTransferWatchEntry,
-    type ScoutGrades,
-    type TransferFeeMode,
-    type TransferWatchEntry,
-    type TransferWatchStatus,
-}
-from "../lib/transferWatch";
+
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { createDefaultPollOfWeek, normalizePollOfWeek } from "../lib/pollOfWeek";
 import { Plus, Edit3, HelpCircle, Trash2, LogOut, Eye, ExternalLink, Download, Upload, Mail, Send, RadioTower, Library, Flame, Layout, ArrowUpDown, Filter, Repeat2, ScanSearch, BarChart3, LineChart, Image as ImageIcon, Mic, MessageSquare, Calendar, BarChart2, PenLine, Bell, Trophy, Zap, Newspaper } from "lucide-react";
@@ -56,8 +46,7 @@ const AdminCollectionsTab = dynamic(() => import('../components/admin/AdminColle
 const AdminDebatesTab = dynamic(() => import('../components/admin/AdminDebatesTab').then(m => m.AdminDebatesTab));
 const AdminPollsTab = dynamic(() => import('../components/admin/AdminPollsTab').then(m => m.AdminPollsTab));
 const AdminOnThisDayTab = dynamic(() => import('../components/admin/AdminOnThisDayTab').then(m => m.AdminOnThisDayTab));
-const AdminTransferWatchTab = dynamic(() => import('../components/admin/AdminTransferWatchTab').then(m => m.AdminTransferWatchTab));
-const AdminTransferTrackerTab = dynamic(() => import('../components/admin/AdminTransferTrackerTab').then(m => m.AdminTransferTrackerTab));
+
 const AdminSettingsTab = dynamic(() => import('../components/admin/AdminSettingsTab').then(m => m.AdminSettingsTab));
 const AdminNewsletterTab = dynamic(() => import('../components/admin/AdminNewsletterTab').then(m => m.AdminNewsletterTab));
 const AdminAnalyticsTab = dynamic(() => import('../components/admin/AdminAnalyticsTab').then(m => m.AdminAnalyticsTab));
@@ -69,45 +58,12 @@ const AdminCalendarTab = dynamic(() => import('../components/admin/AdminCalendar
 const AdminNotificationsTab = dynamic(() => import('../components/admin/AdminNotificationsTab').then(m => m.AdminNotificationsTab));
 const AdminPOTSTab = dynamic(() => import('../components/admin/AdminPOTSTab').then(m => m.AdminPOTSTab));
 const AdminPostsTab = dynamic(() => import('../components/admin/AdminPostsTab').then(m => m.AdminPostsTab));
-const AdminReportCardTab = dynamic(() => import('../components/admin/AdminReportCardTab').then(m => m.AdminReportCardTab));
+
 const AdminWeeklyRoundupTab = dynamic(() => import('../components/admin/AdminWeeklyRoundupTab').then(m => m.AdminWeeklyRoundupTab));
 
 type View = "list" | "create" | "edit";
-type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "transfer-watch" | "transfer-tracker" | "report-cards" | "weekly-roundup" | "on-this-day" | "settings" | "polls" | "newsletter" | "analytics" | "carousel-generator" | "quick-take-video" | "draft-assistant" | "tweet-generator" | "calendar";
+type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "debates" | "run-in" | "title-race" | "weekly-roundup" | "on-this-day" | "settings" | "polls" | "newsletter" | "analytics" | "carousel-generator" | "quick-take-video" | "draft-assistant" | "tweet-generator" | "calendar";
 
-type TransferDraft = {
-    player: string;
-    playerImageUrl: string;
-    club: string;
-    fromClub: string;
-    feeMode: TransferFeeMode;
-    feeMillions: string;
-    status: TransferWatchStatus;
-    tier: number;
-    scoutGrades?: Partial<ScoutGrades>;
-    punchyLine: string;
-    myTake: string;
-    aiTake: string;
-    aiScore?: number;
-};
-
-function createTransferDraft(club = "Arsenal"): TransferDraft {
-    return {
-        player: "",
-        playerImageUrl: "",
-        club,
-        fromClub: "",
-        feeMode: "million-usd",
-        feeMillions: "",
-        status: "rumor",
-        tier: 3,
-        scoutGrades: undefined,
-        punchyLine: "",
-        myTake: "",
-        aiTake: "",
-        aiScore: undefined,
-    };
-}
 
 export function AdminPage() {
     const navigate = useNavigate();
@@ -136,12 +92,10 @@ export function AdminPage() {
     const [savingSiteSettings, setSavingSiteSettings] = useState(false);
     const [savingPollOfWeek, setSavingPollOfWeek] = useState(false);
     const [savingClubIntelligence, setSavingClubIntelligence] = useState(false);
-    const [savingTransferWatch, setSavingTransferWatch] = useState(false);
+
     const [stories, setStories] = useState<StoryFeature[]>(() => getAllStories(true));
     const [selectedClubForInsights, setSelectedClubForInsights] = useState("Arsenal");
-    const [transferDraft, setTransferDraft] = useState<TransferDraft>(() => createTransferDraft());
-    const [transferEditId, setTransferEditId] = useState<string | null>(null);
-    const [transferFilterClub, setTransferFilterClub] = useState("all");
+
 
     const [collections, setCollections] = useState<any[]>([]);
     const [debates, setDebates] = useState<any[]>([]);
@@ -154,10 +108,7 @@ export function AdminPage() {
         () => calculateClubIntelligenceSummary(selectedClubInsight),
         [selectedClubInsight],
     );
-    const filteredTransferWatchEntries = useMemo(() => {
-        if (transferFilterClub === "all") return siteSettings.transferWatch;
-        return siteSettings.transferWatch.filter((entry) => entry.club === transferFilterClub);
-    }, [siteSettings.transferWatch, transferFilterClub]);
+
 
     const getAdminAuthHeaders = useCallback((): HeadersInit => ({}), []);
 
@@ -428,159 +379,6 @@ export function AdminPage() {
         }
     };
 
-    const handleAddTransferWatchEntry = async () => {
-        const existingEntry = transferEditId
-            ? siteSettings.transferWatch.find((entry) => entry.id === transferEditId) || null
-            : null;
-        const normalized = normalizeTransferWatchEntry({
-            ...transferDraft,
-            feeMillions: Number(transferDraft.feeMillions) || 0,
-            tier: transferDraft.tier as 1|2|3|4|5,
-            updatedAt: new Date().toISOString(),
-            id: transferEditId || undefined, // Use existing ID if editing
-        } as Partial<TransferWatchEntry>);
-
-        if (!normalized) {
-            toast.error("Add at least a player name and club before saving a transfer item.");
-            return;
-        }
-
-        const isNew = !transferEditId;
-
-        const newTransferWatch = [normalized, ...siteSettings.transferWatch.filter((entry) => entry.id !== normalized.id)];
-        const previousDossierSlug = existingEntry ? buildTransferDossierSlug(existingEntry) : null;
-        const previousTopic = existingEntry ? buildTransferTopic(existingEntry.player, existingEntry.club) : null;
-        const nextTransferSources = existingEntry
-            ? siteSettings.transferSources.map((source) => {
-                const matchesPreviousDossier = source.dossierSlug === previousDossierSlug
-                    || source.topic === previousTopic
-                    || (source.player === existingEntry.player && source.club === existingEntry.club);
-
-                if (!matchesPreviousDossier) return source;
-
-                return {
-                    ...source,
-                    dossierSlug: buildTransferDossierSlug(normalized),
-                    topic: buildTransferTopic(normalized.player, normalized.club),
-                    player: normalized.player,
-                    club: normalized.club,
-                };
-            })
-            : siteSettings.transferSources;
-        
-        setSiteSettings((prev) => ({
-            ...prev,
-            transferWatch: newTransferWatch,
-            transferSources: nextTransferSources,
-        }));
-        
-        setTransferDraft(createTransferDraft(normalized.club));
-        setTransferEditId(null);
-        toast.success(isNew ? "Transfer watch item added to the draft feed." : "Transfer watch item updated.");
-
-        if (isNew) {
-            try {
-                const token = localStorage.getItem("pitchside_admin_auth");
-                const feeString = formatTransferWatchAmount(normalized) || "";
-                await fetch("/api/transfers", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({
-                        player: normalized.player,
-                        fromClub: normalized.fromClub || "Unknown",
-                        toClub: normalized.club,
-                        fee: feeString,
-                        source: `Tier ${normalized.tier} Report`,
-                        status: normalized.status === "confirmed" ? "done" : "rumour"
-                    })
-                });
-            } catch (e) {
-                console.error("Failed to sync to tracker", e);
-            }
-        }
-        
-        // Auto-save the Transfer Watch feed
-        try {
-            const updated = await updateSiteSettingsAsync({
-                transferWatch: newTransferWatch,
-                transferSources: nextTransferSources,
-            });
-            setSiteSettings(updated);
-        } catch (error) {
-            toast.error("UI updated, but failed to persist to server. Click Save manually.");
-        }
-    };
-
-    const handleEditTransferWatchEntry = (entry: typeof siteSettings.transferWatch[0]) => {
-        setTransferDraft({
-            player: entry.player,
-            playerImageUrl: entry.playerImageUrl || "",
-            club: entry.club,
-            fromClub: entry.fromClub || "",
-            feeMode: entry.feeMode,
-            feeMillions: String(entry.feeMillions || ""),
-            status: entry.status,
-            tier: entry.tier || 3,
-            scoutGrades: entry.scoutGrades,
-            punchyLine: entry.punchyLine || "",
-            myTake: entry.myTake || "",
-            aiTake: entry.aiTake || "",
-            aiScore: entry.aiScore,
-        });
-        setTransferEditId(entry.id);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-
-    const handleCancelTransferWatchEdit = () => {
-        setTransferDraft(createTransferDraft(transferDraft.club || "Arsenal"));
-        setTransferEditId(null);
-    };
-
-    const handleDeleteTransferWatchEntry = (id: string) => {
-        const entryToDelete = siteSettings.transferWatch.find((entry) => entry.id === id);
-        const nextTransferWatch = siteSettings.transferWatch.filter((entry) => entry.id !== id);
-        const nextTransferSources = entryToDelete
-            ? siteSettings.transferSources.filter((source) => (
-                source.dossierSlug !== buildTransferDossierSlug(entryToDelete)
-                && source.topic !== buildTransferTopic(entryToDelete.player, entryToDelete.club)
-                && !(source.player === entryToDelete.player && source.club === entryToDelete.club)
-            ))
-            : siteSettings.transferSources;
-
-        setSiteSettings((prev) => ({
-            ...prev,
-            transferWatch: nextTransferWatch,
-            transferSources: nextTransferSources,
-        }));
-
-        if (transferEditId === id) {
-            setTransferDraft(createTransferDraft());
-            setTransferEditId(null);
-        }
-    };
-
-    const handleSaveTransferSources = async (nextSources: SiteSettings["transferSources"]) => {
-        const updated = await updateSiteSettingsAsync({
-            transferSources: nextSources,
-        });
-        setSiteSettings(updated);
-    };
-
-    const handleSaveTransferWatch = async () => {
-        setSavingTransferWatch(true);
-        try {
-            const updated = await updateSiteSettingsAsync({
-                transferWatch: siteSettings.transferWatch,
-                transferSources: siteSettings.transferSources,
-            });
-            setSiteSettings(updated);
-            toast.success("Transfer watch updated.");
-        } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Failed to save transfer watch.");
-        } finally {
-            setSavingTransferWatch(false);
-        }
-    };
 
     const handlePollFieldChange = (field: "enabled" | "title" | "description" | "question", value: string | boolean) => {
         setSiteSettings((prev) => ({
@@ -892,24 +690,7 @@ export function AdminPage() {
                     >
                         <ArrowUpDown className="w-4 h-4" /> Title Race
                     </button>
-                    <button
-                        onClick={() => setActiveTab("transfer-tracker")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "transfer-tracker" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
-                    >
-                        <Repeat2 className="w-4 h-4" /> Transfer Tracker
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("transfer-watch")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "transfer-watch" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
-                    >
-                        <Repeat2 className="w-4 h-4" /> Transfer Watch
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("report-cards")}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "report-cards" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
-                    >
-                        <span className="text-base leading-none">📝</span> Report Cards
-                    </button>
+
                     <button
                         onClick={() => setActiveTab("weekly-roundup")}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors shrink-0 ${activeTab === "weekly-roundup" ? "bg-[#16A34A] text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}
@@ -1044,19 +825,7 @@ export function AdminPage() {
                     />
                 )}
 
-                {/* TRANSFER TRACKER TAB */}
-                {activeTab === "transfer-tracker" && (
-                    <AdminTransferTrackerTab />
-                )}
 
-                {/* TRANSFER REPORT CARDS TAB */}
-                {activeTab === "report-cards" && (
-                    <AdminReportCardTab
-                        siteSettings={siteSettings}
-                        setSiteSettings={setSiteSettings}
-                        updateSiteSettingsAsync={updateSiteSettingsAsync}
-                    />
-                )}
 
                 {activeTab === "weekly-roundup" && (
                     <AdminWeeklyRoundupTab
@@ -1066,27 +835,7 @@ export function AdminPage() {
                     />
                 )}
 
-                {/* TRANSFER WATCH TAB */}
-                {activeTab === "transfer-watch" && (
-                    <AdminTransferWatchTab 
-                        siteSettings={siteSettings}
-                        transferDraft={transferDraft}
-                        transferEditId={transferEditId}
-                        transferFilterClub={transferFilterClub}
-                        filteredTransferWatchEntries={filteredTransferWatchEntries}
-                        savingTransferWatch={savingTransferWatch}
-                        setTransferDraft={setTransferDraft}
-                        setTransferFilterClub={setTransferFilterClub}
-                        handleAddTransferWatchEntry={handleAddTransferWatchEntry}
-                        handleEditTransferWatchEntry={handleEditTransferWatchEntry}
-                        handleCancelTransferWatchEdit={handleCancelTransferWatchEdit}
-                        handleSaveTransferWatch={handleSaveTransferWatch}
-                        handleDeleteTransferWatchEntry={handleDeleteTransferWatchEntry}
-                        formatTransferWatchAmount={formatTransferWatchAmount}
-                        transferSources={siteSettings.transferSources}
-                        onPersistTransferSources={handleSaveTransferSources}
-                    />
-                )}
+
 
                 {/* SETTINGS TAB */}
                 {activeTab === "settings" && (

@@ -242,7 +242,7 @@ export default function RootLayout({
               <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/daily-fix">Daily Fix</a></li>
-                <li><a href="/transfers">Transfer Watch</a></li>
+
                 <li><a href="/stories">Stories</a></li>
                 <li><a href="/debates">Debates</a></li>
                 <li><a href="/collections">Collections</a></li>

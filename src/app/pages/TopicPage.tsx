@@ -27,7 +27,13 @@ function sortPosts(posts: BlogPost[], sort: string): BlogPost[] {
   return ordered.sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
 }
 
-export function TopicPage({ initialPosts }: { initialPosts?: BlogPost[] }) {
+export function TopicPage({ 
+  initialPosts, 
+  topicDetails 
+}: { 
+  initialPosts?: BlogPost[],
+  topicDetails?: { title?: string; description?: string; heroImage?: string; }
+}) {
   const { slug = "" } = useParams();
   const [posts, setPosts] = useState<BlogPost[]>(() => initialPosts || getPublishedPosts());
   const [loading, setLoading] = useState(!initialPosts && posts.length === 0);
@@ -127,10 +133,10 @@ export function TopicPage({ initialPosts }: { initialPosts?: BlogPost[] }) {
           <div className="relative mt-4 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div className="max-w-3xl">
               <h1 className="text-4xl font-black font-outfit text-[#0F172A] dark:text-white md:text-5xl">
-                {topicLabel}
+                {topicDetails?.title || topicLabel}
               </h1>
               <p className="mt-3 text-base leading-7 text-[#64748B] dark:text-gray-400">
-                A focused editorial page for {topicLabel}, with one featured entry, the latest attached coverage, and the related topics that surround it.
+                {topicDetails?.description || `A focused editorial page for ${topicLabel}, with one featured entry, the latest attached coverage, and the related topics that surround it.`}
               </p>
             </div>
             <div className="flex flex-col gap-3 xl:items-end">

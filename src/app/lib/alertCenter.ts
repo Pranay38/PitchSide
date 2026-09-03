@@ -4,13 +4,12 @@ import {
   getLiveFixturesForClub,
   getUpcomingFixturesForClub,
 } from "./clubFixtures";
-import type { TransferWatchEntry } from "./transferWatch";
-import { buildTransferTopic } from "./transferWatch";
+
 
 export interface SiteAlert {
   id: string;
-  type: "club" | "player" | "transfer";
-  kind: "article" | "fixture-live" | "fixture-upcoming" | "transfer";
+  type: "club" | "player";
+  kind: "article" | "fixture-live" | "fixture-upcoming";
   title: string;
   summary: string;
   href: string;
@@ -48,9 +47,7 @@ function sortAlerts(alerts: SiteAlert[]): SiteAlert[] {
 export async function buildSiteAlerts(input: {
   followedClubs: string[];
   followedPlayers: string[];
-  followedTransfers: string[];
   posts: BlogPost[];
-  transferWatch: TransferWatchEntry[];
 }): Promise<SiteAlert[]> {
   const alerts = new Map<string, SiteAlert>();
 
@@ -111,20 +108,6 @@ export async function buildSiteAlerts(input: {
         priority: 3,
       });
     }
-
-    for (const entry of input.transferWatch.filter((item) => normalize(item.club) === normalize(club)).slice(0, 2)) {
-      alerts.set(`club-transfer-${entry.id}`, {
-        id: `club-transfer-${entry.id}`,
-        type: "club",
-        kind: "transfer",
-        entity: club,
-        title: `${club} transfer watch moved`,
-        summary: `${entry.player} is currently tagged as ${entry.status}.`,
-        href: "/transfers",
-        date: entry.updatedAt,
-        priority: entry.status === "confirmed" ? 1 : 2,
-      });
-    }
   }
 
   for (const player of input.followedPlayers) {
@@ -139,36 +122,6 @@ export async function buildSiteAlerts(input: {
         href: `/post/${post.slug || post.id}`,
         date: post.date,
         priority: 3,
-      });
-    }
-
-    for (const entry of input.transferWatch.filter((item) => normalize(item.player) === normalize(player)).slice(0, 2)) {
-      alerts.set(`player-transfer-${entry.id}`, {
-        id: `player-transfer-${entry.id}`,
-        type: "player",
-        kind: "transfer",
-        entity: player,
-        title: `${player} transfer alert`,
-        summary: `${entry.player} is linked with ${entry.club} as a ${entry.status}.`,
-        href: "/transfers",
-        date: entry.updatedAt,
-        priority: entry.status === "confirmed" ? 1 : 2,
-      });
-    }
-  }
-
-  for (const followedTransfer of input.followedTransfers) {
-    for (const entry of input.transferWatch.filter((item) => buildTransferTopic(item.player, item.club) === followedTransfer).slice(0, 1)) {
-      alerts.set(`transfer-topic-${entry.id}`, {
-        id: `transfer-topic-${entry.id}`,
-        type: "transfer",
-        kind: "transfer",
-        entity: followedTransfer,
-        title: `${entry.player} -> ${entry.club}`,
-        summary: `${entry.player} is still tagged ${entry.status} with ${entry.feeMode === "million-usd" ? `$${entry.feeMillions}m` : "fee not disclosed"}.`,
-        href: "/transfers",
-        date: entry.updatedAt,
-        priority: entry.status === "confirmed" ? 1 : 2,
       });
     }
   }

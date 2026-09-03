@@ -3,16 +3,7 @@ import {
   getClubIntelligenceKey,
   normalizeClubIntelligence,
 } from "./clubIntelligence";
-import {
-  type TransferWatchEntry,
-  matchesTransferClub,
-  normalizeTransferWatchEntries,
-} from "./transferWatch";
-import {
-  type TransferSourceArticle,
-  getTransferSourcesForDossier,
-  normalizeTransferSourceArticles,
-} from "./transferSources";
+
 import {
   createDefaultPollOfWeek,
   normalizePollOfWeek,
@@ -23,11 +14,7 @@ import {
   createDefaultPOTSSettings,
   normalizePOTSSettings,
 } from "./pots";
-import {
-  type TransferReportCards,
-  defaultTransferReportCards,
-  normalizeTransferReportCards,
-} from "./transferReportCards";
+
 import { defaultWeeklyRoundup, normalizeWeeklyRoundup, type WeeklyRoundup } from "./weeklyRoundup";
 
 export interface SupplementalEvent {
@@ -51,7 +38,6 @@ export interface HomepageCuration {
   latestPostIds: string[];
   editorPickIds: string[];
   featuredStoryIds: string[];
-  transferSpotlightIds: string[];
 }
 
 export interface AuthorsTake {
@@ -83,13 +69,12 @@ export interface SiteSettings {
   pollOfWeek: PollOfWeek;
   pots: POTSSettings;
   clubIntelligence: Record<string, ClubIntelligence>;
-  transferWatch: TransferWatchEntry[];
-  transferSources: TransferSourceArticle[];
+
   homepageCuration: HomepageCuration;
   supplementalEvents: SupplementalEvent[];
   authorsTake: AuthorsTake;
   fantasyCorner: FantasyCorner;
-  transferReportCards: TransferReportCards;
+
   weeklyRoundup: WeeklyRoundup;
   updatedAt: string;
 }
@@ -105,14 +90,13 @@ const DEFAULT_SETTINGS: SiteSettings = {
   pollOfWeek: createDefaultPollOfWeek(),
   pots: createDefaultPOTSSettings(),
   clubIntelligence: {},
-  transferWatch: [],
-  transferSources: [],
+
   homepageCuration: {
     hero: { type: "post", id: "" },
     latestPostIds: [],
     editorPickIds: [],
     featuredStoryIds: [],
-    transferSpotlightIds: [],
+
   },
   supplementalEvents: [],
   authorsTake: {
@@ -128,7 +112,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     captainPick: { name: "", club: "", reason: "" },
     differentialPick: { name: "", club: "", reason: "" },
   },
-  transferReportCards: defaultTransferReportCards,
+
   weeklyRoundup: defaultWeeklyRoundup,
   updatedAt: "",
 };
@@ -179,7 +163,6 @@ function normalizeHomepageCuration(input?: Partial<HomepageCuration> | null): Ho
     latestPostIds: uniqueIds(input?.latestPostIds),
     editorPickIds: uniqueIds(input?.editorPickIds),
     featuredStoryIds: uniqueIds(input?.featuredStoryIds),
-    transferSpotlightIds: uniqueIds(input?.transferSpotlightIds),
   };
 }
 
@@ -249,13 +232,12 @@ function normalizeSettings(input?: Partial<SiteSettings> | null): SiteSettings {
     pollOfWeek: normalizePollOfWeek(input?.pollOfWeek),
     pots: normalizePOTSSettings(input?.pots),
     clubIntelligence: normalizeClubIntelligenceMap(input?.clubIntelligence),
-    transferWatch: normalizeTransferWatchEntries(input?.transferWatch),
-    transferSources: normalizeTransferSourceArticles(input?.transferSources),
+
     homepageCuration: normalizeHomepageCuration(input?.homepageCuration),
     supplementalEvents: normalizeSupplementalEvents(input?.supplementalEvents),
     authorsTake: normalizeAuthorsTake(input?.authorsTake),
     fantasyCorner: normalizeFantasyCorner(input?.fantasyCorner),
-    transferReportCards: normalizeTransferReportCards(input?.transferReportCards),
+
     weeklyRoundup: normalizeWeeklyRoundup(input?.weeklyRoundup),
     updatedAt: input?.updatedAt || DEFAULT_SETTINGS.updatedAt,
   };
@@ -354,29 +336,3 @@ export async function getClubIntelligenceAsync(club: string): Promise<ClubIntell
   return settings.clubIntelligence[getClubIntelligenceKey(club)] || null;
 }
 
-export function getTransferWatchEntries(club?: string): TransferWatchEntry[] {
-  const settings = getSettingsLocal();
-  if (!club) return settings.transferWatch;
-  return settings.transferWatch.filter((entry) => matchesTransferClub(entry, club));
-}
-
-export async function getTransferWatchEntriesAsync(club?: string): Promise<TransferWatchEntry[]> {
-  const settings = await getSiteSettingsAsync();
-  if (!club) return settings.transferWatch;
-  return settings.transferWatch.filter((entry) => matchesTransferClub(entry, club));
-}
-
-export function getTransferSources(): TransferSourceArticle[] {
-  return getSettingsLocal().transferSources;
-}
-
-export async function getTransferSourcesAsync(): Promise<TransferSourceArticle[]> {
-  return (await getSiteSettingsAsync()).transferSources;
-}
-
-export async function getTransferSourcesForDossierAsync(
-  dossier: Pick<TransferSourceArticle, "dossierSlug" | "topic" | "player" | "club">,
-): Promise<TransferSourceArticle[]> {
-  const settings = await getSiteSettingsAsync();
-  return getTransferSourcesForDossier(settings.transferSources, dossier);
-}

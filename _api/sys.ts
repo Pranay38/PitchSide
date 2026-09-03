@@ -15,7 +15,7 @@ import onThisDayHandler from "../server/endpoints/on-this-day";
 import analyticsHandler from "../server/endpoints/analytics";
 import aiGenerateHandler from "../server/endpoints/ai-generate";
 import sitemapHandler from "../server/endpoints/sitemap";
-import transfersHandler from "../server/endpoints/transfers";
+
 import { getPolls, createPoll, updatePoll, deletePoll, votePoll } from "../server/endpoints/polls";
 import { getMatchRatings, createMatchRating, updateMatchRating, deleteMatchRating, voteMatchRating } from "../server/endpoints/matchRatings";
 import { getArmchairRatings, voteArmchairRatings } from "../server/endpoints/armchairRatings";
@@ -30,7 +30,7 @@ import rssHandler from "../server/endpoints/rss";
 import ensureIndexesHandler from "../server/endpoints/ensure-indexes";
 import searchHandler from "../server/endpoints/search";
 import footballDataHandler from "../server/endpoints/football-data";
-import transferSourcePreviewHandler from "../server/endpoints/transfer-source-preview";
+
 import welcomeSequenceHandler from "../server/endpoints/welcome-sequence";
 import { applyRateLimit, applyStrictRateLimit } from "../server/lib/rateLimit";
 
@@ -88,8 +88,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return ogHandler(req, res);
         case "club-season":
             return clubSeasonHandler(req, res);
-        case "transfers":
-            return transfersHandler(req, res);
+
         case "user-prefs":
             return userPrefsHandler(req, res);
         case "polls":
@@ -164,8 +163,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return searchHandler(req, res);
         case "football-data":
             return footballDataHandler(req, res);
-        case "transfer-source-preview":
-            return transferSourcePreviewHandler(req, res);
+
         case "welcome-sequence":
             return welcomeSequenceHandler(req, res);
         default:

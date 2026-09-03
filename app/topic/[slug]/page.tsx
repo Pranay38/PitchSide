@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getPublishedPostsServer } from "@/lib/server-data";
+import { getTopicBySlugServer } from "@/lib/server-topic";
 import { TopicPage as TopicPageClient } from "@/app/pages/TopicPage";
 import { deslugify, slugify } from "@/app/lib/contentPaths";
 
@@ -38,10 +39,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const allPosts = canonicalSlug ? await getPublishedPostsServer() : [];
   const topicMatches = canonicalSlug ? getTopicMatches(allPosts, canonicalSlug) : [];
   const shouldIndex = topicMatches.length >= 2;
+  const topicDetails = canonicalSlug ? await getTopicBySlugServer(canonicalSlug) : null;
+  const pageTitle = topicDetails?.title || `${topicLabel} Coverage | The Touchline Dribble`;
+  const pageDesc = topicDetails?.description || `Read every Touchline Dribble story tagged with ${topicLabel}.`;
 
   return {
-    title: `${topicLabel} Coverage | The Touchline Dribble`,
-    description: `Read every Touchline Dribble story tagged with ${topicLabel}.`,
+    title: pageTitle,
+    description: pageDesc,
     alternates: {
       canonical: `${SITE_URL}/topic/${canonicalSlug}`,
     },
@@ -52,15 +56,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
           follow: true,
         },
     openGraph: {
-      title: `${topicLabel} Coverage | The Touchline Dribble`,
-      description: `Read every Touchline Dribble story tagged with ${topicLabel}.`,
+      title: pageTitle,
+      description: pageDesc,
       type: "website",
       url: `${SITE_URL}/topic/${canonicalSlug}`,
+      ...(topicDetails?.heroImage ? { images: [topicDetails.heroImage] } : {})
     },
     twitter: {
       card: "summary_large_image",
-      title: `${topicLabel} Coverage | The Touchline Dribble`,
-      description: `Read every Touchline Dribble story tagged with ${topicLabel}.`,
+      title: pageTitle,
+      description: pageDesc,
+      ...(topicDetails?.heroImage ? { images: [topicDetails.heroImage] } : {})
     },
   };
 }
@@ -80,10 +86,11 @@ export default async function TopicPage({ params }: Props) {
   
   const allPosts = await getPublishedPostsServer();
   const topicMatches = getTopicMatches(allPosts, canonicalSlug);
+  const topicDetails = await getTopicBySlugServer(canonicalSlug);
 
   if (topicMatches.length === 0) {
     notFound();
   }
 
-  return <TopicPageClient initialPosts={topicMatches as any} />;
+  return <TopicPageClient initialPosts={topicMatches as any} topicDetails={topicDetails || undefined} />;
 }

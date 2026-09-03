@@ -24,7 +24,7 @@ function getDefaultSiteSettings() {
       featuredStoryIds: [],
       transferSpotlightIds: [],
     },
-    transferWatch: [],
+
   };
 }
 

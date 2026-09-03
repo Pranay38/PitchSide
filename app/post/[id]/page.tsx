@@ -23,6 +23,7 @@ import { PostEmbedHydrationClient } from "./PostEmbedHydrationClient";
 import { AdaptiveArticleHeader } from "@/app/components/AdaptiveArticleHeader";
 import { MilestoneScrubber } from "@/app/components/MilestoneScrubber";
 import { HotTakeHeatIndex } from "@/app/components/HotTakeHeatIndex";
+import { TopicClusterNav } from "@/app/components/TopicClusterNav";
 export const revalidate = 60;
 
 interface Props {
@@ -309,6 +310,8 @@ export default async function BlogPostPage({ params }: Props) {
                 ))}
               </div>
             )}
+
+            <TopicClusterNav topicLabel={post.tags?.[0] || post.club} />
 
             <div className="mt-12">
               <InlineNewsletterCard
