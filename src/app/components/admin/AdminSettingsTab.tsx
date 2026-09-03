@@ -225,7 +225,7 @@ export function AdminSettingsTab({
                                     <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Featured Stories</p>
                                     <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.featuredStoryIds.length}</p>
                                 </div>
-
+                            </div>
                         </div>
                     </div>
 
