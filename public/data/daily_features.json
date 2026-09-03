@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-09-02T09:15:44.721206",
+  "lastUpdated": "2026-09-03T09:24:26.338259",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool tried to sign Gusto - Wednesday's gossip",
+    "text": "Chelsea make contact with Wijnaldum - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 99
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 83
     },
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 85
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 76
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 70
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 67
     }
   ]
 }
