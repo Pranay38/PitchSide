@@ -162,7 +162,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     const postClub = (post.club || "").toLowerCase();
                     const postTags = Array.isArray(post.tags) ? post.tags.map((t: string) => t.toLowerCase()) : [];
                     
-                    if (activeClub && (postClub.includes(activeClub.toLowerCase()) || postTags.some(t => t.includes(activeClub.toLowerCase())))) modifier += 100;
+                    if (activeClub && (postClub.includes(activeClub.toLowerCase()) || postTags.some((t: any) => t.includes(activeClub.toLowerCase())))) modifier += 100;
                     if (isTransfer && (postClub.includes("transfer") || postTags.includes("transfer") || post.category?.toLowerCase() === "transfer")) modifier += 80;
                     if (isStory && (postTags.includes("story") || parseInt(post.readTime || "0") > 5 || post.type?.toLowerCase() === "longform")) modifier += 60;
                     

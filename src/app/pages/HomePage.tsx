@@ -23,12 +23,12 @@ import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
 import { safeParse, DailyFeaturesSchema } from "../lib/schemas";
 import { DebateWidget } from "../components/DebateWidget";
+import { SupportBanner } from "../components/SupportBanner";
 import { getClubByName } from "../data/clubs";
 
 // Lazy-load below-the-fold heavy components to reduce initial bundle
 const OnThisDayWidget = lazy(() => import("../components/OnThisDayWidget").then(m => ({ default: m.OnThisDayWidget })));
 const RumorMillWidget = lazy(() => import("../components/RumorMillWidget").then(m => ({ default: m.RumorMillWidget })));
-const ManagerPressureWidget = lazy(() => import("../components/ManagerPressureWidget").then(m => ({ default: m.ManagerPressureWidget })));
 const FantasyCornerWidget = lazy(() => import("../components/FantasyCornerWidget").then(m => ({ default: m.FantasyCornerWidget })));
 
 const InlineNewsletterCard = lazy(() => import("../components/InlineNewsletterCard").then(m => ({ default: m.InlineNewsletterCard })));
@@ -38,10 +38,6 @@ const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m =>
 import { QuickTakesSection } from "../components/QuickTakesSection";
 
 import { ChallengeTheTake } from "../components/home/ChallengeTheTake";
-
-const PitchXI = lazy(() => import("../components/PitchXI").then(m => ({ default: m.PitchXI })));
-import { WORLD_CUP_XI } from "../data/worldCupXI";
-
 
 
 /** Hook: animates elements with class `scroll-reveal` when they enter viewport */
@@ -466,7 +462,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
       {/* --- AUTHOR'S TAKE (INLINE BANNER STRIP) --- */}
       <section className="mb-12 scroll-reveal">
-        <div className="relative w-full border-y border-gray-200 dark:border-gray-800/60 bg-gradient-to-r from-gray-50 to-white dark:from-[#060e20] dark:to-[#0b1325]">
+        <div className="relative w-full border-y border-border bg-secondary">
           <div className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-start md:items-center gap-4 flex-1">
                <div className="h-12 w-12 rounded-full border-2 border-[#16A34A] bg-[#0F172A] overflow-hidden flex items-center justify-center shrink-0">
@@ -474,11 +470,11 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                </div>
                <div>
                  <div className="flex items-center gap-2 mb-1.5">
-                   <p className="font-outfit text-[10px] font-black text-[#16A34A] uppercase tracking-[0.2em]">Author's Take</p>
-                   <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"></span>
-                   <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-widest">Every Friday</p>
+                   <p className="kicker px-2 py-0.5 rounded-full bg-primary/10 text-primary uppercase text-[10px]">Author's Take</p>
+                   <span className="w-1 h-1 rounded-full bg-border"></span>
+                   <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Every Friday</p>
                  </div>
-                 <h2 className="font-outfit text-lg sm:text-2xl font-black text-[#0F172A] dark:text-white leading-tight">
+                 <h2 className="font-headline text-lg sm:text-2xl tracking-tight text-foreground leading-tight">
                    {siteSettings.authorsTake?.headline || "Lamine Yamal Injury: Barcelona's Tactical Crisis and How Hansi Flick Adapts"}
                  </h2>
                </div>
@@ -507,36 +503,6 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
         </section>
 
-        {/* --- WORLD CUP XI / TEAM OF THE WEEK --- */}
-        <section className="my-16 scroll-reveal">
-          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-                🏆 Editor&apos;s Pick
-              </p>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-black font-outfit text-[#0F172A] dark:text-white">
-                Our World Cup XI.
-              </h2>
-              <p className="mt-2 text-sm text-[#64748B] dark:text-gray-400">
-                Tap any player to see why they made the cut.
-              </p>
-            </div>
-            <Link
-              to="/world-cup-xi"
-              className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
-            >
-              Full breakdown
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <Suspense fallback={
-            <div className="mx-auto max-w-[440px] aspect-[3/4.2] rounded-[2rem] bg-[#1a5c2a]/20 animate-pulse" />
-          }>
-            <PitchXI team={WORLD_CUP_XI} compact />
-          </Suspense>
-        </section>
-
-
         {/* --- SPACIOUS MAIN LAYOUT --- */}
         <section className="mb-32 scroll-reveal">
           <div className="flex flex-col gap-24">
@@ -546,7 +512,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
               <div>
                 <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
                   <div>
-                    <h2 className="mt-2 text-4xl sm:text-5xl font-black font-outfit text-[#0F172A] dark:text-white">
+                    <h2 className="mt-2 text-4xl sm:text-5xl font-headline tracking-tight text-foreground">
                       Big deeper reads.
                     </h2>
                   </div>
@@ -579,11 +545,11 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                             </span>
                           </div>
                         </div>
-                        <div className="p-6">
-                          <h3 className="text-xl font-black font-outfit text-[#0F172A] dark:text-white line-clamp-2 group-hover:text-[#16A34A] transition-colors">
+                        <div className="p-6 border-t border-border mt-1">
+                          <h3 className="text-xl font-headline text-foreground line-clamp-2 group-hover:text-primary transition-colors">
                             {post.title}
                           </h3>
-                          <p className="mt-3 text-sm text-[#64748B] dark:text-gray-400 line-clamp-2 leading-relaxed">
+                          <p className="mt-3 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                             {post.excerpt}
                           </p>
                         </div>
@@ -602,12 +568,6 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                   <RumorMillWidget data={dailyFeatures.rumorMill} />
                 </div>
               ) : null}
-              {dailyFeatures?.managerPressure?.length ? (
-                <div className="tinted-panel rounded-3xl p-6 border border-gray-100 dark:border-gray-800/50 bg-white dark:bg-[var(--card)] shadow-sm">
-                  <h3 className="font-outfit text-xl font-bold mb-4 dark:text-white">Managerial Pressure</h3>
-                  <ManagerPressureWidget data={dailyFeatures.managerPressure} />
-                </div>
-              ) : null}
               {siteSettings?.fantasyCorner?.enabled ? (
                 <div className="h-full">
                   <FantasyCornerWidget data={siteSettings.fantasyCorner} />
@@ -618,10 +578,10 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
 
             {/* Latest Analysis Block */}
-            <div id="latest-articles" className="pt-8 border-t border-gray-100 dark:border-gray-800/50">
+            <div id="latest-articles" className="pt-8 border-t border-border">
               <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                  <h2 className="mt-2 text-4xl sm:text-5xl font-black font-outfit text-[#0F172A] dark:text-white">
+                  <h2 className="mt-2 text-4xl sm:text-5xl font-headline tracking-tight text-foreground">
                     Fresh from the feed.
                   </h2>
                 </div>
@@ -656,110 +616,142 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
         {/* Section Divider */}
         <div className="section-divider" />
 
-        <section className="mt-24 grid gap-12 xl:grid-cols-[8fr_4fr] items-start scroll-reveal">
-          <div className="w-full">
-            <div className="w-full">
-              {/* Deep Reads (Stories) - TEMPORARILY HIDDEN
-              {latestStories.length > 0 ? (
-                <BlogPostsGrid
-                  title="Deep Reads"
-                  description="Immersive longform stories built for slower reading. Dive deeper."
-                  backgroundLabel="READS"
-                  posts={latestStories.slice(0, 3).map(story => ({
-                    id: story.id,
-                    title: story.title,
-                    category: story.eyebrow,
-                    imageUrl: story.coverImage,
-                    views: Math.floor(Math.random() * 5000) + 1000,
-                    readTime: parseInt(story.readTime || "5", 10),
-                    rating: 5,
-                    href: `/stories/${story.slug}`
-                  }))}
-                  onPostClick={(post) => {
-                    if (post.href) window.location.href = post.href;
-                  }}
-                />
-              ) : (
-                <PageState
-                  icon={ScrollText}
-                  eyebrow="Stories"
-                  title="Longform is on the way"
-                  description="Publish a story and it will slot into the deep reads rail automatically."
-                />
-              )}
-              */}
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <div className="rounded-[2rem] border border-gray-200 bg-[linear-gradient(180deg,#0f172a,#111f35)] p-6 text-white shadow-xl shadow-[#0F172A]/10 dark:border-gray-800">
-              <div className="mb-5 flex items-center gap-3">
-                <div className="h-6 w-1.5 rounded-full bg-[#16A34A]" />
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-                    Editor Picks
-                  </p>
-                  <h2 className="text-lg font-black font-outfit text-white">
-                    Stronger entry points into the site
-                  </h2>
-                </div>
+        {/* --- EDITOR PICKS (Horizontal Scroll) --- */}
+        {editorsPicks.length > 0 && (
+          <section className="mt-24 scroll-reveal">
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="kicker text-primary mb-2">Curated</p>
+                <h2 className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground">
+                  Editor Picks.
+                </h2>
               </div>
+              <Link
+                to="/archive"
+                className="inline-flex items-center gap-2 text-sm font-bold text-primary"
+              >
+                Full archive
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+              {editorsPicks.map((post) => (
+                <Link
+                  key={post.id}
+                  to={`/post/${post.slug || post.id}`}
+                  className="group relative flex-shrink-0 w-[340px] sm:w-[400px] snap-start rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:-translate-y-1 transition-all duration-300"
+                >
+                  <div className="relative h-52 overflow-hidden">
+                    <img
+                      src={post.coverImage}
+                      alt={post.title}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                      <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary-foreground">
+                        {post.mustRead ? "Must Read" : "Editor Pick"}
+                      </span>
+                      <span className="rounded-full bg-white/20 backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white border border-white/10">
+                        {post.club}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-lg font-headline font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                      {post.excerpt}
+                    </p>
+                    <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground font-medium">
+                      <span>By The Touchline Dribble</span>
+                      <span>·</span>
+                      <span>{post.readTime}</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
-              <div className="space-y-4">
-                {editorsPicks.map((post) => (
+        {/* --- MORE FROM THE ARCHIVE (posts older than 7 days) --- */}
+        {(() => {
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          const olderPosts = standardPosts.filter((p) => {
+            const postDate = new Date(p.date);
+            return postDate < sevenDaysAgo;
+          }).slice(0, 6);
+          
+          if (olderPosts.length === 0) return null;
+          
+          return (
+            <section className="mt-24 scroll-reveal">
+              <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="kicker text-primary mb-2">Archive</p>
+                  <h2 className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground">
+                    More worth your time.
+                  </h2>
+                  <p className="mt-2 text-muted-foreground text-sm">
+                    Older pieces that still hold up. No expiry date on good analysis.
+                  </p>
+                </div>
+                <Link
+                  to="/archive"
+                  className="inline-flex items-center gap-2 text-sm font-bold text-primary"
+                >
+                  Browse full archive
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+              <div className="grid gap-px bg-border rounded-2xl overflow-hidden border border-border">
+                {olderPosts.map((post, idx) => (
                   <Link
                     key={post.id}
                     to={`/post/${post.slug || post.id}`}
-                    className="group flex gap-4 rounded-2xl border border-white/10 bg-white/5 p-3 transition-colors hover:border-[#16A34A]/30 hover:bg-white/[0.08]"
+                    className="group flex gap-5 items-center bg-card p-5 hover:bg-secondary transition-colors"
                   >
-                    <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl">
+                    <div className="h-20 w-28 shrink-0 overflow-hidden rounded-xl">
                       <img
                         src={post.coverImage}
                         alt={post.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
-                    <div>
-                      <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-                        {post.mustRead ? "Must Read" : "Editor Pick"}
-                      </p>
-                      <h3 className="mt-1 text-base font-black font-outfit text-white transition-colors group-hover:text-[#86efac]">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                          {post.category || post.club}
+                        </span>
+                        <span className="text-muted-foreground text-xs">·</span>
+                        <span className="text-xs text-muted-foreground">{post.readTime}</span>
+                      </div>
+                      <h3 className="font-headline font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
                         {post.title}
                       </h3>
-                      <p className="mt-2 line-clamp-2 text-sm text-white/68">
+                      <p className="mt-1 text-sm text-muted-foreground line-clamp-1">
                         {post.excerpt}
                       </p>
                     </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 hidden sm:block" />
                   </Link>
                 ))}
               </div>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-1">
-
-              <Link
-                to="/archive?type=story"
-                className="group block section-surface rounded-[2rem] border border-gray-200 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800"
-              >
-                <p className="inline-flex items-center gap-2 rounded-full bg-[#0F172A]/5 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#64748B] dark:bg-white/5 dark:text-gray-300">
-                  <BookOpen className="h-3.5 w-3.5 text-[#16A34A]" />
-                  Archive Entry Point
-                </p>
-                <h3 className="mt-4 text-2xl font-black font-outfit text-[#0F172A] transition-colors group-hover:text-[#16A34A] dark:text-white">
-                  Use the archive as the site&apos;s real search layer.
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-[#64748B] dark:text-gray-400">
-                  Filter by club, league, topic, and format instead of scrolling until something looks familiar.
-                </p>
-              </Link>
-            </div>
-          </div>
-        </section>
+            </section>
+          );
+        })()}
 
         {/* Section Divider */}
         <div className="section-divider" />
 
-        <section className="mt-24 scroll-reveal">
+        <section className="mt-16 scroll-reveal w-full max-w-4xl mx-auto px-4 sm:px-6">
+          <SupportBanner variant="inline" />
+        </section>
+
+        <section className="mt-16 scroll-reveal">
           <InlineNewsletterCard />
         </section>
 

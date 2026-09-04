@@ -149,7 +149,7 @@ export default async function ManagerPressurePage({ params }: { params: { slug: 
             <div className="space-y-6">
                <h3 className="text-2xl font-black text-white uppercase tracking-tight">The Form Guide</h3>
                <div className="grid grid-cols-3 gap-4">
-                  {data.recentResults.map((match, i) => (
+                  {data.recentResults.map((match: any, i: number) => (
                     <div key={i} className={`p-4 border-2 ${match.result === 'W' ? 'border-[#39FF14]/30 bg-[#39FF14]/5' : match.result === 'L' ? 'border-red-500/30 bg-red-500/5' : 'border-zinc-700 bg-zinc-900'}`}>
                        <div className={`text-2xl font-black mb-1 ${match.result === 'W' ? 'text-[#39FF14]' : match.result === 'L' ? 'text-red-500' : 'text-zinc-400'}`}>
                           {match.result}

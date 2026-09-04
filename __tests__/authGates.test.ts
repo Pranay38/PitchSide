@@ -58,6 +58,7 @@ describe("Auth Gate Tests", () => {
   });
 
   it("should return generic error on 500 (no internal leak)", async () => {
+    (checkRateLimit as any).mockReturnValue(true);
     (requireAuth as any).mockResolvedValue(true);
     (connectToDatabase as any).mockRejectedValue(new Error("MongoDB creds invalid"));
     const res = mockRes();

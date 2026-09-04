@@ -65,7 +65,7 @@ export const ShareBar = ({ title, url, className = "" }: ShareBarProps) => {
         <MessageCircle size={18} />
       </button>
 
-      {typeof navigator !== 'undefined' && navigator.share && (
+      {typeof navigator !== 'undefined' && "share" in navigator && (
         <button onClick={handleNativeShare} className={btnClass} title="Share">
           <Share2 size={18} />
         </button>

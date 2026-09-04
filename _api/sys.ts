@@ -124,16 +124,48 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const limit = Math.min(parseInt(req.query.limit as string) || 5, 10);
             if (!articleId || typeof articleId !== "string") return res.status(400).json({ error: "Invalid articleId" });
             try {
-                let recommendations = await getRecommendations({ articleId, limit });
-                if (recommendations.length < 3) {
-                    const { db } = await connectToDatabase();
-                    const article = await db.collection("posts").findOne({ id: articleId });
-                    const tagBased = await getTagBasedFallback({ articleId, tags: article?.tags || [], club: article?.club, limit: limit - recommendations.length });
-                    const seen = new Set(recommendations.map((r: any) => r?.id));
-                    recommendations = [...recommendations, ...tagBased.filter((a: any) => a && !seen.has(a.id))].filter(Boolean);
+                const { db } = await connectToDatabase();
+                const article = await db.collection("posts").findOne({ id: articleId });
+                
+                let recommendations: any[] = [];
+                const seen = new Set<string>();
+
+                // 1. Curated Read Next (relatedPostIds)
+                if (article?.relatedPostIds && Array.isArray(article.relatedPostIds)) {
+                    const relatedPosts = await db.collection("posts").find({ id: { $in: article.relatedPostIds }, isDraft: { $ne: true } }).toArray();
+                    for (const rp of relatedPosts) {
+                        if (!seen.has(rp.id)) {
+                            recommendations.push(rp);
+                            seen.add(rp.id);
+                        }
+                    }
                 }
+
+                // 2. Machine Learning Collaborative Filtering
+                if (recommendations.length < limit) {
+                    const mlRecs = await getRecommendations({ articleId, limit: limit - recommendations.length });
+                    for (const rec of mlRecs) {
+                        if (rec && !seen.has(rec.id)) {
+                            recommendations.push(rec);
+                            seen.add(rec.id);
+                        }
+                    }
+                }
+
+                // 3. Tag-based Fallback
+                if (recommendations.length < limit) {
+                    const tagBased = await getTagBasedFallback({ articleId, tags: article?.tags || [], club: article?.club, limit: limit - recommendations.length });
+                    for (const rec of tagBased) {
+                        if (rec && !seen.has(rec.id)) {
+                            recommendations.push(rec);
+                            seen.add(rec.id);
+                        }
+                    }
+                }
+
+                const source = article?.relatedPostIds?.length > 0 ? "curated" : (recommendations.length >= 3 ? "collaborative" : "tag-based");
                 res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=600");
-                return res.json({ recommendations, source: recommendations.length >= 3 ? "collaborative" : "tag-based" });
+                return res.json({ recommendations, source });
             } catch (err) {
                 console.error("Recommendations error:", err);
                 return res.status(500).json({ error: "Failed to fetch recommendations" });

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Tag, Search, Loader2, Trash2, Plus, Link, Mic, User, Library, Star, Flame, Crown, CalendarDays, X, FileAudio } from "lucide-react";
 import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName, deleteCustomClub, isCustomClub } from "../../data/clubs";
 import type { SearchResult } from "../../data/clubs";
+import type { BlogPost } from "../../data/posts";
 
 const GENERAL_CATEGORIES = [
     "General",
@@ -41,6 +42,10 @@ interface MetaSettingsProps {
     setMainStory: (val: boolean) => void;
     publishAt: string;
     setPublishAt: (val: string) => void;
+    relatedPostIds: string[];
+    setRelatedPostIds: React.Dispatch<React.SetStateAction<string[]>>;
+    allPosts: BlogPost[];
+    currentPostId?: string;
     errors: Record<string, string>;
 }
 
@@ -59,6 +64,8 @@ export function MetaSettings({
     editorPick, setEditorPick,
     mainStory, setMainStory,
     publishAt, setPublishAt,
+    relatedPostIds, setRelatedPostIds,
+    allPosts, currentPostId,
     errors
 }: MetaSettingsProps) {
     const [clubSearch, setClubSearch] = useState("");
@@ -71,6 +78,20 @@ export function MetaSettings({
     const clubDropdownRef = useRef<HTMLDivElement>(null);
     const [showCustomTeamModal, setShowCustomTeamModal] = useState(false);
     const [customTeamLogoInput, setCustomTeamLogoInput] = useState("");
+    const [postSearch, setPostSearch] = useState("");
+
+    const availablePosts = allPosts.filter(p => p.id !== currentPostId);
+    const filteredPosts = availablePosts.filter(p => p.title.toLowerCase().includes(postSearch.toLowerCase()));
+
+    const toggleRelatedPost = (id: string) => {
+        setRelatedPostIds(prev => {
+            if (prev.includes(id)) return prev.filter(p => p !== id);
+            if (prev.length >= 3) {
+                return [...prev.slice(1), id]; // Keep max 3, push out oldest
+            }
+            return [...prev, id];
+        });
+    };
 
     const effectiveClub = category === "club" ? club : category;
 
@@ -565,6 +586,51 @@ export function MetaSettings({
                             >
                                 <X className="w-4 h-4" />
                             </button>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Related Posts */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
+                    <Library className="w-4 h-4 text-[#16A34A]" />
+                    Curated Read Next
+                </label>
+                <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
+                    Hand-pick up to 3 related articles to show at the bottom of this post. If fewer than 3 are selected, the system will automatically fill the rest based on matching tags.
+                </p>
+
+                <div className="space-y-4">
+                    <input
+                        type="text"
+                        placeholder="Search posts..."
+                        value={postSearch}
+                        onChange={(e) => setPostSearch(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                    />
+
+                    <div className="max-h-48 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+                        {filteredPosts.map(post => {
+                            const isSelected = relatedPostIds.includes(post.id);
+                            return (
+                                <div 
+                                    key={post.id}
+                                    onClick={() => toggleRelatedPost(post.id)}
+                                    className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${isSelected ? 'border-[#16A34A] bg-[#16A34A]/5' : 'border-gray-200 dark:border-gray-700 hover:border-[#16A34A]/50 bg-gray-50 dark:bg-[#0F172A]'}`}
+                                >
+                                    <div className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'border-[#16A34A] bg-[#16A34A] text-white' : 'border-gray-300 dark:border-gray-600'}`}>
+                                        {isSelected && <svg className="w-3 h-3" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className={`text-sm font-medium truncate ${isSelected ? 'text-[#16A34A]' : 'text-[#0F172A] dark:text-white'}`}>{post.title}</p>
+                                        <p className="text-xs text-gray-500 truncate">{post.club} • {post.date}</p>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                        {filteredPosts.length === 0 && (
+                            <p className="text-sm text-center text-gray-500 py-4">No posts found</p>
                         )}
                     </div>
                 </div>

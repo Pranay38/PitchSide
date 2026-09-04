@@ -1,5 +1,5 @@
 import React from "react";
-import { Twitter, Quote } from "lucide-react";
+import { Quote } from "lucide-react";
 
 interface ShareableQuoteProps {
   quote: string;
@@ -15,13 +15,13 @@ export function ShareableQuote({ quote, author, url }: ShareableQuoteProps) {
   };
 
   return (
-    <div className="relative my-10 group overflow-hidden rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-gradient-to-br from-white to-gray-50 dark:from-[#0F172A] dark:to-[#0B1120] p-8 md:p-10 shadow-sm transition-all hover:shadow-xl hover:border-[#16A34A]/30">
+    <div className="relative my-10 group overflow-hidden rounded-2xl border border-border bg-card p-8 md:p-10 shadow-sm transition-all hover:shadow-xl hover:border-primary/30">
       <div className="absolute top-4 left-6 text-[#16A34A]/10 pointer-events-none">
         <Quote className="w-16 h-16 md:w-24 md:h-24" />
       </div>
       
       <div className="relative z-10">
-        <blockquote className="font-outfit text-xl md:text-3xl font-black text-[#0F172A] dark:text-white leading-tight mb-6">
+        <blockquote className="font-headline font-bold text-xl md:text-3xl text-foreground leading-tight mb-6">
           "{quote}"
         </blockquote>
         
@@ -34,10 +34,10 @@ export function ShareableQuote({ quote, author, url }: ShareableQuoteProps) {
           
           <button 
             onClick={handleTweet}
-            className="inline-flex items-center gap-2 bg-[#1DA1F2]/10 hover:bg-[#1DA1F2]/20 text-[#1DA1F2] px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
+            className="inline-flex items-center gap-2 bg-foreground/10 hover:bg-foreground hover:text-background text-foreground px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all"
           >
-            <Twitter className="w-4 h-4" />
-            Click to Tweet
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+            Share on X
           </button>
         </div>
       </div>

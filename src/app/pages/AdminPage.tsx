@@ -597,6 +597,7 @@ export function AdminPage() {
         return (
             <PostEditor
                 post={view === "edit" && editingPost ? editingPost : undefined}
+                allPosts={posts}
                 onSave={view === "edit" && editingPost ? handleUpdatePost : handleCreatePost}
                 onCancel={() => {
                     setEditingPost(null);

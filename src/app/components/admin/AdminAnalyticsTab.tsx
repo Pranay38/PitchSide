@@ -132,7 +132,7 @@ export function AdminAnalyticsTab() {
                 <h3 className="text-red-800 dark:text-red-400 font-semibold mb-1">Failed to load analytics</h3>
                 <p className="text-red-600 dark:text-red-300 text-sm mb-4">{error}</p>
                 <button
-                    onClick={fetchAnalytics}
+                    onClick={() => fetchAnalytics()}
                     className="px-4 py-2 bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded-lg text-sm font-medium hover:bg-red-200 dark:hover:bg-red-500/30 transition-colors"
                 >
                     Try Again

@@ -72,7 +72,7 @@ describe("Email Gate & Subscriber Funnel Tests", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 
-  it("should return 409 for duplicate subscriber", async () => {
+  it("should return 200 for duplicate subscriber", async () => {
     mockCollection.findOne.mockResolvedValue({ email: "exists@test.com", status: "active" });
 
     const req = {
@@ -81,7 +81,7 @@ describe("Email Gate & Subscriber Funnel Tests", () => {
     const res = mockRes();
     await subscribersHandler(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(409);
+    expect(res.status).toHaveBeenCalledWith(200);
   });
 
   it("should create new subscriber and send welcome email", async () => {

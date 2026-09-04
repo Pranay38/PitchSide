@@ -47,7 +47,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   const hasFooter = writer || publishedAt;
 
   return (
-    <Card className={cn("group flex w-full flex-col gap-3 overflow-hidden rounded-[2rem] shadow-sm transition-all duration-300 depth-card cursor-pointer dark:bg-[var(--card)] ghost-border-dark dark:ghost-border", className)}>
+    <Card className={cn("group flex w-full flex-col gap-3 overflow-hidden glass-card rounded-2xl hover:border-primary/30 transition-all duration-300 cursor-pointer", className)}>
       {cover && (
         <CardHeader className="p-0">
           <div className="relative h-56 w-full overflow-hidden">
@@ -60,7 +60,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             {/* Gradient overlay for depth */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             {/* Read indicator */}
-            <div className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 dark:bg-[#0F172A]/90 backdrop-blur-sm text-xs font-bold text-[#16A34A] opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md">
+            <div className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-background/90 backdrop-blur-sm text-xs font-bold text-primary opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md">
               Read →
             </div>
           </div>
@@ -69,9 +69,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
 
       <CardContent className="flex-grow p-5">
         {hasMeta && (
-          <div className="mb-4 flex items-center text-xs font-semibold text-gray-400">
+          <div className="mb-4 flex items-center text-xs font-semibold text-muted-foreground">
             {tag && (
-              <Badge className="rounded-full bg-gray-100 dark:bg-gray-800 text-[#475569] dark:text-gray-300 px-3 py-1 font-medium border-none shadow-none">
+              <Badge className="kicker rounded-full bg-secondary text-primary px-3 py-1 border-none shadow-none">
                 {tag}
               </Badge>
             )}
@@ -85,12 +85,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           </div>
         )}
 
-        <h2 className="mb-2 text-2xl md:text-3xl font-extrabold font-outfit leading-tight text-[#0F172A] dark:text-white transition-colors duration-300 group-hover:text-[#16A34A] dark:group-hover:text-[#4ade80]">
+        <h2 className="mb-2 text-2xl font-headline leading-tight text-foreground transition-colors duration-300 group-hover:text-primary">
           {headline}
         </h2>
 
         <p
-          className={cn("text-sm text-gray-500 dark:text-gray-400 leading-relaxed", {
+          className={cn("text-sm text-muted-foreground leading-relaxed", {
             "overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [display:-webkit-box]":
               clampLines && clampLines > 0,
           })}
@@ -103,19 +103,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
       </CardContent>
 
       {hasFooter && (
-        <CardFooter className="flex items-center justify-between p-5 pt-0 border-t border-gray-100 dark:border-gray-800 mt-2 bg-gray-50/50 dark:bg-gray-800/10">
-          {writer && (
-            <div>
-              <p className="text-sm font-semibold text-[#0F172A] dark:text-gray-200">{writer}</p>
-            </div>
-          )}
-          {publishedAt && (
-            <div className={writer ? "text-right" : ""}>
-              <p className="text-sm font-semibold text-[#0F172A] dark:text-gray-200">
-                {formatPostDate(publishedAt)}
-              </p>
-            </div>
-          )}
+        <CardFooter className="flex items-center p-5 pt-4 border-t border-border mt-auto">
+          <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            {writer && <span>{writer}</span>}
+            {writer && publishedAt && <span>·</span>}
+            {publishedAt && <span>{formatPostDate(publishedAt)}</span>}
+          </div>
         </CardFooter>
       )}
     </Card>

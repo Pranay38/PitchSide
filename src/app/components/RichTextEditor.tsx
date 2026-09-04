@@ -415,7 +415,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                 </ToolbarButton>
                 <ToolbarButton 
                     onClick={() => editor.chain().focus().toggleGlossaryHighlight().run()} 
-                    isActive={editor.storage.glossaryHighlight?.active} 
+                    isActive={(editor.storage as any).glossaryHighlight?.active} 
                     title="Toggle Glossary Highlights"
                 >
                     <BookOpen className="w-4 h-4" />

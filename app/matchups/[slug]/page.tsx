@@ -140,7 +140,7 @@ export default async function MatchupPreviewPage({ params }: { params: { slug: s
                   <div className="bg-zinc-950 border border-zinc-800 p-6">
                      <h4 className="text-zinc-400 font-bold uppercase text-sm mb-4">{data.homeTeam}</h4>
                      <div className="flex gap-2">
-                        {data.homeForm.map((res, i) => (
+                        {data.homeForm.map((res: any, i: number) => (
                            <div key={i} className={`w-10 h-10 flex items-center justify-center font-black font-mono text-lg border-2 ${res === 'W' ? 'border-[#39FF14] text-[#39FF14]' : res === 'L' ? 'border-red-500 text-red-500' : 'border-zinc-500 text-zinc-500'}`}>
                               {res}
                            </div>
@@ -151,7 +151,7 @@ export default async function MatchupPreviewPage({ params }: { params: { slug: s
                   <div className="bg-zinc-950 border border-zinc-800 p-6">
                      <h4 className="text-zinc-400 font-bold uppercase text-sm mb-4">{data.awayTeam}</h4>
                      <div className="flex gap-2">
-                        {data.awayForm.map((res, i) => (
+                        {data.awayForm.map((res: any, i: number) => (
                            <div key={i} className={`w-10 h-10 flex items-center justify-center font-black font-mono text-lg border-2 ${res === 'W' ? 'border-[#39FF14] text-[#39FF14]' : res === 'L' ? 'border-red-500 text-red-500' : 'border-zinc-500 text-zinc-500'}`}>
                               {res}
                            </div>

@@ -33,6 +33,7 @@
     "dist",
     "src/app/App.tsx",
     "src/app/routes.tsx",
-    "src/main.tsx"
+    "src/main.tsx",
+    "zap"
   ]
 }

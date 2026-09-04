@@ -19,6 +19,7 @@ export function AlertsPage() {
   const {
     followedClubs,
     followedPlayers,
+    toggleFollowedClub,
     toggleFollowedPlayer,
     markAlertsSeen,
     setNewsletterOptIn,

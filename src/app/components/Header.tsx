@@ -161,12 +161,11 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
     <>
       <ClubOnboardingModal />
       <BriefcaseDrawer isOpen={briefcaseOpen} onClose={() => setBriefcaseOpen(false)} />
-      {/* Animated gradient accent line at the very top */}
-      <div className="gradient-accent-line w-full" />
+      {/* Removed gradient accent line */}
       <header className={`sticky top-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
         isScrolled 
-          ? "glass shadow-sm dark:shadow-none bg-white/70 dark:bg-[#0b1326]/40 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/5 ghost-border-dark" 
-          : "bg-white/60 dark:bg-[#0b1326]/40 backdrop-blur-xl border-b border-gray-200/30 dark:border-white/5 md:border-transparent"
+          ? "glass shadow-sm dark:shadow-none bg-white/70 dark:bg-black/40 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/5 ghost-border-dark" 
+          : "bg-white/60 dark:bg-black/40 backdrop-blur-xl border-b border-gray-200/30 dark:border-white/5 md:border-transparent"
       }`}>
         <div className={`w-full max-w-7xl mx-auto px-4 lg:px-6 flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
           isScrolled ? "py-2" : "py-3.5"
@@ -177,7 +176,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
               <img src="/logo.png" alt="The Touchline Dribble" className="w-9 h-9 object-contain rounded-lg group-hover:scale-110 transition-transform duration-300" />
               <div className="absolute inset-0 rounded-lg bg-[#16A34A]/0 group-hover:bg-[#16A34A]/10 transition-colors duration-300" />
             </div>
-            <span className="hidden xl:block text-xl font-extrabold font-outfit bg-gradient-to-r from-[#16A34A] via-[#22c55e] to-[#4ade80] bg-clip-text text-transparent group-hover:from-[#4ade80] group-hover:to-[#16A34A] transition-all duration-500 whitespace-nowrap">
+            <span className="hidden xl:block text-2xl font-extrabold font-headline text-[#1A1A1A] dark:text-[#EDEDED] transition-all duration-500 whitespace-nowrap">
               The Touchline Dribble
             </span>
           </Link>
@@ -206,7 +205,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
             {/* Club badge */}
             {favoriteClub && (
-              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card glow-green">
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg glass-card">
                 {club?.logo ? (
                   <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />
                 ) : (
@@ -260,9 +259,9 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           </div>
         </div>
 
-          {/* Mobile menu dropdown */}
+          {/* Mobile menu full-screen overlay */}
           {mobileOpen && (
-            <div className="sm:hidden glass border-t border-white/10 dark:border-gray-800/50 px-6 py-4 space-y-3 animate-float-in">
+            <div className="sm:hidden fixed inset-0 top-[60px] z-40 glass border-t border-white/10 dark:border-white/5 px-6 py-6 overflow-y-auto animate-float-in flex flex-col gap-6">
               <form onSubmit={handleArchiveSearch} className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-[#0F172A]">
                 <Search className="w-4 h-4 text-[#94A3B8]" />
                 <input
@@ -279,7 +278,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                   to={link.to}
                   onClick={() => setMobileOpen(false)}
                   aria-label={link.label}
-                  className="block text-sm font-semibold text-[#0F172A] dark:text-white hover:text-[#16A34A] transition-colors py-2"
+                  className="block text-2xl font-headline text-[#1A1A1A] dark:text-[#EDEDED] hover:text-[#16A34A] transition-colors py-2"
                 >
                   {link.icon || link.label}
                 </Link>

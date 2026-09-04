@@ -115,19 +115,21 @@ export function PostCard({ post, featured = false }: PostCardProps) {
                 </span>
               ))}
           </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold font-outfit text-white mb-2 line-clamp-2 group-hover:text-[#4ade80] transition-colors duration-300">
+          <h2 className="text-2xl md:text-3xl font-headline text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
             {post.title}
           </h2>
           <p className="text-sm text-white/70 mb-3 line-clamp-2 max-w-2xl">
             {post.excerpt}
           </p>
-          <div className="flex items-center gap-3 text-xs text-white/60">
-            <span>{post.date}</span>
-            <span>•</span>
+          <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-white/70">
+            <span>By The Touchline Dribble</span>
+            <span>·</span>
             <span className="flex items-center gap-1">
                <Clock className="w-3 h-3" />
                {post.readTime}
             </span>
+            <span>·</span>
+            <span>{post.date}</span>
           </div>
         </div>
       </div>
@@ -136,7 +138,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
 
   return (
     <div
-      className="group block relative bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 rounded-[2rem] hover:border-[#16A34A]/30 hover:shadow-xl hover:shadow-[#16A34A]/5 dark:hover:shadow-[#16A34A]/10 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+      className="group block relative glass-card rounded-2xl hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
     >
       <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
       <div className="aspect-video overflow-hidden relative pointer-events-none">
@@ -210,30 +212,25 @@ export function PostCard({ post, featured = false }: PostCardProps) {
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
-      <div className="p-5 sm:p-6 pb-6 mt-1 flex flex-col h-full bg-white dark:bg-[#0F172A] pointer-events-none">
-        <h3 className="font-outfit font-black text-xl text-[#0F172A] tracking-tight sm:text-2xl dark:text-white mb-2 line-clamp-2 group-hover:text-[#16A34A] transition-colors duration-200">
+      <div className="p-5 sm:p-6 flex flex-col h-full bg-background pointer-events-none border-t border-border">
+        <h3 className="font-headline text-2xl text-foreground tracking-tight mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-200">
           {post.title}
         </h3>
         <p className="mb-6 text-[#64748B] text-sm leading-relaxed dark:text-gray-400 line-clamp-2">
           {post.excerpt}
         </p>
 
-        <div className="mt-auto pt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-gray-100 dark:border-gray-800">
-          <div className="relative flex items-center overflow-hidden font-bold text-[#16A34A] text-xs transition-colors">
-            <span className="mr-3 relative overflow-hidden flex items-center justify-center rounded-full bg-[#16A34A]/10 p-2.5 w-9 h-9 transition-colors duration-300 ease-in group-hover:bg-[#16A34A] group-hover:text-white text-[#16A34A]">
-              <ArrowRight className="absolute h-4 w-4 transition-all duration-500 ease-in group-hover:translate-x-8 group-hover:opacity-0" />
-              <ArrowRight className="absolute -left-4 h-4 w-4 transition-all duration-500 ease-in-out group-hover:left-2.5" />
-            </span>
-            Read article
-          </div>
-          <span className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-            {post.date}
-            <span className="w-4 border-t border-gray-200 dark:border-gray-800" />
+        <div className="mt-auto pt-5 flex items-center justify-between border-t border-border">
+          <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <span>By The Touchline Dribble</span>
+            <span>·</span>
             <span className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              {post.readTime}
+               <Clock className="w-3 h-3" />
+               {post.readTime}
             </span>
-          </span>
+            <span>·</span>
+            <span>{post.date}</span>
+          </div>
         </div>
       </div>
     </div>

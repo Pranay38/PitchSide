@@ -29,8 +29,8 @@ export function MobileBottomNav() {
 
     return (
         <nav className="fixed bottom-4 left-4 right-4 z-50 sm:hidden">
-            {/* Frosted glass floating pill */}
-            <div className="bg-white/80 dark:bg-[#0b1326]/70 backdrop-blur-2xl border ghost-border-dark dark:ghost-border rounded-[2.5rem] shadow-2xl ambient-shadow pb-[max(0rem,calc(env(safe-area-inset-bottom)-1rem))]">
+            {/* Premium Glass Bar */}
+            <div className="glass-card rounded-2xl shadow-lg border border-border pb-[max(0rem,calc(env(safe-area-inset-bottom)-1rem))]">
                 <div className="flex items-center justify-around px-2 py-2">
                     {tabs.map((tab) => {
                         const isActive = tab.to === "/"
@@ -54,7 +54,7 @@ export function MobileBottomNav() {
                                         }`}
                                     />
                                     {isActive && (
-                                        <div className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#16A34A] glow-green animate-pulse" />
+                                        <div className="absolute -bottom-[6px] left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#16A34A]" />
                                     )}
                                 </div>
                                 <span className={`text-[10px] font-bold tracking-wide leading-tight transition-all duration-200 ${

@@ -24,9 +24,11 @@ import { PostCard } from "../components/PostCard";
 import { CommentSection } from "../components/CommentSection";
 import { PollWidget } from "../components/PollWidget";
 
-import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
 import { SeriesNavigator } from "../components/SeriesNavigator";
 import { PageState } from "../components/PageState";
+import { ReadingProgressBar } from "../components/ReadingProgressBar";
+import { QuickReactBar } from "../components/QuickReactBar";
+import { ArticleEndCTA } from "../components/ArticleEndCTA";
 
 import { TouchlineAudioPlayer } from "../components/TouchlineAudioPlayer";
 import {
@@ -313,6 +315,7 @@ export function BlogPostPage() {
       />
 
       <Header />
+      <ReadingProgressBar readTime={post.readTime} />
 
       {isPreview && (
         <div className="bg-amber-500 text-black py-2.5 px-4 text-center text-sm font-bold sticky top-0 z-50">
@@ -321,130 +324,108 @@ export function BlogPostPage() {
       )}
 
       <main>
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0">
-            <img src={post.coverImage} alt={post.title} className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.3),rgba(15,23,42,0.82))]" />
+        {/* ── Magazine Header ── */}
+        <section className="pt-20 pb-10 w-full max-w-[760px] mx-auto px-4 sm:px-6">
+          {/* Kicker: Category + Club */}
+          <div className="flex items-center gap-3 mb-6">
+            {post.category && (
+              <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                {post.category}
+              </span>
+            )}
+            {post.category && <span className="text-border">|</span>}
+            <Link to={topicPath(post.club)} className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">
+              {post.club}
+            </Link>
           </div>
 
-          <div className="relative mx-auto flex min-h-[420px] w-full max-w-[1180px] items-end px-4 py-10 sm:px-6 md:min-h-[520px]">
-            <div className="max-w-4xl">
-              <Breadcrumbs
-                items={[
-                  { label: post.tags[0] || post.club, href: topicPath(post.tags[0] || post.club) },
-                  { label: post.title },
-                ]}
-              />
+          {/* Title */}
+          <h1 className="animate-enter font-headline font-bold text-4xl md:text-5xl lg:text-[3.5rem] text-foreground leading-[1.05] mb-6 tracking-[-0.03em]">
+            {post.title}
+          </h1>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                {post.tags.map((tag) => (
-                  <Link
-                    to={topicPath(tag)}
-                    key={tag}
-                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
-                      tag === post.club
-                        ? "bg-[#16A34A] text-white"
-                        : "bg-white/12 text-white backdrop-blur-sm"
-                    }`}
-                  >
-                    <Tag className="h-3 w-3" />
-                    {tag}
-                  </Link>
-                ))}
-                {/* Removed Match Rating logic to align with pure editorial focus */}
+          {/* Excerpt / Standfirst */}
+          <p className="animate-enter animate-enter-delay-1 text-xl text-muted-foreground leading-relaxed mb-8 font-newsreader italic">
+            {post.excerpt}
+          </p>
+
+          {/* Byline bar */}
+          <div className="animate-enter animate-enter-delay-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground border-t border-border pt-5">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-[#4ade80] flex items-center justify-center">
+                <span className="text-xs font-bold text-white">P</span>
               </div>
-
-              <h1 className="mt-6 text-4xl font-black font-outfit leading-[0.95] text-white md:text-6xl">
-                {post.title}
-              </h1>
-              <p className="mt-4 max-w-3xl text-lg leading-8 text-white/78 md:text-xl">
-                {post.excerpt}
-              </p>
-              <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-white/70">
-                <span>{post.date}</span>
-                <span className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  {post.readTime}
-                </span>
+              <div>
+                <span className="font-bold text-foreground">Pranay Agrawal</span>
+                <span className="text-muted-foreground"> · The Touchline Dribble</span>
               </div>
             </div>
+            <span className="hidden sm:block">·</span>
+            <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5"/> {post.readTime}</span>
+            <span>·</span>
+            <time>{post.date}</time>
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-[860px] px-4 py-10 sm:px-6">
+        {/* ── Featured Image (full-bleed) ── */}
+        <section className="animate-enter animate-enter-delay-3 w-full max-w-[1100px] mx-auto px-4 sm:px-6 mb-14">
+           <figure>
+             <div className="aspect-[21/9] w-full rounded-2xl overflow-hidden shadow-lg relative">
+                <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
+             </div>
+           </figure>
+        </section>
+
+        <section className="mx-auto w-full max-w-[720px] px-4 py-6 sm:px-6">
           <article className="min-w-0">
-            <div className="mb-6 flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={handleLike}
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-bold transition-colors ${
-                  isLiked
-                    ? "border-[#16A34A]/30 bg-[#16A34A]/10 text-[#16A34A]"
-                    : "border-gray-200 text-[#475569] hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-800 dark:text-gray-300"
-                }`}
-              >
-                <Heart className={`h-4 w-4 ${isLiked ? "fill-[#16A34A]" : ""}`} />
-                {isLiked ? "Liked" : "Like article"}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const nextSaved = toggleSavedPost(post.id);
-                  toast.success(nextSaved ? "Saved to your library" : "Removed from saved.");
-                }}
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-bold transition-colors ${
-                  saved
-                    ? "border-[#16A34A]/30 bg-[#16A34A]/10 text-[#16A34A]"
-                    : "border-gray-200 text-[#475569] hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-800 dark:text-gray-300"
-                }`}
-              >
-                <Bookmark className={`h-4 w-4 ${saved ? "fill-[#16A34A]" : ""}`} />
-                {saved ? "Saved" : "Save article"}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const nextFollowing = toggleFollowedClub(post.club);
-                  toast.success(nextFollowing ? `Following ${post.club}` : `Unfollowed ${post.club}`);
-                }}
-                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-bold transition-colors ${
-                  followingClub
-                    ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-500"
-                    : "border-gray-200 text-[#475569] hover:border-amber-500/30 hover:text-amber-600 dark:hover:text-amber-500 dark:border-gray-800 dark:text-gray-300"
-                }`}
-              >
-                <Shield className={`h-4 w-4 ${followingClub ? "fill-amber-500" : ""}`} />
-                {followingClub ? `Following ${post.club}` : `Follow ${post.club}`}
-              </button>
-
-              {post.playerName && (
+            {/* Compact floating action bar */}
+            <div className="mb-10 flex items-center justify-between border-b border-border pb-5">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    const nextFollowing = toggleFollowedPlayer(post.playerName!);
-                    toast.success(nextFollowing ? `Following ${post.playerName}` : `Unfollowed ${post.playerName}`);
-                  }}
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-bold transition-colors ${
-                    followingPlayer
-                      ? "border-[#16A34A]/30 bg-[#16A34A]/10 text-[#16A34A]"
-                      : "border-gray-200 text-[#475569] hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-800 dark:text-gray-300"
-                  }`}
+                  onClick={handleLike}
+                  className={`p-2.5 rounded-full border transition-colors ${isLiked ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}
+                  aria-label={isLiked ? "Liked" : "Like article"}
                 >
-                  <UserRound className="h-4 w-4" />
-                  {followingPlayer ? `Following ${post.playerName}` : `Follow ${post.playerName}`}
+                  <Heart className={`h-4 w-4 ${isLiked ? "fill-primary" : ""}`} />
                 </button>
-              )}
-
-              <button
-                type="button"
-                onClick={() => handleShare("copy")}
-                className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2.5 text-sm font-bold text-[#475569] transition-colors hover:border-[#16A34A]/30 hover:text-[#16A34A] dark:border-gray-800 dark:text-gray-300"
-              >
-                <Copy className="h-4 w-4" />
-                Copy link
-              </button>
+                <button
+                  type="button"
+                  onClick={() => { const s = toggleSavedPost(post.id); toast.success(s ? "Saved" : "Removed"); }}
+                  className={`p-2.5 rounded-full border transition-colors ${saved ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}
+                  aria-label={saved ? "Saved" : "Save article"}
+                >
+                  <Bookmark className={`h-4 w-4 ${saved ? "fill-primary" : ""}`} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleShare("copy")}
+                  className="p-2.5 rounded-full border border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                  aria-label="Copy link"
+                >
+                  <Copy className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => { const f = toggleFollowedClub(post.club); toast.success(f ? `Following ${post.club}` : `Unfollowed ${post.club}`); }}
+                  className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border transition-colors ${followingClub ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}
+                >
+                  <Shield className={`h-3.5 w-3.5 ${followingClub ? "fill-primary-foreground" : ""}`} />
+                  {followingClub ? "Following" : post.club}
+                </button>
+                {post.playerName && (
+                  <button
+                    type="button"
+                    onClick={() => { const f = toggleFollowedPlayer(post.playerName!); toast.success(f ? `Following ${post.playerName}` : `Unfollowed ${post.playerName}`); }}
+                    className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border transition-colors ${followingPlayer ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}
+                  >
+                    <UserRound className="h-3.5 w-3.5" />
+                    {followingPlayer ? "Following" : post.playerName}
+                  </button>
+                )}
+              </div>
             </div>
 
             {post.audioUrl && (
@@ -507,10 +488,7 @@ export function BlogPostPage() {
             )}
 
             <div className="mt-12" ref={bottomRef}>
-              <InlineNewsletterCard
-                title="Get the strongest Touchline Dribble reads in one email"
-                description="Use the newsletter as the low-noise way to keep up with new analysis and longform pieces."
-              />
+              <ArticleEndCTA authorName="Pranay Agrawal" />
             </div>
 
             {post.poll && (
@@ -528,25 +506,24 @@ export function BlogPostPage() {
               showSource={true}
             />
 
-            <div className="my-12 border-t border-gray-200 dark:border-gray-800" />
-
-            <div className="mb-12">
-              <h2 className="mb-4 text-lg font-bold text-[#0F172A] dark:text-white">
-                Share this article
-              </h2>
-              <div className="flex flex-wrap gap-3">
-                <button onClick={() => handleShare("whatsapp")} className="rounded-full bg-[#25D366] px-5 py-2.5 text-sm font-bold text-white">
-                  WhatsApp
-                </button>
-                <button onClick={() => handleShare("twitter")} className="rounded-full bg-[#1DA1F2] px-5 py-2.5 text-sm font-bold text-white">
-                  X
-                </button>
-                <button onClick={() => handleShare("reddit")} className="rounded-full bg-[#FF4500] px-5 py-2.5 text-sm font-bold text-white">
-                  Reddit
-                </button>
-                <button onClick={() => handleShare("copy")} className="rounded-full bg-[#0F172A] px-5 py-2.5 text-sm font-bold text-white dark:bg-gray-700">
-                  Copy link
-                </button>
+            {/* ── Share Strip ── */}
+            <div className="my-14 border-t border-border pt-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <p className="text-sm font-bold text-foreground uppercase tracking-widest">Share this piece</p>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handleShare("whatsapp")} className="p-2.5 rounded-full border border-border text-muted-foreground hover:bg-[#25D366] hover:text-white hover:border-[#25D366] transition-all" aria-label="Share on WhatsApp">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                  </button>
+                  <button onClick={() => handleShare("twitter")} className="p-2.5 rounded-full border border-border text-muted-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all" aria-label="Share on X">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                  </button>
+                  <button onClick={() => handleShare("reddit")} className="p-2.5 rounded-full border border-border text-muted-foreground hover:bg-[#FF4500] hover:text-white hover:border-[#FF4500] transition-all" aria-label="Share on Reddit">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.688-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>
+                  </button>
+                  <button onClick={() => handleShare("copy")} className="p-2.5 rounded-full border border-border text-muted-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all" aria-label="Copy link">
+                    <Copy className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -589,6 +566,8 @@ export function BlogPostPage() {
             </div>
           </article>
         </section>
+
+        <QuickReactBar postId={post.id} />
 
         {relatedPosts.length > 0 && (
           <section className="mx-auto w-full max-w-[1180px] px-4 pb-16 sm:px-6">

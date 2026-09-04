@@ -53,11 +53,12 @@ function readImageAsDataURL(file: File): Promise<string> {
 
 interface PostEditorProps {
     post?: BlogPost | null;
+    allPosts?: BlogPost[];
     onSave: (post: Omit<BlogPost, "id">, isLeaving?: boolean) => Promise<void>;
     onCancel: () => void;
 }
 
-export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
+export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps) {
     type SubmitAction = "draft" | "publish" | "back";
     const [title, setTitle] = useState(post?.title || "");
     const [format, setFormat] = useState<"article" | "quick-take">(post?.format === "quick-take" ? "quick-take" : "article");
@@ -94,6 +95,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     const [seriesName, setSeriesName] = useState(post?.seriesName || "");
     const [seriesOrder, setSeriesOrder] = useState<number | "">(post?.seriesOrder ?? "");
     const [publishAt, setPublishAt] = useState(post?.publishAt || "");
+    const [relatedPostIds, setRelatedPostIds] = useState<string[]>(post?.relatedPostIds || []);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
@@ -213,6 +215,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
             seriesName: seriesName.trim() || undefined,
             seriesOrder: seriesOrder === "" ? undefined : seriesOrder,
             publishAt: publishAt || undefined,
+            relatedPostIds: relatedPostIds.length > 0 ? relatedPostIds : undefined,
         };
     };
 
@@ -298,7 +301,7 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
     }, [
         title, excerpt, content, coverImage, club, category, tags,
         thisWeek, mustRead, editorPick, mainStory, mediaUrl, audioUrl, playerName,
-        usePoll, poll, seriesName, seriesOrder, publishAt, submitAction
+        usePoll, poll, seriesName, seriesOrder, publishAt, relatedPostIds, submitAction
     ]);
 
     useEffect(() => {
@@ -434,6 +437,10 @@ export function PostEditor({ post, onSave, onCancel }: PostEditorProps) {
                                     setMainStory={setMainStory}
                                     publishAt={publishAt}
                                     setPublishAt={setPublishAt}
+                                    relatedPostIds={relatedPostIds}
+                                    setRelatedPostIds={setRelatedPostIds}
+                                    allPosts={allPosts || []}
+                                    currentPostId={post?.id}
                                     errors={errors}
                                 />
 

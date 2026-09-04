@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "@/lib/router-compat";
-import { Zap, ChevronRight, Swords, Loader2 } from "lucide-react";
+import { Zap, ChevronRight, Swords, Loader2, Check } from "lucide-react";
 import { getDeviceId } from "../lib/deviceId";
 
 interface TeamInfo {

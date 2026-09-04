@@ -5,6 +5,7 @@ export interface BlogPost {
   content: string;
   coverImage: string;
   club: string;
+  category?: string;
   tags: string[];
   date: string;
   readTime: string;
@@ -44,6 +45,7 @@ export interface BlogPost {
     id: string;
     statement: string;
   }[];
+  relatedPostIds?: string[];
 }
 
 export const blogPosts: BlogPost[] = [
@@ -54,6 +56,7 @@ export const blogPosts: BlogPost[] = [
     excerpt: "Everyone is blaming Kylian Mbappe for Real Madrid's collapse. You're all blind. Tactical data proves Vinicius Jr is the actual structural problem.",
     coverImage: "https://images.unsplash.com/photo-1616778551732-6dd1289f567d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmb290YmFsbCUyMHRhY3RpY2FsJTIwYm9hcmR8ZW58MXx8fHwxNzcyMjU0Nzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
     club: "Real Madrid",
+    category: "Opinion",
     tags: ["Real Madrid", "Tactics", "La Liga", "Instigator"],
     date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
     readTime: "4 min read",
@@ -134,7 +137,8 @@ As the season progresses, we can expect further refinement of these tactical pri
     excerpt: "The Gunners are mounting their strongest title bid in years. We examine whether they have what it takes.",
     coverImage: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
     club: "Arsenal",
-    tags: ["Arsenal", "Premier League", "Title Race"],
+    category: "Tactical Analysis",
+    tags: ["Arsenal", "Premier League", "Arteta"],
     date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
     readTime: "7 min read",
     thisWeek: true,
@@ -268,8 +272,9 @@ The blend of youth and experience, of individual brilliance and collective disci
     slug: "barcelona-s-financial-recovery-and-sporting-renaissance-00006",
     excerpt: "From the brink of financial collapse to competitive resurgence — Barcelona's remarkable recovery story.",
     coverImage: "https://images.unsplash.com/photo-1551958219-acbc608c6377?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    club: "Barcelona",
-    tags: ["Barcelona", "La Liga", "Finance"],
+    club: "Tactics",
+    category: "Deep Dive",
+    tags: ["Tactics", "History", "Analysis"],
     date: "February 20, 2026",
     readTime: "9 min read",
     content: `Barcelona's journey from financial crisis to sporting renaissance is one of football's most remarkable recent stories. Just three years ago, the club was drowning in over a billion euros of debt. Today, they are once again competing for major honors.

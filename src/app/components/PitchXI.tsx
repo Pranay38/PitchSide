@@ -358,7 +358,7 @@ export function PitchXI({ team, compact = false }: PitchXIProps) {
   const isTournament = team.context.type === "tournament";
   const contextLabel = isTournament
     ? (team.context as any).tournament
-    : `${LEAGUES[(team.context as any).league]?.name ?? "League"} MW${(team.context as any).matchweek}`;
+    : `${LEAGUES[(team.context as any).league as keyof typeof LEAGUES]?.name ?? "League"} MW${(team.context as any).matchweek}`;
 
   return (
     <div

@@ -129,11 +129,13 @@ export function RecommendedArticles({
 
         {showSource && source && (
           <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-[0.1em] ${
-            source === "collaborative" 
+            source === "curated"
+              ? "bg-[#16A34A] text-white"
+              : source === "collaborative" 
               ? "bg-[#16A34A]/10 text-[#16A34A]" 
               : "bg-gray-100 dark:bg-gray-800 text-[#64748B] dark:text-gray-400"
           }`}>
-            {source === "collaborative" ? "ML" : "Tag-based"}
+            {source === "curated" ? "Curated" : source === "collaborative" ? "ML" : "Tag-based"}
           </span>
         )}
       </div>

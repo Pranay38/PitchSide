@@ -65,7 +65,7 @@ export function SupportBanner({ variant = "inline", className = "" }: SupportBan
   return (
     <div className={`relative overflow-hidden rounded-[2rem] ${className}`}>
       {/* Base surface layer */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0b1326] via-[#131b2e] to-[#171f33]" />
+      <div className="absolute inset-0 bg-foreground" />
       
       {/* Atmospheric stadium glows */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-[#16A34A]/8 rounded-full blur-[100px] pointer-events-none translate-x-1/3 -translate-y-1/3" />
@@ -92,10 +92,10 @@ export function SupportBanner({ variant = "inline", className = "" }: SupportBan
               </p>
             </div>
             
-            <h3 className="text-2xl sm:text-3xl font-black font-outfit text-[#dae2fd] mb-3 leading-tight tracking-tight">
-              Enjoying <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#62df7d] to-[#4ade80]">The Touchline Dribble</span>?
+            <h3 className="text-2xl sm:text-3xl font-bold font-headline text-background mb-3 leading-tight tracking-tight">
+              Enjoying <span className="text-primary">The Touchline Dribble</span>?
             </h3>
-            <p className="text-sm sm:text-base text-[#bdcaba] leading-relaxed">
+            <p className="text-sm sm:text-base text-muted leading-relaxed">
               This blog is a passion project. If you love the tactical breakdowns and transfer coverage, consider supporting us to keep the lights on and help us grow.
             </p>
           </div>
@@ -111,7 +111,7 @@ export function SupportBanner({ variant = "inline", className = "" }: SupportBan
               Support via Razorpay
               <ArrowUpRight className="w-4 h-4 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
             </a>
-            <div className="flex items-center justify-center gap-2 text-[#bdcaba]/50 text-xs">
+            <div className="flex items-center justify-center gap-2 text-muted/70 text-xs">
               <Lock className="w-3 h-3" />
               <span>Secure payment via Razorpay</span>
             </div>
