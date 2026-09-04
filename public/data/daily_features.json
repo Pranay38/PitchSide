@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-09-03T09:24:26.338259",
+  "lastUpdated": "2026-09-04T09:17:33.428813",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea make contact with Wijnaldum - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Everton eye free agent Vardy - Friday's gossip",
+    "sentimentScore": 69
   },
   "managerPressure": [
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 83
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 99
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 76
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 77
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 67
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 69
     }
   ]
 }
