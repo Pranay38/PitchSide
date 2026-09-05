@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Mail, X, FileText, Send, Loader2, CheckCircle2 } from "lucide-react";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { toast } from "sonner";
+
+/** Storage key tracking how many articles this reader has viewed */
+const ARTICLES_READ_KEY = "pitchside_articles_read";
 
 export function InnerCircleModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +14,7 @@ export function InnerCircleModal() {
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const hasTriggered = useRef(false);
 
   const CLUBS = ["Arsenal", "Chelsea", "Liverpool", "Man City", "Man United", "Spurs", "Real Madrid", "Barcelona"];
 
@@ -21,23 +25,83 @@ export function InnerCircleModal() {
   };
   const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
 
-  useEffect(() => {
-    // Only show if they haven't opted in yet
-    if (loading || newsletterOptIn) return;
+  // ─── Shared trigger: opens modal at most once per session ───
+  const triggerModal = useCallback(() => {
+    if (hasTriggered.current) return;
+    hasTriggered.current = true;
+    setIsOpen(true);
+  }, []);
 
-    // Has it been dismissed recently?
+  // ─── Guard check: should we listen for triggers at all? ───
+  const shouldSuppress = useCallback((): boolean => {
+    if (loading || newsletterOptIn) return true;
     const dismissed = localStorage.getItem("pitchside_modal_dismissed");
     if (dismissed && Date.now() - parseInt(dismissed, 10) < 86400000 * 7) {
-      return; // Wait 7 days before showing again if dismissed
+      return true; // Wait 7 days after dismissal
     }
-
-    // Show after 15 seconds
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 15000);
-
-    return () => clearTimeout(timer);
+    return false;
   }, [loading, newsletterOptIn]);
+
+  // ─── Trigger 1: 50% scroll depth (reader is engaged, not bouncing) ───
+  useEffect(() => {
+    if (shouldSuppress()) return;
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      if (docHeight > 0 && scrollTop / docHeight >= 0.5) {
+        triggerModal();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [shouldSuppress, triggerModal]);
+
+  // ─── Trigger 2: Exit intent on desktop (mouse leaves viewport top) ───
+  useEffect(() => {
+    if (shouldSuppress()) return;
+
+    // Only on desktop — touch devices don't have meaningful exit intent
+    const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+    if (isTouchDevice) return;
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      // Mouse exiting through the top of the viewport = closing tab / navigating away
+      if (e.clientY <= 0) {
+        triggerModal();
+      }
+    };
+
+    document.addEventListener("mouseleave", handleMouseLeave);
+    return () => document.removeEventListener("mouseleave", handleMouseLeave);
+  }, [shouldSuppress, triggerModal]);
+
+  // ─── Trigger 3: Returning reader (2+ articles read across sessions) ───
+  useEffect(() => {
+    if (shouldSuppress()) return;
+
+    // Increment article count for this page view (deduplicated by pathname)
+    try {
+      const viewedRaw = localStorage.getItem(ARTICLES_READ_KEY);
+      const viewed: string[] = viewedRaw ? JSON.parse(viewedRaw) : [];
+      const currentPath = window.location.pathname;
+
+      if (!viewed.includes(currentPath)) {
+        viewed.push(currentPath);
+        localStorage.setItem(ARTICLES_READ_KEY, JSON.stringify(viewed));
+      }
+
+      // If they've read 2+ articles, trigger after a short delay
+      // (give them a moment to start reading the current one)
+      if (viewed.length >= 2) {
+        const timer = setTimeout(() => triggerModal(), 5000);
+        return () => clearTimeout(timer);
+      }
+    } catch {
+      // localStorage unavailable — silently skip this trigger
+    }
+  }, [shouldSuppress, triggerModal]);
 
   const handleClose = () => {
     setIsOpen(false);
