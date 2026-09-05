@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-09-04T09:17:33.428813",
+  "lastUpdated": "2026-09-05T08:46:09.497413",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Everton eye free agent Vardy - Friday's gossip",
-    "sentimentScore": 69
+    "text": "Bissouma was offered to Chelsea - Saturday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 99
-    },
-    {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 77
-    },
-    {
       "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 88
+    },
+    {
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 76
+    },
+    {
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 73
+    },
+    {
+      "name": "Marco Rose (BOU)",
       "pressureScore": 69
+    },
+    {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 63
     }
   ]
 }
