@@ -48,6 +48,7 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
                 src={post.coverImage} 
                 alt={post.title} 
                 fill
+                quality={95}
                 priority
                 className="object-cover transition-transform duration-700 hover:scale-[1.02]" 
               />

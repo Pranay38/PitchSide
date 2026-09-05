@@ -37,8 +37,8 @@ export async function GET(req: NextRequest) {
                   position: 'absolute',
                   top: 0,
                   left: 0,
-                  width: '100%',
-                  height: '100%',
+                  width: 1200,
+                  height: 630,
                   objectFit: 'cover',
                 }}
               />
