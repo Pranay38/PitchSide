@@ -33,46 +33,56 @@ export default async function welcomeSequenceHandler(req: VercelRequest, res: Ve
             status: { $ne: "unsubscribed" }
         }).toArray();
 
+import { buildEditorialEmail } from "../utils/emailTemplate";
+
         const day1Batch = day1Subscribers.map(sub => ({
             to: sub.email,
             subject: "The Best of Touchline Dribble 🏆",
-            html: `
-                <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0F172A; color: #fff; border-radius: 16px; overflow: hidden;">
-                    <div style="background: linear-gradient(135deg, #16A34A, #15803d); padding: 32px; text-align: center;">
-                        <h1 style="margin: 0; font-size: 24px; color: white;">The Best of Touchline Dribble</h1>
-                    </div>
-                    <div style="padding: 32px;">
-                        <p style="color: #94A3B8; line-height: 1.6; margin: 0 0 16px;">
-                            Hey there,<br><br>
-                            It's been a day since you joined us. While we prepare our next tactical breakdown, here are three of our absolute best pieces to get you started:
-                        </p>
-                        
-                        <div style="background: #1E293B; padding: 20px; border-radius: 8px; margin-bottom: 16px;">
-                            <h3 style="margin: 0 0 8px; color: #4ade80;">1. Football Formations Explained</h3>
-                            <p style="margin: 0; color: #94A3B8; font-size: 14px;">Every system from the classic 4-4-2 to Pep's 3-2-4-1, broken down.</p>
-                        </div>
-                        
-                        <div style="background: #1E293B; padding: 20px; border-radius: 8px; margin-bottom: 16px;">
-                            <h3 style="margin: 0 0 8px; color: #4ade80;">2. The Death of the Number 10</h3>
-                            <p style="margin: 0; color: #94A3B8; font-size: 14px;">Why the classic playmaker vanished, and how the role evolved into the modern '8'.</p>
-                        </div>
-                        
-                        <div style="background: #1E293B; padding: 20px; border-radius: 8px; margin-bottom: 16px;">
-                            <h3 style="margin: 0 0 8px; color: #4ade80;">3. High Press vs. Mid Block</h3>
-                            <p style="margin: 0; color: #94A3B8; font-size: 14px;">A tactical deep dive into defensive structures and when teams choose to use them.</p>
-                        </div>
+            html: buildEditorialEmail({
+                title: "The Best of Touchline Dribble",
+                previewText: "Three of our absolute best tactical pieces to get you started.",
+                unsubscribeUrl: `https://www.thetouchlinedribble.in/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}`,
+                content: `
+                    <h2 class="headline serif">The Editor's Selection.</h2>
+                    <p class="body-text sans">
+                        Hi again,<br><br>
+                        It's been a day since you joined the list. While we prepare our next tactical breakdown, I wanted to share three of our most popular, timeless pieces. 
+                    </p>
+                    <p class="body-text sans">
+                        These are the articles that define what we do here at The Touchline Dribble.
+                    </p>
+                    
+                    <hr class="divider">
 
-                        <p style="color: #94A3B8; line-height: 1.6; margin: 24px 0 0;">
-                            Dive in, and let us know what you think.<br>
-                            — The Touchline Dribble Team
-                        </p>
+                    <div style="margin-bottom: 32px;">
+                        <div class="kicker sans">Tactics 101</div>
+                        <h3 class="subheadline serif" style="margin-bottom: 8px;"><a href="https://www.thetouchlinedribble.in/post/football-formations" style="color: #0f172a; text-decoration: none;">Football Formations Explained</a></h3>
+                        <p class="body-text sans" style="margin-bottom: 12px; font-size: 15px;">Every system from the classic 4-4-2 to Pep's 3-2-4-1, broken down step-by-step.</p>
+                        <a href="https://www.thetouchlinedribble.in/post/football-formations" class="sans" style="font-size: 13px; font-weight: 600;">Read piece &rarr;</a>
                     </div>
-                    <div style="padding: 16px 32px; border-top: 1px solid #1E293B; text-align: center;">
-                        <p style="color: #64748B; font-size: 12px; margin: 0;">© 2026 The Touchline Dribble</p>
-                        <p style="margin-top: 10px;"><a href="https://www.thetouchlinedribble.in/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}" style="color: #64748b; text-decoration: underline; font-size: 12px;">Unsubscribe</a></p>
+                    
+                    <div style="margin-bottom: 32px;">
+                        <div class="kicker sans">Player Roles</div>
+                        <h3 class="subheadline serif" style="margin-bottom: 8px;"><a href="https://www.thetouchlinedribble.in/post/death-of-number-10" style="color: #0f172a; text-decoration: none;">The Death of the Number 10</a></h3>
+                        <p class="body-text sans" style="margin-bottom: 12px; font-size: 15px;">Why the classic playmaker vanished, and how the role evolved into the modern '8'.</p>
+                        <a href="https://www.thetouchlinedribble.in/post/death-of-number-10" class="sans" style="font-size: 13px; font-weight: 600;">Read piece &rarr;</a>
                     </div>
-                </div>
-            `
+                    
+                    <div style="margin-bottom: 16px;">
+                        <div class="kicker sans">Systems</div>
+                        <h3 class="subheadline serif" style="margin-bottom: 8px;"><a href="https://www.thetouchlinedribble.in/post/high-press" style="color: #0f172a; text-decoration: none;">High Press vs. Mid Block</a></h3>
+                        <p class="body-text sans" style="margin-bottom: 12px; font-size: 15px;">A tactical deep dive into defensive structures and when elite teams choose to use them.</p>
+                        <a href="https://www.thetouchlinedribble.in/post/high-press" class="sans" style="font-size: 13px; font-weight: 600;">Read piece &rarr;</a>
+                    </div>
+
+                    <hr class="divider">
+
+                    <p class="body-text sans" style="margin-top: 24px;">
+                        Dive in, and let me know what you think.<br>
+                        <strong>Pranay Agarwal</strong>
+                    </p>
+                `
+            })
         }));
 
         if (day1Batch.length > 0) {
@@ -94,36 +104,37 @@ export default async function welcomeSequenceHandler(req: VercelRequest, res: Ve
         const day3Batch = day3Subscribers.map(sub => ({
             to: sub.email,
             subject: "Who is the greatest modern manager? 🤔",
-            html: `
-                <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0F172A; color: #fff; border-radius: 16px; overflow: hidden;">
-                    <div style="background: linear-gradient(135deg, #16A34A, #15803d); padding: 32px; text-align: center;">
-                        <h1 style="margin: 0; font-size: 24px; color: white;">Join the Debate</h1>
+            html: buildEditorialEmail({
+                title: "Join the Debate",
+                previewText: "We want to hear your take on football's greatest modern manager.",
+                unsubscribeUrl: `https://www.thetouchlinedribble.in/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}`,
+                content: `
+                    <div class="kicker sans">The Debate</div>
+                    <h2 class="headline serif">Who is the greatest modern manager?</h2>
+                    
+                    <p class="body-text sans" style="margin-top: 24px;">
+                        Hi,<br><br>
+                        We pride ourselves on having the sharpest tactical community on the internet. And today, I want to hear directly from you.
+                    </p>
+                    
+                    <div class="editors-note sans">
+                        <strong>The Question:</strong><br>
+                        Who is the greatest modern manager, and what is their defining tactical innovation?
                     </div>
-                    <div style="padding: 32px;">
-                        <p style="color: #94A3B8; line-height: 1.6; margin: 0 0 16px;">
-                            Hey,<br><br>
-                            We pride ourselves on having the sharpest tactical community on the internet. And today, we want to hear from you.
-                        </p>
-                        <p style="color: #F8FAFC; font-size: 18px; font-weight: bold; margin: 24px 0;">
-                            Who is the greatest modern manager, and what is their defining tactical innovation?
-                        </p>
-                        <p style="color: #94A3B8; line-height: 1.6; margin: 0 0 24px;">
-                            Is it Pep's inverted fullbacks? Klopp's Gegenpressing? Mourinho's impenetrable low block?
-                        </p>
-                        <p style="color: #94A3B8; line-height: 1.6; margin: 0 0 16px;">
-                            <strong>Reply directly to this email</strong> with your take. We read every single reply, and the best answers get featured in our weekly digest.
-                        </p>
-                        <p style="color: #94A3B8; line-height: 1.6; margin: 24px 0 0;">
-                            Speak soon,<br>
-                            — The Touchline Dribble Team
-                        </p>
-                    </div>
-                    <div style="padding: 16px 32px; border-top: 1px solid #1E293B; text-align: center;">
-                        <p style="color: #64748B; font-size: 12px; margin: 0;">© 2026 The Touchline Dribble</p>
-                        <p style="margin-top: 10px;"><a href="https://www.thetouchlinedribble.in/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}" style="color: #64748b; text-decoration: underline; font-size: 12px;">Unsubscribe</a></p>
-                    </div>
-                </div>
-            `
+
+                    <p class="body-text sans">
+                        Is it Pep Guardiola's inverted fullbacks? Jurgen Klopp's heavy-metal Gegenpressing? Jose Mourinho's impenetrable low block? Or maybe someone else entirely?
+                    </p>
+                    <p class="body-text sans">
+                        <strong>Reply directly to this email</strong> with your take. I read every single reply, and the best answers get featured in our weekly digest.
+                    </p>
+                    
+                    <p class="body-text sans" style="margin-top: 24px;">
+                        Looking forward to your thoughts,<br>
+                        <strong>Pranay Agarwal</strong>
+                    </p>
+                `
+            })
         }));
 
         if (day3Batch.length > 0) {

@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { connectToDatabase } from "../_db";
 import { sendBatchEmails, isMailerConfigured } from "../_mailer";
 import { requireAuth } from "../utils/security";
+import { buildEditorialEmail } from "../utils/emailTemplate";
 
 const SITE_URL = "https://www.thetouchlinedribble.in";
 
@@ -99,24 +100,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
 
         const generateHtmlForPosts = (posts: any[]) => {
-            return posts.map(post => {
+            return posts.map((post, idx) => {
                 const postHref = `${SITE_URL}/post/${post.slug || post.id || post._id}`;
                 return `
-            <div style="margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid #e2e8f0;">
-                ${post.coverImage ? `<a href="${postHref}"><img src="${post.coverImage}" alt="${post.title}" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 12px; margin-bottom: 20px;" /></a>` : ''}
-                <div style="font-size: 11px; font-weight: bold; color: #16A34A; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px;">
-                    ${post.club || "Football"} • ${post.readTime || "5 min read"}
+            <div style="margin-bottom: 40px; ${idx < posts.length - 1 ? 'padding-bottom: 32px; border-bottom: 1px solid #e2e8f0;' : ''}">
+                ${post.coverImage ? `<a href="${postHref}"><img src="${post.coverImage}" alt="${post.title}" style="width: 100%; max-height: 350px; object-fit: cover; margin-bottom: 16px;" /></a>` : ''}
+                <div class="kicker sans">
+                    ${post.club || "Analysis"} • ${post.readTime || "5 min read"}
                 </div>
-                <h3 style="margin: 0 0 15px 0; font-size: 24px; color: #0f172a; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.3;">
+                <h3 class="headline serif" style="margin-bottom: 12px; font-size: 24px; line-height: 1.3;">
                     <a href="${postHref}" style="color: #0f172a; text-decoration: none;">${post.title}</a>
                 </h3>
-                <div style="margin: 0 0 20px 0; font-size: 16px; color: #334155; line-height: 1.7; font-family: 'Segoe UI', Arial, sans-serif;">
+                <div class="body-text sans" style="color: #475569; margin-bottom: 20px;">
                     ${post.excerpt || ""}
                 </div>
-                <div style="text-align: left;">
-                    <a href="${postHref}" style="display: inline-block; padding: 12px 24px; background-color: #16A34A; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: bold; letter-spacing: 0.5px;">
-                        Read Article →
-                    </a>
+                <div>
+                    <a href="${postHref}" class="btn sans">Read Article &rarr;</a>
                 </div>
             </div>
         `}).join('');
@@ -149,9 +148,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 sub.alertPreferences?.story;
 
             let personalizedGreeting = "Here is a roundup of our top football analysis and stories from the past week.";
-            if (activeClub) personalizedGreeting = `Here's your personalized digest, featuring the latest ${activeClub} updates and top football stories.`;
-            else if (isTransfer) personalizedGreeting = "Here's your weekly digest, packed with the latest transfer rumors and top football news.";
-            else if (isStory) personalizedGreeting = "Here's your weekly digest, featuring our best longform reads and top football stories.";
+            let editorsNoteTitle = "From the Editor";
+            if (activeClub) {
+                personalizedGreeting = `I put together this digest specifically for you, featuring the latest ${activeClub} updates alongside our top football stories.`;
+                editorsNoteTitle = `Your ${activeClub} Digest`;
+            } else if (isTransfer) {
+                personalizedGreeting = "Here is your weekly digest, packed with the latest transfer rumors and top football news.";
+                editorsNoteTitle = "Transfer & News Digest";
+            } else if (isStory) {
+                personalizedGreeting = "Here is your weekly digest, featuring our best longform reads and top football stories.";
+                editorsNoteTitle = "Longform & Analysis Digest";
+            }
 
             const personalizedPosts = [...recentPostsResult].sort((a, b) => {
                 let scoreA = (a.reactions?.fire || 0) + (a.reactions?.mindblown || 0);
@@ -189,26 +196,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 customBacklink = `<p><a href="${SITE_URL}/stories" style="color: #16A34A; text-decoration: none;">Read More Longform Stories</a> | <a href="${SITE_URL}" style="color: #334155; text-decoration: none;">Visit Homepage</a></p>`;
             }
 
-            const emailHtml = `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #ffffff;">
-                <div style="text-align: center; padding-bottom: 20px; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9;">
-                    <h1 style="margin: 0; color: #0f172a; font-size: 24px; font-weight: 900; letter-spacing: -0.5px;">The Touchline Dribble</h1>
-                    <p style="margin: 5px 0 0 0; color: #16A34A; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;">Weekly Digest</p>
-                </div>
-                
-                <p style="font-size: 16px; color: #334155; line-height: 1.6; margin-bottom: 30px;">
-                    ${personalizedGreeting}
-                </p>
+            const emailHtml = buildEditorialEmail({
+                title: subject,
+                previewText: personalizedGreeting,
+                unsubscribeUrl: `${SITE_URL}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}`,
+                content: `
+                    <div class="editors-note sans">
+                        <strong>${editorsNoteTitle}</strong><br><br>
+                        Hi there,<br><br>
+                        ${personalizedGreeting}
+                    </div>
 
-                ${postsHtml}
+                    ${postsHtml}
 
-                <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center; font-size: 12px; color: #94a3b8;">
-                    <p>You received this email because you subscribed to The Touchline Dribble.</p>
-                    ${customBacklink}
-                    <p style="margin-top: 15px;"><a href="${SITE_URL}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}" style="color: #94a3b8; text-decoration: underline;">Unsubscribe</a></p>
-                </div>
-            </div>
-            `;
+                    <hr class="divider">
+                    <p class="body-text sans">
+                        Thanks for reading,<br>
+                        <strong>Pranay Agarwal</strong><br>
+                        Editor, The Touchline Dribble
+                    </p>
+                    <div style="text-align: center; font-size: 13px; margin-top: 32px;" class="sans">
+                        ${customBacklink}
+                    </div>
+                `
+            });
 
             return {
                 to: sub.email,

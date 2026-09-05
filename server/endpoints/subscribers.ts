@@ -188,31 +188,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             let emailSent = false;
             if (isMailerConfigured()) {
                 try {
+                    const unSubUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host || "www.thetouchlinedribble.in"}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(normalizedEmail)}`;
+                    
+                    const { buildEditorialEmail } = await import("../utils/emailTemplate");
+                    const html = buildEditorialEmail({
+                        title: "Welcome to The Touchline Dribble ⚽",
+                        previewText: "You're in. Here is what to expect from us.",
+                        unsubscribeUrl: unSubUrl,
+                        content: `
+                            <h2 class="headline serif">Welcome to the Inner Circle.</h2>
+                            <p class="body-text sans">
+                                Hi there,<br><br>
+                                Thanks for trusting us with your inbox. I know it's a crowded space, so I'll make sure every email we send is worth your time.
+                            </p>
+                            <p class="body-text sans">
+                                You are now on the list to receive our sharpest tactical breakdowns, exclusive opinion pieces, and in-depth analysis before anyone else. We don't do clickbait or standard match reports. We focus on the "why" and "how" of the beautiful game.
+                            </p>
+                            <div class="editors-note sans">
+                                <strong>What's next?</strong><br>
+                                Keep an eye out over the next few days. I'll be sending over a curated selection of our best timeless pieces to get you acquainted with our style of analysis.
+                            </div>
+                            <p class="body-text sans">
+                                If there's a specific team or tactical concept you want us to cover, just hit reply to this email. I read every single one.
+                            </p>
+                            <p class="body-text sans" style="margin-top: 24px;">
+                                Speak soon,<br>
+                                <strong>Pranay Agarwal</strong><br>
+                                Editor, The Touchline Dribble
+                            </p>
+                        `
+                    });
+
                     await sendEmail({
                         to: normalizedEmail,
-                        subject: "Welcome to The Touchline Dribble! ⚽",
-                        html: `
-                            <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0F172A; color: #fff; border-radius: 16px; overflow: hidden;">
-                                <div style="background: linear-gradient(135deg, #16A34A, #15803d); padding: 32px; text-align: center;">
-                                    <h1 style="margin: 0; font-size: 24px; color: white;">⚽ The Touchline Dribble</h1>
-                                    <p style="margin: 8px 0 0; color: rgba(255,255,255,0.85); font-size: 14px;">Football Analysis & Opinion</p>
-                                </div>
-                                <div style="padding: 32px;">
-                                    <h2 style="color: #4ade80; margin: 0 0 16px;">You're in! 🎉</h2>
-                                    <p style="color: #94A3B8; line-height: 1.6; margin: 0 0 16px;">
-                                        Thanks for subscribing to <strong style="color: #fff;">The Touchline Dribble</strong>. 
-                                        You'll receive email notifications whenever we publish new articles — 
-                                        sharp analysis, tactical breakdowns, and bold opinions delivered straight to your inbox.
-                                    </p>
-                                    <p style="color: #94A3B8; line-height: 1.6; margin: 0;">
-                                        Stay tuned for the next post! ⚽🔥
-                                    </p>
-                                </div>
-                                <div style="padding: 16px 32px; border-top: 1px solid #1E293B; text-align: center;">
-                                    <p style="color: #64748B; font-size: 12px; margin: 0;">© 2026 The Touchline Dribble. All rights reserved.</p>
-                                </div>
-                            </div>
-                        `,
+                        subject: "Welcome to The Touchline Dribble ⚽",
+                        html,
                     });
                     emailSent = true;
                 } catch (emailError) {
