@@ -1,6 +1,20 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || "",
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || "",
+});
+
+const newsletterRateLimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(3, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:newsletter",
+});
 
 /**
  * Redirect /post/<numeric-id> → /post/<slug> for SEO.
@@ -36,6 +50,29 @@ async function handlePostSlugRedirect(request: NextRequest): Promise<NextRespons
 }
 
 export default clerkMiddleware(async (_auth, request) => {
+  if (request.nextUrl.pathname.startsWith('/api/subscribers') && request.method === 'POST') {
+    const ip = request.headers.get("x-forwarded-for") ?? request.ip ?? "127.0.0.1";
+    try {
+      const { success, limit, reset, remaining } = await newsletterRateLimit.limit(ip);
+      
+      if (!success) {
+        return NextResponse.json(
+          { error: "Too many signup attempts. Please try again later." },
+          { 
+            status: 429,
+            headers: {
+              "X-RateLimit-Limit": limit.toString(),
+              "X-RateLimit-Remaining": remaining.toString(),
+              "X-RateLimit-Reset": reset.toString()
+            }
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Rate limit error:", error);
+    }
+  }
+
   const redirectResponse = await handlePostSlugRedirect(request);
   if (redirectResponse) return redirectResponse;
 });

@@ -8,6 +8,25 @@ import { Providers } from "./providers";
 import { CSPostHogProvider } from "@/app/components/PostHogProvider";
 import { InnerCircleModal } from "@/app/components/InnerCircleModal";
 import "./globals.css";
+import { Inter, Newsreader, Space_Grotesk } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-newsreader",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-space-grotesk",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -81,20 +100,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${newsreader.variable} ${spaceGrotesk.variable}`}>
       <head>
-        {/* Google Fonts: Inter, Newsreader, Space Grotesk */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-
         {/* Preconnect to frequently used external services */}
         <link rel="preconnect" href="https://api.football-data.org" />
         <link rel="preconnect" href="https://images.unsplash.com" />
