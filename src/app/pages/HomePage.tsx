@@ -16,6 +16,9 @@ import { ArticleCard } from "../components/ui/blog-post-card";
 import AeroHero from "../components/ui/aero-hero";
 import Blogs from "../components/ui/blogs";
 import { PageState } from "../components/PageState";
+import { SectionMarker } from "../components/SectionMarker";
+import { TextWireSection } from "../components/TextWireSection";
+import { CommunityContributorCTA } from "../components/CommunityContributorCTA";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { getSiteSettings, getSiteSettingsAsync, type SiteSettings } from "../lib/siteSettingsStorage";
@@ -495,6 +498,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
       <main className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
         {/* --- QUICK TAKES --- */}
         <section className="mb-8 scroll-reveal">
+          <SectionMarker minute="1'" label="Quick Takes" />
           <QuickTakesSection posts={posts} />
         </section>
 
@@ -505,11 +509,12 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
         {/* --- SPACIOUS MAIN LAYOUT --- */}
         <section className="mb-32 scroll-reveal">
-          <div className="flex flex-col gap-24">
+          <div className="flex flex-col gap-32">
             
             {/* ── This Week's Big Reads ────────────── */}
             {thisWeekPosts.length > 0 && (
               <div>
+                <SectionMarker minute="15'" label="Deep Reads" />
                 <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
                   <div>
                     <h2 className="mt-2 text-4xl sm:text-5xl font-headline tracking-tight text-foreground">
@@ -560,6 +565,21 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
               </div>
             )}
 
+            {/* --- TEXT WIRE: Dense headlines section --- */}
+            {standardPosts.length > 3 && (
+              <div>
+                <SectionMarker minute="30'" label="The Wire" />
+                <TextWireSection
+                  posts={standardPosts.filter((p) => {
+                    // Exclude hero and thisWeek posts to avoid duplication
+                    const heroId = heroSelection?.type === "post" ? heroSelection.post.id : null;
+                    return p.id !== heroId && !p.thisWeek;
+                  })}
+                  limit={5}
+                />
+              </div>
+            )}
+
             {/* --- UTILITY WIDGETS (Rumor Mill, Manager Pressure, Prediction Arena) --- */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {dailyFeatures?.rumorMill ? (
@@ -579,6 +599,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
             {/* Latest Analysis Block */}
             <div id="latest-articles" className="pt-8 border-t border-border">
+              <SectionMarker minute="45+2'" label="Latest Analysis" />
               <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <h2 className="mt-2 text-4xl sm:text-5xl font-headline tracking-tight text-foreground">
@@ -618,7 +639,8 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
         {/* --- EDITOR PICKS (Horizontal Scroll) --- */}
         {editorsPicks.length > 0 && (
-          <section className="mt-24 scroll-reveal">
+          <section className="mt-32 scroll-reveal">
+            <SectionMarker minute="HT" label="Editor Picks" />
             <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p className="kicker text-primary mb-2">Curated</p>
@@ -665,7 +687,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                       {post.excerpt}
                     </p>
                     <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground font-medium">
-                      <span>By The Touchline Dribble</span>
+                      <span className="font-semibold">By {post.author || "The Touchline Dribble"}</span>
                       <span>·</span>
                       <span>{post.readTime}</span>
                     </div>
@@ -688,7 +710,8 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
           if (olderPosts.length === 0) return null;
           
           return (
-            <section className="mt-24 scroll-reveal">
+            <section className="mt-32 scroll-reveal">
+              <SectionMarker minute="75'" label="From The Archive" />
               <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p className="kicker text-primary mb-2">Archive</p>
@@ -747,11 +770,18 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
         {/* Section Divider */}
         <div className="section-divider" />
 
-        <section className="mt-16 scroll-reveal w-full max-w-4xl mx-auto px-4 sm:px-6">
+        <section className="mt-32 scroll-reveal w-full max-w-4xl mx-auto px-4 sm:px-6">
           <SupportBanner variant="inline" />
         </section>
 
-        <section className="mt-16 scroll-reveal">
+        {/* --- COMMUNITY CONTRIBUTOR CTA --- */}
+        <section className="mt-20 scroll-reveal">
+          <SectionMarker minute="85'" label="Community" />
+          <CommunityContributorCTA />
+        </section>
+
+        <section className="mt-20 scroll-reveal">
+          <SectionMarker minute="FT" label="Stay Connected" />
           <InlineNewsletterCard />
         </section>
 

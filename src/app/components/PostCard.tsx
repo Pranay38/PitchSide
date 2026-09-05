@@ -2,7 +2,7 @@ import { Link } from "@/lib/router-compat";
 import Image from "next/image";
 import type { BlogPost } from "../data/posts";
 import { getClubByName } from "../data/clubs";
-import { Clock, Star, ArrowRight, Heart } from "lucide-react";
+import { Clock, Star, ArrowRight, Heart, Circle, Pencil } from "lucide-react";
 import { getCategoryBadgeColor } from "./ui/utils";
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
@@ -76,14 +76,16 @@ export function PostCard({ post, featured = false }: PostCardProps) {
                if (hoursAgo < 24) {
                  return (
                    <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white bg-red-500 rounded-full shadow-md animate-pulse">
-                     🔴 New
+                     <Circle className="w-2.5 h-2.5 fill-white" />
+                     New
                    </div>
                  );
                }
                if (wasUpdated) {
                  return (
                    <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-[#0F172A] bg-[#4ade80]/90 rounded-full shadow-md">
-                     ✏️ Updated
+                     <Pencil className="w-2.5 h-2.5" />
+                     Updated
                    </div>
                  );
                }
@@ -122,7 +124,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
             {post.excerpt}
           </p>
           <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-white/70">
-            <span>By The Touchline Dribble</span>
+            <span>By {post.author || "The Touchline Dribble"}</span>
             <span>·</span>
             <span className="flex items-center gap-1">
                <Clock className="w-3 h-3" />
@@ -172,14 +174,16 @@ export function PostCard({ post, featured = false }: PostCardProps) {
             if (hoursAgo < 24) {
               return (
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white bg-red-500 rounded-full shadow-md animate-pulse">
-                  🔴 New
+                  <Circle className="w-2.5 h-2.5 fill-white" />
+                  New
                 </div>
               );
             }
             if (wasUpdated) {
               return (
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-[#0F172A] bg-[#4ade80]/90 rounded-full shadow-md">
-                  ✏️ Updated
+                  <Pencil className="w-2.5 h-2.5" />
+                  Updated
                 </div>
               );
             }
@@ -222,7 +226,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
 
         <div className="mt-auto pt-5 flex items-center justify-between border-t border-border">
           <div className="flex flex-wrap items-center gap-1.5 text-xs font-medium text-muted-foreground">
-            <span>By The Touchline Dribble</span>
+            <span className="font-semibold">By {post.author || "The Touchline Dribble"}</span>
             <span>·</span>
             <span className="flex items-center gap-1">
                <Clock className="w-3 h-3" />
