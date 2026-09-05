@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const club = searchParams.get('club');
     const date = searchParams.get('date');
     const subtitle = searchParams.get('subtitle');
+    const image = searchParams.get('image');
 
     return new ImageResponse(
       (
@@ -20,37 +21,67 @@ export async function GET(req: NextRequest) {
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: '#0b1326',
-            backgroundImage: 'linear-gradient(135deg, #0b1326 0%, #0F172A 40%, #0d2818 100%)',
+            backgroundImage: image ? undefined : 'linear-gradient(135deg, #0b1326 0%, #0F172A 40%, #0d2818 100%)',
             padding: '0',
             fontFamily: 'system-ui, -apple-system, sans-serif',
             position: 'relative',
             overflow: 'hidden',
           }}
         >
-          {/* Atmospheric glow - top right */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '-100px',
-              right: '-100px',
-              width: '500px',
-              height: '500px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(22,163,74,0.15) 0%, transparent 70%)',
-            }}
-          />
-          {/* Atmospheric glow - bottom left */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '-80px',
-              left: '-80px',
-              width: '400px',
-              height: '400px',
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(22,163,74,0.1) 0%, transparent 70%)',
-            }}
-          />
+          {image ? (
+            <>
+              {/* Background Image */}
+              <img
+                src={image.startsWith('/') ? `https://www.thetouchlinedribble.in${image}` : image}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+              />
+              {/* Dark Gradient Overlay for readability */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  background: 'linear-gradient(to top, rgba(11, 19, 38, 0.95) 0%, rgba(15, 23, 42, 0.7) 40%, rgba(11, 19, 38, 0.4) 100%)',
+                }}
+              />
+            </>
+          ) : (
+            <>
+              {/* Atmospheric glow - top right */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '-100px',
+                  right: '-100px',
+                  width: '500px',
+                  height: '500px',
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(22,163,74,0.15) 0%, transparent 70%)',
+                }}
+              />
+              {/* Atmospheric glow - bottom left */}
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '-80px',
+                  left: '-80px',
+                  width: '400px',
+                  height: '400px',
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(22,163,74,0.1) 0%, transparent 70%)',
+                }}
+              />
+            </>
+          )}
 
           {/* Content */}
           <div

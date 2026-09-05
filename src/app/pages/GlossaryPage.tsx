@@ -221,12 +221,12 @@ export function GlossaryPage() {
                       <p className="mt-3 text-sm leading-6 text-[#64748B] dark:text-gray-400">
                         {entry.definition}
                       </p>
-                      <a
-                        href={`#${termSlug(entry.term)}`}
+                      <Link
+                        href={`/glossary/${termSlug(entry.term)}`}
                         className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-[#16A34A] opacity-0 transition-opacity group-hover:opacity-100"
                       >
-                        <Hash className="h-3 w-3" /> Permalink
-                      </a>
+                        <ArrowRight className="h-3 w-3" /> Read Full Definition
+                      </Link>
                     </div>
                   ))}
                 </div>
