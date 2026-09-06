@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "@/lib/router-compat";
 import { Zap, ChevronRight, Swords, Loader2, Check } from "lucide-react";
 import { getDeviceId } from "../lib/deviceId";
+import { VotingGatewayModal } from "./VotingGatewayModal";
 
 interface TeamInfo {
   name: string;
@@ -36,6 +37,10 @@ export function PredictionArenaWidget({
   const [totalVotes, setTotalVotes] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Gateway State
+  const [showGateway, setShowGateway] = useState(false);
+  const [pendingPrediction, setPendingPrediction] = useState<string | null>(null);
+
   // Fetch existing prediction on mount
   useEffect(() => {
     const fetchPrediction = async () => {
@@ -57,8 +62,17 @@ export function PredictionArenaWidget({
     fetchPrediction();
   }, [matchId]);
 
-  const handlePredict = useCallback(async (option: string) => {
+  const handlePredict = useCallback(async (option: string, bypassGateway = false) => {
     if (predicted || isSubmitting) return;
+
+    if (!bypassGateway) {
+        const storedEmail = localStorage.getItem("pitchside_subscriber_email");
+        if (!storedEmail) {
+            setPendingPrediction(option);
+            setShowGateway(true);
+            return;
+        }
+    }
 
     setIsSubmitting(true);
     setPredicted(option); // Optimistic
@@ -96,6 +110,7 @@ export function PredictionArenaWidget({
   };
 
     return (
+        <>
         <div className="bg-white dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 rounded-[2rem] p-6 md:p-8 relative overflow-hidden shadow-sm hover:shadow-xl hover:shadow-[#16A34A]/5 transition-all duration-300">
             {/* Background elements */}
             <div className="absolute -top-12 -right-12 p-8 opacity-[0.02] dark:opacity-[0.04] pointer-events-none transform rotate-12 scale-150">
@@ -214,5 +229,15 @@ export function PredictionArenaWidget({
                 </div>
             </div>
         </div>
+        <VotingGatewayModal 
+            isOpen={showGateway} 
+            onClose={() => { setShowGateway(false); setPendingPrediction(null); }}
+            onComplete={(email) => {
+                setShowGateway(false);
+                if (pendingPrediction) handlePredict(pendingPrediction, true);
+            }}
+            featureName="make your prediction"
+        />
+        </>
     );
 }

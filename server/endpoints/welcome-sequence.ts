@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { connectToDatabase } from "../_db";
 import { sendBatchEmails, isMailerConfigured } from "../_mailer";
+import { buildEditorialEmail } from "../utils/emailTemplate";
 
 const COLLECTION = "subscribers";
 
@@ -33,7 +34,6 @@ export default async function welcomeSequenceHandler(req: VercelRequest, res: Ve
             status: { $ne: "unsubscribed" }
         }).toArray();
 
-import { buildEditorialEmail } from "../utils/emailTemplate";
 
         const day1Batch = day1Subscribers.map(sub => ({
             to: sub.email,

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "@/lib/router-compat";
 import { Flame, ThumbsUp, ThumbsDown, Vote, ExternalLink, Loader2, ArrowRight } from "lucide-react";
+import { VotingGatewayModal } from "./VotingGatewayModal";
 
 interface Debate {
     id: string;
@@ -18,6 +19,10 @@ export function DebateWidget() {
     const [activeDebate, setActiveDebate] = useState<Debate | null>(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+    
+    // Gateway State
+    const [showGateway, setShowGateway] = useState(false);
+    const [pendingVote, setPendingVote] = useState<"agree" | "disagree" | null>(null);
     
     // Check local storage for votes
     const getVotedState = (id: string) => localStorage.getItem(`voted_debate_${id}`);
@@ -50,8 +55,18 @@ export function DebateWidget() {
         fetchDebates();
     }, [fetchDebates]);
 
-    const handleVote = async (side: "agree" | "disagree") => {
+    const handleVote = async (side: "agree" | "disagree", bypassGateway = false) => {
         if (!activeDebate || votedSide || submitting) return;
+        
+        if (!bypassGateway) {
+            const storedEmail = localStorage.getItem("pitchside_subscriber_email");
+            if (!storedEmail) {
+                setPendingVote(side);
+                setShowGateway(true);
+                return;
+            }
+        }
+
         setSubmitting(true);
         
         try {
@@ -94,6 +109,7 @@ export function DebateWidget() {
     const disagreePct = 100 - agreePct;
 
     return (
+        <>
         <div className="rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-gradient-to-br from-white dark:from-[#0F172A] to-gray-50 dark:to-[#0B1120] p-6 shadow-sm relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-bl-full -z-0"></div>
             
@@ -184,5 +200,15 @@ export function DebateWidget() {
                 )}
             </div>
         </div>
+        <VotingGatewayModal 
+            isOpen={showGateway} 
+            onClose={() => { setShowGateway(false); setPendingVote(null); }}
+            onComplete={(email) => {
+                setShowGateway(false);
+                if (pendingVote) handleVote(pendingVote, true);
+            }}
+            featureName="cast your vote"
+        />
+        </>
     );
 }

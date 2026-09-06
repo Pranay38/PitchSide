@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { SEO } from "../components/SEO";
+import { VotingGatewayModal } from "../components/VotingGatewayModal";
 
 interface Argument {
     id: string;
@@ -209,6 +210,12 @@ export function DebateCornerPage() {
     const [sharingId, setSharingId] = useState<string | null>(null);
     const resultCardRef = useRef<HTMLDivElement>(null);
 
+    // Gateway State
+    const [showGateway, setShowGateway] = useState(false);
+    const [pendingVote, setPendingVote] = useState<{ id: string; side: "agree" | "disagree" } | null>(null);
+    const [pendingArg, setPendingArg] = useState<string | null>(null); // holds the debate id
+    const [gatewayFeature, setGatewayFeature] = useState("cast your vote");
+
     const fetchDebates = useCallback(async () => {
         try {
             const res = await fetch("/api/debates");
@@ -258,8 +265,18 @@ export function DebateCornerPage() {
         return Date.now() - new Date(debate.createdAt).getTime() > 7 * 24 * 60 * 60 * 1000;
     };
 
-    const handleVote = async (id: string, side: "agree" | "disagree") => {
+    const handleVote = async (id: string, side: "agree" | "disagree", bypassGateway = false) => {
         if (votedIds.has(id)) return;
+
+        if (!bypassGateway) {
+            const storedEmail = localStorage.getItem("pitchside_subscriber_email");
+            if (!storedEmail) {
+                setPendingVote({ id, side });
+                setGatewayFeature("cast your vote");
+                setShowGateway(true);
+                return;
+            }
+        }
         try {
             await fetch("/api/debates", {
                 method: "POST",
@@ -283,8 +300,19 @@ export function DebateCornerPage() {
         } catch (e) { console.error(e); }
     };
 
-    const handleSubmitArg = async (debateId: string) => {
+    const handleSubmitArg = async (debateId: string, bypassGateway = false) => {
         if (!argText.trim() || submitting) return;
+
+        if (!bypassGateway) {
+            const storedEmail = localStorage.getItem("pitchside_subscriber_email");
+            if (!storedEmail) {
+                setPendingArg(debateId);
+                setGatewayFeature("submit your argument");
+                setShowGateway(true);
+                return;
+            }
+        }
+        
         setSubmitting(true);
         try {
             await fetch("/api/debates", {
@@ -588,6 +616,23 @@ export function DebateCornerPage() {
             {sharingId && debates.find(d => d.id === sharingId) && (
                 <DebateResultCard debate={debates.find(d => d.id === sharingId)!} cardRef={resultCardRef} />
             )}
+
+            <VotingGatewayModal 
+                isOpen={showGateway} 
+                onClose={() => { 
+                    setShowGateway(false); 
+                    setPendingVote(null); 
+                    setPendingArg(null); 
+                }}
+                onComplete={(email) => {
+                    setShowGateway(false);
+                    if (pendingVote) handleVote(pendingVote.id, pendingVote.side, true);
+                    if (pendingArg) handleSubmitArg(pendingArg, true);
+                    setPendingVote(null);
+                    setPendingArg(null);
+                }}
+                featureName={gatewayFeature}
+            />
         </div>
     );
 }
