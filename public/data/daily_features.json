@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-09-06T09:07:10.407262",
+  "lastUpdated": "2026-09-07T09:54:52.060111",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool may make January move for Sarr - Sunday's gossip",
+    "text": "Chelsea plot early move for Scott - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 83
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 92
     },
     {
       "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 78
+      "pressureScore": 84
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 62
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 77
+    },
+    {
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 73
     }
   ]
 }
