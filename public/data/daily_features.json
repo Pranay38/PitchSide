@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-09-07T09:54:52.060111",
+  "lastUpdated": "2026-09-08T09:19:22.251188",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea plot early move for Scott - Monday's gossip",
-    "sentimentScore": 41
+    "text": "Chiesa might leave Liverpool - Tuesday's gossip",
+    "sentimentScore": 38
   },
   "managerPressure": [
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 92
-    },
-    {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 84
-    },
-    {
       "name": "Pierre Sage (CRY)",
-      "pressureScore": 77
+      "pressureScore": 89
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 73
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 83
+    },
+    {
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 74
+    },
+    {
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 60
     }
   ]
 }
