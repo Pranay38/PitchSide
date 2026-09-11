@@ -40,6 +40,7 @@ export interface BlogPost {
     medium?: boolean;
   };
   format?: "article" | "quick-take"; // "article" (default) or "quick-take" (micro-post)
+  gatekeepPoint?: number; // Percentage (1-99) to gate the content. 0 or undefined means no gate.
   armchairRatings?: {
     name: string;
     position: string;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Tag, Search, Loader2, Trash2, Plus, Link, Mic, User, Library, Star, Flame, Crown, CalendarDays, X, FileAudio } from "lucide-react";
+import { Tag, Search, Loader2, Trash2, Plus, Link, Mic, User, Library, Star, Flame, Crown, CalendarDays, X, FileAudio, Shield } from "lucide-react";
 import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName, deleteCustomClub, isCustomClub } from "../../data/clubs";
 import type { SearchResult } from "../../data/clubs";
 import type { BlogPost } from "../../data/posts";
@@ -49,6 +49,8 @@ interface MetaSettingsProps {
     allPosts: BlogPost[];
     currentPostId?: string;
     errors: Record<string, string>;
+    gatekeepPoint: number | "";
+    setGatekeepPoint: (val: number | "") => void;
 }
 
 export function MetaSettings({
@@ -69,7 +71,8 @@ export function MetaSettings({
     relatedPostIds, setRelatedPostIds,
     allPosts, currentPostId,
     errors,
-    matchRating, setMatchRating
+    matchRating, setMatchRating,
+    gatekeepPoint, setGatekeepPoint
 }: MetaSettingsProps) {
     const [clubSearch, setClubSearch] = useState("");
     const [clubResults, setClubResults] = useState<SearchResult[]>([]);
@@ -598,6 +601,33 @@ export function MetaSettings({
                                 <X className="w-4 h-4" />
                             </button>
                         )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Premium Gating */}
+            <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
+                <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
+                    <Shield className="w-4 h-4 text-[#16A34A]" />
+                    Premium Content Gate
+                </label>
+                <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
+                    Set a percentage where the article cuts off for unauthenticated users. A Call-To-Action will be injected at this point asking them to log in to read the rest. Set to 0 to make the article fully public.
+                </p>
+
+                <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                        <input
+                            type="range"
+                            min="0"
+                            max="99"
+                            value={gatekeepPoint === "" ? 0 : gatekeepPoint}
+                            onChange={(e) => setGatekeepPoint(e.target.value === "0" ? "" : Number(e.target.value))}
+                            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-[#16A34A]"
+                        />
+                        <span className="text-sm font-medium text-[#0F172A] dark:text-white w-12 text-right">
+                            {gatekeepPoint === "" ? "Off" : `${gatekeepPoint}%`}
+                        </span>
                     </div>
                 </div>
             </div>
