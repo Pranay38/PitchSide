@@ -46,8 +46,6 @@ import { RecommendedArticles } from "../components/RecommendedArticles";
 import { ArmchairRatingsPanel } from "../components/ArmchairRatingsPanel";
 import { useUser } from "@clerk/nextjs";
 
-import { useUser } from "@clerk/nextjs";
-
 function generateFAQSchema(content: string): object | null {
   // Parse HTML content for h2/h3 headings and following paragraphs
   const paragraphAfterHeading = /<h[23][^>]*>(.*?)<\/h[23]>\s*<p[^>]*>(.*?)<\/p>/gi;

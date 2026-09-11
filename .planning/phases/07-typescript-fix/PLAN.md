@@ -9,6 +9,7 @@ Fix all TypeScript compilation errors and re-enable strict type checking during 
 - **PostEditor & MetaSettings:** Plumbed matchRating and setMatchRating through MetaSettingsProps in src/app/components/editor/MetaSettings.tsx and the PostEditor component. Updated the UI in MetaSettings to render two separate number inputs for home and away ratings instead of a single overall rating input.
 - **PostCard Rating Display:** Adapted src/app/components/PostCard.tsx to safely access and average the structured matchRating (e.g. displaying ((home + away) / 2)) instead of expecting a primitive number.
 - **Removed Type Ignore:** Removed the typescript: { ignoreBuildErrors: true } block from next.config.mjs.
+- **Other Type Issues:** Removed duplicate `useUser` import in src/app/pages/BlogPostPage.tsx which was causing build failures.
 
 ## Verification
 - tsc --noEmit completes with 0 errors.
