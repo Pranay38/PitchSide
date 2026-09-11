@@ -34,7 +34,7 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 - [x] Optimize mobile reading experience (mobile-only, desktop untouched)
 - [x] Break monolithic CMS files (AdminPage, StoryEditor, RichTextEditor)
 - [ ] SEO quick wins (FAQ schema, sitemap expansion, llms.txt)
-- [ ] Core Web Vitals optimization
+- [x] Core Web Vitals optimization
 - [ ] Clean root directory and add CI pipeline
 
 ### Out of Scope

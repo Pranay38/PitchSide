@@ -27,7 +27,7 @@
 | [Phase 9](./phases/09-critical-path-tests/) | 📅 Planned | Sprint 1 | Critical Path Tests | FR-1.4–1.5 | 10-15 new tests, CI pipeline runs on PR |
 | [Phase 12](./phases/12-mobile-reading-ux/) | ✅ Done | Sprint 2 | Mobile Reading UX | FR-6 | Mobile typography, progress bar, sticky CTA, swipe nav |
 | [Phase 13](./phases/13-cms-modularization/) | ✅ Done | Sprint 3 | CMS Modularization | FR-7 | AdminPage, StoryEditor, RichTextEditor split into modules |
-| [Phase 16](./phases/16-core-web-vitals/) | 📅 Planned | Sprint 4 | Core Web Vitals | FR-10 | Lazy loading, dynamic imports, Lighthouse mobile 90+ |
+| [Phase 16](./phases/16-core-web-vitals/) | ✅ Done | Sprint 4 | Core Web Vitals | FR-10 | Lazy loading, dynamic imports, Lighthouse mobile 90+ |
 
 ### Dependencies
 ```
