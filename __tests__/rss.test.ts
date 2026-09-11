@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from "vitest";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import handler from "../server/endpoints/rss";
 
-// Mock the exact path that rss.ts imports
-vi.mock("../../_api/_db", () => ({
+// Mock the exact path that rss.ts imports from the test's perspective
+vi.mock("../_api/_db", () => ({
   connectToDatabase: vi.fn().mockResolvedValue({
     db: {
       collection: vi.fn().mockReturnValue({

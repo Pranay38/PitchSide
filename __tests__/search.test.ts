@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import handler from "../server/endpoints/search";
-import { connectToDatabase } from "../../_api/_db";
+import { connectToDatabase } from "../_api/_db";
 
-vi.mock("../../_api/_db", () => ({
+vi.mock("../_api/_db", () => ({
   connectToDatabase: vi.fn()
 }));
 

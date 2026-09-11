@@ -1,5 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { NextRequest } from "next/server";
+import React from "react";
+(global as any).React = React;
 import { GET } from "../app/api/og/route";
 
 vi.mock("@vercel/og", () => ({
