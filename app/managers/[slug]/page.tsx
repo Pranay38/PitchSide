@@ -5,9 +5,10 @@ import { Header } from "@/app/components/Header";
 import { Footer } from "@/app/components/Footer";
 import { getManagerPressureData } from "@/app/lib/data-fetcher";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const data = await getManagerPressureData(params.slug);
-  const pageUrl = `https://www.thetouchlinedribble.in/managers/${params.slug}`;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getManagerPressureData(slug);
+  const pageUrl = `https://www.thetouchlinedribble.in/managers/${slug}`;
   return {
     title: `${data.name} Pressure Gauge & Job Security at ${data.club} | Touchline Dribble`,
     description: `Live tracking of ${data.name}'s job security at ${data.club}. Current pressure score: ${data.pressureScore}/100. Will they be sacked? Have your say.`,
@@ -31,8 +32,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function ManagerPressurePage({ params }: { params: { slug: string } }) {
-  const data = await getManagerPressureData(params.slug);
+export default async function ManagerPressurePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const data = await getManagerPressureData(slug);
   
   const isCritical = data.pressureScore >= 80;
   const barColor = isCritical ? "#FF3333" : "#FDE047";
