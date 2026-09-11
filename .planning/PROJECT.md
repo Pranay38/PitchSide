@@ -34,7 +34,6 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 - [x] Optimize mobile reading experience (mobile-only, desktop untouched)
 - [x] Break monolithic CMS files (AdminPage, StoryEditor, RichTextEditor)
 - [ ] SEO quick wins (FAQ schema, sitemap expansion, llms.txt)
-- [ ] AI content assistant (outlines, internal links, social copy)
 - [ ] Core Web Vitals optimization
 - [ ] Clean root directory and add CI pipeline
 
@@ -49,6 +48,7 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 - Viral Social Engine — (removed by user request in Sprint 2)
 - Content Syndication — (removed by user request in Sprint 2)
 - Programmatic SEO — (removed by user request in Sprint 3)
+- AI Content Assistant — (removed by user request in Sprint 4)
 
 ## Context
 

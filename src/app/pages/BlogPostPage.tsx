@@ -21,21 +21,8 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PostCard } from "../components/PostCard";
 
-import { CommentSection } from "../components/CommentSection";
-import { PollWidget } from "../components/PollWidget";
-
-import { SeriesNavigator } from "../components/SeriesNavigator";
+// Removed static imports for dynamic components
 import { PageState } from "../components/PageState";
-import { ReadingProgressBar } from "../components/ReadingProgressBar";
-import { QuickReactBar } from "../components/QuickReactBar";
-import { SwipeNavigator } from "../components/SwipeNavigator";
-import { ArticleEndCTA } from "../components/ArticleEndCTA";
-import { MobileNewsletterCTA } from "../components/MobileNewsletterCTA";
-
-import { TouchlineAudioPlayer } from "../components/TouchlineAudioPlayer";
-import {
-  ArticleContentRenderer,
-} from "../components/ArticleContentRenderer";
 import { getArticleContentModel } from "../lib/articleModel";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import type { BlogPost } from "../data/posts";
@@ -47,6 +34,19 @@ import { useReadingTracker } from "../hooks/useReadingTracker";
 import { RecommendedArticles } from "../components/RecommendedArticles";
 import { ArmchairRatingsPanel } from "../components/ArmchairRatingsPanel";
 import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
+import dynamic from "next/dynamic";
+
+const CommentSection = dynamic(() => import("../components/CommentSection").then(m => m.CommentSection));
+const PollWidget = dynamic(() => import("../components/PollWidget").then(m => m.PollWidget));
+const SeriesNavigator = dynamic(() => import("../components/SeriesNavigator").then(m => m.SeriesNavigator));
+const ReadingProgressBar = dynamic(() => import("../components/ReadingProgressBar").then(m => m.ReadingProgressBar));
+const QuickReactBar = dynamic(() => import("../components/QuickReactBar").then(m => m.QuickReactBar));
+const SwipeNavigator = dynamic(() => import("../components/SwipeNavigator").then(m => m.SwipeNavigator));
+const ArticleEndCTA = dynamic(() => import("../components/ArticleEndCTA").then(m => m.ArticleEndCTA));
+const MobileNewsletterCTA = dynamic(() => import("../components/MobileNewsletterCTA").then(m => m.MobileNewsletterCTA));
+const TouchlineAudioPlayer = dynamic(() => import("../components/TouchlineAudioPlayer").then(m => m.TouchlineAudioPlayer));
+const ArticleContentRenderer = dynamic(() => import("../components/ArticleContentRenderer").then(m => m.ArticleContentRenderer));
 
 function generateFAQSchema(content: string): object | null {
   // Parse HTML content for h2/h3 headings and following paragraphs
@@ -417,14 +417,15 @@ export function BlogPostPage() {
 
         {/* ── Featured Image (full-bleed) ── */}
         <section className="animate-enter animate-enter-delay-3 w-full max-w-[1100px] mx-auto px-4 sm:px-6 mb-14">
-           <figure>
+            <figure>
              <div className="aspect-[21/9] w-full rounded-2xl overflow-hidden shadow-lg relative max-h-[60vh] md:max-h-none">
-                <img 
+                <Image 
                   src={post.coverImage} 
                   alt={post.title} 
-                  className="w-full h-full object-cover" 
+                  fill
+                  priority
+                  className="object-cover" 
                   sizes="(max-width: 768px) 100vw, 1100px"
-                  fetchPriority="high"
                 />
              </div>
            </figure>

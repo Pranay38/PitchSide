@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useUser, SignInButton } from "@clerk/nextjs";
 import { Link } from "@/lib/router-compat";
 import { ArrowRight, BookOpen, Library, Newspaper, Repeat2, ScrollText, Trophy, ShieldQuestion, Flame, ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 
-import { PollOfTheWeekPanel } from "../components/PollOfTheWeekPanel";
+import dynamic from "next/dynamic";
+const PollOfTheWeekPanel = dynamic(() => import("../components/PollOfTheWeekPanel").then(m => m.PollOfTheWeekPanel));
 import type { RumorMill } from "../components/RumorMillWidget";
 import type { ManagerPressure } from "../components/ManagerPressureWidget";
 import { PostCard } from "../components/PostCard";
@@ -18,29 +20,29 @@ import Blogs from "../components/ui/blogs";
 import { PageState } from "../components/PageState";
 import { SectionMarker } from "../components/SectionMarker";
 import { TextWireSection } from "../components/TextWireSection";
-import { CommunityContributorCTA } from "../components/CommunityContributorCTA";
+const CommunityContributorCTA = dynamic(() => import("../components/CommunityContributorCTA").then(m => m.CommunityContributorCTA));
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 import { getSiteSettings, getSiteSettingsAsync, type SiteSettings } from "../lib/siteSettingsStorage";
 import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
 import { safeParse, DailyFeaturesSchema } from "../lib/schemas";
-import { DebateWidget } from "../components/DebateWidget";
-import { SupportBanner } from "../components/SupportBanner";
+const DebateWidget = dynamic(() => import("../components/DebateWidget").then(m => m.DebateWidget));
+const SupportBanner = dynamic(() => import("../components/SupportBanner").then(m => m.SupportBanner));
 import { getClubByName } from "../data/clubs";
 
-// Lazy-load below-the-fold heavy components to reduce initial bundle
-const OnThisDayWidget = lazy(() => import("../components/OnThisDayWidget").then(m => ({ default: m.OnThisDayWidget })));
-const RumorMillWidget = lazy(() => import("../components/RumorMillWidget").then(m => ({ default: m.RumorMillWidget })));
-const FantasyCornerWidget = lazy(() => import("../components/FantasyCornerWidget").then(m => ({ default: m.FantasyCornerWidget })));
+// Dynamic below-the-fold heavy components to reduce initial bundle
+const OnThisDayWidget = dynamic(() => import("../components/OnThisDayWidget").then(m => m.OnThisDayWidget));
+const RumorMillWidget = dynamic(() => import("../components/RumorMillWidget").then(m => m.RumorMillWidget));
+const FantasyCornerWidget = dynamic(() => import("../components/FantasyCornerWidget").then(m => m.FantasyCornerWidget));
 
-const InlineNewsletterCard = lazy(() => import("../components/InlineNewsletterCard").then(m => ({ default: m.InlineNewsletterCard })));
-const BlogPostsGrid = lazy(() => import("../components/ui/blog-posts").then(m => ({ default: m.BlogPostsGrid })));
+const InlineNewsletterCard = dynamic(() => import("../components/InlineNewsletterCard").then(m => m.InlineNewsletterCard));
+const BlogPostsGrid = dynamic(() => import("../components/ui/blog-posts").then(m => m.BlogPostsGrid));
 
 
-import { QuickTakesSection } from "../components/QuickTakesSection";
+const QuickTakesSection = dynamic(() => import("../components/QuickTakesSection").then(m => m.QuickTakesSection));
 
-import { ChallengeTheTake } from "../components/home/ChallengeTheTake";
+const ChallengeTheTake = dynamic(() => import("../components/home/ChallengeTheTake").then(m => m.ChallengeTheTake));
 
 
 /** Hook: animates elements with class `scroll-reveal` when they enter viewport */
@@ -123,11 +125,12 @@ function StoryLinkCard({ story }: { story: StoryFeature }) {
       to={`/stories/${story.slug}`}
       className="group block overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800 dark:bg-[#0F172A]"
     >
-      <div className="aspect-[16/10] overflow-hidden">
-        <img
+      <div className="aspect-[16/10] overflow-hidden relative">
+        <Image
           src={story.coverImage}
           alt={story.title}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
       </div>
       <div className="space-y-3 p-5">
@@ -538,10 +541,11 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                         className="group relative flex-shrink-0 w-[300px] sm:w-[400px] snap-start rounded-[2rem] overflow-hidden ghost-border-dark dark:ghost-border bg-white dark:bg-[var(--card)] shadow-sm ambient-shadow hover:-translate-y-2 depth-card transition-all duration-500"
                       >
                         <div className="relative h-56 overflow-hidden">
-                          <img
+                          <Image
                             src={post.coverImage}
                             alt={post.title}
-                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                           <div className="absolute bottom-4 left-4 flex items-center gap-2">
@@ -664,10 +668,11 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                   className="group relative flex-shrink-0 w-[340px] sm:w-[400px] snap-start rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:-translate-y-1 transition-all duration-300"
                 >
                   <div className="relative h-52 overflow-hidden">
-                    <img
+                    <Image
                       src={post.coverImage}
                       alt={post.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-3 left-3 flex items-center gap-2">
@@ -737,11 +742,12 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                     to={`/post/${post.slug || post.id}`}
                     className="group flex gap-5 items-center bg-card p-5 hover:bg-secondary transition-colors"
                   >
-                    <div className="h-20 w-28 shrink-0 overflow-hidden rounded-xl">
-                      <img
+                    <div className="h-20 w-28 shrink-0 overflow-hidden rounded-xl relative">
+                      <Image
                         src={post.coverImage}
                         alt={post.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
                     <div className="min-w-0 flex-1">
