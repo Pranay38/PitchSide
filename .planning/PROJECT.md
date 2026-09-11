@@ -31,9 +31,7 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 
 - [ ] Fix 29 TypeScript errors and re-enable type checking
 - [ ] Add 10-15 critical path tests (Vitest + Playwright)
-- [ ] Build Viral Social Engine (quote cards, Twitter threads, carousels)
-- [ ] Build Content Syndication pipeline (Reddit, Substack, Medium)
-- [ ] Optimize mobile reading experience (mobile-only, desktop untouched)
+- [x] Optimize mobile reading experience (mobile-only, desktop untouched)
 - [ ] Break monolithic CMS files (AdminPage, StoryEditor, RichTextEditor)
 - [ ] SEO quick wins (FAQ schema, sitemap expansion, llms.txt)
 - [ ] Programmatic SEO expansion (player vs player, formation hubs)
@@ -49,6 +47,8 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 - Real-time features (WebSockets, live match commentary) — (too complex for current phase)
 - Google AdSense — (rejected to preserve editorial prestige)
 - Lead magnet funnel — (user rejected; using distribution-first growth instead)
+- Viral Social Engine — (removed by user request in Sprint 2)
+- Content Syndication — (removed by user request in Sprint 2)
 
 ## Context
 
@@ -73,8 +73,8 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 | Email Gating | Necessary for lead capture before implementing paywalls | ✅ Active |
 | No AdSense | Preserve editorial prestige and high-end brand feel | ✅ Decided (M1) |
 | No Lead Magnet Funnel | User preference — distribution-first growth over gated content | ✅ Decided (M2) |
-| Viral Social Engine | Auto-generate shareable content from articles for distribution | ✅ Decided (M2) |
-| Content Syndication | Cross-post to Reddit/Substack/Medium with canonical links | ✅ Decided (M2) |
+| Viral Social Engine | Auto-generate shareable content from articles for distribution | ❌ Rejected (M2) |
+| Content Syndication | Cross-post to Reddit/Substack/Medium with canonical links | ❌ Rejected (M2) |
 | Mobile-Only UX Changes | Desktop layout untouched — optimize only mobile reading experience | ✅ Decided (M2) |
 | Fix TS Before Features | Re-enable type checking as P0 before any feature work | ✅ Decided (M2) |
 

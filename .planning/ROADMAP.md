@@ -25,9 +25,7 @@
 | [Phase 7](./phases/07-typescript-fix/) | 📅 Planned | Sprint 1 | TypeScript Error Fix | FR-1.1–1.3 | 0 TS errors, `ignoreBuildErrors` removed, `npm run build` passes |
 | [Phase 8](./phases/08-seo-quick-wins/) | 📅 Planned | Sprint 1 | SEO Quick Wins | FR-3 | FAQ schema on articles, sitemap expanded, llms.txt enhanced |
 | [Phase 9](./phases/09-critical-path-tests/) | 📅 Planned | Sprint 1 | Critical Path Tests | FR-1.4–1.5 | 10-15 new tests, CI pipeline runs on PR |
-| [Phase 10](./phases/10-viral-social-engine/) | 📅 Planned | Sprint 2 | Viral Social Engine | FR-4 | Quote cards, Twitter threads, carousel generator in admin |
-| [Phase 11](./phases/11-content-syndication/) | 📅 Planned | Sprint 2 | Content Syndication | FR-5 | Auto-syndicate to Reddit, Substack, Medium; enhanced RSS |
-| [Phase 12](./phases/12-mobile-reading-ux/) | 📅 Planned | Sprint 2 | Mobile Reading UX | FR-6 | Mobile typography, progress bar, sticky CTA, swipe nav |
+| [Phase 12](./phases/12-mobile-reading-ux/) | ✅ Done | Sprint 2 | Mobile Reading UX | FR-6 | Mobile typography, progress bar, sticky CTA, swipe nav |
 | [Phase 13](./phases/13-cms-modularization/) | 📅 Planned | Sprint 3 | CMS Modularization | FR-7 | AdminPage, StoryEditor, RichTextEditor split into modules |
 | [Phase 14](./phases/14-programmatic-seo/) | 📅 Planned | Sprint 3 | Programmatic SEO | FR-8 | Player vs Player pages, Formation hubs, sitemap updated |
 | [Phase 15](./phases/15-ai-content-assistant/) | 📅 Planned | Sprint 4 | AI Content Assistant | FR-9 | Outline generator, internal link suggestions, social copy |
@@ -36,9 +34,7 @@
 ### Dependencies
 ```
 Phase 6 ──→ Phase 7 ──→ Phase 8 ──→ Phase 9
-                                        │
-Phase 10 ──→ Phase 11                   │
-                                        ▼
+
 Phase 12 (independent, mobile-only)  CI pipeline gates all subsequent phases
 Phase 13 ──→ Phase 15
 Phase 14 (independent)
