@@ -26,8 +26,7 @@
 | [Phase 8](./phases/08-seo-quick-wins/) | 📅 Planned | Sprint 1 | SEO Quick Wins | FR-3 | FAQ schema on articles, sitemap expanded, llms.txt enhanced |
 | [Phase 9](./phases/09-critical-path-tests/) | 📅 Planned | Sprint 1 | Critical Path Tests | FR-1.4–1.5 | 10-15 new tests, CI pipeline runs on PR |
 | [Phase 12](./phases/12-mobile-reading-ux/) | ✅ Done | Sprint 2 | Mobile Reading UX | FR-6 | Mobile typography, progress bar, sticky CTA, swipe nav |
-| [Phase 13](./phases/13-cms-modularization/) | 📅 Planned | Sprint 3 | CMS Modularization | FR-7 | AdminPage, StoryEditor, RichTextEditor split into modules |
-| [Phase 14](./phases/14-programmatic-seo/) | 📅 Planned | Sprint 3 | Programmatic SEO | FR-8 | Player vs Player pages, Formation hubs, sitemap updated |
+| [Phase 13](./phases/13-cms-modularization/) | ✅ Done | Sprint 3 | CMS Modularization | FR-7 | AdminPage, StoryEditor, RichTextEditor split into modules |
 | [Phase 15](./phases/15-ai-content-assistant/) | 📅 Planned | Sprint 4 | AI Content Assistant | FR-9 | Outline generator, internal link suggestions, social copy |
 | [Phase 16](./phases/16-core-web-vitals/) | 📅 Planned | Sprint 4 | Core Web Vitals | FR-10 | Lazy loading, dynamic imports, Lighthouse mobile 90+ |
 
@@ -37,7 +36,6 @@ Phase 6 ──→ Phase 7 ──→ Phase 8 ──→ Phase 9
 
 Phase 12 (independent, mobile-only)  CI pipeline gates all subsequent phases
 Phase 13 ──→ Phase 15
-Phase 14 (independent)
 Phase 16 (last — requires profiling data)
 ```
 

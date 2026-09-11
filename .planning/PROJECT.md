@@ -32,9 +32,8 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 - [ ] Fix 29 TypeScript errors and re-enable type checking
 - [ ] Add 10-15 critical path tests (Vitest + Playwright)
 - [x] Optimize mobile reading experience (mobile-only, desktop untouched)
-- [ ] Break monolithic CMS files (AdminPage, StoryEditor, RichTextEditor)
+- [x] Break monolithic CMS files (AdminPage, StoryEditor, RichTextEditor)
 - [ ] SEO quick wins (FAQ schema, sitemap expansion, llms.txt)
-- [ ] Programmatic SEO expansion (player vs player, formation hubs)
 - [ ] AI content assistant (outlines, internal links, social copy)
 - [ ] Core Web Vitals optimization
 - [ ] Clean root directory and add CI pipeline
@@ -49,6 +48,7 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 - Lead magnet funnel — (user rejected; using distribution-first growth instead)
 - Viral Social Engine — (removed by user request in Sprint 2)
 - Content Syndication — (removed by user request in Sprint 2)
+- Programmatic SEO — (removed by user request in Sprint 3)
 
 ## Context
 
