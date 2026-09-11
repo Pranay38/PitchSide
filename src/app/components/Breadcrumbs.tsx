@@ -19,8 +19,31 @@ interface BreadcrumbsProps {
 }
 
 export function Breadcrumbs({ items }: BreadcrumbsProps) {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://www.thetouchlinedribble.in/"
+            },
+            ...items.map((item, index) => ({
+                "@type": "ListItem",
+                "position": index + 2,
+                "name": item.label,
+                "item": item.href ? `https://www.thetouchlinedribble.in${item.href}` : undefined
+            }))
+        ]
+    };
+
     return (
         <Breadcrumb className="mb-6 animate-float-in">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <BreadcrumbList className="text-[#64748B] dark:text-gray-400 font-medium text-sm">
                 <BreadcrumbItem>
                     <BreadcrumbLink 

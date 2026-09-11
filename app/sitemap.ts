@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getPublishedPostsServer, getSiteSettingsServer, getStoriesServer } from '@/lib/server-data';
 import { slugify } from '@/app/lib/contentPaths';
+import { footballGlossary, termSlug } from '@/app/data/footballGlossary';
 
 import fs from 'fs';
 import path from 'path';
@@ -61,7 +62,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/debates`, priority: 0.7, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/daily-fix`, priority: 0.8, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/quick-takes`, priority: 0.7, changeFrequency: 'daily' as const },
-
+    { url: `${baseUrl}/weekly-roundup`, priority: 0.7, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/for-you`, priority: 0.7, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/glossary`, priority: 0.6, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/collections`, priority: 0.6, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/pots`, priority: 0.6, changeFrequency: 'weekly' as const },
@@ -156,5 +158,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Sitemap: Failed to load matchup data', e);
   }
 
-  return [...routes, ...staticPages, ...postRoutes, ...storyRoutes, ...tagRoutes, ...clubRoutes, ...managerRoutes, ...matchupRoutes];
+  const glossaryRoutes: MetadataRoute.Sitemap = footballGlossary.map((entry) => ({
+    url: `${baseUrl}/glossary/${termSlug(entry.term)}`,
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.5,
+  }));
+
+  return [...routes, ...staticPages, ...postRoutes, ...storyRoutes, ...tagRoutes, ...clubRoutes, ...managerRoutes, ...matchupRoutes, ...glossaryRoutes];
 }

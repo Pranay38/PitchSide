@@ -46,7 +46,38 @@ import { RecommendedArticles } from "../components/RecommendedArticles";
 import { ArmchairRatingsPanel } from "../components/ArmchairRatingsPanel";
 import { useUser } from "@clerk/nextjs";
 
+import { useUser } from "@clerk/nextjs";
 
+function generateFAQSchema(content: string): object | null {
+  // Parse HTML content for h2/h3 headings and following paragraphs
+  const paragraphAfterHeading = /<h[23][^>]*>(.*?)<\/h[23]>\s*<p[^>]*>(.*?)<\/p>/gi;
+  
+  const faqs: Array<{question: string; answer: string}> = [];
+  let match;
+  
+  while ((match = paragraphAfterHeading.exec(content)) !== null) {
+    const question = match[1].replace(/<[^>]*>/g, '').trim();
+    const answer = match[2].replace(/<[^>]*>/g, '').trim();
+    if (question && answer && answer.length > 20) {
+      faqs.push({ question, answer });
+    }
+  }
+  
+  if (faqs.length < 2) return null;
+  
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(faq => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+}
 
 function sortPosts(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
@@ -302,6 +333,11 @@ export function BlogPostPage() {
     }
   });
 
+  const faqSchema = useMemo(() => {
+    if (!post?.content) return null;
+    return generateFAQSchema(post.content);
+  }, [post?.content]);
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] transition-colors duration-300 dark:bg-[#0B1120]">
       <SEO
@@ -313,6 +349,12 @@ export function BlogPostPage() {
         club={post.club}
         date={post.date}
       />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       <Header />
       <ReadingProgressBar readTime={post.readTime} />

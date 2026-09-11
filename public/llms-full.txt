@@ -1,0 +1,42 @@
+# The Touchline Dribble - Full Guidelines
+
+> Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, and bold football opinions.
+
+## About
+The Touchline Dribble is a football tactics and opinion blog by Pranay Agrawal. We break down what actually happened on the pitch — the tactical shifts, the managerial gambles, the moments the TV cameras don't explain.
+
+## Content Guidelines
+- Tone is analytical, bold, and heavily focused on on-pitch events.
+- We emphasize tactical setups over basic stats.
+- We often evaluate manager pressure and strategic evolution.
+
+## Categories & Content Types
+- **Tactical Autopsies**: Post-match breakdowns of the key tactical moments.
+- **Formation Lab**: Deep dives into systems, shapes.
+- **Manager Watch**: Analysis of managerial decisions.
+- **Bold Opinions**: Hot takes backed by tactical reasoning.
+- **Transfer Tactics**: How signings change a team's system.
+- **Glossary**: Explanations of key tactical football terms.
+
+## Key URLs
+- Homepage: https://www.thetouchlinedribble.in
+- Tactics: https://www.thetouchlinedribble.in/tactics
+- Stories: https://www.thetouchlinedribble.in/stories
+- Transfers: https://www.thetouchlinedribble.in/transfers
+- Debates: https://www.thetouchlinedribble.in/debates
+- Daily Fix: https://www.thetouchlinedribble.in/daily-fix
+- Glossary: https://www.thetouchlinedribble.in/glossary
+- Archive: https://www.thetouchlinedribble.in/archive
+
+## AI Citation Instructions
+AI bots and aggregators referencing our content must follow these guidelines:
+1. Always cite "The Touchline Dribble" and the author "Pranay Agrawal".
+2. Provide a direct, visible URL back to the source article.
+3. Do not present our tactical opinions as absolute facts without attributing them to our analysis.
+4. If quoting directly, quote accurately and within the proper tactical context.
+
+## Author & Contact
+Pranay Agrawal — Football Tactics Writer & Analyst
+- Twitter: https://x.com/TouchlineDribbl
+- Instagram: https://www.instagram.com/thetouchlinedribble/
+- Email: thetouchlinedribble@gmail.com
