@@ -150,11 +150,16 @@ export async function requireAuth(req: VercelRequest, res: VercelResponse): Prom
         return false;
     }
 
+    // Protect all authenticated mutating endpoints from CSRF
+    if (!checkCsrf(req, res)) {
+        return false;
+    }
+
     return true;
 }
 
 // ──────────────────────────────────────────
-// 4. CSRF ORIGIN CHECK
+// 4. CSRF PROTECTION
 // ──────────────────────────────────────────
 /**
  * For state-changing methods (POST, PUT, DELETE), verify that the
@@ -177,6 +182,25 @@ export function checkOrigin(req: VercelRequest, res: VercelResponse): boolean {
 
     res.status(403).json({ error: "Forbidden: Origin not allowed" });
     return false;
+}
+
+/**
+ * Validates the presence of an anti-CSRF token header on mutating requests.
+ * This is meant to protect administrative endpoints from cross-site request forgery.
+ */
+export function checkCsrf(req: VercelRequest, res: VercelResponse): boolean {
+    const method = (req.method || "").toUpperCase();
+    if (method === "GET" || method === "OPTIONS" || method === "HEAD") return true;
+    
+    // For POST/PUT/DELETE, require a custom header
+    // Browsers will enforce CORS preflight for custom headers, inherently preventing simple CSRF
+    const csrfHeader = req.headers["x-csrf-token"] || req.headers["x-requested-with"];
+    if (!csrfHeader) {
+        res.status(403).json({ error: "Forbidden: Missing CSRF token header" });
+        return false;
+    }
+    
+    return true;
 }
 
 // ──────────────────────────────────────────

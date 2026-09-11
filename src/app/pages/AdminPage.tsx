@@ -288,6 +288,7 @@ export function AdminPage() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "x-csrf-token": "1",
                     ...getAdminAuthHeaders(),
                 },
                 body: JSON.stringify({ title: post.title, excerpt: post.excerpt, postId: post.id }),
@@ -306,12 +307,12 @@ export function AdminPage() {
     const handleSavePoll = async () => {
         try {
             setSavingPoll(true);
-                        const isEditing = !!editingPoll._id;
+            const isEditing = !!editingPoll._id;
             const url = isEditing ? `/api/polls/${editingPoll._id}` : "/api/polls";
             const method = isEditing ? "PUT" : "POST";
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "x-csrf-token": "1" },
                 body: JSON.stringify(editingPoll),
             });
             if (res.ok) {
@@ -331,7 +332,7 @@ export function AdminPage() {
     const handleDeletePoll = async (id: string) => {
         if (!confirm("Delete this poll?")) return;
         try {
-                        const res = await fetch(`/api/polls/${id}`, { method: "DELETE", headers: {} });
+            const res = await fetch(`/api/polls/${id}`, { method: "DELETE", headers: { "x-csrf-token": "1" } });
             if (res.ok) {
                 toast.success("Poll deleted");
                 fetchServerPolls();
@@ -344,12 +345,12 @@ export function AdminPage() {
     const handleSaveMatchRating = async () => {
         try {
             setSavingMatchRating(true);
-                        const isEditing = !!editingMatchRating._id;
+            const isEditing = !!editingMatchRating._id;
             const url = isEditing ? `/api/match-ratings/${editingMatchRating._id}` : "/api/match-ratings";
             const method = isEditing ? "PUT" : "POST";
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "x-csrf-token": "1" },
                 body: JSON.stringify(editingMatchRating),
             });
             if (res.ok) {
@@ -369,7 +370,7 @@ export function AdminPage() {
     const handleDeleteMatchRating = async (id: string) => {
         if (!confirm("Delete these match ratings?")) return;
         try {
-                        const res = await fetch(`/api/match-ratings/${id}`, { method: "DELETE", headers: {} });
+            const res = await fetch(`/api/match-ratings/${id}`, { method: "DELETE", headers: { "x-csrf-token": "1" } });
             if (res.ok) {
                 toast.success("Match Ratings deleted");
                 fetchServerMatchRatings();
@@ -579,9 +580,12 @@ export function AdminPage() {
         if (!window.confirm("Send weekly digest to all subscribers now?")) return;
         setSendingDigest(true);
         try {
-                        const res = await fetch("/api/digest", { 
+            const res = await fetch("/api/digest", { 
                 method: "POST",
-                headers: { "Authorization": `Bearer ${localStorage.getItem("pitchside_admin_auth") || ""}` }
+                headers: { 
+                    "Authorization": `Bearer ${localStorage.getItem("pitchside_admin_auth") || ""}`,
+                    "x-csrf-token": "1"
+                }
             });
             const data = await res.json();
             if (res.ok) toast.success(data.message || "Digest sent!");

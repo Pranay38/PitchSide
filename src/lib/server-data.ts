@@ -80,15 +80,22 @@ export async function getPublishedPostsServer() {
     const collection = db.collection("posts");
     const now = new Date();
 
-    const posts = await collection.find({}).sort({ _id: -1 }).toArray();
+    const query = {
+      $and: [
+        { isDraft: { $ne: true } },
+        {
+          $or: [
+            { publishAt: { $exists: false } },
+            { publishAt: null },
+            { publishAt: { $lte: now.toISOString() } }
+          ]
+        }
+      ]
+    };
 
-    return posts
-      .map(sanitizePost)
-      .filter((p: any) => {
-        if (p.isDraft) return false;
-        if (!p.publishAt) return true;
-        return new Date(p.publishAt) <= now;
-      });
+    const posts = await collection.find(query).sort({ _id: -1 }).toArray();
+
+    return posts.map(sanitizePost);
   } catch (error) {
     logServerDataError("getPublishedPostsServer", error);
     return [];

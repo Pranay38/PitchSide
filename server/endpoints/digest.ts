@@ -122,7 +122,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         };
 
         const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const subject = `The Touchline Dribble: Weekly Digest (${dateStr})`;
+        const subjectA = `The Touchline Dribble: Weekly Digest (${dateStr})`;
+        const subjectB = `Top Football Stories This Week ⚽ (${dateStr})`;
+
+        let sentVariantA = 0;
+        let sentVariantB = 0;
 
         const batchList = subscribers.map(sub => {
             const userId = emailToUserId[sub.email.toLowerCase()];
@@ -196,8 +200,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 customBacklink = `<p><a href="${SITE_URL}/stories" style="color: #16A34A; text-decoration: none;">Read More Longform Stories</a> | <a href="${SITE_URL}" style="color: #334155; text-decoration: none;">Visit Homepage</a></p>`;
             }
 
+            const isVariantA = Math.random() > 0.5;
+            const finalSubject = isVariantA ? subjectA : subjectB;
+            if (isVariantA) sentVariantA++; else sentVariantB++;
+
             const emailHtml = buildEditorialEmail({
-                title: subject,
+                title: finalSubject,
                 previewText: personalizedGreeting,
                 unsubscribeUrl: `${SITE_URL}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}`,
                 content: `
@@ -223,7 +231,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             return {
                 to: sub.email,
-                subject: subject,
+                subject: finalSubject,
                 html: emailHtml
             };
         });
@@ -232,7 +240,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         await db.collection("cron_logs").updateOne(
             { jobName: "digest" },
-            { $set: { lastRunAt: new Date().toISOString(), status: "success", emailsSent: subscribers.length } },
+            { $set: { 
+                lastRunAt: new Date().toISOString(), 
+                status: "success", 
+                emailsSent: subscribers.length,
+                variantASent: sentVariantA,
+                variantBSent: sentVariantB 
+            } },
             { upsert: true }
         );
 

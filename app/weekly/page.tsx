@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { WeeklyDigestPage } from "@/app/pages/WeeklyDigestPage";
 import { getPublishedPostsServer } from "@/lib/server-data";
+import type { BlogPost } from "@/app/data/posts";
 
 export const metadata: Metadata = {
   title: "The Whistle — Weekly Digest | The Touchline Dribble",
@@ -9,5 +10,5 @@ export const metadata: Metadata = {
 
 export default async function WeeklyPage() {
   const posts = await getPublishedPostsServer();
-  return <WeeklyDigestPage initialPosts={posts} />;
+  return <WeeklyDigestPage initialPosts={posts as BlogPost[]} />;
 }

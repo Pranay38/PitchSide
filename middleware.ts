@@ -51,7 +51,7 @@ async function handlePostSlugRedirect(request: NextRequest): Promise<NextRespons
 
 export default clerkMiddleware(async (_auth, request) => {
   if (request.nextUrl.pathname.startsWith('/api/subscribers') && request.method === 'POST') {
-    const ip = request.headers.get("x-forwarded-for") ?? request.ip ?? "127.0.0.1";
+    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
     try {
       const { success, limit, reset, remaining } = await newsletterRateLimit.limit(ip);
       
