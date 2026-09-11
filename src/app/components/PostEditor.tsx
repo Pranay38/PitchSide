@@ -86,6 +86,7 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
     const [mediaUrl, setMediaUrl] = useState(post?.mediaUrl || "");
     const [audioUrl, setAudioUrl] = useState(post?.audioUrl || "");
     const [playerName, setPlayerName] = useState(post?.playerName || "");
+    const [matchRating, setMatchRating] = useState<{home: number; away: number} | null>(post?.matchRating || null);
     const [poll, setPoll] = useState(post?.poll || { question: "", options: [{ text: "", votes: 0 }, { text: "", votes: 0 }] });
     const [usePoll, setUsePoll] = useState(!!post?.poll);
     const [hotTakes, setHotTakes] = useState<{id: string; statement: string}[]>(post?.hotTakes || []);
@@ -427,6 +428,8 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
                                     setSeriesName={setSeriesName}
                                     seriesOrder={seriesOrder}
                                     setSeriesOrder={setSeriesOrder}
+                                    matchRating={matchRating}
+                                    setMatchRating={setMatchRating}
                                     thisWeek={thisWeek}
                                     setThisWeek={setThisWeek}
                                     mustRead={mustRead}

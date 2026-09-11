@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // TypeScript errors should now fail the build to ensure type safety
-  typescript: {
-    ignoreBuildErrors: false,
-  },
 
   experimental: {
     serverActions: {

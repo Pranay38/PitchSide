@@ -52,13 +52,13 @@ export default async function ManagerPressurePage({ params }: { params: Promise<
             "@type": "Article",
             headline: `${data.name} Pressure Gauge & Job Security at ${data.club}`,
             description: `Live tracking of ${data.name}'s job security at ${data.club}. Current pressure score: ${data.pressureScore}/100.`,
-            url: `https://www.thetouchlinedribble.in/managers/${params.slug}`,
+            url: `https://www.thetouchlinedribble.in/managers/${slug}`,
             publisher: {
               "@type": "Organization",
               name: "The Touchline Dribble",
               url: "https://www.thetouchlinedribble.in",
             },
-            mainEntityOfPage: `https://www.thetouchlinedribble.in/managers/${params.slug}`,
+            mainEntityOfPage: `https://www.thetouchlinedribble.in/managers/${slug}`,
           }),
         }}
       />

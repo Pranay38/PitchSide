@@ -4,7 +4,7 @@ import { GlossaryTermPage } from "@/app/pages/GlossaryTermPage";
 import { footballGlossary, termSlug, lookupTerm } from "@/app/data/footballGlossary";
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export function generateStaticParams() {
@@ -13,8 +13,9 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-  const term = footballGlossary.find((e) => termSlug(e.term) === params.slug);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const term = footballGlossary.find((e) => termSlug(e.term) === slug);
   
   if (!term) return { title: "Term Not Found" };
 
@@ -29,8 +30,9 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function GlossaryTermRoute({ params }: Props) {
-  const term = footballGlossary.find((e) => termSlug(e.term) === params.slug);
+export default async function GlossaryTermRoute({ params }: Props) {
+  const { slug } = await params;
+  const term = footballGlossary.find((e) => termSlug(e.term) === slug);
 
   if (!term) {
     notFound();

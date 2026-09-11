@@ -13,7 +13,7 @@ export interface BlogPost {
   mustRead?: boolean;
   editorPick?: boolean;
   mainStory?: boolean;
-  matchRating?: number;
+  matchRating?: { home: number; away: number } | null;
   mediaUrl?: string;
   sofascoreUrl?: string; // Legacy support
   sofascoreWidget?: any; // Structured WidgetConfig

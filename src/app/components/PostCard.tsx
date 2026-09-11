@@ -60,10 +60,10 @@ export function PostCard({ post, featured = false }: PostCardProps) {
                  Must Read
                </div>
              )}
-             {post.matchRating !== undefined && post.matchRating > 0 && (
+             {post.matchRating !== undefined && post.matchRating !== null && (
                <div className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold text-[#0F172A] bg-[#4ade80] rounded-full shadow-md">
                  <Star className="w-3 h-3 fill-[#0F172A]" />
-                 {post.matchRating}/10 Rating
+                 {((post.matchRating.home + post.matchRating.away) / 2).toFixed(1)}/10 Rating
                </div>
              )}
              {(() => {
@@ -159,10 +159,10 @@ export function PostCard({ post, featured = false }: PostCardProps) {
               Must Read
             </div>
           )}
-          {post.matchRating !== undefined && post.matchRating > 0 && (
+          {post.matchRating !== undefined && post.matchRating !== null && (
             <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-[#0F172A] bg-[#4ade80] rounded-full shadow-md">
               <Star className="w-3 h-3 fill-[#0F172A]" />
-              {post.matchRating}/10 Rating
+              {((post.matchRating.home + post.matchRating.away) / 2).toFixed(1)}/10 Rating
             </div>
           )}
           {(() => {

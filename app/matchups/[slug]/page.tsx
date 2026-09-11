@@ -5,9 +5,10 @@ import { Header } from "@/app/components/Header";
 import { Footer } from "@/app/components/Footer";
 import { getMatchupData } from "@/app/lib/data-fetcher";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const data = await getMatchupData(params.slug);
-  const pageUrl = `https://www.thetouchlinedribble.in/matchups/${params.slug}`;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const data = await getMatchupData(slug);
+  const pageUrl = `https://www.thetouchlinedribble.in/matchups/${slug}`;
   return {
     title: `${data.homeTeam} vs ${data.awayTeam} Tactics & Predicted Lineups | Touchline Dribble`,
     description: `Tactical preview for ${data.homeTeam} vs ${data.awayTeam}. We break down formations, the key battles like ${data.keyBattle.homePlayer} vs ${data.keyBattle.awayPlayer}, and how the match will be won.`,
@@ -31,8 +32,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function MatchupPreviewPage({ params }: { params: { slug: string } }) {
-  const data = await getMatchupData(params.slug);
+export default async function MatchupPreviewPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const data = await getMatchupData(slug);
 
   return (
     <main className="min-h-screen bg-zinc-950 font-outfit selection:bg-[#39FF14] selection:text-black">
@@ -47,10 +49,16 @@ export default async function MatchupPreviewPage({ params }: { params: { slug: s
             "@type": "SportsEvent",
             name: `${data.homeTeam} vs ${data.awayTeam}`,
             description: data.tacticalTakeaway,
-            url: `https://www.thetouchlinedribble.in/matchups/${params.slug}`,
+            url: `https://www.thetouchlinedribble.in/matchups/${slug}`,
             location: { "@type": "Place", name: data.venue },
             homeTeam: { "@type": "SportsTeam", name: data.homeTeam },
             awayTeam: { "@type": "SportsTeam", name: data.awayTeam },
+            publisher: {
+              "@type": "Organization",
+              name: "The Touchline Dribble",
+              url: "https://www.thetouchlinedribble.in",
+            },
+            mainEntityOfPage: `https://www.thetouchlinedribble.in/matchups/${slug}`,
             organizer: { "@type": "Organization", name: data.competition },
           }),
         }}

@@ -38,6 +38,8 @@ interface MetaSettingsProps {
     setMustRead: (val: boolean) => void;
     editorPick: boolean;
     setEditorPick: (val: boolean) => void;
+    matchRating: { home: number; away: number } | null;
+    setMatchRating: (val: { home: number; away: number } | null) => void;
     mainStory: boolean;
     setMainStory: (val: boolean) => void;
     publishAt: string;
@@ -66,10 +68,10 @@ export function MetaSettings({
     publishAt, setPublishAt,
     relatedPostIds, setRelatedPostIds,
     allPosts, currentPostId,
-    errors
+    errors,
+    matchRating, setMatchRating
 }: MetaSettingsProps) {
     const [clubSearch, setClubSearch] = useState("");
-    const [matchRating, setMatchRating] = useState<number | "">(0);
     const [clubResults, setClubResults] = useState<SearchResult[]>([]);
     const [searchingClubs, setSearchingClubs] = useState(false);
     const [showClubDropdown, setShowClubDropdown] = useState(false);
@@ -472,18 +474,27 @@ export function MetaSettings({
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Overall Match Rating (0-10)</label>
-                        <input
-                            type="number"
-                            min="0"
-                            max="10"
-                            step="0.5"
-                            value={matchRating}
-                            onChange={(e) => setMatchRating(e.target.value ? Number(e.target.value) : "")}
-                            placeholder="e.g. 8.5"
-                            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
-                        />
+                    <div className="flex gap-2">
+                        <div className="flex-1">
+                            <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Home Rating</label>
+                            <input
+                                type="number" min="0" max="10" step="0.5"
+                                value={matchRating?.home ?? ""}
+                                onChange={(e) => setMatchRating(e.target.value ? { home: Number(e.target.value), away: matchRating?.away ?? 0 } : null)}
+                                placeholder="e.g. 8.5"
+                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Away Rating</label>
+                            <input
+                                type="number" min="0" max="10" step="0.5"
+                                value={matchRating?.away ?? ""}
+                                onChange={(e) => setMatchRating(e.target.value ? { home: matchRating?.home ?? 0, away: Number(e.target.value) } : null)}
+                                placeholder="e.g. 7.0"
+                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm"
+                            />
+                        </div>
                     </div>
                     <div>
                         <label className="block text-xs font-semibold text-[#64748B] dark:text-gray-400 mb-1">Series Name</label>
