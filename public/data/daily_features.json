@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-09-10T09:21:13.376749",
+  "lastUpdated": "2026-09-11T09:19:28.630244",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Newcastle still open to Hall sale - Thursday's gossip",
-    "sentimentScore": 41
+    "text": "Chelsea and Real Madrid keen on Arsenal's Zubimendi - Friday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
-      "name": "Gary O'Neil (IPS)",
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 95
+    },
+    {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 94
+    },
+    {
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 88
+    },
+    {
+      "name": "\u00c1lvaro Arbeloa (FUL)",
       "pressureScore": 87
     },
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 83
-    },
-    {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 63
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 69
     }
   ]
 }
