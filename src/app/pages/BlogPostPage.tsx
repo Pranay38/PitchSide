@@ -28,7 +28,9 @@ import { SeriesNavigator } from "../components/SeriesNavigator";
 import { PageState } from "../components/PageState";
 import { ReadingProgressBar } from "../components/ReadingProgressBar";
 import { QuickReactBar } from "../components/QuickReactBar";
+import { SwipeNavigator } from "../components/SwipeNavigator";
 import { ArticleEndCTA } from "../components/ArticleEndCTA";
+import { MobileNewsletterCTA } from "../components/MobileNewsletterCTA";
 
 import { TouchlineAudioPlayer } from "../components/TouchlineAudioPlayer";
 import {
@@ -101,6 +103,12 @@ export function BlogPostPage() {
   const isPreview = !!previewPost;
   const previousPost = !isPreview && currentIndex > 0 ? posts[currentIndex - 1] : null;
   const nextPost = !isPreview && currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
+
+  // Category based navigation for swipe
+  const categoryPosts = useMemo(() => post?.category ? posts.filter(p => p.category === post.category) : posts, [posts, post?.category]);
+  const categoryIndex = useMemo(() => post ? categoryPosts.findIndex(p => p.id === post.id) : -1, [categoryPosts, post]);
+  const prevInCategory = categoryIndex > 0 ? categoryPosts[categoryIndex - 1] : null;
+  const nextInCategory = categoryIndex >= 0 && categoryIndex < categoryPosts.length - 1 ? categoryPosts[categoryIndex + 1] : null;
 
   // Sync like state when post loads
   useEffect(() => {
@@ -410,8 +418,14 @@ export function BlogPostPage() {
         {/* ── Featured Image (full-bleed) ── */}
         <section className="animate-enter animate-enter-delay-3 w-full max-w-[1100px] mx-auto px-4 sm:px-6 mb-14">
            <figure>
-             <div className="aspect-[21/9] w-full rounded-2xl overflow-hidden shadow-lg relative">
-                <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
+             <div className="aspect-[21/9] w-full rounded-2xl overflow-hidden shadow-lg relative max-h-[60vh] md:max-h-none">
+                <img 
+                  src={post.coverImage} 
+                  alt={post.title} 
+                  className="w-full h-full object-cover" 
+                  sizes="(max-width: 768px) 100vw, 1100px"
+                  fetchPriority="high"
+                />
              </div>
            </figure>
         </section>
@@ -481,9 +495,14 @@ export function BlogPostPage() {
                 <SeriesNavigator currentPost={post} seriesPosts={seriesPosts} />
               )}
               
-              {articleContentModel && (
-                <ArticleContentRenderer model={articleContentModel} />
-              )}
+              <SwipeNavigator 
+                prevUrl={prevInCategory ? `/post/${prevInCategory.slug || prevInCategory.id}` : undefined}
+                nextUrl={nextInCategory ? `/post/${nextInCategory.slug || nextInCategory.id}` : undefined}
+              >
+                {articleContentModel && (
+                  <ArticleContentRenderer model={articleContentModel} />
+                )}
+              </SwipeNavigator>
             </div>
 
             {post.mediaUrl && (
@@ -639,6 +658,7 @@ export function BlogPostPage() {
       </main>
 
       <Footer />
+      <MobileNewsletterCTA />
     </div>
   );
 }

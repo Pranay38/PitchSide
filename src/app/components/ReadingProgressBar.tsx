@@ -8,6 +8,8 @@ interface ReadingProgressBarProps {
 
 export function ReadingProgressBar({ readTime }: ReadingProgressBarProps) {
   const [progress, setProgress] = useState(0);
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('up');
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,13 +20,30 @@ export function ReadingProgressBar({ readTime }: ReadingProgressBarProps) {
       const currentScroll = window.scrollY;
       const scrollPercentage = Math.min(100, Math.max(0, (currentScroll / documentHeight) * 100));
       setProgress(scrollPercentage);
+      
+      // Scroll direction for mobile header auto-hide
+      if (window.matchMedia('(max-width: 768px)').matches) {
+        if (currentScroll > lastScrollY && currentScroll > 100) {
+          setScrollDirection('down');
+          document.body.classList.add('mobile-header-hidden');
+        } else if (currentScroll < lastScrollY || currentScroll <= 100) {
+          setScrollDirection('up');
+          document.body.classList.remove('mobile-header-hidden');
+        }
+      } else {
+        document.body.classList.remove('mobile-header-hidden');
+      }
+      setLastScrollY(currentScroll);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll(); // Initial check
 
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.body.classList.remove('mobile-header-hidden');
+    };
+  }, [lastScrollY]);
 
   // Calculate remaining minutes based on progress
   const totalMinutesMatch = readTime.match(/(\d+)/);
@@ -35,21 +54,30 @@ export function ReadingProgressBar({ readTime }: ReadingProgressBarProps) {
   const isVisible = progress > 5 && progress < 98;
 
   return (
-    <div 
-      className={`fixed top-0 left-0 right-0 z-[100] transition-opacity duration-300 pointer-events-none ${isVisible ? "opacity-100" : "opacity-0"}`}
-    >
-      <div className="h-[3px] bg-border w-full relative">
-        <div 
-          className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-[#4ade80]"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-      
-      {totalMinutes > 0 && (
-        <div className="absolute top-3 right-4 sm:right-6 bg-background/80 backdrop-blur-md border border-border text-foreground text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm">
-          {remainingMinutes} min left
+    <>
+      <style dangerouslySetInnerHTML={{__html: `
+        @media (max-width: 768px) {
+          body.mobile-header-hidden header {
+            transform: translateY(-100%);
+          }
+        }
+      `}} />
+      <div 
+        className={`fixed top-0 left-0 right-0 z-[9999] transition-opacity duration-300 pointer-events-none ${isVisible ? "opacity-100" : "opacity-0"}`}
+      >
+        <div className="h-[3px] sm:h-1 bg-border w-full relative">
+          <div 
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-[#4ade80]"
+            style={{ width: `${progress}%` }}
+          />
         </div>
-      )}
-    </div>
+        
+        {totalMinutes > 0 && (
+          <div className="absolute top-3 right-4 bg-background/80 backdrop-blur-md border border-border text-foreground text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm md:hidden">
+            {remainingMinutes} min left
+          </div>
+        )}
+      </div>
+    </>
   );
 }

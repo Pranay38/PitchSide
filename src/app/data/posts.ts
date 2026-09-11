@@ -34,6 +34,11 @@ export interface BlogPost {
   reactions?: Record<string, number>;
   likedBy?: string[];
   author?: string;
+  syndication?: {
+    reddit?: boolean;
+    substack?: boolean;
+    medium?: boolean;
+  };
   format?: "article" | "quick-take"; // "article" (default) or "quick-take" (micro-post)
   armchairRatings?: {
     name: string;

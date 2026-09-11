@@ -106,7 +106,7 @@ export function ArticleContentRenderer({
                   <div
                     key={`html-${i}`}
                     className="text-[#334155] dark:text-gray-200"
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(block.content || "") }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((block.content || "").replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" ')) }}
                   />
                 );
               })}
@@ -121,7 +121,7 @@ export function ArticleContentRenderer({
           <div
             ref={containerRef}
             className={`text-[#334155] dark:text-gray-200 html-blob leading-8 ${className}`}
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(model.html || "") }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((model.html || "").replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" ')) }}
           />
         </>
       );

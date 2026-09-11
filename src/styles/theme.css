@@ -1097,3 +1097,30 @@
 .animate-thermometer-fill {
   animation: thermometer-fill 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Phase 12: Mobile Typography & Readability */
+@media (max-width: 768px) {
+  .pitchside-article-content, .article-content, .blog-post-content, [class*="article"], [class*="post-content"] {
+    font-size: 18px !important;
+    line-height: 1.75 !important;
+  }
+  
+  .pitchside-article-content p, .article-content p, .blog-post-content p {
+    margin-bottom: 1.5em !important;
+  }
+  
+  .pitchside-article-content, .article-content {
+    max-width: 100% !important;
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+  }
+  
+  .pitchside-article-content h2, .article-content h2 {
+    font-size: 1.5rem !important;
+    margin-top: 2em !important;
+  }
+  
+  .pitchside-article-content h3, .article-content h3 {
+    font-size: 1.25rem !important;
+  }
+}

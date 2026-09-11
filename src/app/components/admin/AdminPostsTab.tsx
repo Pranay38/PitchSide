@@ -1,7 +1,6 @@
 import { useState, useRef, Dispatch, SetStateAction } from "react";
-import { Plus, Edit3, Trash2, Eye, Download, Upload, Send, Image as ImageIcon, Share2, X } from "lucide-react";
+import { Plus, Eye, Edit3, Trash2, Send, Image as ImageIcon, Download, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { SocialContentPanel } from "./SocialContentPanel";
 import type { BlogPost } from "../../data/posts";
 import { exportPostsAsJSON, importPostsFromJSON } from "../../lib/postStorage";
 
@@ -33,7 +32,6 @@ export function AdminPostsTab({
     const [postFilter, setPostFilter] = useState<"all" | "published" | "drafts">("all");
     const [postSort, setPostSort] = useState<"newest" | "oldest" | "a-z" | "z-a">("newest");
     const importFileRef = useRef<HTMLInputElement>(null);
-    const [selectedPostForSocial, setSelectedPostForSocial] = useState<BlogPost | null>(null);
 
     const handleExport = () => {
         exportPostsAsJSON();
@@ -155,31 +153,12 @@ export function AdminPostsTab({
                                 }} className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-green-600 transition-colors" title="Create Carousel">
                                     <ImageIcon className="w-4 h-4" />
                                 </button>
-                                <button onClick={() => setSelectedPostForSocial(post)} className="p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 text-[#64748B] dark:text-gray-400 hover:text-purple-600 transition-colors" title="Social Content">
-                                    <Share2 className="w-4 h-4" />
-                                </button>
                                 <button onClick={() => handleViewPost(post)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] dark:text-gray-400 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
                                 <button onClick={() => handleEditPost(post)} className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-[#64748B] dark:text-gray-400 hover:text-blue-600 transition-colors" title="Edit"><Edit3 className="w-4 h-4" /></button>
                                 <button onClick={() => handleDeletePost(post.id)} className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-[#64748B] dark:text-gray-400 hover:text-red-600 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
                             </div>
                         </div>
                     ))}
-                </div>
-            )}
-            
-            {selectedPostForSocial && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-                    <div className="bg-white dark:bg-[#0F172A] w-full max-w-4xl rounded-2xl shadow-xl relative my-8 max-h-[90vh] overflow-y-auto">
-                        <div className="sticky top-0 bg-white dark:bg-[#0F172A] p-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center z-10">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Social Content: {selectedPostForSocial.title}</h3>
-                            <button onClick={() => setSelectedPostForSocial(null)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500">
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <div className="p-6">
-                            <SocialContentPanel post={selectedPostForSocial} />
-                        </div>
-                    </div>
                 </div>
             )}
         </>

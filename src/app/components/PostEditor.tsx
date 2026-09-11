@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { SpellcheckBar } from "./admin/SpellcheckBar";
 import { InteractiveWidgets } from "./editor/InteractiveWidgets";
 import { MetaSettings } from "./editor/MetaSettings";
+import { SyndicationSettings } from "./editor/SyndicationSettings";
 import { EditorTopBar } from "./editor/EditorTopBar";
 import { CoverImageUpload } from "./editor/CoverImageUpload";
 import { RichTextCanvas } from "./editor/RichTextCanvas";
@@ -97,6 +98,7 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
     const [seriesOrder, setSeriesOrder] = useState<number | "">(post?.seriesOrder ?? "");
     const [publishAt, setPublishAt] = useState(post?.publishAt || "");
     const [relatedPostIds, setRelatedPostIds] = useState<string[]>(post?.relatedPostIds || []);
+    const [syndication, setSyndication] = useState<{reddit?: boolean; substack?: boolean; medium?: boolean}>(post?.syndication || {});
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
@@ -217,6 +219,7 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
             seriesOrder: seriesOrder === "" ? undefined : seriesOrder,
             publishAt: publishAt || undefined,
             relatedPostIds: relatedPostIds.length > 0 ? relatedPostIds : undefined,
+            syndication: Object.keys(syndication).length > 0 ? syndication : undefined,
         };
     };
 
@@ -445,6 +448,12 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
                                     allPosts={allPosts || []}
                                     currentPostId={post?.id}
                                     errors={errors}
+                                />
+
+                                <SyndicationSettings
+                                    syndication={syndication}
+                                    setSyndication={setSyndication}
+                                    postId={post?.id}
                                 />
 
                                 <InteractiveWidgets

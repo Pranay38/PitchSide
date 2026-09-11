@@ -29,6 +29,12 @@ export default async function rssHandler(req: VercelRequest, res: VercelResponse
       const link = `${siteUrl}/post/${postPath}`;
       const escapedTitle = escapeXml(post.title || "Untitled");
       const escapedExcerpt = escapeXml(post.excerpt || "");
+      
+      const fullHtmlContent = post.content || `<p>${escapedExcerpt}</p>`; // Basic fallback
+      const coverImage = post.coverImage || post.image;
+      const mediaXml = coverImage 
+        ? `\n      <media:content url="${escapeXml(coverImage)}" medium="image" />` 
+        : "";
 
       // Deduplicate categories (club + tags)
       const categories = new Set<string>();
@@ -44,12 +50,16 @@ export default async function rssHandler(req: VercelRequest, res: VercelResponse
       <guid isPermaLink="true">${link}</guid>
       <pubDate>${pubDate}</pubDate>
       <description>${escapedExcerpt}</description>
-      ${categoryXml}
+      ${categoryXml}${mediaXml}
+      <content:encoded><![CDATA[${fullHtmlContent}]]></content:encoded>
     </item>`;
     });
 
     const rss = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" 
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:media="http://search.yahoo.com/mrss/"
+  xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>The Touchline Dribble — Tactical Breakdowns &amp; Bold Football Opinions</title>
     <link>${siteUrl}</link>
