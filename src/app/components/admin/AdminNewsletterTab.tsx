@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Mail, Send, Users, LoaderCircle, CheckCircle2, AlertCircle } from "lucide-react";
+import { Mail, Send, Users, LoaderCircle, CheckCircle2, AlertCircle, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { AdminEmptyState } from "./AdminEmptyState";
 
@@ -20,6 +20,8 @@ export function AdminNewsletterTab() {
   const [content, setContent] = useState("<p>Welcome to this week's digest!</p>");
   const [targetClub, setTargetClub] = useState("All");
   const [sending, setSending] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [addingEmail, setAddingEmail] = useState(false);
 
   const CLUBS = ["All", "Arsenal", "Chelsea", "Liverpool", "Man City", "Man United", "Spurs", "Real Madrid", "Barcelona"];
 
@@ -97,6 +99,36 @@ export function AdminNewsletterTab() {
       </div>
     );
   }
+
+  const handleAddEmail = async () => {
+    const trimmed = newEmail.trim().toLowerCase();
+    if (!trimmed || !trimmed.includes("@") || !trimmed.includes(".")) {
+      toast.error("Enter a valid email address.");
+      return;
+    }
+    setAddingEmail(true);
+    try {
+      const res = await fetch("/api/subscribers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify({ email: trimmed }),
+        credentials: "same-origin",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Failed to add subscriber");
+      if (data.alreadySubscribed) {
+        toast.info(`${trimmed} is already subscribed.`);
+      } else {
+        toast.success(`${trimmed} added successfully!`);
+      }
+      setNewEmail("");
+      await fetchSubscribers();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to add subscriber");
+    } finally {
+      setAddingEmail(false);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
@@ -182,6 +214,26 @@ export function AdminNewsletterTab() {
               Subscribers
               <span className="text-xs font-normal text-gray-500">{subscribers.length} total</span>
             </h3>
+
+            {/* Add new subscriber */}
+            <div className="flex gap-2 mb-4">
+              <input
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleAddEmail()}
+                placeholder="Add email manually..."
+                className="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#16A34A]/50 outline-none transition-all dark:text-white placeholder-gray-400"
+              />
+              <button
+                onClick={handleAddEmail}
+                disabled={addingEmail || !newEmail.trim()}
+                className="flex items-center gap-1.5 px-4 py-2 bg-[#16A34A] hover:bg-[#15803d] active:scale-95 text-white text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {addingEmail ? <LoaderCircle className="w-3.5 h-3.5 animate-spin" /> : <UserPlus className="w-3.5 h-3.5" />}
+                Add
+              </button>
+            </div>
             
             {subscribers.length === 0 ? (
               <AdminEmptyState

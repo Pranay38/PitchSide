@@ -196,13 +196,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         previewText: "You're in. Here is what to expect from us.",
                         unsubscribeUrl: unSubUrl,
                         content: `
-                            <h2 class="headline serif">Welcome to the Inner Circle.</h2>
+                            <p class="kicker sans">Welcome Aboard</p>
+                            <h2 class="headline-text">You're in the Inner Circle.</h2>
                             <p class="body-text sans">
                                 Hi there,<br><br>
                                 Thanks for trusting us with your inbox. I know it's a crowded space, so I'll make sure every email we send is worth your time.
                             </p>
                             <p class="body-text sans">
-                                You are now on the list to receive our sharpest tactical breakdowns, exclusive opinion pieces, and in-depth analysis before anyone else. We don't do clickbait or standard match reports. We focus on the "why" and "how" of the beautiful game.
+                                You are now on the list to receive our sharpest tactical breakdowns, exclusive opinion pieces, and in-depth analysis before anyone else. We don't do clickbait or standard match reports. We focus on the <strong>"why"</strong> and <strong>"how"</strong> of the beautiful game.
                             </p>
                             <div class="editors-note sans">
                                 <strong>What's next?</strong><br>
@@ -214,7 +215,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                             <p class="body-text sans" style="margin-top: 24px;">
                                 Speak soon,<br>
                                 <strong>Pranay Agarwal</strong><br>
-                                Editor, The Touchline Dribble
+                                <span style="color: #16A34A;">Editor, The Touchline Dribble</span>
                             </p>
                         `
                     });
