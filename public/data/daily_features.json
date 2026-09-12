@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-09-11T09:19:28.630244",
+  "lastUpdated": "2026-09-12T08:59:16.214778",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea and Real Madrid keen on Arsenal's Zubimendi - Friday's gossip",
-    "sentimentScore": 60
+    "text": "Richarlison could still leave Spurs - Saturday's gossip",
+    "sentimentScore": 38
   },
   "managerPressure": [
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 95
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 89
     },
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 94
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 89
     },
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 88
-    },
-    {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 87
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 84
     },
     {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 69
+      "pressureScore": 76
     }
   ]
 }
