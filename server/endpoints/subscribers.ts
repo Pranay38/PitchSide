@@ -196,26 +196,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         previewText: "You're in. Here is what to expect from us.",
                         unsubscribeUrl: unSubUrl,
                         content: `
-                            <p class="kicker sans">Welcome Aboard</p>
-                            <h2 class="headline-text">You're in the Inner Circle.</h2>
-                            <p class="body-text sans">
+                            <p style="font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; color: #16A34A; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 8px 0;">Welcome Aboard</p>
+                            <h2 style="font-family: 'Space Grotesk', 'Inter', sans-serif; font-size: 26px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; color: #0F172A; margin: 0 0 20px 0;">You're in the Inner Circle.</h2>
+                            <p style="font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: #334155; margin: 0 0 20px 0;">
                                 Hi there,<br><br>
                                 Thanks for trusting us with your inbox. I know it's a crowded space, so I'll make sure every email we send is worth your time.
                             </p>
-                            <p class="body-text sans">
-                                You are now on the list to receive our sharpest tactical breakdowns, exclusive opinion pieces, and in-depth analysis before anyone else. We don't do clickbait or standard match reports. We focus on the <strong>"why"</strong> and <strong>"how"</strong> of the beautiful game.
+                            <p style="font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: #334155; margin: 0 0 20px 0;">
+                                You are now on the list to receive our sharpest tactical breakdowns, exclusive opinion pieces, and in-depth analysis before anyone else. We don't do clickbait or standard match reports. We focus on the <strong style="color: #0F172A;">"why"</strong> and <strong style="color: #0F172A;">"how"</strong> of the beautiful game.
                             </p>
-                            <div class="editors-note sans">
-                                <strong>What's next?</strong><br>
+                            <div style="background-color: #F8FAFC; border-left: 3px solid #16A34A; border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 0 0 24px 0; font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; color: #475569;">
+                                <strong style="color: #0F172A;">What's next?</strong><br>
                                 Keep an eye out over the next few days. I'll be sending over a curated selection of our best timeless pieces to get you acquainted with our style of analysis.
                             </div>
-                            <p class="body-text sans">
+                            <p style="font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: #334155; margin: 0 0 20px 0;">
                                 If there's a specific team or tactical concept you want us to cover, just hit reply to this email. I read every single one.
                             </p>
-                            <p class="body-text sans" style="margin-top: 24px;">
+                            <p style="font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: #334155; margin: 24px 0 0 0;">
                                 Speak soon,<br>
-                                <strong>Pranay Agarwal</strong><br>
-                                <span style="color: #16A34A;">Editor, The Touchline Dribble</span>
+                                <strong style="color: #0F172A;">Pranay Agarwal</strong><br>
+                                <span style="color: #16A34A; font-weight: 500;">Editor, The Touchline Dribble</span>
                             </p>
                         `
                     });
