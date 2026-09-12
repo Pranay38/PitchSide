@@ -103,19 +103,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return posts.map((post, idx) => {
                 const postHref = `${SITE_URL}/post/${post.slug || post.id || post._id}`;
                 return `
-            <div style="margin-bottom: 40px; ${idx < posts.length - 1 ? 'padding-bottom: 32px; border-bottom: 1px solid #e2e8f0;' : ''}">
-                ${post.coverImage ? `<a href="${postHref}"><img src="${post.coverImage}" alt="${post.title}" style="width: 100%; max-height: 350px; object-fit: cover; margin-bottom: 16px;" /></a>` : ''}
-                <div class="kicker sans">
-                    ${post.club || "Analysis"} • ${post.readTime || "5 min read"}
-                </div>
-                <h3 class="headline serif" style="margin-bottom: 12px; font-size: 24px; line-height: 1.3;">
-                    <a href="${postHref}" style="color: #0f172a; text-decoration: none;">${post.title}</a>
+            <div style="margin-bottom: 32px; ${idx < posts.length - 1 ? 'padding-bottom: 28px; border-bottom: 1px solid #1A1A1A;' : ''}">
+                ${post.coverImage ? `<a href="${postHref}" style="display: block; margin-bottom: 16px; border-radius: 12px; overflow: hidden;"><img src="${post.coverImage}" alt="${post.title}" style="width: 100%; max-height: 300px; object-fit: cover; display: block; border-radius: 12px;" /></a>` : ''}
+                <p style="font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; color: #16A34A; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 8px 0;">
+                    ${post.club || "Analysis"} &bull; ${post.readTime || "5 min read"}
+                </p>
+                <h3 style="font-family: 'Space Grotesk', 'Inter', sans-serif; font-size: 22px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; margin: 0 0 10px 0;">
+                    <a href="${postHref}" style="color: #ffffff; text-decoration: none;">${post.title}</a>
                 </h3>
-                <div class="body-text sans" style="color: #475569; margin-bottom: 20px;">
+                <p style="font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; color: #94A3B8; margin: 0 0 18px 0;">
                     ${post.excerpt || ""}
-                </div>
+                </p>
                 <div>
-                    <a href="${postHref}" class="btn sans">Read Article &rarr;</a>
+                    <a href="${postHref}" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #16A34A 0%, #22c55e 100%); color: #ffffff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; border-radius: 10px; text-decoration: none; letter-spacing: 0.02em;">Read Article &rarr;</a>
                 </div>
             </div>
         `}).join('');
@@ -190,14 +190,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const postsHtml = generateHtmlForPosts(personalizedPosts);
             
             // Generate backlink structure tailored for the user persona
-            let customBacklink = `<p><a href="${SITE_URL}" style="color: #16A34A; text-decoration: none;">Visit the Website</a></p>`;
+            let customBacklink = `<p style="margin: 0;"><a href="${SITE_URL}" style="color: #4ade80; text-decoration: none; font-weight: 600;">Visit the Website</a></p>`;
             if (activeClub) {
                 const clubSlug = activeClub.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                customBacklink = `<p><a href="${SITE_URL}/tag/${clubSlug}" style="color: #16A34A; text-decoration: none;">Read More ${activeClub} News</a> | <a href="${SITE_URL}" style="color: #334155; text-decoration: none;">Visit Homepage</a></p>`;
+                customBacklink = `<p style="margin: 0;"><a href="${SITE_URL}/tag/${clubSlug}" style="color: #4ade80; text-decoration: none; font-weight: 600;">Read More ${activeClub} News</a> <span style="color: #475569;">&nbsp;|&nbsp;</span> <a href="${SITE_URL}" style="color: #64748b; text-decoration: none;">Visit Homepage</a></p>`;
             } else if (isTransfer) {
-                customBacklink = `<p><a href="${SITE_URL}/transfers" style="color: #16A34A; text-decoration: none;">View Transfer Tracker</a> | <a href="${SITE_URL}" style="color: #334155; text-decoration: none;">Visit Homepage</a></p>`;
+                customBacklink = `<p style="margin: 0;"><a href="${SITE_URL}/transfers" style="color: #4ade80; text-decoration: none; font-weight: 600;">View Transfer Tracker</a> <span style="color: #475569;">&nbsp;|&nbsp;</span> <a href="${SITE_URL}" style="color: #64748b; text-decoration: none;">Visit Homepage</a></p>`;
             } else if (isStory) {
-                customBacklink = `<p><a href="${SITE_URL}/stories" style="color: #16A34A; text-decoration: none;">Read More Longform Stories</a> | <a href="${SITE_URL}" style="color: #334155; text-decoration: none;">Visit Homepage</a></p>`;
+                customBacklink = `<p style="margin: 0;"><a href="${SITE_URL}/stories" style="color: #4ade80; text-decoration: none; font-weight: 600;">Read More Longform Stories</a> <span style="color: #475569;">&nbsp;|&nbsp;</span> <a href="${SITE_URL}" style="color: #64748b; text-decoration: none;">Visit Homepage</a></p>`;
             }
 
             const isVariantA = Math.random() > 0.5;
@@ -209,21 +209,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 previewText: personalizedGreeting,
                 unsubscribeUrl: `${SITE_URL}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(sub.email)}`,
                 content: `
-                    <div class="editors-note sans">
-                        <strong>${editorsNoteTitle}</strong><br><br>
+                    <div style="background-color: #121212; border-left: 3px solid #16A34A; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 28px; font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; color: #94A3B8;">
+                        <strong style="color: #EDEDED;">${editorsNoteTitle}</strong><br><br>
                         Hi there,<br><br>
                         ${personalizedGreeting}
                     </div>
 
                     ${postsHtml}
 
-                    <hr class="divider">
-                    <p class="body-text sans">
+                    <hr style="height: 1px; background-color: #1A1A1A; margin: 32px 0; border: none;">
+                    <p style="font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: #94A3B8; margin-bottom: 20px;">
                         Thanks for reading,<br>
-                        <strong>Pranay Agarwal</strong><br>
-                        Editor, The Touchline Dribble
+                        <strong style="color: #EDEDED;">Pranay Agarwal</strong><br>
+                        <span style="color: #16A34A;">Editor, The Touchline Dribble</span>
                     </p>
-                    <div style="text-align: center; font-size: 13px; margin-top: 32px;" class="sans">
+                    <div style="text-align: center; font-family: 'Inter', sans-serif; font-size: 13px; margin-top: 32px;">
                         ${customBacklink}
                     </div>
                 `

@@ -303,11 +303,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(400).json({ error: "No subscribers found." });
             }
 
-            const batchList = subscribers.map(s => ({
-                to: s.email,
-                subject,
-                html: htmlContent
-            }));
+            const { buildEditorialEmail } = await import("../utils/emailTemplate");
+
+            const batchList = subscribers.map(s => {
+                const unSubUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host || "www.thetouchlinedribble.in"}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(s.email)}`;
+                const wrappedHtml = buildEditorialEmail({
+                    title: subject,
+                    previewText: subject,
+                    unsubscribeUrl: unSubUrl,
+                    content: htmlContent,
+                });
+                return {
+                    to: s.email,
+                    subject,
+                    html: wrappedHtml,
+                };
+            });
 
             await sendBatchEmails(batchList);
 
