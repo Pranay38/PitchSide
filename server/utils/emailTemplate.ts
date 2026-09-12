@@ -83,7 +83,7 @@ export function buildEditorialEmail({ title, previewText, content, unsubscribeUr
             <td class="footer" style="padding: 28px 40px; background-color: #FAFAF8; text-align: center; border-top: 1px solid #E2E8F0;">
               <p style="font-family: 'Space Grotesk', 'Inter', sans-serif; font-size: 13px; color: #0F172A; font-weight: 700; margin: 0 0 4px 0; letter-spacing: -0.01em;">The Touchline Dribble</p>
               <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #64748B; line-height: 1.5; margin: 0 0 16px 0;">
-                Intelligent football analysis &amp; tactical breakdowns.
+                The tactical detail your pundit missed. Sharp analysis, bold opinions, and the football debates that actually matter.
               </p>
               <p style="font-family: 'Inter', sans-serif; font-size: 11px; color: #94A3B8; margin: 0;">
                 You're receiving this because you joined our community.<br>
