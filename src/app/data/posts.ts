@@ -52,6 +52,11 @@ export interface BlogPost {
     statement: string;
   }[];
   relatedPostIds?: string[];
+  seo?: {
+    title: string;
+    description: string;
+    focusKeywords: string[];
+  };
 }
 
 export const blogPosts: BlogPost[] = [
@@ -70,6 +75,11 @@ export const blogPosts: BlogPost[] = [
     mustRead: true,
     editorPick: true,
     format: "article",
+    seo: {
+      title: "Real Madrid Tactics: Why Vinicius Jr Is the Real Problem, Not Mbappe",
+      description: "Tactical analysis of Real Madrid's collapse. Data shows why Vinicius Jr's positioning, not Kylian Mbappe, is breaking Carlo Ancelotti's system.",
+      focusKeywords: ["Real Madrid tactics", "Vinicius Jr heatmap", "Mbappe Real Madrid analysis", "Carlo Ancelotti tactics"]
+    },
     content: `Everyone is blaming Kylian Mbappe for Real Madrid's collapse. You're all blind. The actual problem is Vinicius Jr.
 
 ## The Myth
@@ -106,6 +116,11 @@ Ancelotti has lost control of the left wing. Blaming Mbappe for a systemic failu
     readTime: "6 min read",
     thisWeek: true,
     editorPick: true,
+    seo: {
+      title: "Manchester United Tactics: How The New Manager Fixed The Midfield",
+      description: "Deep dive into Manchester United's tactical evolution. We break down the shift to a progressive 4-3-3, high pressing, and the new midfield roles.",
+      focusKeywords: ["Manchester United tactics", "Man Utd formation", "Premier League tactical analysis", "Ten Hag replacement"]
+    },
     content: `The transformation of Manchester United's tactical approach has been nothing short of remarkable. Under new management, the team has shifted from a reactive 4-2-3-1 formation to a more progressive 4-3-3 system that emphasizes ball retention and high pressing.
 
 ## The Key Changes
@@ -149,6 +164,11 @@ As the season progresses, we can expect further refinement of these tactical pri
     readTime: "7 min read",
     thisWeek: true,
     mustRead: true,
+    seo: {
+      title: "Arsenal Title Contenders: Tactical Analysis of Arteta's Blueprint",
+      description: "Are Arsenal finally ready to win the Premier League? A deep tactical analysis of Mikel Arteta's system, squad depth, and pressing structure.",
+      focusKeywords: ["Arsenal title contenders", "Mikel Arteta tactics", "Arsenal Premier League", "Arsenal tactical analysis"]
+    },
     content: `Arsenal's transformation over the past few seasons has been one of football's most compelling narratives. From languishing in mid-table obscurity to genuine title contenders, the Gunners have rebuilt with purpose and precision.
 
 ## Squad Depth Makes the Difference

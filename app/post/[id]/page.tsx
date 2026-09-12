@@ -47,12 +47,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const ogImageUrl = `https://www.thetouchlinedribble.in/api/og?title=${encodeURIComponent(post.title)}${post.club ? `&club=${encodeURIComponent(post.club)}` : ""}${post.date ? `&date=${encodeURIComponent(post.date)}` : ""}${post.coverImage ? `&image=${encodeURIComponent(post.coverImage)}` : ""}`;
 
+  const seoTitle = post.seo?.title || post.title;
+  const seoDescription = post.seo?.description || post.excerpt || "";
+  const keywords = post.seo?.focusKeywords || [];
+
   return {
-    title: post.title,
-    description: post.excerpt || "",
+    title: seoTitle,
+    description: seoDescription,
+    ...(keywords.length > 0 && { keywords }),
     openGraph: {
-      title: post.title,
-      description: post.excerpt || "",
+      title: seoTitle,
+      description: seoDescription,
       type: "article",
       url: `https://www.thetouchlinedribble.in/post/${post.slug || post.id}`,
       images: [
@@ -70,8 +75,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: post.title,
-      description: post.excerpt || "",
+      title: seoTitle,
+      description: seoDescription,
       images: [ogImageUrl],
       site: "@TouchlineDribbl",
       creator: "@TouchlineDribbl",
@@ -110,10 +115,11 @@ export default async function BlogPostPage({ params }: Props) {
   // JSON-LD structured data for the article
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "NewsArticle",
+    "@type": ["Article", "BlogPosting"],
     ...(isMedical && { additionalType: "MedicalWebPage" }),
-    headline: post.title,
-    description: post.excerpt || "",
+    headline: post.seo?.title || post.title,
+    description: post.seo?.description || post.excerpt || "",
+    ...(post.seo?.focusKeywords && post.seo.focusKeywords.length > 0 && { keywords: post.seo.focusKeywords.join(", ") }),
     image: [post.coverImage],
     datePublished: post.publishAt || post.date
       ? new Date(post.publishAt || post.date).toISOString()
