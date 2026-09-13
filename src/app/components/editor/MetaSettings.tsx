@@ -621,30 +621,30 @@ export function MetaSettings({
                     Set the percentage of the article that is visible to unauthenticated users before they hit the paywall. Set to 0 or leave empty for a fully public article.
                 </p>
 
-                <div className="flex items-center gap-4">
-                    <div className="relative">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+                    <div className="flex-1 flex items-center gap-4">
                         <input
-                            type="number"
+                            type="range"
                             min="0"
                             max="100"
-                            step="10"
-                            placeholder="e.g. 50"
-                            value={gatekeepPoint === "" ? "" : gatekeepPoint}
+                            step="5"
+                            value={gatekeepPoint === "" ? 0 : gatekeepPoint}
                             onChange={(e) => {
-                                const val = e.target.value;
-                                if (val === "" || val === "0") {
+                                const val = parseInt(e.target.value, 10);
+                                if (val === 0) {
                                     setGatekeepPoint("");
                                 } else {
-                                    const num = parseInt(val, 10);
-                                    if (!isNaN(num) && num >= 0 && num <= 100) setGatekeepPoint(num);
+                                    setGatekeepPoint(val);
                                 }
                             }}
-                            className="w-28 pl-4 pr-8 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm text-center"
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-[#16A34A]"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">%</span>
+                        <div className="w-16 flex-shrink-0 text-right">
+                            <span className="text-xl font-bold text-[#16A34A]">{gatekeepPoint === "" ? "0" : gatekeepPoint}%</span>
+                        </div>
                     </div>
-                    <span className="text-sm text-[#64748B] dark:text-gray-400">
-                        {gatekeepPoint === "" || gatekeepPoint === 0 ? "Gate is off — fully public" : `Show first ${gatekeepPoint}% of the article before gate`}
+                    <span className="text-sm text-[#64748B] dark:text-gray-400 sm:border-l sm:border-gray-200 sm:dark:border-gray-700 sm:pl-6">
+                        {gatekeepPoint === "" || gatekeepPoint === 0 ? "Gate is off — fully public" : `Show first ${gatekeepPoint}% of the article`}
                     </span>
                 </div>
             </div>
