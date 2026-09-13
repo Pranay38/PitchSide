@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-09-12T08:59:16.214778",
+  "lastUpdated": "2026-09-13T09:55:58.741119",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Richarlison could still leave Spurs - Saturday's gossip",
-    "sentimentScore": 38
+    "text": "Arsenal monitoring Como's Paz - Sunday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "Andoni Iraola (LIV)",
-      "pressureScore": 89
+      "pressureScore": 99
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 89
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 86
     },
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 84
+      "name": "David Moyes (EVE)",
+      "pressureScore": 86
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 76
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 83
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 67
     }
   ]
 }
