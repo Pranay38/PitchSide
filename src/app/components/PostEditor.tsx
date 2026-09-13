@@ -452,6 +452,7 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
                                     errors={errors}
                                     gatekeepPoint={gatekeepPoint}
                                     setGatekeepPoint={setGatekeepPoint}
+                                    content={content}
                                 />
 
                                 <SyndicationSettings
