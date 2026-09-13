@@ -312,6 +312,7 @@ export async function updateSiteSettingsAsync(
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${getAuthToken()}`,
+      "x-csrf-token": "1",
     },
     body: JSON.stringify(updates),
   });

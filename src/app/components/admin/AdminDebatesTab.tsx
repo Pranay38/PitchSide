@@ -18,9 +18,10 @@ export function AdminDebatesTab({
 
     const handleSaveDebate = async (data: any) => {
         try {
+            const password = localStorage.getItem("pitchside_admin_auth") || "";
             const res = await fetch("/api/debates", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${password}`, "x-csrf-token": "1" },
                 body: JSON.stringify(data)
             });
             if (res.ok) {
@@ -38,7 +39,8 @@ export function AdminDebatesTab({
     const handleDeleteDebate = async (id: string) => {
         if (!confirm("Are you sure?")) return;
         try {
-            const res = await fetch(`/api/debates/${id}`, { method: "DELETE" });
+            const password = localStorage.getItem("pitchside_admin_auth") || "";
+            const res = await fetch(`/api/debates/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${password}`, "x-csrf-token": "1" } });
             if (res.ok) {
                 toast.success("Debate deleted.");
                 fetchDebates();
@@ -53,7 +55,8 @@ export function AdminDebatesTab({
     const handleDeleteArgument = async (debateId: string, argumentId: string) => {
         if (!confirm("Are you sure you want to delete this argument?")) return;
         try {
-            const res = await fetch(`/api/debates/${debateId}/arguments/${argumentId}`, { method: "DELETE" });
+            const password = localStorage.getItem("pitchside_admin_auth") || "";
+            const res = await fetch(`/api/debates/${debateId}/arguments/${argumentId}`, { method: "DELETE", headers: { "Authorization": `Bearer ${password}`, "x-csrf-token": "1" } });
             if (res.ok) {
                 toast.success("Argument deleted.");
                 fetchDebates();

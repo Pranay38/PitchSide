@@ -60,6 +60,7 @@ export function AdminTitleRaceTab() {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${process.env.NEXT_PUBLIC_ADMIN_PASSWORD || localStorage.getItem(ADMIN_KEY) || ""}`,
+                    "x-csrf-token": "1",
                 },
                 body: JSON.stringify({ teams }),
             });

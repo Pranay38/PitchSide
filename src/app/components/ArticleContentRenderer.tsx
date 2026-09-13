@@ -91,11 +91,11 @@ export function ArticleContentRenderer({
   useScrollytelling(containerRef);
 
   const content = useMemo(() => {
-    const isGated = !isSignedIn && gatekeepPoint > 0 && gatekeepPoint < 100;
+    const isGated = !isSignedIn && gatekeepPoint > 0;
     
     let richBlocks = model.richBlocks;
     if (isGated && richBlocks) {
-      const cutOffIndex = Math.ceil(richBlocks.length * (gatekeepPoint / 100));
+      const cutOffIndex = Math.min(gatekeepPoint, richBlocks.length);
       richBlocks = richBlocks.slice(0, cutOffIndex);
     }
 
@@ -169,7 +169,7 @@ export function ArticleContentRenderer({
 
     let basicBlocks = model.blocks;
     if (isGated && basicBlocks) {
-      const cutOffIndex = Math.ceil(basicBlocks.length * (gatekeepPoint / 100));
+      const cutOffIndex = Math.min(gatekeepPoint, basicBlocks.length);
       basicBlocks = basicBlocks.slice(0, cutOffIndex);
     }
 

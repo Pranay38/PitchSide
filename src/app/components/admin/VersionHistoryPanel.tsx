@@ -66,7 +66,8 @@ export function VersionHistoryPanel({ postId, onClose, onRestore }: VersionHisto
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("pitchside_admin_auth") || ""}` 
+                    "Authorization": `Bearer ${localStorage.getItem("pitchside_admin_auth") || ""}`,
+                    "x-csrf-token": "1",
                 },
                 body: JSON.stringify({ postId, version: selectedVersionData.version })
             });

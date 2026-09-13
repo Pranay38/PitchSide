@@ -185,7 +185,8 @@ export async function addPostAsync(
     method: "POST",
     headers: { 
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${getAuthToken()}`
+      "Authorization": `Bearer ${getAuthToken()}`,
+      "x-csrf-token": "1"
     },
     body: JSON.stringify(post),
   });
@@ -232,7 +233,8 @@ export async function updatePostAsync(
     method: "PUT",
     headers: { 
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${getAuthToken()}`
+      "Authorization": `Bearer ${getAuthToken()}`,
+      "x-csrf-token": "1"
     },
     body: JSON.stringify({ id, ...updates }),
   });
@@ -278,7 +280,8 @@ export async function deletePostAsync(id: string): Promise<BlogPost[]> {
   const res = await fetch(`${API_BASE}/posts?id=${encodeURIComponent(id)}`, {
     method: "DELETE",
     headers: {
-      "Authorization": `Bearer ${getAuthToken()}`
+      "Authorization": `Bearer ${getAuthToken()}`,
+      "x-csrf-token": "1"
     }
   });
 

@@ -312,6 +312,7 @@ export async function addStoryAsync(story: StoryFeature): Promise<StoryFeature[]
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${getAuthToken()}`,
+      "x-csrf-token": "1",
     },
     body: JSON.stringify(normalized),
   });
@@ -350,6 +351,7 @@ export async function updateStoryAsync(story: StoryFeature): Promise<StoryFeatur
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${getAuthToken()}`,
+      "x-csrf-token": "1",
     },
     body: JSON.stringify(normalized),
   });
@@ -381,6 +383,7 @@ export async function deleteStoryAsync(id: string): Promise<StoryFeature[]> {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${getAuthToken()}`,
+      "x-csrf-token": "1",
     },
   });
 

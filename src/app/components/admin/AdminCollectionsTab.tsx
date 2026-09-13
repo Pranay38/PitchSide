@@ -47,6 +47,7 @@ export function AdminCollectionsTab({ collections, fetchCollections }: AdminColl
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${password || ""}`,
+                    "x-csrf-token": "1",
                 },
                 body: JSON.stringify({
                     title: title.trim(),
@@ -86,6 +87,7 @@ export function AdminCollectionsTab({ collections, fetchCollections }: AdminColl
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${password || ""}`,
+                    "x-csrf-token": "1",
                 },
             });
 

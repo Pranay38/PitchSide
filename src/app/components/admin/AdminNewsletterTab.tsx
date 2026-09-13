@@ -69,6 +69,7 @@ export function AdminNewsletterTab() {
         headers: {
           "Content-Type": "application/json",
           ...getAuthHeaders(),
+          "x-csrf-token": "1",
         },
         body: JSON.stringify({
           subject,

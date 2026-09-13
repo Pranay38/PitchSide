@@ -78,6 +78,7 @@ export const BlogPostSchema = z.object({
   })).optional(),
   
   relatedPostIds: z.array(z.string()).optional(),
+  gatekeepPoint: z.number().optional(),
 });
 
 export type ValidatedBlogPost = z.infer<typeof BlogPostSchema>;

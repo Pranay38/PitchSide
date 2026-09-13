@@ -612,21 +612,30 @@ export function MetaSettings({
                     Premium Content Gate
                 </label>
                 <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
-                    Set a percentage where the article cuts off for unauthenticated users. A Call-To-Action will be injected at this point asking them to log in to read the rest. Set to 0 to make the article fully public.
+                    Set the exact block/paragraph number where the article cuts off for unauthenticated users. A Call-To-Action will be injected at this point asking them to log in. Set to 0 or leave empty for fully public.
                 </p>
 
                 <div className="space-y-4">
                     <div className="flex items-center gap-4">
                         <input
-                            type="range"
+                            type="number"
                             min="0"
-                            max="99"
-                            value={gatekeepPoint === "" ? 0 : gatekeepPoint}
-                            onChange={(e) => setGatekeepPoint(e.target.value === "0" ? "" : Number(e.target.value))}
-                            className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-[#16A34A]"
+                            step="1"
+                            placeholder="e.g. 5"
+                            value={gatekeepPoint === "" ? "" : gatekeepPoint}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (val === "" || val === "0") {
+                                    setGatekeepPoint("");
+                                } else {
+                                    const num = parseInt(val, 10);
+                                    if (!isNaN(num) && num >= 0) setGatekeepPoint(num);
+                                }
+                            }}
+                            className="w-28 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm text-center"
                         />
-                        <span className="text-sm font-medium text-[#0F172A] dark:text-white w-12 text-right">
-                            {gatekeepPoint === "" ? "Off" : `${gatekeepPoint}%`}
+                        <span className="text-sm text-[#64748B] dark:text-gray-400">
+                            {gatekeepPoint === "" || gatekeepPoint === 0 ? "Gate is off — fully public" : `Show ${gatekeepPoint} block${gatekeepPoint === 1 ? "" : "s"} before gate`}
                         </span>
                     </div>
                 </div>

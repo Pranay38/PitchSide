@@ -55,6 +55,7 @@ export function AdminRunInEditor() {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${localStorage.getItem(ADMIN_KEY) || ""}`,
+                    "x-csrf-token": "1",
                 },
                 body: JSON.stringify({ title, description, teams }),
             });
