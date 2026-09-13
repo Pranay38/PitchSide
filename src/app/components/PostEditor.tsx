@@ -239,8 +239,13 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
         saveFeedbackTimerRef.current = setTimeout(() => setSaveStatus("idle"), 3000);
     };
 
+    const onSaveRef = useRef(onSave);
+    useEffect(() => {
+        onSaveRef.current = onSave;
+    }, [onSave]);
+
     const persistPost = async (mode: "draft" | "publish", isLeaving = false) => {
-        await onSave(buildPostPayload(mode === "draft"), isLeaving);
+        await onSaveRef.current(buildPostPayload(mode === "draft"), isLeaving);
     };
 
     const handleDraftSave = async (isLeaving = false) => {
