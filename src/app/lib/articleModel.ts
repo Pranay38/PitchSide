@@ -199,16 +199,8 @@ export function buildHtmlEditorialModel(content: string): ArticleContentModel {
     });
   });
 
-  // Break the body down into chunks of HTML and actionable React components (like Tweet)
+  // Break the body down into actionable React components (like Tweet) and HTML blocks
   const richBlocks: RichBlock[] = [];
-  let currentHtmlChunk = "";
-
-  const pushHtmlChunk = () => {
-    if (currentHtmlChunk.trim()) {
-      richBlocks.push({ type: "html", content: annotateHtmlWithGlossary(currentHtmlChunk) });
-      currentHtmlChunk = "";
-    }
-  };
 
   Array.from(doc.body.children).forEach((child) => {
     // Check for Sofascore lazy loading
@@ -216,7 +208,7 @@ export function buildHtmlEditorialModel(content: string): ArticleContentModel {
       child.setAttribute("data-lazy-src", child.getAttribute("src")!);
       child.setAttribute("src", "");
       child.classList.add("lazy-embed-iframe");
-      currentHtmlChunk += child.outerHTML;
+      richBlocks.push({ type: "html", content: annotateHtmlWithGlossary(child.outerHTML) });
       return;
     }
 
@@ -239,17 +231,18 @@ export function buildHtmlEditorialModel(content: string): ArticleContentModel {
       if (lastLink && lastLink.href.includes("status/")) {
         const idMatch = lastLink.href.match(/status\/(\d+)/);
         if (idMatch && idMatch[1]) {
-          pushHtmlChunk();
           richBlocks.push({ type: "tweet", id: idMatch[1] });
           return;
         }
       }
     }
 
-    currentHtmlChunk += child.outerHTML;
+    // Default: push the HTML child as its own block
+    const childHtml = child.outerHTML;
+    if (childHtml.trim()) {
+      richBlocks.push({ type: "html", content: annotateHtmlWithGlossary(childHtml) });
+    }
   });
-
-  pushHtmlChunk();
 
   return {
     isRich: true,
