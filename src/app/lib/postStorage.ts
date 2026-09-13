@@ -196,10 +196,11 @@ export async function addPostAsync(
           }
     throw new Error(await getApiErrorMessage(res, "Failed to publish post"));
   }
-
   const createdPost = await res.json();
-
-  return getAllPostsAsync();
+  const currentPosts = getAllPosts();
+  const updated = [createdPost, ...currentPosts];
+  savePostsLocal(updated);
+  return updated;
 }
 
 export function addPost(post: Omit<BlogPost, "id">): BlogPost[] {
@@ -244,8 +245,13 @@ export async function updatePostAsync(
           }
     throw new Error(await getApiErrorMessage(res, "Failed to update post"));
   }
-
-  return getAllPostsAsync();
+  const currentPosts = getAllPosts();
+  const updated = currentPosts.map((p) => {
+    if (p.id !== id) return p;
+    return { ...p, ...updates, id: p.id || id };
+  });
+  savePostsLocal(updated);
+  return updated;
 }
 
 export function updatePost(id: string, updates: Partial<BlogPost>): BlogPost[] {

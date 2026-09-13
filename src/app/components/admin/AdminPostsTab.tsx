@@ -128,7 +128,11 @@ export function AdminPostsTab({
                             )}
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <h3 className="font-semibold text-[#0F172A] dark:text-white text-sm truncate">{post.title}</h3>
+                                    <h3 className="font-semibold text-[#0F172A] dark:text-white text-sm truncate">
+                                        {post.title === "Untitled Draft" && post.content
+                                            ? `Untitled Draft: ${post.content.replace(/<[^>]+>/g, '').substring(0, 40)}...`
+                                            : post.title}
+                                    </h3>
                                     {post.isDraft && !post.publishAt && (
                                         <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider rounded">Draft</span>
                                     )}
