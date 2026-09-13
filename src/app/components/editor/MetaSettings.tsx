@@ -87,36 +87,7 @@ export function MetaSettings({
     const clubDropdownRef = useRef<HTMLDivElement>(null);
     const [showCustomTeamModal, setShowCustomTeamModal] = useState(false);
 
-    // Premium gate picker state
-    const [showGatePicker, setShowGatePicker] = useState(false);
-    const articleModel = useMemo(() => content ? getArticleContentModel(content) : null, [content]);
-    const blockPreviews = useMemo(() => {
-        if (!articleModel) return [];
-        const previews: { index: number; label: string; preview: string }[] = [];
-
-        if (articleModel.richBlocks && articleModel.richBlocks.length > 0) {
-            articleModel.richBlocks.forEach((block: RichBlock, i: number) => {
-                if (block.type === "tweet") {
-                    previews.push({ index: i, label: "Tweet Embed", preview: `🐦 Tweet ${block.id}` });
-                } else {
-                    const stripped = block.content.replace(/<[^>]+>/g, "").trim();
-                    const tag = block.content.match(/^<(\w+)/)?.[1] || "p";
-                    const labelMap: Record<string, string> = { h1: "Heading 1", h2: "Heading 2", h3: "Heading 3", p: "Paragraph", blockquote: "Quote", ul: "List", ol: "Numbered List", img: "Image", figure: "Figure", table: "Table", pre: "Code Block", hr: "Divider" };
-                    previews.push({ index: i, label: labelMap[tag] || "Block", preview: stripped.slice(0, 120) + (stripped.length > 120 ? "…" : "") });
-                }
-            });
-        } else if (articleModel.blocks && articleModel.blocks.length > 0) {
-            articleModel.blocks.forEach((block: PlainBlock, i: number) => {
-                const labelMap: Record<string, string> = { heading: `H${(block as any).level || 2}`, paragraph: "Paragraph", blockquote: "Quote", "unordered-list": "List", "ordered-list": "Numbered List", editorial: "Editorial" };
-                const text = block.type === "unordered-list" || block.type === "ordered-list" ? block.items.join(", ") : block.type === "editorial" ? `📐 ${block.block.kind}` : block.text;
-                previews.push({ index: i, label: labelMap[block.type] || "Block", preview: text.slice(0, 120) + (text.length > 120 ? "…" : "") });
-            });
-        }
-
-        return previews;
-    }, [articleModel]);
-    const totalBlocks = blockPreviews.length;
-    const activeGate = typeof gatekeepPoint === "number" && gatekeepPoint > 0 ? gatekeepPoint : null;
+    // Custom Team Logo State
     const [customTeamLogoInput, setCustomTeamLogoInput] = useState("");
     const [postSearch, setPostSearch] = useState("");
 
@@ -644,133 +615,37 @@ export function MetaSettings({
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                 <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
                     <Shield className="w-4 h-4 text-[#16A34A]" />
-                    Premium Content Gate
+                    Premium Content Gate (%)
                 </label>
                 <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
-                    Click &quot;Place Gate&quot; to visually select where the article cuts off for unauthenticated users.
+                    Set the percentage of the article that is visible to unauthenticated users before they hit the paywall. Set to 0 or leave empty for a fully public article.
                 </p>
 
-                <div className="space-y-3">
-                    {/* Status & Buttons */}
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <button
-                            type="button"
-                            onClick={() => setShowGatePicker(true)}
-                            disabled={totalBlocks === 0}
-                            className="px-4 py-2 bg-[#16A34A] hover:bg-[#15803d] text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                        >
-                            <Shield className="w-3.5 h-3.5" />
-                            {activeGate ? "Move Gate" : "Place Gate"}
-                        </button>
-                        {activeGate && (
-                            <button
-                                type="button"
-                                onClick={() => setGatekeepPoint("")}
-                                className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-2"
-                            >
-                                <X className="w-3.5 h-3.5" />
-                                Remove Gate
-                            </button>
-                        )}
-                        <span className="text-sm text-[#64748B] dark:text-gray-400">
-                            {totalBlocks === 0
-                                ? "Write content first"
-                                : activeGate
-                                    ? `🔒 Gate after block ${activeGate} of ${totalBlocks}`
-                                    : "No gate — fully public"}
-                        </span>
+                <div className="flex items-center gap-4">
+                    <div className="relative">
+                        <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="10"
+                            placeholder="e.g. 50"
+                            value={gatekeepPoint === "" ? "" : gatekeepPoint}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (val === "" || val === "0") {
+                                    setGatekeepPoint("");
+                                } else {
+                                    const num = parseInt(val, 10);
+                                    if (!isNaN(num) && num >= 0 && num <= 100) setGatekeepPoint(num);
+                                }
+                            }}
+                            className="w-28 pl-4 pr-8 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#0F172A] text-[#0F172A] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#16A34A]/50 focus:border-[#16A34A] transition-all text-sm text-center"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">%</span>
                     </div>
-
-                    {/* Gate Picker Modal */}
-                    {showGatePicker && (
-                        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowGatePicker(false)}>
-                            <div
-                                className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[80vh] flex flex-col overflow-hidden border border-gray-200 dark:border-gray-700"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                {/* Modal Header */}
-                                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
-                                    <div>
-                                        <h3 className="text-base font-bold text-[#0F172A] dark:text-white">Place Premium Gate</h3>
-                                        <p className="text-xs text-[#64748B] dark:text-gray-400 mt-0.5">Click between blocks to set where the paywall appears</p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowGatePicker(false)}
-                                        className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-[#64748B] transition-colors"
-                                    >
-                                        <X className="w-5 h-5" />
-                                    </button>
-                                </div>
-
-                                {/* Scrollable Block List */}
-                                <div className="overflow-y-auto flex-1 px-6 py-4 space-y-0">
-                                    {blockPreviews.map((block, idx) => (
-                                        <div key={block.index}>
-                                            {/* Block Card */}
-                                            <div className={`px-4 py-3 rounded-xl border transition-colors ${
-                                                activeGate && idx >= activeGate
-                                                    ? "border-red-200 dark:border-red-800/50 bg-red-50/50 dark:bg-red-900/10 opacity-50"
-                                                    : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#0F172A]"
-                                            }`}>
-                                                <div className="flex items-start gap-3">
-                                                    <span className="text-[10px] font-bold text-[#64748B] dark:text-gray-500 bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded mt-0.5 flex-shrink-0">
-                                                        {idx + 1}
-                                                    </span>
-                                                    <div className="min-w-0 flex-1">
-                                                        <span className="text-[10px] uppercase tracking-wider font-bold text-[#16A34A]">{block.label}</span>
-                                                        <p className="text-xs text-[#334155] dark:text-gray-300 mt-0.5 line-clamp-2 leading-relaxed">{block.preview || "(empty)"}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Clickable Drop Zone Between Blocks */}
-                                            <div
-                                                className="group relative py-1.5 cursor-pointer"
-                                                onClick={() => {
-                                                    setGatekeepPoint(idx + 1);
-                                                    setShowGatePicker(false);
-                                                }}
-                                            >
-                                                {activeGate === idx + 1 ? (
-                                                    /* Active gate marker */
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="flex-1 h-0.5 bg-[#16A34A]" />
-                                                        <span className="text-[10px] font-bold text-white bg-[#16A34A] px-2.5 py-1 rounded-full whitespace-nowrap flex items-center gap-1">
-                                                            <Shield className="w-3 h-3" />
-                                                            PREMIUM GATE
-                                                        </span>
-                                                        <div className="flex-1 h-0.5 bg-[#16A34A]" />
-                                                    </div>
-                                                ) : (
-                                                    /* Hover hint */
-                                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <div className="flex-1 h-0.5 bg-[#16A34A]/40 rounded" />
-                                                        <span className="text-[10px] font-medium text-[#16A34A]/70 whitespace-nowrap">Click to place gate here</span>
-                                                        <div className="flex-1 h-0.5 bg-[#16A34A]/40 rounded" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* Modal Footer */}
-                                <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
-                                    <span className="text-xs text-[#64748B] dark:text-gray-400">
-                                        {activeGate ? `Gate after block ${activeGate} — ${totalBlocks - activeGate} block${totalBlocks - activeGate === 1 ? "" : "s"} locked` : "No gate set"}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowGatePicker(false)}
-                                        className="px-4 py-2 bg-[#16A34A] hover:bg-[#15803d] text-white text-sm font-medium rounded-xl transition-colors"
-                                    >
-                                        Done
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <span className="text-sm text-[#64748B] dark:text-gray-400">
+                        {gatekeepPoint === "" || gatekeepPoint === 0 ? "Gate is off — fully public" : `Show first ${gatekeepPoint}% of the article before gate`}
+                    </span>
                 </div>
             </div>
             {/* Related Posts */}

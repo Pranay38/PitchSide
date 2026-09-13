@@ -95,7 +95,7 @@ export function ArticleContentRenderer({
     
     let richBlocks = model.richBlocks;
     if (isGated && richBlocks) {
-      const cutOffIndex = Math.min(gatekeepPoint, richBlocks.length);
+      const cutOffIndex = Math.ceil((gatekeepPoint / 100) * richBlocks.length);
       richBlocks = richBlocks.slice(0, cutOffIndex);
     }
 
@@ -169,7 +169,7 @@ export function ArticleContentRenderer({
 
     let basicBlocks = model.blocks;
     if (isGated && basicBlocks) {
-      const cutOffIndex = Math.min(gatekeepPoint, basicBlocks.length);
+      const cutOffIndex = Math.ceil((gatekeepPoint / 100) * basicBlocks.length);
       basicBlocks = basicBlocks.slice(0, cutOffIndex);
     }
 
