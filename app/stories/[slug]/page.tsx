@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getStoryBySlugServer, getStoriesServer } from '@/lib/server-data';
 import { StoryPage as StoryPageClient } from '@/app/pages/StoryPage';
 
-export const revalidate = 60;
+export const revalidate = 3600; // 1 hour
 
 interface Props {
   params: Promise<{ slug: string }>;

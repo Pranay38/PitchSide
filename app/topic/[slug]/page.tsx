@@ -5,7 +5,7 @@ import { getTopicBySlugServer } from "@/lib/server-topic";
 import { TopicPage as TopicPageClient } from "@/app/pages/TopicPage";
 import { deslugify, slugify } from "@/app/lib/contentPaths";
 
-export const revalidate = 60;
+export const revalidate = 3600; // 1 hour
 const SITE_URL = "https://www.thetouchlinedribble.in";
 
 interface Props {

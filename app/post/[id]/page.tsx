@@ -24,7 +24,7 @@ import { AdaptiveArticleHeader } from "@/app/components/AdaptiveArticleHeader";
 import { MilestoneScrubber } from "@/app/components/MilestoneScrubber";
 import { HotTakeHeatIndex } from "@/app/components/HotTakeHeatIndex";
 import { TopicClusterNav } from "@/app/components/TopicClusterNav";
-export const revalidate = 60;
+export const revalidate = 3600; // 1 hour
 
 interface Props {
   params: Promise<{ id: string }>;
