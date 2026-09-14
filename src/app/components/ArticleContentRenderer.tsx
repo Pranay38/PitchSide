@@ -155,14 +155,36 @@ export function ArticleContentRenderer({
         );
       }
 
+      let fallbackHtml = model.html || "";
+      if (isGated && fallbackHtml) {
+        const parts = fallbackHtml.split("</p>");
+        if (parts.length > 1) {
+          const cutOffIndex = Math.max(1, Math.ceil((gatekeepPoint / 100) * (parts.length - 1)));
+          fallbackHtml = parts.slice(0, cutOffIndex).join("</p>") + "</p>";
+        } else {
+          const cutOffIndex = Math.ceil((gatekeepPoint / 100) * fallbackHtml.length);
+          fallbackHtml = fallbackHtml.substring(0, cutOffIndex) + "...";
+        }
+      }
+
       return (
         <>
           <GlossaryStyles />
           <div
             ref={containerRef}
             className={`text-[#334155] dark:text-gray-200 html-blob leading-8 ${className}`}
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((model.html || "").replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" ')) }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(fallbackHtml.replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" ')) }}
           />
+          {isGated && (
+            <div className="my-10 p-8 rounded-2xl bg-gradient-to-br from-[#1E293B] to-[#0F172A] border border-[#16A34A]/30 text-center shadow-xl">
+              <h3 className="text-2xl font-bold text-white mb-3">Keep Reading</h3>
+              <p className="text-gray-300 mb-6 max-w-md mx-auto">This article is exclusively for our members. Log in or sign up for free to read the rest of the tactical breakdown.</p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/sign-up" className="px-6 py-3 bg-[#16A34A] hover:bg-[#15803d] text-white font-medium rounded-xl transition-colors">Create Free Account</a>
+                <a href="/sign-in" className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-colors">Log In</a>
+              </div>
+            </div>
+          )}
         </>
       );
     }
