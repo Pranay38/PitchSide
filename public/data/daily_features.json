@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-09-13T09:55:58.741119",
+  "lastUpdated": "2026-09-14T10:16:55.014257",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal monitoring Como's Paz - Sunday's gossip",
+    "text": "Bayern monitoring Wirtz - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 99
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 80
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 86
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 72
     },
     {
       "name": "David Moyes (EVE)",
-      "pressureScore": 86
-    },
-    {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 83
+      "pressureScore": 71
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 67
+      "pressureScore": 62
     }
   ]
 }
