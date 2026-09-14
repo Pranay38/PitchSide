@@ -11,12 +11,18 @@ import NextLink from "next/link";
 import { forwardRef } from "react";
 
 export {
-  useParams,
   usePathname,
   useRouter,
   notFound,
   redirect,
 } from "next/navigation";
+
+import { useParams as useNextParams } from "next/navigation";
+
+export function useParams<T extends Record<string, string>>(): Partial<T> {
+  const params = useNextParams();
+  return (params || {}) as Partial<T>;
+}
 
 import { useRouter as useNextRouter, useSearchParams as useNextSearchParams, usePathname as useNextPathname } from "next/navigation";
 
