@@ -6,7 +6,7 @@ import { connectToDatabase } from "../../_api/_db";
 import { isPostLive, notifySubscribersAboutPost } from "../../server/lib/postNotifications";
 
 // Default seed posts (used when DB is empty on first run)
-import { blogPosts as defaultPosts } from "../app/data/posts";
+import { blogPosts as defaultPosts } from "../../app/data/posts";
 
 const COLLECTION = "posts";
 
