@@ -93,7 +93,14 @@ export async function getPublishedPostsServer() {
       ]
     };
 
-    const posts = await collection.find(query).sort({ _id: -1 }).toArray();
+    const posts = await collection.find(query, {
+      projection: {
+        content: 0,
+        html: 0,
+        blocks: 0,
+        richBlocks: 0
+      }
+    }).sort({ _id: -1 }).toArray();
 
     return posts.map(sanitizePost);
   } catch (error) {
@@ -129,7 +136,14 @@ export async function getStoriesServer() {
   try {
     const { db } = await connectToDatabase();
     const collection = db.collection("stories");
-    const stories = await collection.find({}).sort({ _id: -1 }).toArray();
+    const stories = await collection.find({}, {
+      projection: {
+        content: 0,
+        html: 0,
+        blocks: 0,
+        richBlocks: 0
+      }
+    }).sort({ _id: -1 }).toArray();
     return stories.map(sanitizePost);
   } catch (error) {
     logServerDataError("getStoriesServer", error);

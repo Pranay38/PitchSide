@@ -102,11 +102,6 @@ export default async function BlogPostPage({ params }: Props) {
     permanentRedirect(`/post/${post.slug}`);
   }
 
-  // 3. Only fetch supplementary data after redirect check passes
-  const allPosts = await getPublishedPostsServer();
-
-
-
   // 3. Prepare content models
   const articleContentModel = post.content ? getArticleContentModel(post.content) : null;
 
@@ -299,7 +294,7 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Content Renderer (Renders static HTML for crawlers, hydrating glossary on mount) */}
             <PostEmbedHydrationClient>
               {articleContentModel && (
-                 <ArticleContentRenderer model={articleContentModel} />
+                 <ArticleContentRenderer model={articleContentModel} gatekeepPoint={post.gatekeepPoint} />
               )}
             </PostEmbedHydrationClient>
 
