@@ -7,7 +7,7 @@ import { Footer } from "@/app/components/Footer";
 
 function PreferencesForm() {
   const searchParams = useSearchParams();
-  const emailParam = searchParams.get("email") || "";
+  const emailParam = searchParams?.get("email") || "";
   
   const [email, setEmail] = useState(emailParam);
   const [loading, setLoading] = useState(false);
