@@ -615,38 +615,93 @@ export function MetaSettings({
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
                 <label className="flex items-center gap-2 text-sm font-semibold text-[#0F172A] dark:text-white mb-2">
                     <Shield className="w-4 h-4 text-[#16A34A]" />
-                    Premium Content Gate (%)
+                    Premium Content Gate
                 </label>
-                <p className="text-xs text-[#64748B] dark:text-gray-400 mb-4">
-                    Set the percentage of the article that is visible to unauthenticated users before they hit the paywall. Set to 0 or leave empty for a fully public article.
+                <p className="text-xs text-[#64748B] dark:text-gray-400 mb-5">
+                    Set the percentage of the article visible before the sign-in wall. 0% = fully public.
                 </p>
 
-                <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                    <div className="flex-1 flex items-center gap-4">
-                        <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="5"
-                            value={gatekeepPoint === "" ? 0 : gatekeepPoint}
-                            onChange={(e) => {
-                                const val = parseInt(e.target.value, 10);
-                                if (val === 0) {
-                                    setGatekeepPoint("");
-                                } else {
-                                    setGatekeepPoint(val);
-                                }
-                            }}
-                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-[#16A34A]"
-                        />
-                        <div className="w-16 flex-shrink-0 text-right">
-                            <span className="text-xl font-bold text-[#16A34A]">{gatekeepPoint === "" ? "0" : gatekeepPoint}%</span>
-                        </div>
-                    </div>
-                    <span className="text-sm text-[#64748B] dark:text-gray-400 sm:border-l sm:border-gray-200 sm:dark:border-gray-700 sm:pl-6">
-                        {gatekeepPoint === "" || gatekeepPoint === 0 ? "Gate is off — fully public" : `Show first ${gatekeepPoint}% of the article`}
+                <style>{`
+                    .gate-slider {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 100%;
+                        height: 6px;
+                        border-radius: 999px;
+                        outline: none;
+                        cursor: pointer;
+                        transition: background 0.15s ease;
+                    }
+                    .gate-slider::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        background: #ffffff;
+                        border: 3px solid #16A34A;
+                        box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+                        cursor: pointer;
+                        transition: transform 0.15s ease, box-shadow 0.15s ease;
+                    }
+                    .gate-slider::-webkit-slider-thumb:hover {
+                        transform: scale(1.15);
+                        box-shadow: 0 0 0 4px rgba(22,163,74,0.15), 0 1px 4px rgba(0,0,0,0.15);
+                    }
+                    .gate-slider::-webkit-slider-thumb:active {
+                        transform: scale(1.05);
+                        box-shadow: 0 0 0 6px rgba(22,163,74,0.2), 0 1px 4px rgba(0,0,0,0.15);
+                    }
+                    .gate-slider::-moz-range-thumb {
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        background: #ffffff;
+                        border: 3px solid #16A34A;
+                        box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+                        cursor: pointer;
+                    }
+                    .gate-slider::-moz-range-track {
+                        height: 6px;
+                        border-radius: 999px;
+                        background: transparent;
+                    }
+                `}</style>
+
+                <div className="flex items-center gap-4">
+                    <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="5"
+                        value={gatekeepPoint === "" ? 0 : gatekeepPoint}
+                        onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            if (val === 0) {
+                                setGatekeepPoint("");
+                            } else {
+                                setGatekeepPoint(val);
+                            }
+                        }}
+                        className="gate-slider"
+                        style={{
+                            background: `linear-gradient(to right, #16A34A ${gatekeepPoint === "" ? 0 : gatekeepPoint}%, ${
+                                typeof window !== "undefined" && document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb"
+                            } ${gatekeepPoint === "" ? 0 : gatekeepPoint}%)`
+                        }}
+                    />
+                    <span className={`text-xl font-bold tabular-nums min-w-[3.5rem] text-right ${
+                        gatekeepPoint === "" || gatekeepPoint === 0 ? "text-gray-400 dark:text-gray-500" : "text-[#16A34A]"
+                    }`}>
+                        {gatekeepPoint === "" ? "0" : gatekeepPoint}%
                     </span>
                 </div>
+
+                <p className="text-xs text-[#64748B] dark:text-gray-400 mt-3">
+                    {gatekeepPoint === "" || gatekeepPoint === 0
+                        ? "Gate is off — fully public"
+                        : `Show first ${gatekeepPoint}% of the article`}
+                </p>
             </div>
             {/* Related Posts */}
             <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">

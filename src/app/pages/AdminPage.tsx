@@ -192,8 +192,34 @@ export function AdminPage() {
         const handleLogout = () => { signOut({ callbackUrl: '/' }); };
 
     // Post Handlers
+    // Ref to track the ID of a post created during this "create" session,
+    // so subsequent saves update the same post instead of creating duplicates.
+    const createdDraftIdRef = useRef<string | null>(null);
+
+
     const handleCreatePost = async (postData: Omit<BlogPost, "id">, isLeaving?: boolean) => {
         try {
+            // If we already created a draft in this session, update it instead
+            if (createdDraftIdRef.current) {
+                const updated = await updatePostAsync(createdDraftIdRef.current, postData);
+                setPosts(updated);
+
+                if (isLeaving) {
+                    createdDraftIdRef.current = null;
+                    setView("list");
+                    setEditingPost(null);
+                } else if (!postData.isDraft) {
+                    // Explicit publish
+                    createdDraftIdRef.current = null;
+                    setView("list");
+                    setEditingPost(null);
+                    toast.success("Post published successfully!");
+                }
+                // For draft auto-saves, just stay in create view — no re-mount needed
+                return;
+            }
+
+            // First save — create the post
             const previousPostIds = new Set(posts.map((item) => item.id));
             const updated = await addPostAsync(postData);
             setPosts(updated);
@@ -202,13 +228,12 @@ export function AdminPage() {
                 setView("list");
                 setEditingPost(null);
             } else if (postData.isDraft) {
-                // It was an auto-save. Find the newly created draft by id instead
-                // of assuming the API returns it first.
+                // Track the new draft's ID so future saves will update it
                 const newPost = updated.find((item) => !previousPostIds.has(item.id));
                 if (newPost) {
-                    setEditingPost(newPost);
+                    createdDraftIdRef.current = newPost.id;
                 }
-                setView("edit");
+                // Stay in "create" view — no re-mount, no duplicate
             } else {
                 // Explicit publish click
                 setView("list");
@@ -604,6 +629,7 @@ export function AdminPage() {
                 allPosts={posts}
                 onSave={view === "edit" && editingPost ? handleUpdatePost : handleCreatePost}
                 onCancel={() => {
+                    createdDraftIdRef.current = null;
                     setEditingPost(null);
                     setView("list");
                 }}
