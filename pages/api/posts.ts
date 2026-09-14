@@ -1,12 +1,12 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { applyCors, checkRateLimit, requireAuth, hasAdminAuth } from "../../../server/utils/security";
+import { applyCors, checkRateLimit, requireAuth, hasAdminAuth } from "../../server/utils/security";
 import { ObjectId } from "mongodb";
 import { randomBytes } from "crypto";
-import { connectToDatabase } from "../../../_api/_db";
-import { isPostLive, notifySubscribersAboutPost } from "../../../server/lib/postNotifications";
+import { connectToDatabase } from "../../_api/_db";
+import { isPostLive, notifySubscribersAboutPost } from "../../server/lib/postNotifications";
 
 // Default seed posts (used when DB is empty on first run)
-import { blogPosts as defaultPosts } from "../../app/data/posts";
+import { blogPosts as defaultPosts } from "../app/data/posts";
 
 const COLLECTION = "posts";
 
