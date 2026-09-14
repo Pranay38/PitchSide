@@ -38,7 +38,7 @@ function buildPostEmailHtml(title: string, excerpt: string | undefined, postUrl:
       </div>
       <p class="body-text sans">
         Thanks for reading,<br>
-        <strong>Pranay Agarwal</strong>
+        <strong>The Touchline Dribble Team</strong>
       </p>
     `
   });
