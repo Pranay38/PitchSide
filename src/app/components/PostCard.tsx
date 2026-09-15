@@ -1,3 +1,5 @@
+"use client";
+
 import { Link } from "@/lib/router-compat";
 import Image from "next/image";
 import type { BlogPost } from "../data/posts";
