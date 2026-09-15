@@ -17,6 +17,7 @@ import { PostCard } from "../components/PostCard";
 import { ArticleCard } from "../components/ui/blog-post-card";
 import AeroHero from "../components/ui/aero-hero";
 import Blogs from "../components/ui/blogs";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../components/ui/carousel";
 import { PageState } from "../components/PageState";
 import { SectionMarker } from "../components/SectionMarker";
 import { TextWireSection } from "../components/TextWireSection";
@@ -443,7 +444,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
       <SEO
         title="Home"
-        description="A sharper front page for the day's best football analysis, deep reads, stories, and transfer coverage."
+        description="We don't do boring match reports. We break down the tactical truths"
         url="https://www.thetouchlinedribble.in/"
         schema={JSON.stringify({
           "@context": "https://schema.org",
@@ -476,7 +477,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                </div>
                <div>
                  <div className="flex items-center gap-2 mb-1.5">
-                   <p className="kicker px-2 py-0.5 rounded-full bg-primary/10 text-primary uppercase text-[10px]">Author's Take</p>
+                   <p className="kicker px-2 py-0.5 rounded-full bg-primary/10 text-primary uppercase text-[10px]">Our Weekly Verdict</p>
                    <span className="w-1 h-1 rounded-full bg-border"></span>
                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Every Friday</p>
                  </div>
@@ -491,7 +492,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                 to="/post/lamine-yamal-injury-barcelona-tactics"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#16A34A] hover:bg-[#15803d] text-white font-black uppercase tracking-widest text-[11px] shadow-sm transition-all"
               >
-                Read & Analyze
+                Hear our take
               </Link>
             </div>
           </div>
@@ -501,7 +502,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
       <main className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
         {/* --- QUICK TAKES --- */}
         <section className="mb-8 scroll-reveal">
-          <SectionMarker minute="1'" label="Quick Takes" />
+          <SectionMarker minute="1'" label="Snap Judgments" />
           <QuickTakesSection posts={posts} />
         </section>
 
@@ -517,11 +518,11 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
             {/* ── This Week's Big Reads ────────────── */}
             {thisWeekPosts.length > 0 && (
               <div>
-                <SectionMarker minute="15'" label="Deep Reads" />
+                <SectionMarker minute="15'" label="The Deep Dive" />
                 <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
                   <div>
                     <h2 className="mt-2 text-4xl sm:text-5xl font-headline tracking-tight text-foreground">
-                      Big deeper reads.
+                      Where we dissect the details.
                     </h2>
                   </div>
                   <Link
@@ -532,39 +533,44 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
-                <div className="relative group/scroll">
-                  <div className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-                    {thisWeekPosts.map((post) => (
-                      <Link
-                        key={post.id}
-                        to={`/post/${post.slug || post.id}`}
-                        className="group relative flex-shrink-0 w-[300px] sm:w-[400px] snap-start rounded-[2rem] overflow-hidden ghost-border-dark dark:ghost-border bg-white dark:bg-[var(--card)] shadow-sm ambient-shadow hover:-translate-y-2 depth-card transition-all duration-500"
-                      >
-                        <div className="relative h-56 overflow-hidden">
-                          <Image
-                            src={post.coverImage}
-                            alt={post.title}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                          <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                            <span className="rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#060E20]">
-                              {post.club || (post.tags && post.tags[0]) || 'Featured'}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="p-6 border-t border-border mt-1">
-                          <h3 className="text-xl font-headline text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                            {post.title}
-                          </h3>
-                          <p className="mt-3 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                            {post.excerpt}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+                <div className="relative px-8 sm:px-12">
+                  <Carousel opts={{ align: "start", loop: false }} className="w-full">
+                    <CarouselContent className="-ml-6">
+                      {thisWeekPosts.map((post) => (
+                        <CarouselItem key={post.id} className="pl-6 basis-auto">
+                          <Link
+                            to={`/post/${post.slug || post.id}`}
+                            className="group relative flex-shrink-0 block w-[300px] sm:w-[400px] rounded-[2rem] overflow-hidden ghost-border-dark dark:ghost-border bg-white dark:bg-[var(--card)] shadow-sm ambient-shadow hover:-translate-y-2 depth-card transition-all duration-500"
+                          >
+                            <div className="relative h-56 overflow-hidden">
+                              <Image
+                                src={post.coverImage}
+                                alt={post.title}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                              <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                                <span className="rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#060E20]">
+                                  {post.club || (post.tags && post.tags[0]) || 'Featured'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="p-6 border-t border-border mt-1">
+                              <h3 className="text-xl font-headline text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                                {post.title}
+                              </h3>
+                              <p className="mt-3 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                                {post.excerpt}
+                              </p>
+                            </div>
+                          </Link>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden md:flex -left-6 lg:-left-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
+                    <CarouselNext className="hidden md:flex -right-6 lg:-right-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
+                  </Carousel>
                 </div>
               </div>
             )}
@@ -572,7 +578,7 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
             {/* --- TEXT WIRE: Dense headlines section --- */}
             {standardPosts.length > 3 && (
               <div>
-                <SectionMarker minute="30'" label="The Wire" />
+                <SectionMarker minute="30'" label="The Radar" />
                 <TextWireSection
                   posts={standardPosts.filter((p) => {
                     // Exclude hero and thisWeek posts to avoid duplication
@@ -603,36 +609,44 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
             {/* Latest Analysis Block */}
             <div id="latest-articles" className="pt-8 border-t border-border">
-              <SectionMarker minute="45+2'" label="Latest Analysis" />
+              <SectionMarker minute="45+2'" label="Our Latest Takes" />
               <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <h2 className="mt-2 text-4xl sm:text-5xl font-headline tracking-tight text-foreground">
-                    Fresh from the feed.
+                    What we're saying right now.
                   </h2>
                 </div>
                 <Link
                   to="/archive?type=article"
                   className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
                 >
-                  See every article
+                  Read everything we wrote
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
-              <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-                {latestPosts.map((post) => (
-                  <Link key={post.id} to={`/post/${post.slug || post.id}`} className="block h-full group">
-                    <ArticleCard
-                      headline={post.title}
-                      excerpt={post.excerpt}
-                      cover={post.coverImage}
-                      tag={post.club || (post.tags && post.tags[0])}
-                      readingTime={post.readTime}
-                      writer={post.author || ""}
-                      publishedAt={post.date}
-                      className="h-full border-none shadow-none bg-transparent"
-                    />
-                  </Link>
-                ))}
+              <div className="relative px-8 sm:px-12">
+                <Carousel opts={{ align: "start", loop: false }} className="w-full">
+                  <CarouselContent className="-ml-6 py-4">
+                    {latestPosts.map((post) => (
+                      <CarouselItem key={post.id} className="pl-6 md:basis-1/2 lg:basis-1/3">
+                        <Link to={`/post/${post.slug || post.id}`} className="block h-full group hover:-translate-y-1 transition-transform duration-300">
+                          <ArticleCard
+                            headline={post.title}
+                            excerpt={post.excerpt}
+                            cover={post.coverImage}
+                            tag={post.club || (post.tags && post.tags[0])}
+                            readingTime={post.readTime}
+                            writer={post.author || ""}
+                            publishedAt={post.date}
+                            className="h-full border-none shadow-md bg-white dark:bg-[#0F172A] hover:shadow-xl transition-shadow rounded-2xl"
+                          />
+                        </Link>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden md:flex -left-6 lg:-left-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
+                  <CarouselNext className="hidden md:flex -right-6 lg:-right-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
+                </Carousel>
               </div>
             </div>
           </div>
@@ -644,12 +658,12 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
         {/* --- EDITOR PICKS (Horizontal Scroll) --- */}
         {editorsPicks.length > 0 && (
           <section className="mt-32 scroll-reveal">
-            <SectionMarker minute="HT" label="Editor Picks" />
+            <SectionMarker minute="HT" label="Our Favorites" />
             <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="kicker text-primary mb-2">Curated</p>
+                <p className="kicker text-primary mb-2">Curated by us</p>
                 <h2 className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground">
-                  Editor Picks.
+                  The pieces we're proud of.
                 </h2>
               </div>
               <Link
@@ -660,45 +674,52 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-              {editorsPicks.map((post) => (
-                <Link
-                  key={post.id}
-                  to={`/post/${post.slug || post.id}`}
-                  className="group relative flex-shrink-0 w-[340px] sm:w-[400px] snap-start rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:-translate-y-1 transition-all duration-300"
-                >
-                  <div className="relative h-52 overflow-hidden">
-                    <Image
-                      src={post.coverImage}
-                      alt={post.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                      <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary-foreground">
-                        {post.mustRead ? "Must Read" : "Editor Pick"}
-                      </span>
-                      <span className="rounded-full bg-white/20 backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white border border-white/10">
-                        {post.club}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-5">
-                    <h3 className="text-lg font-headline font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                    <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground font-medium">
-                      <span className="font-semibold">By {post.author || "The Touchline Dribble"}</span>
-                      <span>·</span>
-                      <span>{post.readTime}</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+            <div className="relative px-8 sm:px-12">
+              <Carousel opts={{ align: "start", loop: false }} className="w-full">
+                <CarouselContent className="-ml-6">
+                  {editorsPicks.map((post) => (
+                    <CarouselItem key={post.id} className="pl-6 basis-auto">
+                      <Link
+                        to={`/post/${post.slug || post.id}`}
+                        className="group relative flex-shrink-0 block w-[340px] sm:w-[400px] rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:-translate-y-1 transition-all duration-300"
+                      >
+                        <div className="relative h-52 overflow-hidden">
+                          <Image
+                            src={post.coverImage}
+                            alt={post.title}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                          <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                            <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary-foreground">
+                              {post.mustRead ? "Must Read" : "Editor Pick"}
+                            </span>
+                            <span className="rounded-full bg-white/20 backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white border border-white/10">
+                              {post.club}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="p-5">
+                          <h3 className="text-lg font-headline font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                            {post.title}
+                          </h3>
+                          <p className="mt-2 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                            {post.excerpt}
+                          </p>
+                          <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground font-medium">
+                            <span className="font-semibold">By {post.author || "The Touchline Dribble"}</span>
+                            <span>·</span>
+                            <span>{post.readTime}</span>
+                          </div>
+                        </div>
+                      </Link>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden md:flex -left-6 lg:-left-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
+                <CarouselNext className="hidden md:flex -right-6 lg:-right-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
+              </Carousel>
             </div>
           </section>
         )}
@@ -716,15 +737,15 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
           
           return (
             <section className="mt-32 scroll-reveal">
-              <SectionMarker minute="75'" label="From The Archive" />
+              <SectionMarker minute="75'" label="The Vault" />
               <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p className="kicker text-primary mb-2">Archive</p>
                   <h2 className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground">
-                    More worth your time.
+                    Takes that aged perfectly.
                   </h2>
                   <p className="mt-2 text-muted-foreground text-sm">
-                    Older pieces that still hold up. No expiry date on good analysis.
+                    Because true tactical insight doesn't expire after 90 minutes.
                   </p>
                 </div>
                 <Link

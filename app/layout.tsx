@@ -166,6 +166,7 @@ export default function RootLayout({
       </head>
 
       <body>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[9999] bg-[#16A34A] text-white px-4 py-2 rounded-md font-bold shadow-lg">Skip to main content</a>
         {/* GA4 */}
         {GA_ID && (
           <>
@@ -219,6 +220,7 @@ export default function RootLayout({
         >
           <CSPostHogProvider>
             <Providers>
+              <div id="main-content" tabIndex={-1} className="outline-none" />
               {children}
               <InnerCircleModal />
             </Providers>

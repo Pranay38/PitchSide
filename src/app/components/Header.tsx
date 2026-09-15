@@ -161,6 +161,20 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
     <>
       <ClubOnboardingModal />
       <BriefcaseDrawer isOpen={briefcaseOpen} onClose={() => setBriefcaseOpen(false)} />
+      
+      {/* Network Bar */}
+      <div className="hidden lg:flex w-full bg-[#0F172A] text-white py-1.5 px-6 items-center justify-between text-[11px] font-bold uppercase tracking-widest relative z-50">
+        <div className="flex items-center gap-6">
+          <span className="text-[#16A34A]">Touchline Network</span>
+          <Link to="/about" className="hover:text-gray-300 transition-colors">What is The Touchline?</Link>
+        </div>
+        <div className="flex items-center gap-6">
+          <a href="https://x.com/TouchlineDribbl" target="_blank" rel="noreferrer" className="hover:text-[#16A34A] transition-colors">Twitter</a>
+          <a href="https://instagram.com/thetouchlinedribble" target="_blank" rel="noreferrer" className="hover:text-[#16A34A] transition-colors">Instagram</a>
+          <Link to="/about#newsletter" className="hover:text-gray-300 transition-colors">Newsletter</Link>
+        </div>
+      </div>
+
       {/* Removed gradient accent line */}
       <header className={`sticky top-0 z-50 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
         isScrolled 

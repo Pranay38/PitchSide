@@ -157,6 +157,17 @@ export function AboutPage() {
                             </div>
                         </div>
                     </div>
+
+                    {/* ── Join the Team ── */}
+                    <div className="mt-16 bg-primary/5 rounded-3xl p-8 border border-primary/20 text-center">
+                        <h3 className="font-headline font-bold text-2xl text-foreground mb-3">Think you can do better?</h3>
+                        <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-6">
+                            We're always looking for sharp tactical minds to join the roster. If you can break down a low block better than the pundits on TV, we want you writing for us.
+                        </p>
+                        <a href="mailto:thetouchlinedribble@gmail.com?subject=Joining the Team" className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-bold text-sm uppercase tracking-widest px-6 py-3 rounded-full hover:bg-primary/90 transition-colors">
+                            Pitch us an article
+                        </a>
+                    </div>
                 </section>
 
                 {/* ── Why Subscribe ── */}

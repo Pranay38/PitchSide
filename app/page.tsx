@@ -7,11 +7,11 @@ export const revalidate = 3600; // ISR: revalidate every hour to save Vercel ISR
 export const metadata: Metadata = {
   title: "The Touchline Dribble — Football Tactics, Analysis & Bold Opinions",
   description:
-    "Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and the bold opinions that fuel your group chat. ⚽",
+    "We don't do boring match reports. We break down the tactical truths",
   openGraph: {
     title: "The Touchline Dribble — Football Tactics, Analysis & Bold Opinions",
     description:
-      "Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and the bold opinions that fuel your group chat. ⚽",
+      "We don't do boring match reports. We break down the tactical truths",
     type: "website",
     url: "https://www.thetouchlinedribble.in",
     siteName: "The Touchline Dribble",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Touchline Dribble — Football Tactics & Bold Opinions",
     description:
-      "Tactical breakdowns your pundit missed. Post-match analysis & bold opinions. ⚽🔥",
+      "We don't do boring match reports. We break down the tactical truths",
     site: "@TouchlineDribbl",
     creator: "@TouchlineDribbl",
   },

@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { AboutPage as AboutPageOriginal } from "@/app/pages/AboutPage";
 
 export const metadata: Metadata = {
-  title: "About — Pranay Agrawal, Founder & Tactical Writer",
+  title: "About — The Touchline Dribble",
   description:
-    "Meet Pranay Agrawal, the tactical writer behind The Touchline Dribble. Post-match breakdowns, formation deep dives, and the bold opinions your pundit won't give you.",
+    "The Touchline Dribble — tactical breakdowns, bold opinions, and the analysis your pundit missed. Built for fans who want more than vibes.",
   openGraph: {
-    title: "About — Pranay Agrawal, Tactical Writer",
+    title: "About — The Touchline Dribble",
     description:
-      "The tactical writer behind The Touchline Dribble — post-match breakdowns and bold football opinions.",
+      "The Touchline Dribble — tactical breakdowns, bold opinions, and the analysis your pundit missed.",
     type: "profile",
     url: "https://www.thetouchlinedribble.in/about",
   },

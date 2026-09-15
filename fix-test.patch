@@ -1,0 +1,25 @@
+--- src/app/pages/BlogPostPage.tsx
++++ src/app/pages/BlogPostPage.tsx
+@@ -102,6 +102,7 @@
+   const isPreview = !!previewPost;
+   const previousPost = !isPreview && currentIndex > 0 ? posts[currentIndex - 1] : null;
+   const nextPost = !isPreview && currentIndex >= 0 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
++  const [mounted, setMounted] = useState(false);
+ 
+   // Category based navigation for swipe
+   const categoryPosts = useMemo(() => post?.category ? posts.filter(p => p.category === post.category) : posts, [posts, post?.category]);
+@@ -112,6 +113,7 @@
+   // Sync like state when post loads
+   useEffect(() => {
++    setMounted(true);
+     if (post && user) {
+       setIsLiked(post.likedBy?.includes(user.id) || false);
+     }
+@@ -370,7 +372,7 @@
+ 
+   const articleContentModel = useMemo(
+     () => (post ? getArticleContentModel(post.content) : null),
+-    [post],
++    [post, mounted],
+   );
+   const headings = articleContentModel?.headings || [];
