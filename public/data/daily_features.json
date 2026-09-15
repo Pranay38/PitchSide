@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-09-14T10:16:55.014257",
+  "lastUpdated": "2026-09-15T09:44:46.371910",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Bayern monitoring Wirtz - Monday's gossip",
+    "text": "Madueke a target for Euro loans - Tuesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 80
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 93
     },
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 72
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 91
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 71
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 62
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 70
     }
   ]
 }
