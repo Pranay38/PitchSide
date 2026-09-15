@@ -46,6 +46,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const ogImageUrl = `https://www.thetouchlinedribble.in/api/og?title=${encodeURIComponent(post.title)}${post.club ? `&club=${encodeURIComponent(post.club)}` : ""}${post.date ? `&date=${encodeURIComponent(post.date)}` : ""}${post.coverImage ? `&image=${encodeURIComponent(post.coverImage)}` : ""}`;
+  
+  // Use the raw cover image for social previews if available, otherwise fallback to the generated one
+  const socialImage = post.coverImage || ogImageUrl;
 
   const seoTitle = post.seo?.title || post.title;
   const seoDescription = post.seo?.description || post.excerpt || "";
@@ -62,7 +65,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `https://www.thetouchlinedribble.in/post/${post.slug || post.id}`,
       images: [
         {
-          url: ogImageUrl,
+          url: socialImage,
           width: 1200,
           height: 630,
           alt: post.title,
@@ -77,7 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title: seoTitle,
       description: seoDescription,
-      images: [ogImageUrl],
+      images: [socialImage],
       site: "@TouchlineDribbl",
       creator: "@TouchlineDribbl",
     },
