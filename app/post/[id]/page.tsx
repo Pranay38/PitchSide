@@ -163,6 +163,52 @@ export default async function BlogPostPage({ params }: Props) {
     },
   };
 
+  const schemaArray = [jsonLd];
+
+  // FAQPage Schema
+  if (articleContentModel?.faqItems && articleContentModel.faqItems.length > 0) {
+    const faqJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: articleContentModel.faqItems.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    };
+    schemaArray.push(faqJsonLd);
+  }
+
+  // SportsEvent / Person Schema based on tags
+  if (post.tags && Array.isArray(post.tags)) {
+    const isMatchAnalysis = post.tags.some((t: string) => t.toLowerCase().includes("vs") || t.toLowerCase().includes("match"));
+    if (isMatchAnalysis && post.club) {
+      const matchJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SportsEvent",
+        name: `${post.club} Match`,
+        sport: "Soccer",
+        homeTeam: { "@type": "SportsTeam", name: post.club },
+        description: post.seo?.description || post.excerpt || `Tactical analysis of ${post.club}'s recent match.`,
+      };
+      schemaArray.push(matchJsonLd);
+    }
+
+    if (post.playerName) {
+      const personJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: post.playerName,
+        memberOf: post.club ? { "@type": "SportsTeam", name: post.club } : undefined,
+        jobTitle: "Soccer Player",
+      };
+      schemaArray.push(personJsonLd);
+    }
+  }
+
   // BreadcrumbList JSON-LD for rich SERP breadcrumbs
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",
@@ -184,10 +230,13 @@ export default async function BlogPostPage({ params }: Props) {
       {/* Invisible trackers for reading history and saving progress */}
       <PostTrackersClient postId={post.id} />
       
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {schemaArray.map((schema, index) => (
+        <script
+          key={`schema-${index}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

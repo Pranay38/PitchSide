@@ -34,6 +34,7 @@ export interface ArticleContentModel {
   blocks?: PlainBlock[];
   headings: ContentHeading[];
   editorialKinds: EditorialBlock["kind"][];
+  faqItems?: { question: string; answer: string }[];
 }
 
 export function slugifyHeading(value: string): string {
@@ -75,6 +76,7 @@ export function buildHtmlEditorialModel(content: string): ArticleContentModel {
 
   const doc = new DOMParser().parseFromString(content, "text/html");
   const editorialKinds: EditorialBlock["kind"][] = [];
+  const faqItems: { question: string; answer: string }[] = [];
   let node = doc.body.firstElementChild;
 
   while (node) {
@@ -112,10 +114,27 @@ export function buildHtmlEditorialModel(content: string): ArticleContentModel {
         block = { kind, data: { id: rawBlockId, title: rawTitle || "Tactical Board", description: rawDescription } };
       } else if (kind === "match-center") {
         block = { kind, data: { id: rawBlockId } };
+      } else if (kind === "faq-block") {
+        block = { 
+          kind, 
+          data: { 
+            title: rawTitle || "Frequently Asked Questions", 
+            items: items.map(row => { 
+              const [q, a] = row.split("|").map((s: string) => s.trim()); 
+              return { 
+                question: (q || "").replace(/^Q:\s*/i, ""), 
+                answer: (a || "").replace(/^A:\s*/i, "") 
+              }; 
+            }).filter(item => item.question && item.answer)
+          } 
+        };
       }
 
       if (block) {
         editorialKinds.push(block.kind);
+        if (block.kind === "faq-block") {
+          faqItems.push(...block.data.items);
+        }
         const fragment = doc.createRange().createContextualFragment(renderEditorialBlockHtml(block));
         node.replaceWith(fragment);
       } else {
@@ -138,6 +157,9 @@ export function buildHtmlEditorialModel(content: string): ArticleContentModel {
       const block = buildEditorialBlock(marker, []);
       if (block) {
         editorialKinds.push(block.kind);
+        if (block.kind === "faq-block") {
+          faqItems.push(...block.data.items);
+        }
         const fragment = doc.createRange().createContextualFragment(renderEditorialBlockHtml(block));
         node.replaceWith(fragment);
       }
@@ -174,6 +196,9 @@ export function buildHtmlEditorialModel(content: string): ArticleContentModel {
 
     if (block) {
       editorialKinds.push(block.kind);
+      if (block.kind === "faq-block") {
+        faqItems.push(...block.data.items);
+      }
       const fragment = doc.createRange().createContextualFragment(renderEditorialBlockHtml(block));
       node.replaceWith(fragment);
       removableNodes.forEach((item) => item.remove());
@@ -250,6 +275,7 @@ export function buildHtmlEditorialModel(content: string): ArticleContentModel {
     richBlocks,
     headings,
     editorialKinds,
+    faqItems,
   };
 }
 
@@ -281,6 +307,7 @@ export function buildPlainEditorialModel(content: string): ArticleContentModel {
   const blocks: PlainBlock[] = [];
   const headings: ContentHeading[] = [];
   const editorialKinds: EditorialBlock["kind"][] = [];
+  const faqItems: { question: string; answer: string }[] = [];
   const seenIds = new Set<string>();
   let index = 0;
 
@@ -299,6 +326,9 @@ export function buildPlainEditorialModel(content: string): ArticleContentModel {
         if (block) {
           blocks.push({ type: "editorial", block });
           editorialKinds.push(block.kind);
+          if (block.kind === "faq-block") {
+            faqItems.push(...block.data.items);
+          }
         }
         index += 1;
         continue;
@@ -322,6 +352,9 @@ export function buildPlainEditorialModel(content: string): ArticleContentModel {
       if (block) {
         blocks.push({ type: "editorial", block });
         editorialKinds.push(block.kind);
+        if (block.kind === "faq-block") {
+          faqItems.push(...block.data.items);
+        }
       }
 
       index += 1;
@@ -408,6 +441,7 @@ export function buildPlainEditorialModel(content: string): ArticleContentModel {
     blocks,
     headings,
     editorialKinds,
+    faqItems,
   };
 }
 

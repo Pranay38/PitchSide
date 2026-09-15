@@ -59,6 +59,16 @@ export interface HighlightSnippetData {
   theme: "dark" | "green" | "light";
 }
 
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface FaqBlockData {
+  title: string;
+  items: FaqItem[];
+}
+
 export type EditorialBlock =
   | {
       kind: "timeline";
@@ -97,6 +107,10 @@ export type EditorialBlock =
   | {
       kind: "highlight-snippet";
       data: HighlightSnippetData;
+    }
+  | {
+      kind: "faq-block";
+      data: FaqBlockData;
     };
 
 interface EditorialOpenMarker {
@@ -124,6 +138,7 @@ const BLOCK_LABELS: Record<EditorialBlock["kind"], string> = {
   "match-center": "Stadium Match Center",
   "image-gallery": "Image Gallery",
   "highlight-snippet": "Highlight Snippet",
+  "faq-block": "FAQ Block",
 };
 
 export const EDITORIAL_SNIPPETS: EditorialSnippet[] = [
@@ -227,6 +242,18 @@ export const EDITORIAL_SNIPPETS: EditorialSnippet[] = [
       '<p>[highlight-snippet attribution="The Touchline Dribble" context="Tactical Analysis" theme="dark"]</p>',
       "<p>The pressing trap worked because the distances stayed short — two metres between each man, closing every lane before it opened.</p>",
       "<p>[/highlight-snippet]</p>",
+      "<p></p>",
+    ].join(""),
+  },
+  {
+    id: "faq-block",
+    label: "FAQ Block",
+    description: "Frequently Asked Questions block optimized for Google Rich Snippets.",
+    html: [
+      "<p>[faq-block title=\"Frequently Asked Questions\"]</p>",
+      "<p>Q: What is a false nine? | A: A center forward who drops deep into midfield.</p>",
+      "<p>Q: How does it help? | A: It creates an overload in the center and pulls defenders out of position.</p>",
+      "<p>[/faq-block]</p>",
       "<p></p>",
     ].join(""),
   },
@@ -420,6 +447,28 @@ export function buildEditorialBlock(
         attribution: marker.attrs.attribution || "The Touchline Dribble",
         context: marker.attrs.context || "",
         theme: (marker.attrs.theme as "dark" | "green" | "light") || "dark",
+      },
+    };
+  }
+
+  if (marker.kind === "faq-block") {
+    const items = lines
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [q, a] = line.split("|").map((s) => s.trim());
+        return { 
+          question: (q || "").replace(/^Q:\s*/i, ""), 
+          answer: (a || "").replace(/^A:\s*/i, "") 
+        };
+      })
+      .filter((item) => item.question && item.answer);
+
+    return {
+      kind: "faq-block",
+      data: {
+        title: marker.attrs.title || "Frequently Asked Questions",
+        items,
       },
     };
   }
@@ -644,6 +693,27 @@ export function renderEditorialBlockHtml(block: EditorialBlock): string {
             </a>
           </div>
         </div>
+      </section>
+    `;
+  }
+
+  if (block.kind === "faq-block") {
+    const items = block.data.items
+      .map(
+        (item) => `
+          <div class="mb-4 rounded-[1.25rem] border border-gray-100 bg-gray-50/50 p-5 dark:border-gray-800 dark:bg-gray-800/30">
+            <h4 class="text-lg font-bold text-[#0F172A] dark:text-white mb-2">${escapeHtml(item.question)}</h4>
+            <p class="text-[15px] leading-relaxed text-[#475569] dark:text-gray-300">${escapeHtml(item.answer)}</p>
+          </div>
+        `
+      )
+      .join("");
+
+    return `
+      <section class="not-prose my-10 rounded-[2rem] border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-[#0F172A]">
+        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">FAQ</p>
+        <h3 class="mt-2 mb-6 text-2xl font-black font-outfit text-[#0F172A] dark:text-white">${escapeHtml(block.data.title)}</h3>
+        <div>${items}</div>
       </section>
     `;
   }

@@ -13,6 +13,7 @@ import {
   glossaryRegex
 } from "../lib/articleModel";
 import { useScrollytelling } from "../hooks/useScrollytelling";
+import { annotateHtmlWithInternalLinks } from "../lib/internalLinker";
 
 function EditorialBlockView({ block }: { block: EditorialBlock }) {
   if (block.kind === "timeline") {
@@ -123,7 +124,7 @@ export function ArticleContentRenderer({
                     <div
                       key={`html-${i}`}
                       className="text-[#334155] dark:text-gray-200"
-                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((block.content || "").replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" ')) }}
+                      dangerouslySetInnerHTML={{ __html: annotateHtmlWithInternalLinks(DOMPurify.sanitize((block.content || "").replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" width="800" height="1000" class="tactical-diagram w-full object-contain mx-auto my-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800" style="aspect-ratio: 4/5; max-height: 75vh; background: #0F172A;" '))) }}
                     />
                   );
                 }
@@ -161,7 +162,7 @@ export function ArticleContentRenderer({
                         <div
                           key={`gated-html-${idx}`}
                           className="text-[#334155] dark:text-gray-200"
-                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize((block.content || "").replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" ')) }}
+                          dangerouslySetInnerHTML={{ __html: annotateHtmlWithInternalLinks(DOMPurify.sanitize((block.content || "").replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" width="800" height="1000" class="tactical-diagram w-full object-contain mx-auto my-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800" style="aspect-ratio: 4/5; max-height: 75vh; background: #0F172A;" '))) }}
                         />
                       );
                     })}
@@ -194,7 +195,7 @@ export function ArticleContentRenderer({
           <div
             ref={containerRef}
             className={`text-[#334155] dark:text-gray-200 html-blob leading-8 ${className}`}
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(fallbackHtml.replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" ')) }}
+            dangerouslySetInnerHTML={{ __html: annotateHtmlWithInternalLinks(DOMPurify.sanitize(fallbackHtml.replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" width="800" height="1000" class="tactical-diagram w-full object-contain mx-auto my-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800" style="aspect-ratio: 4/5; max-height: 75vh; background: #0F172A;" '))) }}
           />
           {isGated && gatedFallbackHtml && (
             <div className="relative overflow-hidden mt-8 max-h-[500px]">
@@ -210,7 +211,7 @@ export function ArticleContentRenderer({
               </div>
               <div
                 className={`text-[#334155] dark:text-gray-200 html-blob leading-8 blur-md opacity-30 select-none pointer-events-none ${className}`}
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(gatedFallbackHtml.replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" ')) }}
+                dangerouslySetInnerHTML={{ __html: annotateHtmlWithInternalLinks(DOMPurify.sanitize(gatedFallbackHtml.replace(/<img /g, '<img sizes="(max-width: 768px) 100vw, 800px" loading="lazy" width="800" height="1000" class="tactical-diagram w-full object-contain mx-auto my-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800" style="aspect-ratio: 4/5; max-height: 75vh; background: #0F172A;" '))) }}
               />
             </div>
           )}
