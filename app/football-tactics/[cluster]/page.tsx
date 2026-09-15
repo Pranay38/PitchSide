@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getPublishedPostsServer } from "@/lib/server-data";
 import { Header } from "@/app/components/Header";
 import { Footer } from "@/app/components/Footer";
-import { ContentCard } from "@/app/components/ContentCard";
+import { PostCard } from "@/app/components/PostCard";
 import Link from "next/link";
 
 export const revalidate = 3600; // 1 hour
@@ -113,7 +113,7 @@ export default async function TacticalClusterPage({ params }: Props) {
           {clusterPosts.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {clusterPosts.map(post => (
-                <ContentCard key={post.id} post={post} />
+                <PostCard key={post.id} post={post} />
               ))}
             </div>
           ) : (
