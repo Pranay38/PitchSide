@@ -222,7 +222,15 @@ async function handleRequest(
 
   // Direct handler (posts, comments, likes, etc.)
   if (DIRECT_HANDLERS[route]) {
-    return adaptToVercel(request, pathSegments, DIRECT_HANDLERS[route]);
+    const response = await adaptToVercel(request, pathSegments, DIRECT_HANDLERS[route]);
+    
+    // Auto-revalidate the site cache when a post is modified
+    if (route === "posts" && request.method !== "GET" && response.status >= 200 && response.status < 300) {
+      const { revalidatePath } = require("next/cache");
+      revalidatePath("/", "layout");
+    }
+    
+    return response;
   }
 
   // Sys consolidated handler (auth, settings, subscribers, etc.)
