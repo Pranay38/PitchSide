@@ -288,6 +288,9 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
         // Don't auto-save immediately on mount or if completely empty
         if (!title.trim() && !content.trim()) return;
         if (submitAction || saveStatus === "saving") return;
+        
+        // Disable auto-save for already-published posts to prevent accidental unpublishing
+        if (post && !post.isDraft) return;
 
         setSaveStatus("idle");
 
