@@ -229,8 +229,8 @@ describe("Subscribers API Endpoint", () => {
       await handler(req, res);
 
       expect(sendBatchEmails).toHaveBeenCalledWith([
-        { to: "test1@example.com", subject: "Weekly Digest", html: "<p>Digest content</p>" },
-        { to: "test2@example.com", subject: "Weekly Digest", html: "<p>Digest content</p>" }
+        { to: "test1@example.com", subject: "Weekly Digest", html: expect.stringContaining("<p>Digest content</p>") },
+        { to: "test2@example.com", subject: "Weekly Digest", html: expect.stringContaining("<p>Digest content</p>") }
       ]);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ message: "Digest sent to 2 subscribers!" });

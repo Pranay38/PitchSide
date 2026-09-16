@@ -2,7 +2,8 @@ import { useState, useRef, Dispatch, SetStateAction } from "react";
 import { Plus, Eye, Edit3, Trash2, Send, Image as ImageIcon, Download, Upload } from "lucide-react";
 import { toast } from "sonner";
 import type { BlogPost } from "../../data/posts";
-import { exportPostsAsJSON, importPostsFromJSON } from "../../lib/postStorage";
+import { exportPostsAsJSON, importPostsFromJSON, updatePostAsync } from "../../lib/postStorage";
+import { Switch } from "../ui/switch";
 
 interface AdminPostsTabProps {
     posts: BlogPost[];
@@ -31,7 +32,22 @@ export function AdminPostsTab({
 }: AdminPostsTabProps) {
     const [postFilter, setPostFilter] = useState<"all" | "published" | "drafts">("all");
     const [postSort, setPostSort] = useState<"newest" | "oldest" | "a-z" | "z-a">("newest");
+    const [togglingPostId, setTogglingPostId] = useState<string | null>(null);
     const importFileRef = useRef<HTMLInputElement>(null);
+
+    const handleTogglePublish = async (post: BlogPost, checked: boolean) => {
+        setTogglingPostId(post.id);
+        try {
+            const isDraft = !checked;
+            const updated = await updatePostAsync(post.id, { isDraft });
+            setPosts(updated);
+            toast.success(isDraft ? "Post unpublished (Draft)" : "Post published");
+        } catch (error) {
+            toast.error("Failed to update post status");
+        } finally {
+            setTogglingPostId(null);
+        }
+    };
 
     const handleExport = () => {
         exportPostsAsJSON();
@@ -148,6 +164,14 @@ export function AdminPostsTab({
                                 </div>
                             </div>
                             <div className="flex items-center gap-1 flex-shrink-0">
+                                <div className="flex items-center gap-2 mr-3" title={post.isDraft ? "Publish post" : "Unpublish to draft"}>
+                                    <span className="text-xs font-medium text-gray-500 hidden sm:inline">{post.isDraft ? "Draft" : "Published"}</span>
+                                    <Switch 
+                                        checked={!post.isDraft} 
+                                        onCheckedChange={(checked) => handleTogglePublish(post, checked)}
+                                        disabled={togglingPostId === post.id}
+                                    />
+                                </div>
                                 <button onClick={() => notifySubscribers(post)} disabled={notifyingPostId === post.id || post.isDraft} className={`p-2 rounded-lg ${post.isDraft ? 'opacity-50 cursor-not-allowed text-gray-400' : 'hover:bg-green-50 dark:hover:bg-green-900/20 text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors'}`} title="Notify Subscribers">
                                     <Send className={`w-4 h-4 ${notifyingPostId === post.id ? 'animate-pulse' : ''}`} />
                                 </button>
