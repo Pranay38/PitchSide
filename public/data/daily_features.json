@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-09-15T09:44:46.371910",
+  "lastUpdated": "2026-09-16T09:38:33.442170",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Madueke a target for Euro loans - Tuesday's gossip",
+    "text": "Barcelona monitor Kane & Haaland - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 93
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 95
     },
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 91
+      "name": "David Moyes (EVE)",
+      "pressureScore": 82
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 70
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 73
+    },
+    {
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 68
+    },
+    {
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 63
     }
   ]
 }
