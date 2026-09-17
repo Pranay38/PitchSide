@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-09-16T09:38:33.442170",
+  "lastUpdated": "2026-09-17T09:47:33.024921",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barcelona monitor Kane & Haaland - Wednesday's gossip",
-    "sentimentScore": 41
+    "text": "Arsenal rejected Dowman loan offers - Thursday's gossip",
+    "sentimentScore": 19
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 95
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 82
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 99
     },
     {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 73
+      "pressureScore": 66
     },
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 68
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 64
     },
     {
-      "name": "Pierre Sage (CRY)",
+      "name": "R\u00e9gis Le Bris (SUN)",
       "pressureScore": 63
+    },
+    {
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 60
     }
   ]
 }
