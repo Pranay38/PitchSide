@@ -61,7 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/archive`, priority: 0.8, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/debates`, priority: 0.7, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/daily-fix`, priority: 0.8, changeFrequency: 'daily' as const },
-    { url: `${baseUrl}/quick-takes`, priority: 0.7, changeFrequency: 'daily' as const },
+    { url: `${baseUrl}/weekly-verdicts`, priority: 0.7, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/weekly-roundup`, priority: 0.7, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/for-you`, priority: 0.7, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/glossary`, priority: 0.6, changeFrequency: 'weekly' as const },
