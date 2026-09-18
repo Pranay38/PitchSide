@@ -7,6 +7,7 @@ import { WORLD_CUP_XI } from "@/app/data/worldCupXI";
 import { Trophy, ArrowLeft } from "lucide-react";
 import { Link } from "@/lib/router-compat";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function WorldCupXIPage() {
   return (
@@ -89,13 +90,15 @@ export default function WorldCupXIPage() {
                     {/* Image */}
                     <div className="relative shrink-0">
                       <div
-                        className="h-16 w-16 rounded-xl overflow-hidden border-2"
+                        className="relative h-16 w-16 rounded-xl overflow-hidden border-2"
                         style={{ borderColor: posColors[player.position] }}
                       >
-                        <img
+                        <Image
                           src={player.image}
                           alt={player.name}
-                          className="h-full w-full object-cover object-top bg-slate-200 dark:bg-slate-700"
+                          fill
+                          sizes="64px"
+                          className="object-cover object-top bg-slate-200 dark:bg-slate-700"
                         />
                       </div>
                       <div className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-white dark:bg-[#0F172A] shadow flex items-center justify-center p-[3px]">

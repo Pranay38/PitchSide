@@ -6,6 +6,7 @@ import { Footer } from "@/app/components/Footer";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { Clock, Tag } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { topicPath } from "@/app/lib/contentPaths";
 import { 
   getArticleContentModel, 
@@ -251,7 +252,9 @@ export default async function BlogPostPage({ params }: Props) {
       <main>
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
-            <img src={post.coverImage} alt={post.title} className="h-full w-full object-cover" />
+            {post.coverImage && (
+              <Image src={post.coverImage} alt={post.title} fill priority sizes="100vw" className="object-cover" />
+            )}
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.3),rgba(15,23,42,0.82))]" />
           </div>
 

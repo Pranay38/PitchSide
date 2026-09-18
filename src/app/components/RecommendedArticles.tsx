@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Link } from "@/lib/router-compat";
+import Image from "next/image";
 import { topicPath } from "../lib/contentPaths";
 import type { BlogPost } from "../data/posts";
 
@@ -35,10 +36,10 @@ function RecommendationCard({ article, index }: { article: Partial<BlogPost>; in
       {/* Thumbnail */}
       <div className="w-[72px] h-[56px] rounded-lg shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800 relative">
         {article.coverImage
-          ? <img
+          ? <Image
               src={article.coverImage} alt={article.title || ""}
-              className="w-full h-full object-cover"
-              onError={e => { e.currentTarget.style.display = "none"; }}
+              fill sizes="72px"
+              className="object-cover"
             />
           : <div className="w-full h-full flex items-center justify-center text-[22px]">
               ⚽

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { X, Briefcase, ChevronRight, BookmarkMinus } from "lucide-react";
 import { Link } from "@/lib/router-compat";
+import Image from "next/image";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { getPublishedPosts } from "../lib/postStorage";
 import { postPath } from "../lib/contentPaths";
@@ -84,8 +85,8 @@ export function BriefcaseDrawer({ isOpen, onClose }: BriefcaseDrawerProps) {
                 <div key={post.id} className="group relative flex flex-col gap-2 p-4 rounded-2xl bg-gray-50 dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-all">
                   <div className="flex gap-3">
                     {post.coverImage && (
-                      <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-800">
-                        <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
+                      <div className="relative w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-gray-200 dark:bg-gray-800">
+                        <Image src={post.coverImage} alt={post.title} fill sizes="64px" className="object-cover" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
