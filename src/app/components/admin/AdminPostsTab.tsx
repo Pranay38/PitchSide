@@ -31,6 +31,7 @@ export function AdminPostsTab({
     setActiveTab
 }: AdminPostsTabProps) {
     const [postFilter, setPostFilter] = useState<"all" | "published" | "drafts">("all");
+    const [formatFilter, setFormatFilter] = useState<"all" | "article" | "quick-take" | "weekly-verdict">("all");
     const [postSort, setPostSort] = useState<"newest" | "oldest" | "a-z" | "z-a">("newest");
     const [togglingPostId, setTogglingPostId] = useState<string | null>(null);
     const importFileRef = useRef<HTMLInputElement>(null);
@@ -73,6 +74,11 @@ export function AdminPostsTab({
             if (postFilter === "drafts") return post.isDraft;
             return true; // "all"
         })
+        .filter(post => {
+            if (formatFilter === "all") return true;
+            if (formatFilter === "article") return !post.format || post.format === "article";
+            return post.format === formatFilter;
+        })
         .sort((a, b) => {
             if (postSort === "newest") return new Date(b.date).getTime() - new Date(a.date).getTime();
             if (postSort === "oldest") return new Date(a.date).getTime() - new Date(b.date).getTime();
@@ -109,6 +115,17 @@ export function AdminPostsTab({
                         <option value="all">All Posts</option>
                         <option value="published">Published</option>
                         <option value="drafts">Drafts</option>
+                    </select>
+
+                    <select 
+                        value={formatFilter}
+                        onChange={(e) => setFormatFilter(e.target.value as any)}
+                        className="bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-lg focus:ring-[#16A34A] focus:border-[#16A34A] block w-full p-2.5 outline-none cursor-pointer pr-8"
+                    >
+                        <option value="all">All Formats</option>
+                        <option value="article">Articles</option>
+                        <option value="weekly-verdict">Weekly Verdicts</option>
+                        <option value="quick-take">Quick Takes</option>
                     </select>
 
                     <select 
@@ -156,6 +173,12 @@ export function AdminPostsTab({
                                         <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded">
                                             Scheduled for {new Date(post.publishAt).toLocaleDateString()}
                                         </span>
+                                    )}
+                                    {post.format === "weekly-verdict" && (
+                                        <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider rounded whitespace-nowrap">Verdict</span>
+                                    )}
+                                    {post.format === "quick-take" && (
+                                        <span className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider rounded whitespace-nowrap">Quick Take</span>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2 mt-1 text-xs text-[#94A3B8] dark:text-gray-500">
