@@ -210,10 +210,16 @@ export function AdminPage() {
                     setEditingPost(null);
                 } else if (!postData.isDraft) {
                     // Explicit publish
+                    const savedId = createdDraftIdRef.current;
                     createdDraftIdRef.current = null;
                     setView("list");
                     setEditingPost(null);
                     toast.success("Post published successfully!");
+
+                    if (postData.format === "weekly-verdict") {
+                        const newlyPublished = updated.find((item) => item.id === savedId);
+                        if (newlyPublished) notifySubscribers(newlyPublished);
+                    }
                 }
                 // For draft auto-saves, just stay in create view — no re-mount needed
                 return;
@@ -238,6 +244,11 @@ export function AdminPage() {
                 // Explicit publish click
                 setView("list");
                 toast.success("Post published successfully!");
+
+                if (postData.format === "weekly-verdict") {
+                    const newlyPublished = updated.find((item) => !previousPostIds.has(item.id));
+                    if (newlyPublished) notifySubscribers(newlyPublished);
+                }
             }
         } catch (error) {
             toast.error(error instanceof Error ? error.message : "Failed to save post.");
@@ -280,9 +291,16 @@ export function AdminPage() {
                     if (updatedPost) setEditingPost(updatedPost);
                 } else {
                     // Explicit publish or update
+                    const wasDraft = editingPost.isDraft;
                     setEditingPost(null);
                     setView("list");
                     toast.success("Post updated successfully!");
+
+                    // If it was a draft and just got published, auto-prompt for email
+                    if (wasDraft && postData.format === "weekly-verdict") {
+                        const updatedPost = updated.find(p => p.id === editingPost.id);
+                        if (updatedPost) notifySubscribers(updatedPost);
+                    }
                 }
             } catch (error) {
                 toast.error(error instanceof Error ? error.message : "Failed to update post.");

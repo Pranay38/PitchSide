@@ -43,6 +43,11 @@ export function AdminPostsTab({
             const updated = await updatePostAsync(post.id, { isDraft });
             setPosts(updated);
             toast.success(isDraft ? "Post unpublished (Draft)" : "Post published");
+            
+            // Automatically email subscribers if a Weekly Verdict is published
+            if (!isDraft && post.format === "weekly-verdict") {
+                notifySubscribers(post);
+            }
         } catch (error) {
             toast.error("Failed to update post status");
         } finally {
