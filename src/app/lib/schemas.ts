@@ -70,7 +70,7 @@ export const BlogPostSchema = z.object({
   reactions: z.record(z.string(), z.number()).optional(),
   likedBy: z.array(z.string()).optional(),
   author: z.string().optional(),
-  format: z.enum(["article", "quick-take"]).optional(),
+  format: z.enum(["article", "weekly-verdict"]).optional(),
 
   hotTakes: z.array(z.object({
     id: z.string(),

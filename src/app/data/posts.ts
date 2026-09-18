@@ -39,7 +39,7 @@ export interface BlogPost {
     substack?: boolean;
     medium?: boolean;
   };
-  format?: "article" | "quick-take" | "weekly-verdict"; // "article" (default), "quick-take" (micro-post), or "weekly-verdict" (short analysis)
+  format?: "article" | "weekly-verdict"; // "article" (default) or "weekly-verdict" (short analysis)
   gatekeepPoint?: number; // Exact block/paragraph number where the content gate appears. 0 or undefined means no gate.
   armchairRatings?: {
     name: string;

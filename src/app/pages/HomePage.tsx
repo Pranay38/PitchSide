@@ -386,9 +386,6 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
     return dedupePostsByTitle(standardPosts.filter((p) => p.thisWeek));
   }, [standardPosts]);
 
-  const latestVerdict = useMemo(() => {
-    return posts.find(p => p.format === "weekly-verdict");
-  }, [posts]);
 
   const hasContent = posts.length > 0 || stories.length > 0;
 
@@ -471,44 +468,12 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
         />
       )}
 
-      {/* --- AUTHOR'S TAKE (INLINE BANNER STRIP) --- */}
-      {latestVerdict && (
-        <section className="mb-12 scroll-reveal">
-          <div className="relative w-full border-y border-border bg-secondary">
-            <div className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 md:py-8 flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-start md:items-center gap-4 flex-1">
-                 <div className="h-12 w-12 rounded-full border-2 border-[#16A34A] bg-[#0F172A] overflow-hidden flex items-center justify-center shrink-0">
-                   <span className="font-outfit font-black text-white">PA</span>
-                 </div>
-                 <div>
-                   <div className="flex items-center gap-2 mb-1.5">
-                     <p className="kicker px-2 py-0.5 rounded-full bg-primary/10 text-primary uppercase text-[10px]">Our Weekly Verdict</p>
-                     <span className="w-1 h-1 rounded-full bg-border"></span>
-                     <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Every Friday</p>
-                   </div>
-                   <h2 className="font-headline text-lg sm:text-2xl tracking-tight text-foreground leading-tight line-clamp-2">
-                     {latestVerdict.title}
-                   </h2>
-                 </div>
-              </div>
-              
-              <div className="shrink-0">
-                <Link 
-                  to={`/post/${latestVerdict.slug || latestVerdict.id}`}
-                  className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#16A34A] hover:bg-[#15803d] text-white font-black uppercase tracking-widest text-[11px] shadow-sm transition-all"
-                >
-                  Hear our take
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+
 
       <main className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
         {/* --- QUICK TAKES --- */}
         <section className="mb-8 scroll-reveal">
-          <SectionMarker minute="1'" label="Snap Judgments" />
+          <SectionMarker minute="1'" label="Verdict" />
           <QuickTakesSection posts={posts} />
         </section>
 

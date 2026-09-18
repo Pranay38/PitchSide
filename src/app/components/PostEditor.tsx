@@ -62,8 +62,8 @@ interface PostEditorProps {
 export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps) {
     type SubmitAction = "draft" | "publish" | "back";
     const [title, setTitle] = useState(post?.title || "");
-    const [format, setFormat] = useState<"article" | "quick-take" | "weekly-verdict">(
-        post?.format === "quick-take" ? "quick-take" : post?.format === "weekly-verdict" ? "weekly-verdict" : "article"
+    const [format, setFormat] = useState<"article" | "weekly-verdict">(
+        post?.format === "weekly-verdict" ? "weekly-verdict" : "article"
     );
     const [excerpt, setExcerpt] = useState(post?.excerpt || "");
     const [content, setContent] = useState(post?.content || "");

@@ -31,7 +31,7 @@ export function AdminPostsTab({
     setActiveTab
 }: AdminPostsTabProps) {
     const [postFilter, setPostFilter] = useState<"all" | "published" | "drafts">("all");
-    const [formatFilter, setFormatFilter] = useState<"all" | "article" | "quick-take" | "weekly-verdict">("all");
+    const [formatFilter, setFormatFilter] = useState<"all" | "article" | "weekly-verdict">("all");
     const [postSort, setPostSort] = useState<"newest" | "oldest" | "a-z" | "z-a">("newest");
     const [togglingPostId, setTogglingPostId] = useState<string | null>(null);
     const importFileRef = useRef<HTMLInputElement>(null);
@@ -130,7 +130,6 @@ export function AdminPostsTab({
                         <option value="all">All Formats</option>
                         <option value="article">Articles</option>
                         <option value="weekly-verdict">Weekly Verdicts</option>
-                        <option value="quick-take">Quick Takes</option>
                     </select>
 
                     <select 
@@ -181,9 +180,6 @@ export function AdminPostsTab({
                                     )}
                                     {post.format === "weekly-verdict" && (
                                         <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider rounded whitespace-nowrap">Verdict</span>
-                                    )}
-                                    {post.format === "quick-take" && (
-                                        <span className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 text-[10px] font-bold uppercase tracking-wider rounded whitespace-nowrap">Quick Take</span>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2 mt-1 text-xs text-[#94A3B8] dark:text-gray-500">

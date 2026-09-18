@@ -26,14 +26,14 @@ function getTimeAgo(dateStr: string): string {
 export function QuickTakesSection({ posts }: { posts: BlogPost[] }) {
   const [sharePost, setSharePost] = useState<BlogPost | null>(null);
 
-  const quickTakes = useMemo(() => {
+  const verdicts = useMemo(() => {
     return posts
-      .filter((p) => p.format === "quick-take" && !p.isDraft)
+      .filter((p) => p.format === "weekly-verdict" && !p.isDraft)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 6);
   }, [posts]);
 
-  if (quickTakes.length === 0) return null;
+  if (verdicts.length === 0) return null;
 
   return (
     <div className="mb-16">
@@ -41,24 +41,24 @@ export function QuickTakesSection({ posts }: { posts: BlogPost[] }) {
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5" />
-            Quick Takes
+            Verdict
           </p>
           <h2 className="mt-2 text-3xl sm:text-4xl font-black font-outfit text-[#0F172A] dark:text-white">
-            Micro Analysis
+            Our Call
           </h2>
         </div>
         <Link
-          to="/quick-takes"
+          to="/weekly-verdicts"
           className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
         >
-          View all takes
+          View all verdicts
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
 
       <div className="relative group/scroll">
         <div className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-          {quickTakes.map((post) => (
+          {verdicts.map((post) => (
             <div
               key={post.id}
               className="flex-shrink-0 w-[280px] sm:w-[320px] snap-start rounded-[1.5rem] bg-white dark:bg-[#0f1930]/60 backdrop-blur-md ghost-border-dark dark:ghost-border p-5 ambient-shadow depth-card relative flex flex-col justify-between min-h-[180px]"
@@ -101,7 +101,7 @@ export function QuickTakesSection({ posts }: { posts: BlogPost[] }) {
                       toast.success("Link copied!");
                     }}
                     className="p-1.5 rounded-lg text-gray-400 hover:text-[#16A34A] hover:bg-[#16A34A]/10 transition-colors"
-                    title="Share Quick Take"
+                    title="Share Verdict"
                   >
                     <Share2 className="w-4 h-4" />
                   </button>

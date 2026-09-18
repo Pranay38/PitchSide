@@ -4,8 +4,8 @@ import { EditorCanvas } from "./EditorCanvas";
 interface RichTextCanvasProps {
     title: string;
     setTitle: (val: string) => void;
-    format: "article" | "quick-take" | "weekly-verdict";
-    setFormat: (val: "article" | "quick-take" | "weekly-verdict") => void;
+    format: "article" | "weekly-verdict";
+    setFormat: (val: "article" | "weekly-verdict") => void;
     content: string;
     setContent: React.Dispatch<React.SetStateAction<string>>;
     errors: Record<string, string>;
@@ -45,17 +45,6 @@ export function RichTextCanvas({
                             }`}
                         >
                             Full Article
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setFormat("quick-take")}
-                            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1 ${
-                                format === "quick-take" 
-                                    ? "bg-white dark:bg-[#1E293B] shadow-sm text-[#16A34A] dark:text-[#16A34A]" 
-                                    : "text-[#64748B] hover:text-[#16A34A]"
-                            }`}
-                        >
-                            Quick Take ⚡
                         </button>
                         <button
                             type="button"
