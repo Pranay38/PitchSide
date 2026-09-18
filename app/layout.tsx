@@ -7,7 +7,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
 import { CSPostHogProvider } from "@/app/components/PostHogProvider";
 import { InnerCircleModal } from "@/app/components/InnerCircleModal";
-import { SmoothScroll } from "@/app/components/SmoothScroll";
 import "./globals.css";
 import { Inter, Newsreader, Space_Grotesk } from "next/font/google";
 
@@ -221,11 +220,9 @@ export default function RootLayout({
         >
           <CSPostHogProvider>
             <Providers>
-              <SmoothScroll>
-                <div id="main-content" tabIndex={-1} className="outline-none" />
-                {children}
-                <InnerCircleModal />
-              </SmoothScroll>
+              <div id="main-content" tabIndex={-1} className="outline-none" />
+              {children}
+              <InnerCircleModal />
             </Providers>
           </CSPostHogProvider>
         </ClerkProvider>
