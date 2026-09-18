@@ -19,6 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "website",
       url: `https://www.thetouchlinedribble.in/club/${slug}`,
     },
+    robots: { index: false, follow: true },
     alternates: { canonical: `https://www.thetouchlinedribble.in/club/${slug}` },
   };
 }

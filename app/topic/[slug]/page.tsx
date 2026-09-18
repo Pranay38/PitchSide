@@ -38,7 +38,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const topicLabel = deslugify(canonicalSlug);
   const allPosts = canonicalSlug ? await getPublishedPostsServer() : [];
   const topicMatches = canonicalSlug ? getTopicMatches(allPosts, canonicalSlug) : [];
-  const shouldIndex = topicMatches.length >= 2;
   const topicDetails = canonicalSlug ? await getTopicBySlugServer(canonicalSlug) : null;
   const pageTitle = topicDetails?.title || `${topicLabel} Coverage | The Touchline Dribble`;
   const pageDesc = topicDetails?.description || `Read every Touchline Dribble story tagged with ${topicLabel}.`;
@@ -49,12 +48,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: `${SITE_URL}/topic/${canonicalSlug}`,
     },
-    robots: shouldIndex
-      ? undefined
-      : {
-          index: false,
-          follow: true,
-        },
+    robots: {
+      index: false,
+      follow: true,
+    },
     openGraph: {
       title: pageTitle,
       description: pageDesc,

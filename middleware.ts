@@ -50,6 +50,13 @@ async function handlePostSlugRedirect(request: NextRequest): Promise<NextRespons
 }
 
 export default clerkMiddleware(async (_auth, request) => {
+  const host = request.headers.get("host");
+  if (host === "thetouchlinedribble.in") {
+    const url = request.nextUrl.clone();
+    url.hostname = "www.thetouchlinedribble.in";
+    return NextResponse.redirect(url, 301);
+  }
+
   if (request.nextUrl.pathname.startsWith('/api/subscribers') && request.method === 'POST') {
     const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
     try {
