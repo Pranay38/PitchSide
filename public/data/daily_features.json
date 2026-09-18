@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-09-17T09:47:33.024921",
+  "lastUpdated": "2026-09-18T09:20:56.043865",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal rejected Dowman loan offers - Thursday's gossip",
-    "sentimentScore": 19
+    "text": "Junior Kroupi on Arsenal radar - Friday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 99
-    },
-    {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 66
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 90
     },
     {
       "name": "Enzo Maresca (MCI)",
-      "pressureScore": 64
+      "pressureScore": 87
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 63
-    },
-    {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 60
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 75
     }
   ]
 }
