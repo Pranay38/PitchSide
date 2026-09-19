@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-09-18T09:20:56.043865",
+  "lastUpdated": "2026-09-19T09:08:38.878988",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Junior Kroupi on Arsenal radar - Friday's gossip",
+    "text": "Liverpool watch \u00c2\u00a351.5m-rated Smit - Saturday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 90
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 94
+    },
+    {
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 77
+    },
+    {
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 70
     },
     {
       "name": "Enzo Maresca (MCI)",
-      "pressureScore": 87
+      "pressureScore": 67
     },
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 75
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 60
     }
   ]
 }
