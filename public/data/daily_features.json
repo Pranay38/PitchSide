@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-09-19T09:08:38.878988",
+  "lastUpdated": "2026-09-20T09:34:16.075821",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool watch \u00c2\u00a351.5m-rated Smit - Saturday's gossip",
+    "text": "Arsenal may move for Endrick in January - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 94
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 95
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 77
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 92
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 70
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 87
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 67
-    },
-    {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 60
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 85
     }
   ]
 }
