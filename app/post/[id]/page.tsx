@@ -25,6 +25,9 @@ import { AdaptiveArticleHeader } from "@/app/components/AdaptiveArticleHeader";
 import { MilestoneScrubber } from "@/app/components/MilestoneScrubber";
 import { HotTakeHeatIndex } from "@/app/components/HotTakeHeatIndex";
 import { TopicClusterNav } from "@/app/components/TopicClusterNav";
+import { OneLineNewsletter } from "@/app/components/OneLineNewsletter";
+import { auth } from "@clerk/nextjs/server";
+import { hasExceededMetering } from "@/app/lib/metering";
 export const revalidate = 3600; // 1 hour
 
 interface Props {
@@ -111,6 +114,30 @@ export default async function BlogPostPage({ params }: Props) {
 
   const isMedical = post.tags?.some((t: string) => t.toLowerCase() === "injury" || t.toLowerCase() === "medical");
 
+  // 4. Server-Side Gating Logic
+  const { userId } = await auth();
+  const isGated = !userId && (post.gatekeepPoint || 0) > 0 && (await hasExceededMetering());
+
+  if (isGated && articleContentModel) {
+    const gatekeepPoint = post.gatekeepPoint || 0;
+    if (articleContentModel.isRich && articleContentModel.richBlocks) {
+      const cutOffIndex = Math.ceil((gatekeepPoint / 100) * articleContentModel.richBlocks.length);
+      articleContentModel.richBlocks = articleContentModel.richBlocks.slice(0, cutOffIndex);
+    } else if (!articleContentModel.isRich && articleContentModel.blocks) {
+      const cutOffIndex = Math.ceil((gatekeepPoint / 100) * articleContentModel.blocks.length);
+      articleContentModel.blocks = articleContentModel.blocks.slice(0, cutOffIndex);
+    } else if (articleContentModel.html) {
+      const parts = articleContentModel.html.split("</p>");
+      if (parts.length > 1) {
+        const cutOffIndex = Math.max(1, Math.ceil((gatekeepPoint / 100) * (parts.length - 1)));
+        articleContentModel.html = parts.slice(0, cutOffIndex).join("</p>") + "</p>";
+      } else {
+        const cutOffIndex = Math.ceil((gatekeepPoint / 100) * articleContentModel.html.length);
+        articleContentModel.html = articleContentModel.html.substring(0, cutOffIndex) + "...";
+      }
+    }
+  }
+
   // JSON-LD structured data for the article
   const jsonLd = {
     "@context": "https://schema.org",
@@ -165,6 +192,14 @@ export default async function BlogPostPage({ params }: Props) {
       "@type": "WebPage",
       "@id": `https://www.thetouchlinedribble.in/post/${post.slug || post.id}`,
     },
+    isAccessibleForFree: !isGated,
+    ...(isGated && {
+      hasPart: {
+        "@type": "WebPageElement",
+        isAccessibleForFree: false,
+        cssSelector: ".pitchside-article-content-gated"
+      }
+    }),
   };
 
   const schemaArray = [jsonLd];
@@ -349,9 +384,11 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Content Renderer (Renders static HTML for crawlers, hydrating glossary on mount) */}
             <PostEmbedHydrationClient>
               {articleContentModel && (
-                 <ArticleContentRenderer model={articleContentModel} gatekeepPoint={post.gatekeepPoint} />
+                 <ArticleContentRenderer model={articleContentModel} isServerGated={isGated} gatekeepPoint={post.gatekeepPoint || 0} />
               )}
             </PostEmbedHydrationClient>
+
+            {!isGated && <OneLineNewsletter />}
 
             {/* Hot Take Heat Index — interactive polls from the editor */}
             {post.hotTakes && post.hotTakes.length > 0 && (
