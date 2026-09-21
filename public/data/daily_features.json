@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-09-20T09:34:16.075821",
+  "lastUpdated": "2026-09-21T10:21:59.288870",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal may move for Endrick in January - Sunday's gossip",
+    "text": "Spurs eye \u00c2\u00a3125m move for Gibbs-White - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 95
-    },
-    {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 92
-    },
-    {
       "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 87
+      "pressureScore": 81
     },
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 85
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 78
+    },
+    {
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 71
+    },
+    {
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 69
+    },
+    {
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 69
     }
   ]
 }
