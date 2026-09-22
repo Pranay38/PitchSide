@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-09-21T10:21:59.288870",
+  "lastUpdated": "2026-09-22T09:36:06.924341",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Spurs eye \u00c2\u00a3125m move for Gibbs-White - Monday's gossip",
+    "text": "Liverpool eye in-demand right-back Read - Tuesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 81
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 99
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 78
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 63
     },
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 71
-    },
-    {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 69
-    },
-    {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 69
+      "name": "David Moyes (EVE)",
+      "pressureScore": 61
     }
   ]
 }
