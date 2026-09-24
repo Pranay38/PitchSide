@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-09-23T09:42:06.920116",
+  "lastUpdated": "2026-09-24T09:41:03.858869",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd & Liverpool eye Mitchell - Wednesday's gossip",
+    "text": "Barcelona rule out Alvarez deal - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 91
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 99
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 89
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 93
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 79
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 92
+    },
+    {
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 88
     }
   ]
 }
