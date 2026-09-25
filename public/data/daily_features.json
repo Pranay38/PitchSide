@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-09-24T09:41:03.858869",
+  "lastUpdated": "2026-09-25T09:58:08.944034",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barcelona rule out Alvarez deal - Thursday's gossip",
+    "text": "Chelsea lead race for Scott - Friday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 90
+    },
+    {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 99
+      "pressureScore": 73
     },
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 93
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 92
-    },
-    {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 88
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 68
     }
   ]
 }
