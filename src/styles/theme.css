@@ -1106,3 +1106,25 @@
     font-size: 1.25rem !important;
   }
 }
+
+/* Print Styles for Accessibility and Archiving */
+@media print {
+  header,
+  footer,
+  .no-print,
+  nav,
+  button {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .brutal-card,
+  .glass,
+  .glass-card,
+  [class*="bg-"] {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}

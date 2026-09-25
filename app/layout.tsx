@@ -7,6 +7,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
 import { CSPostHogProvider } from "@/app/components/PostHogProvider";
 import { InnerCircleModal } from "@/app/components/InnerCircleModal";
+import NextTopLoader from "nextjs-toploader";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { Inter, Newsreader, Space_Grotesk } from "next/font/google";
 
@@ -169,6 +171,8 @@ export default function RootLayout({
       </head>
 
       <body className="overflow-x-hidden antialiased">
+        <NextTopLoader color="#39FF14" showSpinner={false} />
+        <Toaster theme="dark" richColors position="top-center" />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[9999] bg-[#16A34A] text-white px-4 py-2 rounded-md font-bold shadow-lg">Skip to main content</a>
         {/* GA4 */}
         {GA_ID && (

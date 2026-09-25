@@ -375,12 +375,6 @@ export default async function BlogPostPage({ params }: Props) {
                 </Link>
                 <span className="text-white/40">•</span>
                 <span>{post.date}</span>
-                {post.updatedAt && new Date(post.updatedAt).toDateString() !== new Date(post.date).toDateString() && (
-                  <>
-                    <span className="text-white/40">•</span>
-                    <span className="text-[#4ade80]/80">Updated {new Date(post.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                  </>
-                )}
                 <span className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
                   {post.readTime}

@@ -72,22 +72,12 @@ export function PostCard({ post, featured = false }: PostCardProps) {
                const publishDate = new Date(post.date);
                const now = new Date();
                const hoursAgo = (now.getTime() - publishDate.getTime()) / (1000 * 60 * 60);
-               const updatedAt = (post as any).updatedAt;
-               const wasUpdated = updatedAt && new Date(updatedAt).toDateString() !== publishDate.toDateString();
                
                if (hoursAgo < 24) {
                  return (
                    <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white bg-red-500 rounded-full shadow-md animate-pulse">
                      <Circle className="w-2.5 h-2.5 fill-white" />
                      New
-                   </div>
-                 );
-               }
-               if (wasUpdated) {
-                 return (
-                   <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-[#0F172A] bg-[#4ade80]/90 rounded-full shadow-md">
-                     <Pencil className="w-2.5 h-2.5" />
-                     Updated
                    </div>
                  );
                }
@@ -171,22 +161,12 @@ export function PostCard({ post, featured = false }: PostCardProps) {
             const publishDate = new Date(post.date);
             const now = new Date();
             const hoursAgo = (now.getTime() - publishDate.getTime()) / (1000 * 60 * 60);
-            const updatedAt = (post as any).updatedAt;
-            const wasUpdated = updatedAt && new Date(updatedAt).toDateString() !== publishDate.toDateString();
             
             if (hoursAgo < 24) {
               return (
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white bg-red-500 rounded-full shadow-md animate-pulse">
                   <Circle className="w-2.5 h-2.5 fill-white" />
                   New
-                </div>
-              );
-            }
-            if (wasUpdated) {
-              return (
-                <div className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-[#0F172A] bg-[#4ade80]/90 rounded-full shadow-md">
-                  <Pencil className="w-2.5 h-2.5" />
-                  Updated
                 </div>
               );
             }
