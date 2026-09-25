@@ -57,6 +57,8 @@ export interface BlogPost {
     description: string;
     focusKeywords: string[];
   };
+  lastSEORefresh?: Date | string;
+  seoNotes?: string;
 }
 
 export const blogPosts: BlogPost[] = [

@@ -63,6 +63,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: {
+      'msvalidate.01': process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || '',
+    },
   },
   icons: {
     icon: "/logo.png",
@@ -165,7 +168,7 @@ export default function RootLayout({
         />
       </head>
 
-      <body>
+      <body className="overflow-x-hidden antialiased">
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[9999] bg-[#16A34A] text-white px-4 py-2 rounded-md font-bold shadow-lg">Skip to main content</a>
         {/* GA4 */}
         {GA_ID && (

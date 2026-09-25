@@ -1,0 +1,80 @@
+import { NextResponse } from "next/server";
+import { getPublishedPostsServer } from "@/lib/server-data";
+
+export const revalidate = 3600;
+
+export async function GET() {
+  try {
+    const posts = await getPublishedPostsServer();
+    const siteUrl = "https://www.thetouchlinedribble.in";
+    const now = new Date().toUTCString();
+
+    const items = posts.map((post: any) => {
+      const pubDate = post.date ? new Date(post.date).toUTCString() : now;
+      const postPath = post.slug || post.id;
+      const link = `${siteUrl}/post/${postPath}`;
+      const escapedTitle = escapeXml(post.title || "Untitled");
+      const escapedExcerpt = escapeXml(post.excerpt || "");
+      
+      const fullHtmlContent = post.content || `<p>${escapedExcerpt}</p>`;
+      const coverImage = post.coverImage || post.image;
+      const mediaXml = coverImage 
+        ? `\n      <media:content url="${escapeXml(coverImage)}" medium="image" />` 
+        : "";
+
+      const categories = new Set<string>();
+      if (post.club) categories.add(post.club);
+      if (post.tags) post.tags.forEach((t: string) => categories.add(t));
+      const categoryXml = Array.from(categories)
+        .map((c) => `<category>${escapeXml(c)}</category>`)
+        .join("\n      ");
+
+      return `    <item>
+      <title>${escapedTitle}</title>
+      <link>${link}</link>
+      <guid isPermaLink="true">${link}</guid>
+      <pubDate>${pubDate}</pubDate>
+      <description>${escapedExcerpt}</description>
+      ${categoryXml}${mediaXml}
+      <content:encoded><![CDATA[${fullHtmlContent}]]></content:encoded>
+    </item>`;
+    });
+
+    const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" 
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:media="http://search.yahoo.com/mrss/"
+  xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>The Touchline Dribble</title>
+    <link>${siteUrl}</link>
+    <description>Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and bold opinions for die-hard football fans. ⚽</description>
+    <language>en-us</language>
+    <lastBuildDate>${now}</lastBuildDate>
+    <atom:link href="${siteUrl}/api/rss" rel="self" type="application/rss+xml"/>
+${items.join("\n")}
+  </channel>
+</rss>`;
+
+    return new NextResponse(rss, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/xml; charset=utf-8",
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200",
+      },
+    });
+  } catch (err) {
+    console.error("RSS generation failed:", err);
+    return new NextResponse("Failed to generate RSS feed", { status: 500 });
+  }
+}
+
+function escapeXml(str: string): string {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}

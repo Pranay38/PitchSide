@@ -12,6 +12,10 @@
         {
             "path": "/api/welcome-sequence",
             "schedule": "0 12 * * *"
+        },
+        {
+            "path": "/api/seo-weekly-report",
+            "schedule": "0 9 * * 1"
         }
     ]
 }

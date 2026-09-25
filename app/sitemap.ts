@@ -165,5 +165,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  return [...routes, ...staticPages, ...postRoutes, ...storyRoutes, ...tagRoutes, ...clubRoutes, ...managerRoutes, ...matchupRoutes, ...glossaryRoutes];
+  // ─── Programmatic SEO: Comparison Pages ───
+  let comparisonRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const comparisonDataPath = path.join(process.cwd(), 'data', 'comparisons.json');
+    if (fs.existsSync(comparisonDataPath)) {
+      const comparisonData = JSON.parse(fs.readFileSync(comparisonDataPath, 'utf-8'));
+      comparisonRoutes = comparisonData.map((c: any) => ({
+        url: `${baseUrl}/vs/${c.slug}`,
+        lastModified: c.lastUpdated ? new Date(c.lastUpdated) : now,
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      }));
+    }
+  } catch (e) {
+    console.error('Sitemap: Failed to load comparison data', e);
+  }
+
+  // ─── Programmatic SEO: Player Pages ───
+  let playerRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const playerDataPath = path.join(process.cwd(), 'data', 'players.json');
+    if (fs.existsSync(playerDataPath)) {
+      const playerData = JSON.parse(fs.readFileSync(playerDataPath, 'utf-8'));
+      playerRoutes = playerData.map((p: any) => ({
+        url: `${baseUrl}/players/${p.slug}`,
+        lastModified: p.lastUpdated ? new Date(p.lastUpdated) : now,
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      }));
+    }
+  } catch (e) {
+    console.error('Sitemap: Failed to load player data', e);
+  }
+
+  // ─── League Hub Pages ───
+  const leagueSlugs = ['premier-league', 'la-liga', 'serie-a', 'bundesliga', 'ligue-1'];
+  const leagueRoutes: MetadataRoute.Sitemap = leagueSlugs.map(slug => ({
+    url: `${baseUrl}/league/${slug}`,
+    lastModified: now,
+    changeFrequency: 'daily' as const,
+    priority: 0.8,
+  }));
+
+  return [...routes, ...staticPages, ...postRoutes, ...storyRoutes, ...tagRoutes, ...clubRoutes, ...managerRoutes, ...matchupRoutes, ...glossaryRoutes, ...comparisonRoutes, ...playerRoutes, ...leagueRoutes];
 }

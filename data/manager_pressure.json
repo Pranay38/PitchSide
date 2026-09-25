@@ -1,88 +1,864 @@
-{
-    "erik-ten-hag": {
-        "name": "Erik Ten Hag",
-        "club": "Manchester United",
-        "pressureScore": 78,
-        "status": "Critical",
-        "trend": "up",
-        "sackingOdds": "1/4",
-        "recentResults": [
-            {
-                "opponent": "Liverpool",
-                "result": "L",
-                "score": "0-3"
-            },
-            {
-                "opponent": "Brighton",
-                "result": "L",
-                "score": "1-2"
-            },
-            {
-                "opponent": "Fulham",
-                "result": "W",
-                "score": "1-0"
-            },
-            {
-                "opponent": "Man City",
-                "result": "L",
-                "score": "1-3"
-            },
-            {
-                "opponent": "Nottm Forest",
-                "result": "L",
-                "score": "1-2"
-            }
-        ],
-        "nextMatch": "Aston Villa (A)",
-        "sentiment": "-65% WoW",
-        "topGrievances": [
-            "Tactical inflexibility in transition",
-            "Midfield structural collapse",
-            "Poor substitutions"
-        ],
-        "lastUpdated": "2026-09-25T02:45:12.066669"
-    },
-    "mauricio-pochettino": {
-        "name": "Mauricio Pochettino",
-        "club": "Chelsea",
-        "pressureScore": 64,
-        "status": "Under Fire",
-        "trend": "down",
-        "sackingOdds": "4/1",
-        "recentResults": [
-            {
-                "opponent": "Arsenal",
-                "result": "L",
-                "score": "0-5"
-            },
-            {
-                "opponent": "Everton",
-                "result": "W",
-                "score": "6-0"
-            },
-            {
-                "opponent": "Sheffield Utd",
-                "result": "D",
-                "score": "2-2"
-            },
-            {
-                "opponent": "Man Utd",
-                "result": "W",
-                "score": "4-3"
-            },
-            {
-                "opponent": "Burnley",
-                "result": "D",
-                "score": "2-2"
-            }
-        ],
-        "nextMatch": "Tottenham (H)",
-        "sentiment": "-20% WoW",
-        "topGrievances": [
-            "Inconsistent tactical identity",
-            "Defensive set-piece vulnerabilities",
-            "Game management"
-        ],
-        "lastUpdated": "2026-09-25T02:45:12.066679"
-    }
-}
+[
+  {
+    "slug": "erik-ten-hag",
+    "name": "Erik ten Hag",
+    "club": "Manchester United",
+    "league": "Premier League",
+    "pressureScore": 92,
+    "status": "Critical",
+    "trend": "up",
+    "sackingOdds": "1/2",
+    "recentResults": [
+      {
+        "result": "L",
+        "score": "0-3",
+        "opponent": "Liverpool"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Southampton"
+      },
+      {
+        "result": "L",
+        "score": "1-2",
+        "opponent": "Brighton"
+      },
+      {
+        "result": "W",
+        "score": "1-0",
+        "opponent": "Fulham"
+      },
+      {
+        "result": "L",
+        "score": "0-4",
+        "opponent": "Crystal Palace"
+      }
+    ],
+    "nextMatch": "vs Arsenal (A)",
+    "sentiment": "Fans have turned completely, board considering options.",
+    "topGrievances": [
+      "No clear tactical identity",
+      "Poor recruitment",
+      "Dressing room leaks"
+    ]
+  },
+  {
+    "slug": "mikel-arteta",
+    "name": "Mikel Arteta",
+    "club": "Arsenal",
+    "league": "Premier League",
+    "pressureScore": 35,
+    "status": "Stable",
+    "trend": "down",
+    "sackingOdds": "25/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "2-0",
+        "opponent": "Aston Villa"
+      },
+      {
+        "result": "W",
+        "score": "3-1",
+        "opponent": "Wolves"
+      },
+      {
+        "result": "D",
+        "score": "0-0",
+        "opponent": "Man City"
+      },
+      {
+        "result": "W",
+        "score": "1-0",
+        "opponent": "Everton"
+      },
+      {
+        "result": "W",
+        "score": "3-0",
+        "opponent": "Bournemouth"
+      }
+    ],
+    "nextMatch": "vs Manchester United (H)",
+    "sentiment": "Strong backing despite recent draw.",
+    "topGrievances": [
+      "Occasional over-rotation",
+      "Stubbornness with certain players"
+    ]
+  },
+  {
+    "slug": "roberto-de-zerbi",
+    "name": "Roberto De Zerbi",
+    "club": "Tottenham",
+    "league": "Premier League",
+    "pressureScore": 65,
+    "status": "Under Scrutiny",
+    "trend": "up",
+    "sackingOdds": "8/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "2-1",
+        "opponent": "Newcastle"
+      },
+      {
+        "result": "L",
+        "score": "1-3",
+        "opponent": "Chelsea"
+      },
+      {
+        "result": "D",
+        "score": "2-2",
+        "opponent": "Brentford"
+      },
+      {
+        "result": "L",
+        "score": "0-1",
+        "opponent": "West Ham"
+      },
+      {
+        "result": "W",
+        "score": "4-0",
+        "opponent": "Ipswich"
+      }
+    ],
+    "nextMatch": "vs Chelsea (A)",
+    "sentiment": "Exciting football but defensive frailties worry supporters.",
+    "topGrievances": [
+      "Defensive transitions",
+      "Set-piece vulnerability"
+    ]
+  },
+  {
+    "slug": "unai-emery",
+    "name": "Unai Emery",
+    "club": "Aston Villa",
+    "league": "Premier League",
+    "pressureScore": 40,
+    "status": "Stable",
+    "trend": "flat",
+    "sackingOdds": "20/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "3-1",
+        "opponent": "Luton"
+      },
+      {
+        "result": "L",
+        "score": "0-2",
+        "opponent": "Arsenal"
+      },
+      {
+        "result": "W",
+        "score": "2-1",
+        "opponent": "West Ham"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Crystal Palace"
+      },
+      {
+        "result": "W",
+        "score": "3-0",
+        "opponent": "Burnley"
+      }
+    ],
+    "nextMatch": "vs Newcastle (H)",
+    "sentiment": "High confidence after European qualification.",
+    "topGrievances": [
+      "High line sometimes exploited",
+      "Away form inconsistency"
+    ]
+  },
+  {
+    "slug": "marco-silva",
+    "name": "Marco Silva",
+    "club": "Fulham",
+    "league": "Premier League",
+    "pressureScore": 55,
+    "status": "Under Scrutiny",
+    "trend": "up",
+    "sackingOdds": "12/1",
+    "recentResults": [
+      {
+        "result": "L",
+        "score": "0-1",
+        "opponent": "Man Utd"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Everton"
+      },
+      {
+        "result": "D",
+        "score": "0-0",
+        "opponent": "Nottm Forest"
+      },
+      {
+        "result": "W",
+        "score": "2-0",
+        "opponent": "Bournemouth"
+      },
+      {
+        "result": "L",
+        "score": "1-2",
+        "opponent": "Chelsea"
+      }
+    ],
+    "nextMatch": "vs Brentford (A)",
+    "sentiment": "Board wants a push for top half.",
+    "topGrievances": [
+      "Lack of cutting edge",
+      "Midfield balance"
+    ]
+  },
+  {
+    "slug": "nuno-espirito-santo",
+    "name": "Nuno Espírito Santo",
+    "club": "Nottingham Forest",
+    "league": "Premier League",
+    "pressureScore": 85,
+    "status": "Under Fire",
+    "trend": "up",
+    "sackingOdds": "3/1",
+    "recentResults": [
+      {
+        "result": "L",
+        "score": "0-2",
+        "opponent": "Liverpool"
+      },
+      {
+        "result": "L",
+        "score": "1-3",
+        "opponent": "Aston Villa"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Fulham"
+      },
+      {
+        "result": "L",
+        "score": "0-1",
+        "opponent": "Everton"
+      },
+      {
+        "result": "D",
+        "score": "0-0",
+        "opponent": "Brighton"
+      }
+    ],
+    "nextMatch": "vs Crystal Palace (H)",
+    "sentiment": "Relegation fears growing rapidly.",
+    "topGrievances": [
+      "Negative tactics",
+      "Poor record against bottom-half teams"
+    ]
+  },
+  {
+    "slug": "sean-dyche",
+    "name": "Sean Dyche",
+    "club": "Everton",
+    "league": "Premier League",
+    "pressureScore": 75,
+    "status": "Under Fire",
+    "trend": "flat",
+    "sackingOdds": "5/1",
+    "recentResults": [
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Fulham"
+      },
+      {
+        "result": "L",
+        "score": "0-1",
+        "opponent": "Nottm Forest"
+      },
+      {
+        "result": "W",
+        "score": "2-1",
+        "opponent": "Burnley"
+      },
+      {
+        "result": "L",
+        "score": "0-3",
+        "opponent": "Man City"
+      },
+      {
+        "result": "L",
+        "score": "1-2",
+        "opponent": "Arsenal"
+      }
+    ],
+    "nextMatch": "vs Liverpool (A)",
+    "sentiment": "Survival instinct appreciated, but style criticized.",
+    "topGrievances": [
+      "Direct play predictability",
+      "Lack of goals"
+    ]
+  },
+  {
+    "slug": "carlo-ancelotti",
+    "name": "Carlo Ancelotti",
+    "club": "Real Madrid",
+    "league": "La Liga",
+    "pressureScore": 25,
+    "status": "Stable",
+    "trend": "down",
+    "sackingOdds": "50/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "3-1",
+        "opponent": "Sevilla"
+      },
+      {
+        "result": "W",
+        "score": "2-0",
+        "opponent": "Valencia"
+      },
+      {
+        "result": "W",
+        "score": "1-0",
+        "opponent": "Getafe"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Betis"
+      },
+      {
+        "result": "W",
+        "score": "4-1",
+        "opponent": "Almeria"
+      }
+    ],
+    "nextMatch": "vs Atletico Madrid (H)",
+    "sentiment": "Absolute legend status.",
+    "topGrievances": [
+      "Youth integration could be better",
+      "Occasional passive periods in games"
+    ]
+  },
+  {
+    "slug": "hansi-flick",
+    "name": "Hansi Flick",
+    "club": "Barcelona",
+    "league": "La Liga",
+    "pressureScore": 45,
+    "status": "Stable",
+    "trend": "up",
+    "sackingOdds": "15/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "2-1",
+        "opponent": "Athletic Club"
+      },
+      {
+        "result": "D",
+        "score": "2-2",
+        "opponent": "Real Sociedad"
+      },
+      {
+        "result": "W",
+        "score": "3-0",
+        "opponent": "Girona"
+      },
+      {
+        "result": "L",
+        "score": "1-2",
+        "opponent": "Villarreal"
+      },
+      {
+        "result": "W",
+        "score": "4-0",
+        "opponent": "Osasuna"
+      }
+    ],
+    "nextMatch": "vs Sevilla (A)",
+    "sentiment": "Promising start, bringing high intensity back.",
+    "topGrievances": [
+      "High line risks",
+      "Squad depth issues affecting rotation"
+    ]
+  },
+  {
+    "slug": "diego-simeone",
+    "name": "Diego Simeone",
+    "club": "Atlético Madrid",
+    "league": "La Liga",
+    "pressureScore": 30,
+    "status": "Stable",
+    "trend": "flat",
+    "sackingOdds": "33/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "1-0",
+        "opponent": "Mallorca"
+      },
+      {
+        "result": "W",
+        "score": "2-1",
+        "opponent": "Celta Vigo"
+      },
+      {
+        "result": "L",
+        "score": "0-2",
+        "opponent": "Athletic Club"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Getafe"
+      },
+      {
+        "result": "W",
+        "score": "3-1",
+        "opponent": "Las Palmas"
+      }
+    ],
+    "nextMatch": "vs Real Madrid (A)",
+    "sentiment": "The eternal leader.",
+    "topGrievances": [
+      "Predictable attacking patterns",
+      "Struggles against low blocks"
+    ]
+  },
+  {
+    "slug": "imanol-alguacil",
+    "name": "Imanol Alguacil",
+    "club": "Real Sociedad",
+    "league": "La Liga",
+    "pressureScore": 50,
+    "status": "Stable",
+    "trend": "up",
+    "sackingOdds": "18/1",
+    "recentResults": [
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Valencia"
+      },
+      {
+        "result": "L",
+        "score": "0-1",
+        "opponent": "Betis"
+      },
+      {
+        "result": "W",
+        "score": "2-0",
+        "opponent": "Alaves"
+      },
+      {
+        "result": "W",
+        "score": "1-0",
+        "opponent": "Granada"
+      },
+      {
+        "result": "D",
+        "score": "0-0",
+        "opponent": "Rayo Vallecano"
+      }
+    ],
+    "nextMatch": "vs Athletic Club (H)",
+    "sentiment": "Local hero, but expectations are rising.",
+    "topGrievances": [
+      "Inconsistent away form",
+      "Fatigue in late season"
+    ]
+  },
+  {
+    "slug": "vincent-kompany",
+    "name": "Vincent Kompany",
+    "club": "Bayern Munich",
+    "league": "Bundesliga",
+    "pressureScore": 60,
+    "status": "Under Scrutiny",
+    "trend": "up",
+    "sackingOdds": "10/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "3-1",
+        "opponent": "Bochum"
+      },
+      {
+        "result": "D",
+        "score": "2-2",
+        "opponent": "Leverkusen"
+      },
+      {
+        "result": "L",
+        "score": "1-2",
+        "opponent": "Stuttgart"
+      },
+      {
+        "result": "W",
+        "score": "4-0",
+        "opponent": "Mainz"
+      },
+      {
+        "result": "W",
+        "score": "2-0",
+        "opponent": "Union Berlin"
+      }
+    ],
+    "nextMatch": "vs Borussia Dortmund (A)",
+    "sentiment": "Board is patient but demands domestic dominance.",
+    "topGrievances": [
+      "Naive defending at times",
+      "Struggles vs elite counter-attacks"
+    ]
+  },
+  {
+    "slug": "nuri-sahin",
+    "name": "Nuri Şahin",
+    "club": "Borussia Dortmund",
+    "league": "Bundesliga",
+    "pressureScore": 55,
+    "status": "Under Scrutiny",
+    "trend": "flat",
+    "sackingOdds": "14/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "2-1",
+        "opponent": "Wolfsburg"
+      },
+      {
+        "result": "L",
+        "score": "0-2",
+        "opponent": "Leipzig"
+      },
+      {
+        "result": "W",
+        "score": "3-0",
+        "opponent": "Freiburg"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Hoffenheim"
+      },
+      {
+        "result": "L",
+        "score": "1-3",
+        "opponent": "Eintracht"
+      }
+    ],
+    "nextMatch": "vs Bayern Munich (H)",
+    "sentiment": "Promising tactical shifts, but results are patchy.",
+    "topGrievances": [
+      "Mental fragility in big games",
+      "Set-piece defending"
+    ]
+  },
+  {
+    "slug": "xabi-alonso",
+    "name": "Xabi Alonso",
+    "club": "Bayer Leverkusen",
+    "league": "Bundesliga",
+    "pressureScore": 20,
+    "status": "Stable",
+    "trend": "flat",
+    "sackingOdds": "100/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "2-0",
+        "opponent": "Gladbach"
+      },
+      {
+        "result": "W",
+        "score": "3-1",
+        "opponent": "Augsburg"
+      },
+      {
+        "result": "D",
+        "score": "2-2",
+        "opponent": "Bayern Munich"
+      },
+      {
+        "result": "W",
+        "score": "4-1",
+        "opponent": "Werder Bremen"
+      },
+      {
+        "result": "W",
+        "score": "1-0",
+        "opponent": "Heidenheim"
+      }
+    ],
+    "nextMatch": "vs RB Leipzig (H)",
+    "sentiment": "Untouchable after recent successes.",
+    "topGrievances": [
+      "Occasional over-playing at the back",
+      "None major"
+    ]
+  },
+  {
+    "slug": "simone-inzaghi",
+    "name": "Simone Inzaghi",
+    "club": "Inter Milan",
+    "league": "Serie A",
+    "pressureScore": 25,
+    "status": "Stable",
+    "trend": "down",
+    "sackingOdds": "40/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "2-0",
+        "opponent": "Roma"
+      },
+      {
+        "result": "W",
+        "score": "3-1",
+        "opponent": "Napoli"
+      },
+      {
+        "result": "W",
+        "score": "1-0",
+        "opponent": "Fiorentina"
+      },
+      {
+        "result": "D",
+        "score": "0-0",
+        "opponent": "Lazio"
+      },
+      {
+        "result": "W",
+        "score": "4-0",
+        "opponent": "Salernitana"
+      }
+    ],
+    "nextMatch": "vs Juventus (A)",
+    "sentiment": "Master of cup competitions and solid in league.",
+    "topGrievances": [
+      "Rotation predictability",
+      "Slow starts to halves"
+    ]
+  },
+  {
+    "slug": "thiago-motta",
+    "name": "Thiago Motta",
+    "club": "Juventus",
+    "league": "Serie A",
+    "pressureScore": 45,
+    "status": "Stable",
+    "trend": "flat",
+    "sackingOdds": "20/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "1-0",
+        "opponent": "Torino"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "AC Milan"
+      },
+      {
+        "result": "W",
+        "score": "2-0",
+        "opponent": "Bologna"
+      },
+      {
+        "result": "D",
+        "score": "0-0",
+        "opponent": "Atalanta"
+      },
+      {
+        "result": "W",
+        "score": "3-1",
+        "opponent": "Genoa"
+      }
+    ],
+    "nextMatch": "vs Inter Milan (H)",
+    "sentiment": "Bringing a modern identity back to Turin.",
+    "topGrievances": [
+      "Lack of clinical edge",
+      "Integrating new signings slowly"
+    ]
+  },
+  {
+    "slug": "paulo-fonseca",
+    "name": "Paulo Fonseca",
+    "club": "AC Milan",
+    "league": "Serie A",
+    "pressureScore": 70,
+    "status": "Under Fire",
+    "trend": "up",
+    "sackingOdds": "6/1",
+    "recentResults": [
+      {
+        "result": "L",
+        "score": "0-2",
+        "opponent": "Lazio"
+      },
+      {
+        "result": "W",
+        "score": "2-1",
+        "opponent": "Udinese"
+      },
+      {
+        "result": "L",
+        "score": "1-3",
+        "opponent": "Sassuolo"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Juventus"
+      },
+      {
+        "result": "L",
+        "score": "0-1",
+        "opponent": "Empoli"
+      }
+    ],
+    "nextMatch": "vs Napoli (A)",
+    "sentiment": "Fans impatient with defensive lapses.",
+    "topGrievances": [
+      "Soft center",
+      "Poor game management when leading"
+    ]
+  },
+  {
+    "slug": "luis-enrique",
+    "name": "Luis Enrique",
+    "club": "PSG",
+    "league": "Ligue 1",
+    "pressureScore": 35,
+    "status": "Stable",
+    "trend": "flat",
+    "sackingOdds": "25/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "3-0",
+        "opponent": "Lille"
+      },
+      {
+        "result": "W",
+        "score": "2-1",
+        "opponent": "Rennes"
+      },
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Lens"
+      },
+      {
+        "result": "W",
+        "score": "4-0",
+        "opponent": "Nantes"
+      },
+      {
+        "result": "L",
+        "score": "0-2",
+        "opponent": "Monaco"
+      }
+    ],
+    "nextMatch": "vs Marseille (A)",
+    "sentiment": "Building a younger, more dynamic team.",
+    "topGrievances": [
+      "Champions League away form",
+      "Stubborn possession obsession"
+    ]
+  },
+  {
+    "slug": "gennaro-gattuso",
+    "name": "Gennaro Gattuso",
+    "club": "Marseille",
+    "league": "Ligue 1",
+    "pressureScore": 80,
+    "status": "Under Fire",
+    "trend": "up",
+    "sackingOdds": "4/1",
+    "recentResults": [
+      {
+        "result": "D",
+        "score": "1-1",
+        "opponent": "Nice"
+      },
+      {
+        "result": "L",
+        "score": "0-1",
+        "opponent": "Lyon"
+      },
+      {
+        "result": "L",
+        "score": "1-2",
+        "opponent": "Brest"
+      },
+      {
+        "result": "W",
+        "score": "2-0",
+        "opponent": "Lorient"
+      },
+      {
+        "result": "L",
+        "score": "0-3",
+        "opponent": "Toulouse"
+      }
+    ],
+    "nextMatch": "vs PSG (H)",
+    "sentiment": "Volatile atmosphere, results not masking poor play.",
+    "topGrievances": [
+      "Lack of creativity",
+      "Discipline issues",
+      "Tactical rigidity"
+    ]
+  },
+  {
+    "slug": "pep-guardiola",
+    "name": "Pep Guardiola",
+    "club": "Manchester City",
+    "league": "Premier League",
+    "pressureScore": 15,
+    "status": "Stable",
+    "trend": "flat",
+    "sackingOdds": "150/1",
+    "recentResults": [
+      {
+        "result": "W",
+        "score": "3-0",
+        "opponent": "Chelsea"
+      },
+      {
+        "result": "W",
+        "score": "2-1",
+        "opponent": "Brentford"
+      },
+      {
+        "result": "W",
+        "score": "4-0",
+        "opponent": "West Ham"
+      },
+      {
+        "result": "W",
+        "score": "1-0",
+        "opponent": "Newcastle"
+      },
+      {
+        "result": "D",
+        "score": "0-0",
+        "opponent": "Arsenal"
+      }
+    ],
+    "nextMatch": "vs Liverpool (H)",
+    "sentiment": "Total control.",
+    "topGrievances": [
+      "Overthinking in knockouts",
+      "None really"
+    ]
+  }
+]

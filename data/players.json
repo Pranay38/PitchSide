@@ -1,0 +1,2148 @@
+[
+  {
+    "slug": "erling-haaland",
+    "name": "Erling Haaland",
+    "team": "Manchester City",
+    "league": "Premier League",
+    "position": "Striker",
+    "nationality": "Norway",
+    "age": 26,
+    "seasonStats": {
+      "goals": 24,
+      "assists": 5,
+      "appearances": 27,
+      "minutesPlayed": 2340,
+      "xG": 21.3,
+      "rating": 8.2
+    },
+    "tacticalRole": "Elite poacher who operates exclusively in the penalty area. His movement patterns are designed to create separation in the final third. Rarely drops deep to link play, preferring to pin center-backs and make explosive runs in behind.",
+    "strengths": [
+      "Aerial duels",
+      "Off-ball movement",
+      "Clinical finishing",
+      "Physical dominance"
+    ],
+    "weaknesses": [
+      "Link-up play outside the box",
+      "Pressing consistency"
+    ],
+    "relatedTags": [
+      "Manchester City",
+      "Premier League",
+      "striker"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "vinicius-junior",
+    "name": "Vinícius Júnior",
+    "team": "Real Madrid",
+    "league": "La Liga",
+    "position": "Winger",
+    "nationality": "Brazil",
+    "age": 26,
+    "seasonStats": {
+      "goals": 14,
+      "assists": 12,
+      "appearances": 25,
+      "minutesPlayed": 2100,
+      "xG": 12.1,
+      "rating": 8
+    },
+    "tacticalRole": "Dynamic left-winger who excels in 1v1 situations. Primary ball progressor for Real Madrid in transitions.",
+    "strengths": [
+      "Dribbling",
+      "Pace",
+      "Chance creation"
+    ],
+    "weaknesses": [
+      "Defensive work rate",
+      "Occasional decision making"
+    ],
+    "relatedTags": [
+      "Real Madrid",
+      "La Liga",
+      "winger"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-3",
+    "name": "Player Name 3",
+    "team": "Team 3",
+    "league": "Bundesliga",
+    "position": "Attacking Midfielder",
+    "nationality": "Unknown",
+    "age": 22,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 2,
+      "appearances": 22,
+      "minutesPlayed": 1820,
+      "xG": 7.5,
+      "rating": "7.2"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "attacking midfielder",
+      "team-3"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-4",
+    "name": "Player Name 4",
+    "team": "Team 4",
+    "league": "Serie A",
+    "position": "Central Midfielder",
+    "nationality": "Unknown",
+    "age": 23,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 3,
+      "appearances": 23,
+      "minutesPlayed": 1830,
+      "xG": 5.5,
+      "rating": "7.3"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "central midfielder",
+      "team-4"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-5",
+    "name": "Player Name 5",
+    "team": "Team 5",
+    "league": "Ligue 1",
+    "position": "Defensive Midfielder",
+    "nationality": "Unknown",
+    "age": 24,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 4,
+      "appearances": 24,
+      "minutesPlayed": 1840,
+      "xG": 6.5,
+      "rating": "7.4"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "defensive midfielder",
+      "team-5"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-6",
+    "name": "Player Name 6",
+    "team": "Team 6",
+    "league": "Premier League",
+    "position": "Fullback",
+    "nationality": "Unknown",
+    "age": 25,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 5,
+      "appearances": 25,
+      "minutesPlayed": 1850,
+      "xG": 7.5,
+      "rating": "7.5"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "fullback",
+      "team-6"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-7",
+    "name": "Player Name 7",
+    "team": "Team 7",
+    "league": "La Liga",
+    "position": "Center Back",
+    "nationality": "Unknown",
+    "age": 26,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 6,
+      "appearances": 26,
+      "minutesPlayed": 1860,
+      "xG": 5.5,
+      "rating": "7.6"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "center back",
+      "team-7"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-8",
+    "name": "Player Name 8",
+    "team": "Team 8",
+    "league": "Bundesliga",
+    "position": "Goalkeeper",
+    "nationality": "Unknown",
+    "age": 27,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 7,
+      "appearances": 27,
+      "minutesPlayed": 1870,
+      "xG": 6.5,
+      "rating": "7.7"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "goalkeeper",
+      "team-8"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-9",
+    "name": "Player Name 9",
+    "team": "Team 9",
+    "league": "Serie A",
+    "position": "Striker",
+    "nationality": "Unknown",
+    "age": 28,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 0,
+      "appearances": 28,
+      "minutesPlayed": 1880,
+      "xG": 7.5,
+      "rating": "7.8"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "striker",
+      "team-9"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-10",
+    "name": "Player Name 10",
+    "team": "Team 10",
+    "league": "Ligue 1",
+    "position": "Winger",
+    "nationality": "Unknown",
+    "age": 29,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 1,
+      "appearances": 29,
+      "minutesPlayed": 1890,
+      "xG": 5.5,
+      "rating": "7.9"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "winger",
+      "team-10"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-11",
+    "name": "Player Name 11",
+    "team": "Team 11",
+    "league": "Premier League",
+    "position": "Attacking Midfielder",
+    "nationality": "Unknown",
+    "age": 30,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 2,
+      "appearances": 20,
+      "minutesPlayed": 1900,
+      "xG": 6.5,
+      "rating": "8.0"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "attacking midfielder",
+      "team-11"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-12",
+    "name": "Player Name 12",
+    "team": "Team 12",
+    "league": "La Liga",
+    "position": "Central Midfielder",
+    "nationality": "Unknown",
+    "age": 31,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 3,
+      "appearances": 21,
+      "minutesPlayed": 1910,
+      "xG": 7.5,
+      "rating": "8.1"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "central midfielder",
+      "team-12"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-13",
+    "name": "Player Name 13",
+    "team": "Team 13",
+    "league": "Bundesliga",
+    "position": "Defensive Midfielder",
+    "nationality": "Unknown",
+    "age": 32,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 4,
+      "appearances": 22,
+      "minutesPlayed": 1920,
+      "xG": 5.5,
+      "rating": "8.2"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "defensive midfielder",
+      "team-13"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-14",
+    "name": "Player Name 14",
+    "team": "Team 14",
+    "league": "Serie A",
+    "position": "Fullback",
+    "nationality": "Unknown",
+    "age": 33,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 5,
+      "appearances": 23,
+      "minutesPlayed": 1930,
+      "xG": 6.5,
+      "rating": "8.3"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "fullback",
+      "team-14"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-15",
+    "name": "Player Name 15",
+    "team": "Team 15",
+    "league": "Ligue 1",
+    "position": "Center Back",
+    "nationality": "Unknown",
+    "age": 34,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 6,
+      "appearances": 24,
+      "minutesPlayed": 1940,
+      "xG": 7.5,
+      "rating": "8.4"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "center back",
+      "team-15"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-16",
+    "name": "Player Name 16",
+    "team": "Team 16",
+    "league": "Premier League",
+    "position": "Goalkeeper",
+    "nationality": "Unknown",
+    "age": 20,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 7,
+      "appearances": 25,
+      "minutesPlayed": 1950,
+      "xG": 5.5,
+      "rating": "7.0"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "goalkeeper",
+      "team-16"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-17",
+    "name": "Player Name 17",
+    "team": "Team 17",
+    "league": "La Liga",
+    "position": "Striker",
+    "nationality": "Unknown",
+    "age": 21,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 0,
+      "appearances": 26,
+      "minutesPlayed": 1960,
+      "xG": 6.5,
+      "rating": "7.1"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "striker",
+      "team-17"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-18",
+    "name": "Player Name 18",
+    "team": "Team 18",
+    "league": "Bundesliga",
+    "position": "Winger",
+    "nationality": "Unknown",
+    "age": 22,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 1,
+      "appearances": 27,
+      "minutesPlayed": 1970,
+      "xG": 7.5,
+      "rating": "7.2"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "winger",
+      "team-18"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-19",
+    "name": "Player Name 19",
+    "team": "Team 19",
+    "league": "Serie A",
+    "position": "Attacking Midfielder",
+    "nationality": "Unknown",
+    "age": 23,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 2,
+      "appearances": 28,
+      "minutesPlayed": 1980,
+      "xG": 5.5,
+      "rating": "7.3"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "attacking midfielder",
+      "team-19"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-20",
+    "name": "Player Name 20",
+    "team": "Team 0",
+    "league": "Ligue 1",
+    "position": "Central Midfielder",
+    "nationality": "Unknown",
+    "age": 24,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 3,
+      "appearances": 29,
+      "minutesPlayed": 1990,
+      "xG": 6.5,
+      "rating": "7.4"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "central midfielder",
+      "team-0"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-21",
+    "name": "Player Name 21",
+    "team": "Team 1",
+    "league": "Premier League",
+    "position": "Defensive Midfielder",
+    "nationality": "Unknown",
+    "age": 25,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 4,
+      "appearances": 20,
+      "minutesPlayed": 2000,
+      "xG": 7.5,
+      "rating": "7.5"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "defensive midfielder",
+      "team-1"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-22",
+    "name": "Player Name 22",
+    "team": "Team 2",
+    "league": "La Liga",
+    "position": "Fullback",
+    "nationality": "Unknown",
+    "age": 26,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 5,
+      "appearances": 21,
+      "minutesPlayed": 2010,
+      "xG": 5.5,
+      "rating": "7.6"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "fullback",
+      "team-2"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-23",
+    "name": "Player Name 23",
+    "team": "Team 3",
+    "league": "Bundesliga",
+    "position": "Center Back",
+    "nationality": "Unknown",
+    "age": 27,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 6,
+      "appearances": 22,
+      "minutesPlayed": 2020,
+      "xG": 6.5,
+      "rating": "7.7"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "center back",
+      "team-3"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-24",
+    "name": "Player Name 24",
+    "team": "Team 4",
+    "league": "Serie A",
+    "position": "Goalkeeper",
+    "nationality": "Unknown",
+    "age": 28,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 7,
+      "appearances": 23,
+      "minutesPlayed": 2030,
+      "xG": 7.5,
+      "rating": "7.8"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "goalkeeper",
+      "team-4"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-25",
+    "name": "Player Name 25",
+    "team": "Team 5",
+    "league": "Ligue 1",
+    "position": "Striker",
+    "nationality": "Unknown",
+    "age": 29,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 0,
+      "appearances": 24,
+      "minutesPlayed": 2040,
+      "xG": 5.5,
+      "rating": "7.9"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "striker",
+      "team-5"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-26",
+    "name": "Player Name 26",
+    "team": "Team 6",
+    "league": "Premier League",
+    "position": "Winger",
+    "nationality": "Unknown",
+    "age": 30,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 1,
+      "appearances": 25,
+      "minutesPlayed": 2050,
+      "xG": 6.5,
+      "rating": "8.0"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "winger",
+      "team-6"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-27",
+    "name": "Player Name 27",
+    "team": "Team 7",
+    "league": "La Liga",
+    "position": "Attacking Midfielder",
+    "nationality": "Unknown",
+    "age": 31,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 2,
+      "appearances": 26,
+      "minutesPlayed": 2060,
+      "xG": 7.5,
+      "rating": "8.1"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "attacking midfielder",
+      "team-7"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-28",
+    "name": "Player Name 28",
+    "team": "Team 8",
+    "league": "Bundesliga",
+    "position": "Central Midfielder",
+    "nationality": "Unknown",
+    "age": 32,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 3,
+      "appearances": 27,
+      "minutesPlayed": 2070,
+      "xG": 5.5,
+      "rating": "8.2"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "central midfielder",
+      "team-8"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-29",
+    "name": "Player Name 29",
+    "team": "Team 9",
+    "league": "Serie A",
+    "position": "Defensive Midfielder",
+    "nationality": "Unknown",
+    "age": 33,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 4,
+      "appearances": 28,
+      "minutesPlayed": 2080,
+      "xG": 6.5,
+      "rating": "8.3"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "defensive midfielder",
+      "team-9"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-30",
+    "name": "Player Name 30",
+    "team": "Team 10",
+    "league": "Ligue 1",
+    "position": "Fullback",
+    "nationality": "Unknown",
+    "age": 34,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 5,
+      "appearances": 29,
+      "minutesPlayed": 2090,
+      "xG": 7.5,
+      "rating": "8.4"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "fullback",
+      "team-10"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-31",
+    "name": "Player Name 31",
+    "team": "Team 11",
+    "league": "Premier League",
+    "position": "Center Back",
+    "nationality": "Unknown",
+    "age": 20,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 6,
+      "appearances": 20,
+      "minutesPlayed": 2100,
+      "xG": 5.5,
+      "rating": "7.0"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "center back",
+      "team-11"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-32",
+    "name": "Player Name 32",
+    "team": "Team 12",
+    "league": "La Liga",
+    "position": "Goalkeeper",
+    "nationality": "Unknown",
+    "age": 21,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 7,
+      "appearances": 21,
+      "minutesPlayed": 2110,
+      "xG": 6.5,
+      "rating": "7.1"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "goalkeeper",
+      "team-12"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-33",
+    "name": "Player Name 33",
+    "team": "Team 13",
+    "league": "Bundesliga",
+    "position": "Striker",
+    "nationality": "Unknown",
+    "age": 22,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 0,
+      "appearances": 22,
+      "minutesPlayed": 2120,
+      "xG": 7.5,
+      "rating": "7.2"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "striker",
+      "team-13"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-34",
+    "name": "Player Name 34",
+    "team": "Team 14",
+    "league": "Serie A",
+    "position": "Winger",
+    "nationality": "Unknown",
+    "age": 23,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 1,
+      "appearances": 23,
+      "minutesPlayed": 2130,
+      "xG": 5.5,
+      "rating": "7.3"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "winger",
+      "team-14"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-35",
+    "name": "Player Name 35",
+    "team": "Team 15",
+    "league": "Ligue 1",
+    "position": "Attacking Midfielder",
+    "nationality": "Unknown",
+    "age": 24,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 2,
+      "appearances": 24,
+      "minutesPlayed": 2140,
+      "xG": 6.5,
+      "rating": "7.4"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "attacking midfielder",
+      "team-15"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-36",
+    "name": "Player Name 36",
+    "team": "Team 16",
+    "league": "Premier League",
+    "position": "Central Midfielder",
+    "nationality": "Unknown",
+    "age": 25,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 3,
+      "appearances": 25,
+      "minutesPlayed": 2150,
+      "xG": 7.5,
+      "rating": "7.5"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "central midfielder",
+      "team-16"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-37",
+    "name": "Player Name 37",
+    "team": "Team 17",
+    "league": "La Liga",
+    "position": "Defensive Midfielder",
+    "nationality": "Unknown",
+    "age": 26,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 4,
+      "appearances": 26,
+      "minutesPlayed": 2160,
+      "xG": 5.5,
+      "rating": "7.6"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "defensive midfielder",
+      "team-17"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-38",
+    "name": "Player Name 38",
+    "team": "Team 18",
+    "league": "Bundesliga",
+    "position": "Fullback",
+    "nationality": "Unknown",
+    "age": 27,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 5,
+      "appearances": 27,
+      "minutesPlayed": 2170,
+      "xG": 6.5,
+      "rating": "7.7"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "fullback",
+      "team-18"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-39",
+    "name": "Player Name 39",
+    "team": "Team 19",
+    "league": "Serie A",
+    "position": "Center Back",
+    "nationality": "Unknown",
+    "age": 28,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 6,
+      "appearances": 28,
+      "minutesPlayed": 2180,
+      "xG": 7.5,
+      "rating": "7.8"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "center back",
+      "team-19"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-40",
+    "name": "Player Name 40",
+    "team": "Team 0",
+    "league": "Ligue 1",
+    "position": "Goalkeeper",
+    "nationality": "Unknown",
+    "age": 29,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 7,
+      "appearances": 29,
+      "minutesPlayed": 2190,
+      "xG": 5.5,
+      "rating": "7.9"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "goalkeeper",
+      "team-0"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-41",
+    "name": "Player Name 41",
+    "team": "Team 1",
+    "league": "Premier League",
+    "position": "Striker",
+    "nationality": "Unknown",
+    "age": 30,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 0,
+      "appearances": 20,
+      "minutesPlayed": 2200,
+      "xG": 6.5,
+      "rating": "8.0"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "striker",
+      "team-1"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-42",
+    "name": "Player Name 42",
+    "team": "Team 2",
+    "league": "La Liga",
+    "position": "Winger",
+    "nationality": "Unknown",
+    "age": 31,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 1,
+      "appearances": 21,
+      "minutesPlayed": 2210,
+      "xG": 7.5,
+      "rating": "8.1"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "winger",
+      "team-2"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-43",
+    "name": "Player Name 43",
+    "team": "Team 3",
+    "league": "Bundesliga",
+    "position": "Attacking Midfielder",
+    "nationality": "Unknown",
+    "age": 32,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 2,
+      "appearances": 22,
+      "minutesPlayed": 2220,
+      "xG": 5.5,
+      "rating": "8.2"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "attacking midfielder",
+      "team-3"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-44",
+    "name": "Player Name 44",
+    "team": "Team 4",
+    "league": "Serie A",
+    "position": "Central Midfielder",
+    "nationality": "Unknown",
+    "age": 33,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 3,
+      "appearances": 23,
+      "minutesPlayed": 2230,
+      "xG": 6.5,
+      "rating": "8.3"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "central midfielder",
+      "team-4"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-45",
+    "name": "Player Name 45",
+    "team": "Team 5",
+    "league": "Ligue 1",
+    "position": "Defensive Midfielder",
+    "nationality": "Unknown",
+    "age": 34,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 4,
+      "appearances": 24,
+      "minutesPlayed": 2240,
+      "xG": 7.5,
+      "rating": "8.4"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "defensive midfielder",
+      "team-5"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-46",
+    "name": "Player Name 46",
+    "team": "Team 6",
+    "league": "Premier League",
+    "position": "Fullback",
+    "nationality": "Unknown",
+    "age": 20,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 5,
+      "appearances": 25,
+      "minutesPlayed": 2250,
+      "xG": 5.5,
+      "rating": "7.0"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "fullback",
+      "team-6"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-47",
+    "name": "Player Name 47",
+    "team": "Team 7",
+    "league": "La Liga",
+    "position": "Center Back",
+    "nationality": "Unknown",
+    "age": 21,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 6,
+      "appearances": 26,
+      "minutesPlayed": 2260,
+      "xG": 6.5,
+      "rating": "7.1"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "center back",
+      "team-7"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-48",
+    "name": "Player Name 48",
+    "team": "Team 8",
+    "league": "Bundesliga",
+    "position": "Goalkeeper",
+    "nationality": "Unknown",
+    "age": 22,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 7,
+      "appearances": 27,
+      "minutesPlayed": 2270,
+      "xG": 7.5,
+      "rating": "7.2"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "goalkeeper",
+      "team-8"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-49",
+    "name": "Player Name 49",
+    "team": "Team 9",
+    "league": "Serie A",
+    "position": "Striker",
+    "nationality": "Unknown",
+    "age": 23,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 0,
+      "appearances": 28,
+      "minutesPlayed": 2280,
+      "xG": 5.5,
+      "rating": "7.3"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "striker",
+      "team-9"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-50",
+    "name": "Player Name 50",
+    "team": "Team 10",
+    "league": "Ligue 1",
+    "position": "Winger",
+    "nationality": "Unknown",
+    "age": 24,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 1,
+      "appearances": 29,
+      "minutesPlayed": 2290,
+      "xG": 6.5,
+      "rating": "7.4"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "winger",
+      "team-10"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-51",
+    "name": "Player Name 51",
+    "team": "Team 11",
+    "league": "Premier League",
+    "position": "Attacking Midfielder",
+    "nationality": "Unknown",
+    "age": 25,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 2,
+      "appearances": 20,
+      "minutesPlayed": 2300,
+      "xG": 7.5,
+      "rating": "7.5"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "attacking midfielder",
+      "team-11"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-52",
+    "name": "Player Name 52",
+    "team": "Team 12",
+    "league": "La Liga",
+    "position": "Central Midfielder",
+    "nationality": "Unknown",
+    "age": 26,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 3,
+      "appearances": 21,
+      "minutesPlayed": 2310,
+      "xG": 5.5,
+      "rating": "7.6"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "central midfielder",
+      "team-12"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-53",
+    "name": "Player Name 53",
+    "team": "Team 13",
+    "league": "Bundesliga",
+    "position": "Defensive Midfielder",
+    "nationality": "Unknown",
+    "age": 27,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 4,
+      "appearances": 22,
+      "minutesPlayed": 2320,
+      "xG": 6.5,
+      "rating": "7.7"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "defensive midfielder",
+      "team-13"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-54",
+    "name": "Player Name 54",
+    "team": "Team 14",
+    "league": "Serie A",
+    "position": "Fullback",
+    "nationality": "Unknown",
+    "age": 28,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 5,
+      "appearances": 23,
+      "minutesPlayed": 2330,
+      "xG": 7.5,
+      "rating": "7.8"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "fullback",
+      "team-14"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-55",
+    "name": "Player Name 55",
+    "team": "Team 15",
+    "league": "Ligue 1",
+    "position": "Center Back",
+    "nationality": "Unknown",
+    "age": 29,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 6,
+      "appearances": 24,
+      "minutesPlayed": 2340,
+      "xG": 5.5,
+      "rating": "7.9"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "center back",
+      "team-15"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-56",
+    "name": "Player Name 56",
+    "team": "Team 16",
+    "league": "Premier League",
+    "position": "Goalkeeper",
+    "nationality": "Unknown",
+    "age": 30,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 7,
+      "appearances": 25,
+      "minutesPlayed": 2350,
+      "xG": 6.5,
+      "rating": "8.0"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "goalkeeper",
+      "team-16"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-57",
+    "name": "Player Name 57",
+    "team": "Team 17",
+    "league": "La Liga",
+    "position": "Striker",
+    "nationality": "Unknown",
+    "age": 31,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 0,
+      "appearances": 26,
+      "minutesPlayed": 2360,
+      "xG": 7.5,
+      "rating": "8.1"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "striker",
+      "team-17"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-58",
+    "name": "Player Name 58",
+    "team": "Team 18",
+    "league": "Bundesliga",
+    "position": "Winger",
+    "nationality": "Unknown",
+    "age": 32,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 1,
+      "appearances": 27,
+      "minutesPlayed": 2370,
+      "xG": 5.5,
+      "rating": "8.2"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "winger",
+      "team-18"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-59",
+    "name": "Player Name 59",
+    "team": "Team 19",
+    "league": "Serie A",
+    "position": "Attacking Midfielder",
+    "nationality": "Unknown",
+    "age": 33,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 2,
+      "appearances": 28,
+      "minutesPlayed": 2380,
+      "xG": 6.5,
+      "rating": "8.3"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "attacking midfielder",
+      "team-19"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-60",
+    "name": "Player Name 60",
+    "team": "Team 0",
+    "league": "Ligue 1",
+    "position": "Central Midfielder",
+    "nationality": "Unknown",
+    "age": 34,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 3,
+      "appearances": 29,
+      "minutesPlayed": 2390,
+      "xG": 7.5,
+      "rating": "8.4"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "central midfielder",
+      "team-0"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-61",
+    "name": "Player Name 61",
+    "team": "Team 1",
+    "league": "Premier League",
+    "position": "Defensive Midfielder",
+    "nationality": "Unknown",
+    "age": 20,
+    "seasonStats": {
+      "goals": 15,
+      "assists": 4,
+      "appearances": 20,
+      "minutesPlayed": 2400,
+      "xG": 5.5,
+      "rating": "7.0"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Premier League",
+      "defensive midfielder",
+      "team-1"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-62",
+    "name": "Player Name 62",
+    "team": "Team 2",
+    "league": "La Liga",
+    "position": "Fullback",
+    "nationality": "Unknown",
+    "age": 21,
+    "seasonStats": {
+      "goals": 1,
+      "assists": 5,
+      "appearances": 21,
+      "minutesPlayed": 2410,
+      "xG": 6.5,
+      "rating": "7.1"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "La Liga",
+      "fullback",
+      "team-2"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-63",
+    "name": "Player Name 63",
+    "team": "Team 3",
+    "league": "Bundesliga",
+    "position": "Center Back",
+    "nationality": "Unknown",
+    "age": 22,
+    "seasonStats": {
+      "goals": 2,
+      "assists": 6,
+      "appearances": 22,
+      "minutesPlayed": 2420,
+      "xG": 7.5,
+      "rating": "7.2"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Bundesliga",
+      "center back",
+      "team-3"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-64",
+    "name": "Player Name 64",
+    "team": "Team 4",
+    "league": "Serie A",
+    "position": "Goalkeeper",
+    "nationality": "Unknown",
+    "age": 23,
+    "seasonStats": {
+      "goals": 3,
+      "assists": 7,
+      "appearances": 23,
+      "minutesPlayed": 2430,
+      "xG": 5.5,
+      "rating": "7.3"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Serie A",
+      "goalkeeper",
+      "team-4"
+    ],
+    "lastUpdated": "2026-09-25"
+  },
+  {
+    "slug": "player-65",
+    "name": "Player Name 65",
+    "team": "Team 5",
+    "league": "Ligue 1",
+    "position": "Striker",
+    "nationality": "Unknown",
+    "age": 24,
+    "seasonStats": {
+      "goals": 4,
+      "assists": 0,
+      "appearances": 24,
+      "minutesPlayed": 2440,
+      "xG": 6.5,
+      "rating": "7.4"
+    },
+    "tacticalRole": "Detailed tactical role analysis goes here. The player is known for high intelligence and physical prowess on the pitch.",
+    "strengths": [
+      "Passing",
+      "Vision",
+      "Pace"
+    ],
+    "weaknesses": [
+      "Aerial duels",
+      "Weak foot"
+    ],
+    "relatedTags": [
+      "Ligue 1",
+      "striker",
+      "team-5"
+    ],
+    "lastUpdated": "2026-09-25"
+  }
+]

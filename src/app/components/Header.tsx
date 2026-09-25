@@ -19,6 +19,8 @@ import {
 } from "@clerk/nextjs";
 import { ClubOnboardingModal } from "./ClubOnboardingModal";
 
+import Image from "next/image";
+
 /** Returns true if Clerk string is configured */
 function useClerkAvailable(): boolean {
   // @ts-ignore
@@ -187,7 +189,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           {/* Logo */}
           <Link to="/" className="group flex items-center gap-2.5 flex-shrink-0">
             <div className="relative">
-              <img src="/logo.png" alt="The Touchline Dribble" className="w-9 h-9 object-contain rounded-lg group-hover:scale-110 transition-transform duration-300" />
+              <Image src="/logo.png" width={36} height={36} alt="The Touchline Dribble" className="w-9 h-9 object-contain rounded-lg group-hover:scale-110 transition-transform duration-300" />
               <div className="absolute inset-0 rounded-lg bg-[#16A34A]/0 group-hover:bg-[#16A34A]/10 transition-colors duration-300" />
             </div>
             <span className="hidden xl:block text-2xl font-extrabold font-headline text-[#1A1A1A] dark:text-[#EDEDED] transition-all duration-500 whitespace-nowrap">
@@ -221,7 +223,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             {favoriteClub && (
               <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg glass-card">
                 {club?.logo ? (
-                  <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />
+                  <Image src={club.logo} width={20} height={20} alt={favoriteClub} className="w-5 h-5 object-contain" />
                 ) : (
                   <Heart className="w-4 h-4 text-[#16A34A]" />
                 )}
@@ -260,7 +262,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           {/* Mobile: hamburger + login */}
           <div className="flex sm:hidden items-center gap-2 relative z-10">
             {favoriteClub && club?.logo && (
-              <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />
+              <Image src={club.logo} width={20} height={20} alt={favoriteClub} className="w-5 h-5 object-contain" />
             )}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -300,7 +302,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
               {favoriteClub && (
                 <div className="flex items-center gap-2 py-2">
-                  {club?.logo && <img src={club.logo} alt={favoriteClub} className="w-5 h-5 object-contain" />}
+                  {club?.logo && <Image src={club.logo} width={20} height={20} alt={favoriteClub} className="w-5 h-5 object-contain" />}
                   <span className="text-sm font-semibold text-[#16A34A]">{favoriteClub}</span>
                 </div>
               )}

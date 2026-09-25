@@ -1,0 +1,20 @@
+<svg width="600" height="120" viewBox="0 0 600 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&amp;display=swap');
+    </style>
+  </defs>
+  <!-- Optional dark background for testing (comment out for transparent usage) -->
+  <!-- <rect width="100%" height="100%" fill="#0A0A0A" /> -->
+
+  <!-- Logo Mark/Accent -->
+  <rect x="20" y="30" width="8" height="60" rx="4" fill="#16A34A" />
+  
+  <!-- Text -->
+  <text x="45" y="75" font-family="'Space Grotesk', system-ui, sans-serif" font-weight="700" font-size="42" fill="#FAFAF8" letter-spacing="-1">
+    THE TOUCHLINE
+  </text>
+  <text x="380" y="75" font-family="'Space Grotesk', system-ui, sans-serif" font-weight="700" font-size="42" fill="#16A34A" letter-spacing="-1">
+    DRIBBLE
+  </text>
+</svg>

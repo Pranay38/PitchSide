@@ -1,0 +1,37 @@
+[
+  {
+    "slug": "premier-league",
+    "name": "Premier League",
+    "country": "England",
+    "teams": 20,
+    "description": "The most-watched football league in the world, known for its high intensity, physical style, and competitive balance from top to bottom."
+  },
+  {
+    "slug": "la-liga",
+    "name": "La Liga",
+    "country": "Spain",
+    "teams": 20,
+    "description": "Renowned for its technical quality and tactical sophistication, home to some of the world's most historic clubs."
+  },
+  {
+    "slug": "bundesliga",
+    "name": "Bundesliga",
+    "country": "Germany",
+    "teams": 18,
+    "description": "Characterized by high-octane attacking football, packed stadiums, and a strong emphasis on fan culture and youth development."
+  },
+  {
+    "slug": "serie-a",
+    "name": "Serie A",
+    "country": "Italy",
+    "teams": 20,
+    "description": "A league rich in history and tactical pedigree, experiencing a modern renaissance with increasingly attacking play styles."
+  },
+  {
+    "slug": "ligue-1",
+    "name": "Ligue 1",
+    "country": "France",
+    "teams": 18,
+    "description": "The premier breeding ground for Europe's top talent, featuring a mix of raw athleticism and technical brilliance."
+  }
+]

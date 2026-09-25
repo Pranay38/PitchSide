@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { topicPath } from "../lib/contentPaths";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 
+import Image from "next/image";
+
 export function Footer() {
   const { newsletterOptIn, setNewsletterOptIn, loading, fanClub, followedClubs } = useUserPreferences();
   const [email, setEmail] = useState("");
@@ -78,7 +80,7 @@ export function Footer() {
           {/* Brand Column */}
           <div>
             <div className="flex items-center gap-2.5 mb-5">
-              <img src="/logo.png" alt="The Touchline Dribble" className="w-9 h-9 object-contain rounded-lg" />
+              <Image src="/logo.png" width={36} height={36} alt="The Touchline Dribble" className="w-9 h-9 object-contain rounded-lg" />
               <span className="text-2xl font-headline text-foreground">
                 The Touchline Dribble
               </span>
@@ -157,7 +159,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground">
-            &copy; 2026 The Touchline Dribble. All rights reserved.
+            &copy; {new Date().getFullYear()} The Touchline Dribble. All rights reserved.
           </p>
           <a
             href="https://razorpay.me/@thetouchlinedribble"

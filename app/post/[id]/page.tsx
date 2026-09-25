@@ -12,6 +12,7 @@ import {
   getArticleContentModel, 
   buildQuickSummary 
 } from "@/app/lib/articleModel";
+import { generateHowToSchema, generateVideoSchema } from "@/lib/schema-generators";
 import { ArticleContentRenderer } from "@/app/components/ArticleContentRenderer";
 import { ArticleAudioPlayer } from "@/app/components/ArticleAudioPlayer";
 import { InlineNewsletterCard } from "@/app/components/InlineNewsletterCard";
@@ -203,6 +204,46 @@ export default async function BlogPostPage({ params }: Props) {
   };
 
   const schemaArray = [jsonLd];
+
+  // HowTo Schema
+  const isHowTo = post.tags?.some((t: string) => 
+    ["tactics", "guide", "tutorial", "how to"].includes(t.toLowerCase())
+  ) || articleContentModel?.headings.some(h => /^(step\s*\d+|how\s+to)/i.test(h.text));
+
+  if (isHowTo && articleContentModel) {
+    const stepHeadings = articleContentModel.headings.filter(h => 
+      /^(step\s*\d+|how\s+to|\d+\.)/i.test(h.text)
+    );
+    const headingsToUse = stepHeadings.length > 0 ? stepHeadings : articleContentModel.headings;
+    
+    if (headingsToUse.length > 0) {
+      const steps = headingsToUse.map(h => ({
+        name: h.text,
+        text: h.text
+      }));
+      schemaArray.push(generateHowToSchema(post.title, steps));
+    }
+  }
+
+  // VideoObject Schema for YouTube Embeds
+  if (post.content) {
+    const ytRegex = /(?:youtube\.com\/embed\/|youtu\.be\/)([\w-]+)/g;
+    let match;
+    const videoIds = new Set<string>();
+    while ((match = ytRegex.exec(post.content)) !== null) {
+      videoIds.add(match[1]);
+    }
+
+    videoIds.forEach(videoId => {
+      schemaArray.push(generateVideoSchema({
+        name: `${post.title} Video`,
+        description: post.excerpt || `Video embed for ${post.title}`,
+        thumbnailUrl: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        uploadDate: post.publishAt || post.date || new Date().toISOString(),
+        embedUrl: `https://www.youtube.com/embed/${videoId}`
+      }));
+    });
+  }
 
   // FAQPage Schema
   if (articleContentModel?.faqItems && articleContentModel.faqItems.length > 0) {

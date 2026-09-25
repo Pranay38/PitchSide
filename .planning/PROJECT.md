@@ -27,15 +27,26 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 - [x] Zero-CLS font loading (next/font/google)
 - [x] Email preferences & A/B subject testing
 
-### Active (Milestone 2)
+### Active (Milestone 3 — SEO Growth Engine)
 
-- [ ] Fix 29 TypeScript errors and re-enable type checking
-- [ ] Add 10-15 critical path tests (Vitest + Playwright)
+- [ ] GSC API integration + striking-distance dashboard
+- [ ] IndexNow instant indexing on publish/update
+- [ ] SEO title/meta optimization engine + admin tools
+- [ ] Content calendar with publishing cadence tracker
+- [ ] Programmatic SEO expansion: comparisons, league hubs, player analysis (~500-1000 pages)
+- [ ] Schema expansion: HowTo, VideoObject, ItemList
+- [ ] Content refresh tracker for 4-6 week refresh cycles
+- [ ] Internal link scorer + automated suggestions
+- [ ] Weekly SEO metrics email via cron
+- [ ] Bing Webmaster integration + image optimization (WebP/AVIF)
+
+### Completed (Milestone 2)
+
+- [x] Fix 29 TypeScript errors and re-enable type checking
 - [x] Optimize mobile reading experience (mobile-only, desktop untouched)
 - [x] Break monolithic CMS files (AdminPage, StoryEditor, RichTextEditor)
-- [ ] SEO quick wins (FAQ schema, sitemap expansion, llms.txt)
+- [x] SEO quick wins (FAQ schema, sitemap expansion, llms.txt)
 - [x] Core Web Vitals optimization
-- [ ] Clean root directory and add CI pipeline
 
 ### Out of Scope
 
@@ -45,10 +56,6 @@ Weaponized tactical football knowledge that drives viral engagement and converts
 - Real-time features (WebSockets, live match commentary) — (too complex for current phase)
 - Google AdSense — (rejected to preserve editorial prestige)
 - Lead magnet funnel — (user rejected; using distribution-first growth instead)
-- Viral Social Engine — (removed by user request in Sprint 2)
-- Content Syndication — (removed by user request in Sprint 2)
-- Programmatic SEO — (removed by user request in Sprint 3)
-- AI Content Assistant — (removed by user request in Sprint 4)
 
 ## Context
 
