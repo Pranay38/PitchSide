@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "@/lib/router-compat";
-import { ArrowRight, Search, Heart, Shield, Flame, Target, Briefcase, Calendar, Trophy, Users, MessageSquare, Activity } from "lucide-react";
+import { ArrowRight, Search, Heart, Shield, Target, Calendar, Trophy, MessageSquare, Activity } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -9,14 +9,20 @@ import { PostCard } from "../components/PostCard";
 import { PageState } from "../components/PageState";
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
 import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
-import { deslugify } from "../lib/contentPaths";
+import { deslugify, slugify } from "../lib/contentPaths";
 import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
 import { toast } from "sonner";
-import { getClubByName } from "../data/clubs";
-import { getRecentFixturesForClub, getUpcomingFixturesForClub } from "../lib/clubFixtures";
-import type { ClubFixture } from "../lib/clubFixtures";
-import { PollWidget } from "../components/PollWidget";
+import { getAllClubs, getClubByName } from "../data/clubs";
+import {
+  findClubStanding,
+  clubsMatch,
+  getLeagueCodeForClubLeague,
+  getRecentFixturesForClub,
+  getRecentForm,
+  getUpcomingFixturesForClub,
+} from "../lib/clubFixtures";
+import type { ClubFixture, ClubStanding } from "../lib/clubFixtures";
 
 function sortPosts(posts: BlogPost[], sort: string): BlogPost[] {
   const ordered = [...posts];
@@ -40,11 +46,11 @@ export function ClubHubPage() {
   const [isFavorite, setIsFavorite] = useState(false);
   const [recentFixtures, setRecentFixtures] = useState<ClubFixture[]>([]);
   const [nextFixtures, setNextFixtures] = useState<ClubFixture[]>([]);
-  const [fanZoneTab, setFanZoneTab] = useState<"polls" | "debates">("polls");
+  const [leagueStanding, setLeagueStanding] = useState<ClubStanding | null>(null);
 
-  const normalizedSlug = slug.toLowerCase();
-  const clubLabel = deslugify(slug);
-  const clubData = getClubByName(clubLabel);
+  const normalizedSlug = slugify(slug);
+  const clubData = getAllClubs().find((club) => slugify(club.name) === normalizedSlug) || getClubByName(deslugify(slug));
+  const clubLabel = clubData?.name || deslugify(slug);
 
   useEffect(() => {
     let isMounted = true;
@@ -61,16 +67,32 @@ export function ClubHubPage() {
         setLoading(false);
       });
 
-    // Fetch club specific data
+    setRecentFixtures([]);
+    setNextFixtures([]);
+    setLeagueStanding(null);
+
+    // Fetch club-specific, verified data. Empty API responses stay empty rather
+    // than falling back to invented positions or form results.
     const fetchClubData = async () => {
       try {
-        const [recentF, nextF] = await Promise.all([
+        const leagueCode = getLeagueCodeForClubLeague(clubData?.league);
+        const [recentF, nextF, standingsResponse] = await Promise.all([
           getRecentFixturesForClub(clubLabel, clubData?.league || "PL"),
-          getUpcomingFixturesForClub(clubLabel, clubData?.league || "PL")
+          getUpcomingFixturesForClub(clubLabel, clubData?.league || "PL"),
+          fetch(`/api/standings?competition=${leagueCode}`),
         ]);
+
+        let nextStanding: ClubStanding | null = null;
+        if (standingsResponse.ok) {
+          const standingsData = await standingsResponse.json().catch(() => null);
+          const table = Array.isArray(standingsData?.table) ? standingsData.table as ClubStanding[] : [];
+          nextStanding = findClubStanding(table, clubLabel);
+        }
+
         if (isMounted) {
           setRecentFixtures(recentF);
           setNextFixtures(nextF);
+          setLeagueStanding(nextStanding);
         }
       } catch (e) {
         console.error("Failed to fetch club widgets data:", e);
@@ -131,12 +153,13 @@ export function ClubHubPage() {
   const latestPosts = featuredPost
     ? matchingPosts.filter((post) => post.id !== featuredPost.id)
     : matchingPosts;
+  const recentForm = useMemo(() => getRecentForm(recentFixtures, clubLabel), [clubLabel, recentFixtures]);
 
   return (
     <div className="page-atmosphere min-h-screen transition-colors duration-300">
       <SEO
         title={`${clubLabel} Hub`}
-        description={`The ultimate ${clubLabel} fan hub. Read the latest news, stories, and tactical analysis.`}
+        description={`${clubLabel} news, fixtures, transfers, and tactical analysis.`}
       />
       <Header />
 
@@ -189,7 +212,7 @@ export function ClubHubPage() {
             </div>
           </div>
           
-          <div className="relative z-10 mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-white/10 pt-8">
+          <div className="relative z-10 mt-12 grid grid-cols-2 md:grid-cols-3 gap-4 border-t border-white/10 pt-8">
             <div className="flex flex-col">
                 <span className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Total Posts</span>
                 <span className="text-white text-2xl font-black">{matchingPosts.length}</span>
@@ -199,10 +222,8 @@ export function ClubHubPage() {
                 <span className="text-white text-2xl font-black">{matchingStories.length}</span>
             </div>
             <div className="flex flex-col">
-                <span className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">Fan Sentiment</span>
-                <span className="text-[#16A34A] flex items-center gap-1.5 text-lg font-bold">
-                    <Flame className="w-5 h-5 fill-current" /> High
-                </span>
+                <span className="text-white/50 text-xs font-bold uppercase tracking-wider mb-1">League</span>
+                <span className="text-white text-lg font-bold">{clubData?.league || "Global Football"}</span>
             </div>
           </div>
         </section>
@@ -210,14 +231,17 @@ export function ClubHubPage() {
         {/* Enhanced Club Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
             {/* Quick Stats Bar (Spans full width or 2/3) */}
-            <div className="lg:col-span-3 flex flex-col sm:flex-row items-center gap-4 bg-[#1E293B] border border-white/5 rounded-[16px] p-4 shadow-sm hover:shadow-md transition-shadow">
+            <section id="fixtures" className="lg:col-span-3 flex flex-col sm:flex-row items-center gap-4 bg-[#1E293B] border border-white/5 rounded-[16px] p-4 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex-1 flex items-center justify-center sm:justify-start gap-4 border-b sm:border-b-0 sm:border-r border-white/5 pb-4 sm:pb-0 sm:pr-4">
                     <div className="w-12 h-12 rounded-full bg-[#16A34A]/10 flex items-center justify-center text-[#16A34A]">
                         <Trophy className="w-6 h-6" />
                     </div>
                     <div>
                         <p className="text-sm text-gray-400 font-medium">League Position</p>
-                        <p className="text-xl font-bold text-white">4th <span className="text-xs font-normal text-gray-500">(Placeholder)</span></p>
+                        <p className="text-xl font-bold text-white">{leagueStanding ? `#${leagueStanding.position}` : "—"}</p>
+                        <p className="text-xs text-gray-500">
+                          {leagueStanding ? `${leagueStanding.points} points from ${leagueStanding.played} matches` : "Live table unavailable"}
+                        </p>
                     </div>
                 </div>
                 
@@ -228,34 +252,14 @@ export function ClubHubPage() {
                     <div>
                         <p className="text-sm text-gray-400 font-medium mb-1">Recent Form</p>
                         <div className="flex items-center gap-1">
-                            {recentFixtures.length > 0 ? recentFixtures.slice(-5).map((f, i) => {
-                                // Dummy W/D/L logic if score is available
-                                const isHome = f.homeTeam.name.toLowerCase().includes(clubLabel.toLowerCase());
-                                const homeScore = f.score.home || 0;
-                                const awayScore = f.score.away || 0;
-                                let res = 'D';
-                                let color = 'bg-gray-500';
-                                if (isHome) {
-                                    if (homeScore > awayScore) { res = 'W'; color = 'bg-green-500'; }
-                                    else if (homeScore < awayScore) { res = 'L'; color = 'bg-red-500'; }
-                                } else {
-                                    if (awayScore > homeScore) { res = 'W'; color = 'bg-green-500'; }
-                                    else if (awayScore < homeScore) { res = 'L'; color = 'bg-red-500'; }
-                                }
-                                return (
-                                    <span key={i} className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white ${color}`}>
-                                        {res}
-                                    </span>
-                                )
-                            }) : (
-                                <>
-                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-green-500">W</span>
-                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-green-500">W</span>
-                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-gray-500">D</span>
-                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-red-500">L</span>
-                                    <span className="w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white bg-green-500">W</span>
-                                </>
-                            )}
+                            {recentForm.length > 0 ? recentForm.map((result, index) => {
+                              const color = result === "W" ? "bg-green-500" : result === "L" ? "bg-red-500" : "bg-gray-500";
+                              return (
+                                <span key={`${result}-${index}`} className={`w-6 h-6 flex items-center justify-center rounded text-[10px] font-bold text-white ${color}`}>
+                                  {result}
+                                </span>
+                              );
+                            }) : <span className="text-xs text-gray-500">No recent league results</span>}
                         </div>
                     </div>
                 </div>
@@ -268,61 +272,31 @@ export function ClubHubPage() {
                         <p className="text-sm text-gray-400 font-medium">Next Fixture</p>
                         {nextFixtures.length > 0 ? (
                             <p className="text-sm font-bold text-white truncate max-w-[150px]">
-                                vs {nextFixtures[0].homeTeam.name.toLowerCase().includes(clubLabel.toLowerCase()) ? nextFixtures[0].awayTeam.name : nextFixtures[0].homeTeam.name}
+                                vs {clubsMatch(nextFixtures[0].homeTeam.name, clubLabel) ? nextFixtures[0].awayTeam.name : nextFixtures[0].homeTeam.name}
                             </p>
                         ) : (
-                            <p className="text-sm font-bold text-white">vs TBD</p>
+                            <p className="text-sm font-bold text-white">No scheduled fixture</p>
                         )}
                     </div>
                 </div>
-            </div>
+            </section>
 
 
 
-            {/* Fan Zone Widget */}
-            <div className="lg:col-span-1 bg-[#1E293B] border border-white/5 rounded-[16px] shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
-                <div className="flex border-b border-white/5">
-                    <button 
-                        onClick={() => setFanZoneTab("polls")}
-                        className={`flex-1 py-3 text-sm font-bold transition-colors ${fanZoneTab === "polls" ? "text-[#16A34A] border-b-2 border-[#16A34A]" : "text-gray-400 hover:text-white"}`}
-                    >
-                        Polls
-                    </button>
-                    <button 
-                        onClick={() => setFanZoneTab("debates")}
-                        className={`flex-1 py-3 text-sm font-bold transition-colors ${fanZoneTab === "debates" ? "text-[#16A34A] border-b-2 border-[#16A34A]" : "text-gray-400 hover:text-white"}`}
-                    >
-                        Debates
-                    </button>
+            <section className="lg:col-span-3 flex items-center justify-between gap-5 rounded-[16px] border border-white/5 bg-[#1E293B] p-5 shadow-sm transition-shadow hover:shadow-md">
+              <div className="flex items-center gap-4">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-[#16A34A]">
+                  <MessageSquare className="h-5 w-5" />
                 </div>
-                
-                <div className="p-4 flex-1">
-                    {fanZoneTab === "polls" ? (
-                        <PollWidget 
-                            pollId="dummy-club-poll"
-                            title="Fan Verdict"
-                            className="!my-0 !border-none !bg-transparent !shadow-none"
-                            poll={{
-                                question: `Who is ${clubLabel}'s most important player right now?`,
-                                options: [
-                                    { id: "opt1", text: "The Star Striker", votes: 450 },
-                                    { id: "opt2", text: "The Playmaker", votes: 320 },
-                                    { id: "opt3", text: "The Rock at the Back", votes: 150 },
-                                ]
-                            }}
-                        />
-                    ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                            <MessageSquare className="w-8 h-8 text-gray-500 mb-2" />
-                            <p className="text-sm font-bold text-white mb-1">Join the Debate</p>
-                            <p className="text-xs text-gray-400">Head over to the Debate Arena to have your say on recent tactics.</p>
-                            <Link to="/debates" className="mt-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-white font-medium transition-colors border border-white/10">
-                                View Debates
-                            </Link>
-                        </div>
-                    )}
+                <div>
+                  <p className="text-sm font-bold text-white">Join the conversation</p>
+                  <p className="mt-1 text-xs text-gray-400">Have your say in the Debate Arena.</p>
                 </div>
-            </div>
+              </div>
+              <Link to="/debates" className="shrink-0 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10">
+                View debates
+              </Link>
+            </section>
         </div>
 
         {/* Stories Section (if any) */}

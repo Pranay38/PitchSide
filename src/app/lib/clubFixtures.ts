@@ -8,6 +8,21 @@ export interface ClubFixture {
   score: { home: number | null; away: number | null };
 }
 
+export interface ClubStanding {
+  position: number;
+  team: { name: string; crest?: string };
+  played: number;
+  won: number;
+  draw: number;
+  lost: number;
+  gf: number;
+  ga: number;
+  gd: number;
+  points: number;
+}
+
+export type FormResult = "W" | "D" | "L";
+
 interface ClubFixtureWindow {
   daysBack?: number;
   daysForward?: number;
@@ -25,6 +40,8 @@ const LEAGUE_CODE_MAP: Record<string, string> = {
   "Italian Serie A": "SA",
   "Ligue 1": "FL1",
   "French Ligue 1": "FL1",
+  "World Cup 2026": "WC",
+  "FIFA World Cup": "WC",
 };
 
 const CLUB_ALIASES: Record<string, string[]> = {
@@ -113,6 +130,7 @@ export function getLeagueCodeForClubLeague(league?: string | null): string {
   if (normalizedLeague.includes("bundesliga") || normalizedLeague.includes("german")) return "BL1";
   if (normalizedLeague.includes("serie a") || normalizedLeague.includes("italian")) return "SA";
   if (normalizedLeague.includes("ligue 1") || normalizedLeague.includes("french")) return "FL1";
+  if (normalizedLeague.includes("world cup")) return "WC";
 
   return "PL";
 }
@@ -133,6 +151,38 @@ export function clubsMatch(left: string, right: string): boolean {
     normalizedRight.includes(normalizedLeft) ||
     shorterTokenMatch
   );
+}
+
+/**
+ * Returns only results that can be proved from completed fixtures. It never
+ * creates a fallback form string, so quiet periods do not show fake results.
+ */
+export function getRecentForm(
+  fixtures: ClubFixture[],
+  clubName: string,
+  limit = 5,
+): FormResult[] {
+  return fixtures
+    .filter((fixture) => {
+      const hasFinalScore = fixture.score.home !== null && fixture.score.away !== null;
+      return fixture.status === "FINISHED" && hasFinalScore;
+    })
+    .sort((left, right) => new Date(right.utcDate).getTime() - new Date(left.utcDate).getTime())
+    .slice(0, limit)
+    .map((fixture) => {
+      const isHome = clubsMatch(fixture.homeTeam.name, clubName);
+      const clubScore = isHome ? fixture.score.home! : fixture.score.away!;
+      const opponentScore = isHome ? fixture.score.away! : fixture.score.home!;
+
+      if (clubScore > opponentScore) return "W";
+      if (clubScore < opponentScore) return "L";
+      return "D";
+    });
+}
+
+/** Finds a club's verified league-table entry from the standings API response. */
+export function findClubStanding(table: ClubStanding[], clubName: string): ClubStanding | null {
+  return table.find((entry) => clubsMatch(entry.team.name, clubName)) || null;
 }
 
 async function getClubFixturesForWindow(
@@ -196,13 +246,16 @@ export async function getRecentFixturesForClub(
   const matches = await getClubFixturesForWindow(
     clubName,
     league,
-    { daysBack: 7, daysForward: 0 },
+    // A three-week international break can leave a seven-day window empty.
+    // Sixty days reliably covers five domestic results without inventing form.
+    { daysBack: 60, daysForward: 0 },
     signal,
   );
 
   return matches
-    .filter((match) => new Date(match.utcDate).getTime() <= now)
-    .sort((left, right) => new Date(right.utcDate).getTime() - new Date(left.utcDate).getTime());
+    .filter((match) => new Date(match.utcDate).getTime() <= now && match.status === "FINISHED")
+    .sort((left, right) => new Date(right.utcDate).getTime() - new Date(left.utcDate).getTime())
+    .slice(0, 5);
 }
 
 export async function getLiveFixturesForClub(
