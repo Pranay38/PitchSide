@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-09-25T09:58:08.944034",
+  "lastUpdated": "2026-09-26T09:40:35.118893",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea lead race for Scott - Friday's gossip",
-    "sentimentScore": 41
+    "text": "No relegation clause in Haaland's City deal - Saturday's gossip",
+    "sentimentScore": 27
   },
   "managerPressure": [
     {
-      "name": "Matthias Jaissle (NEW)",
+      "name": "Marco Rose (BOU)",
       "pressureScore": 90
     },
     {
-      "name": "Unai Emery (AVL)",
+      "name": "\u00c1lvaro Arbeloa (FUL)",
       "pressureScore": 73
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 68
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 63
     }
   ]
 }
