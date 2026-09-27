@@ -76,7 +76,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(409).json({ error: "A story with this slug already exists" });
       }
 
-      const doc = { ...story, _id: story.id as any };
+      const doc = {
+        ...story,
+        publishedAt: !story.isDraft ? (story.publishedAt || new Date().toISOString()) : story.publishedAt,
+        _id: story.id as any,
+      };
       await collection.insertOne(doc);
       const { _id, ...result } = doc;
       return res.status(201).json(result);
@@ -87,6 +91,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const { id, ...updates } = req.body || {};
       if (!id) return res.status(400).json({ error: "Missing story id" });
 
+      const current = await collection.findOne(buildIdFilter(id));
+      if (!current) return res.status(404).json({ error: "Story not found" });
+
+      if (updates.isDraft === false && !current.publishedAt && !updates.publishedAt) {
+        updates.publishedAt = new Date().toISOString();
+      }
+
       if (updates.slug) {
         const existingSlug = await collection.findOne({ slug: updates.slug, id: { $ne: id } });
         if (existingSlug) {
@@ -95,11 +106,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const result = await collection.updateOne(buildIdFilter(id), { $set: updates });
-      if (result.matchedCount === 0) {
-        return res.status(404).json({ error: "Story not found" });
-      }
-
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ success: true, publishedAt: updates.publishedAt || current.publishedAt });
     }
 
     if (req.method === "DELETE") {

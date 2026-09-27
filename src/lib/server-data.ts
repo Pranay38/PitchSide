@@ -136,14 +136,14 @@ export async function getStoriesServer() {
   try {
     const { db } = await connectToDatabase();
     const collection = db.collection("stories");
-    const stories = await collection.find({}, {
+    const stories = await collection.find({ isDraft: { $ne: true } }, {
       projection: {
         content: 0,
         html: 0,
         blocks: 0,
         richBlocks: 0
       }
-    }).sort({ _id: -1 }).toArray();
+    }).sort({ publishedAt: -1, updatedAt: -1, _id: -1 }).toArray();
     return stories.map(sanitizePost);
   } catch (error) {
     logServerDataError("getStoriesServer", error);
@@ -154,11 +154,11 @@ export async function getStoriesServer() {
 /**
  * Get a single story by slug (server-side).
  */
-export async function getStoryBySlugServer(slug: string) {
+export async function getStoryBySlugServer(slug: string, includeDrafts = false) {
   try {
     const { db } = await connectToDatabase();
     const collection = db.collection("stories");
-    const story = await collection.findOne({ slug });
+    const story = await collection.findOne(includeDrafts ? { slug } : { slug, isDraft: { $ne: true } });
     if (!story) return null;
     return sanitizePost(story);
   } catch (error) {

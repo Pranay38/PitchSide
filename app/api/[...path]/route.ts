@@ -224,10 +224,14 @@ async function handleRequest(
   if (DIRECT_HANDLERS[route]) {
     const response = await adaptToVercel(request, pathSegments, DIRECT_HANDLERS[route]);
     
-    // Auto-revalidate the site cache when a post is modified
-    if (route === "posts" && request.method !== "GET" && response.status >= 200 && response.status < 300) {
+    // Content mutations must be visible immediately across ISR-backed routes.
+    if ((route === "posts" || route === "stories") && request.method !== "GET" && response.status >= 200 && response.status < 300) {
       const { revalidatePath } = require("next/cache");
       revalidatePath("/", "layout");
+      if (route === "stories") {
+        revalidatePath("/stories");
+        revalidatePath("/sitemap.xml");
+      }
     }
     
     return response;
@@ -263,7 +267,12 @@ async function handleRequest(
         : undefined,
     });
 
-    return adaptToVercel(adaptedRequest, pathSegments, sysHandler);
+    const response = await adaptToVercel(adaptedRequest, pathSegments, sysHandler);
+    if (route === "settings" && request.method !== "GET" && response.status >= 200 && response.status < 300) {
+      const { revalidatePath } = require("next/cache");
+      revalidatePath("/", "layout");
+    }
+    return response;
   }
 
   return NextResponse.json({ error: "API route not found: " + route }, { status: 404 });

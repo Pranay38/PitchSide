@@ -569,6 +569,15 @@ export function AdminPage() {
         }
     };
 
+    const handleFeatureStory = async (storyId: string) => {
+        const homepageCuration = {
+            ...siteSettings.homepageCuration,
+            hero: { type: "story" as const, id: storyId },
+        };
+        const updated = await updateSiteSettingsAsync({ homepageCuration });
+        setSiteSettings(updated);
+    };
+
     const handleClubInsightChange = (field: keyof ClubIntelligence, value: string | number) => {
         setSiteSettings((prev) => {
             const key = getClubIntelligenceKey(selectedClubForInsights);
@@ -825,6 +834,7 @@ export function AdminPage() {
                     <AdminStoriesTab 
                         stories={stories}
                         setStories={setStories}
+                        onFeatureStory={handleFeatureStory}
                     />
                 )}
 

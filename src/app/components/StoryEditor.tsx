@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, Eye, Plus, Sparkles, Trash2, Upload, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AlertCircle, ArrowLeft, ArrowRight, Check, CheckCircle2, ChevronDown, ChevronUp, Eye, Home, Plus, Save, Sparkles, Trash2, Upload, X } from "lucide-react";
 import {
   createStoryFromTemplate,
   createEmptyStoryBar,
   createEmptyStoryChapter,
   createEmptyStoryFeature,
   createEmptyStoryMetric,
+  formatStoryDate,
   storyTemplates,
   slugifyStoryValue,
   type StoryFeature,
@@ -48,9 +49,14 @@ function compressImage(file: File, maxWidth = 1400, quality = 0.82): Promise<str
   });
 }
 
+export interface StorySaveOptions {
+  mode: "autosave" | "draft" | "publish";
+  featureAsHero?: boolean;
+}
+
 interface StoryEditorProps {
   story?: StoryFeature | null;
-  onSave: (story: StoryFeature) => Promise<void> | void;
+  onSave: (story: StoryFeature, options: StorySaveOptions) => Promise<void> | void;
   onCancel: () => void;
 }
 
@@ -61,13 +67,24 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
   const [coverUploading, setCoverUploading] = useState(false);
   const [chapterUploading, setChapterUploading] = useState<Record<string, boolean>>({});
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const [currentStep, setCurrentStep] = useState(0);
+  const [dirty, setDirty] = useState(false);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [featureAsHero, setFeatureAsHero] = useState(false);
+  const [published, setPublished] = useState(false);
+  const revisionRef = useRef(0);
 
   useEffect(() => {
     setDraft(normalizeStoryFeature(story || createEmptyStoryFeature()));
-  }, [story]);
+    setDirty(false);
+    setPublished(false);
+  }, [story?.id]);
 
   const updateStory = (updater: (current: StoryFeature) => StoryFeature) => {
     setDraft((current) => updater(current));
+    revisionRef.current += 1;
+    setDirty(true);
+    setAutoSaveStatus("idle");
   };
 
   const updateChapter = (
@@ -94,20 +111,73 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
     });
   };
 
+  const calculatedReadTime = useMemo(() => {
+    const words = draft.chapters.reduce((total, chapter) => {
+      const text = chapter.body.join(" ").replace(/<[^>]*>/g, " ").trim();
+      return total + text.split(/\s+/).filter(Boolean).length;
+    }, 0);
+    return `${Math.max(1, Math.ceil(words / 200))} min scroll`;
+  }, [draft.chapters]);
+
+  const validationErrors = useMemo(() => {
+    const errors: string[] = [];
+    if (!draft.title.trim() || draft.title.trim() === "New Story") errors.push("Add a story title.");
+    if (!draft.slug.trim()) errors.push("Add a URL slug.");
+    if (!draft.excerpt.trim() || draft.excerpt.startsWith("Summarize the story")) errors.push("Write a homepage excerpt.");
+    if (!draft.coverImage.trim()) errors.push("Add a cover image.");
+    const completeChapter = draft.chapters.some((chapter) => {
+      const body = chapter.body.join(" ").replace(/<[^>]*>/g, " ").trim();
+      return chapter.title.trim() && chapter.title !== "New Chapter" && body && body !== "Write this chapter here.";
+    });
+    if (!completeChapter) errors.push("Complete at least one chapter.");
+    return errors;
+  }, [draft]);
+
   const prepareStory = (overrides?: Partial<StoryFeature>): StoryFeature => normalizeStoryFeature({
     ...draft,
+    readTime: calculatedReadTime,
     ...overrides,
     updatedAt: new Date().toISOString(),
   });
 
-  const handleSave = async () => {
+  const handleSave = async (mode: "draft" | "publish") => {
+    if (mode === "publish" && validationErrors.length > 0) {
+      setCurrentStep(2);
+      return;
+    }
     setSaving(true);
     try {
-      await onSave(prepareStory());
+      const now = new Date().toISOString();
+      const prepared = prepareStory({
+        isDraft: mode === "publish" ? false : draft.isDraft,
+        publishedAt: mode === "publish" ? (draft.publishedAt || now) : draft.publishedAt,
+        date: mode === "publish" && !draft.publishedAt ? formatStoryDate() : draft.date,
+      });
+      await onSave(prepared, { mode, featureAsHero: mode === "publish" && featureAsHero });
+      setDraft(prepared);
+      setDirty(false);
+      setAutoSaveStatus("saved");
+      if (mode === "publish") setPublished(true);
     } finally {
       setSaving(false);
     }
   };
+
+  useEffect(() => {
+    if (!dirty || saving || draft.title.trim() === "New Story") return;
+    const revision = revisionRef.current;
+    const timeout = window.setTimeout(async () => {
+      setAutoSaveStatus("saving");
+      try {
+        await onSave(prepareStory(), { mode: "autosave" });
+        if (revisionRef.current === revision) setDirty(false);
+        setAutoSaveStatus("saved");
+      } catch {
+        setAutoSaveStatus("error");
+      }
+    }, 1200);
+    return () => window.clearTimeout(timeout);
+  }, [dirty, draft, saving, onSave]);
 
   const handlePreview = async () => {
     setPreviewing(true);
@@ -168,7 +238,7 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
     if (!shouldReplace) return;
 
     const nextTemplateStory = createStoryFromTemplate(template.id);
-    setDraft(normalizeStoryFeature({
+    updateStory(() => normalizeStoryFeature({
       ...nextTemplateStory,
       id: draft.id || nextTemplateStory.id,
       isDraft: true,
@@ -178,7 +248,8 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
+      <div className="sticky top-0 z-40 -mx-2 rounded-2xl border border-gray-200 bg-white/95 p-4 shadow-lg shadow-slate-900/5 backdrop-blur dark:border-gray-800 dark:bg-[#0F172A]/95 sm:mx-0">
+        <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-4">
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-2">Story Editor</p>
           <h2 className="text-2xl font-bold text-[#0F172A] dark:text-white">
@@ -188,47 +259,58 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
             Build longform stories with publish control, preview mode, chapter images, and scroll-reactive sections.
           </p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <div className="inline-flex rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <button
-              type="button"
-              onClick={() => updateStory((current) => ({ ...current, isDraft: true }))}
-              className={`px-4 py-2.5 text-sm font-medium ${draft.isDraft ? "bg-amber-500 text-white" : "bg-white dark:bg-[#0F172A] text-[#64748B] dark:text-gray-300"}`}
-            >
-              Draft
-            </button>
-            <button
-              type="button"
-              onClick={() => updateStory((current) => ({ ...current, isDraft: false }))}
-              className={`px-4 py-2.5 text-sm font-medium ${!draft.isDraft ? "bg-[#16A34A] text-white" : "bg-white dark:bg-[#0F172A] text-[#64748B] dark:text-gray-300"}`}
-            >
-              Published
-            </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="min-w-[120px] text-xs font-semibold text-[#475569] dark:text-gray-300" aria-live="polite">
+            {autoSaveStatus === "saving" && "Saving…"}
+            {autoSaveStatus === "saved" && <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-300"><Check className="h-3.5 w-3.5" /> Saved</span>}
+            {autoSaveStatus === "error" && <span className="inline-flex items-center gap-1 text-red-600"><AlertCircle className="h-3.5 w-3.5" /> Autosave failed</span>}
+            {autoSaveStatus === "idle" && (dirty ? "Unsaved changes" : "All changes saved")}
           </div>
           <button
+            type="button"
             onClick={handlePreview}
             disabled={previewing}
-            className="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-[#0F172A] dark:text-white rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 inline-flex items-center gap-2"
+            className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-[#0F172A] transition-colors duration-200 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] disabled:opacity-50 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800"
           >
             <Eye className="w-4 h-4" />
             {previewing ? "Opening..." : "Preview"}
           </button>
           <button
+            type="button"
             onClick={onCancel}
-            className="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-[#64748B] dark:text-gray-300 rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+            className="min-h-11 cursor-pointer rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-[#475569] transition-colors duration-200 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
           >
-            Cancel
+            Back to stories
           </button>
           <button
-            onClick={handleSave}
+            type="button"
+            onClick={() => void handleSave("draft")}
             disabled={saving}
-            className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] disabled:opacity-50"
+            className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl bg-[#16A34A] px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[#15803d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2 disabled:opacity-50"
           >
-            {saving ? "Saving..." : draft.isDraft ? "Save Draft" : "Save Story"}
+            <Save className="h-4 w-4" />
+            {saving ? "Saving…" : draft.isDraft ? "Save draft" : "Save changes"}
           </button>
         </div>
+        </div>
+        <nav className="mt-5 grid grid-cols-3 gap-2" aria-label="Story creation steps">
+          {["Essentials", "Chapters", "Review & publish"].map((label, index) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => setCurrentStep(index)}
+              aria-current={currentStep === index ? "step" : undefined}
+              className={`min-h-11 cursor-pointer rounded-xl border px-3 py-2 text-left text-xs font-bold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] sm:text-sm ${currentStep === index ? "border-[#16A34A] bg-[#16A34A]/10 text-[#15803d] dark:text-[#86efac]" : "border-gray-200 bg-white text-[#475569] hover:border-[#16A34A]/40 dark:border-gray-700 dark:bg-[#1E293B] dark:text-gray-300"}`}
+            >
+              <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-current/10">{index + 1}</span>
+              {label}
+            </button>
+          ))}
+        </nav>
       </div>
 
+      {currentStep === 0 && (
+      <>
       <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
           <div>
@@ -264,8 +346,6 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
         <EditorSidebar 
           draft={draft}
           updateStory={updateStory}
-          coverUploading={coverUploading}
-          handleCoverUpload={handleCoverUpload}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -357,6 +437,15 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
         </div>
       </section>
 
+      <div className="flex justify-end">
+        <button type="button" onClick={() => setCurrentStep(1)} className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl bg-[#0F172A] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#1E293B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:bg-[#16A34A] dark:hover:bg-[#15803d]">
+          Continue to chapters <ArrowRight className="h-4 w-4" />
+        </button>
+      </div>
+      </>
+      )}
+
+      {currentStep === 1 && (
       <section className="space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -453,15 +542,6 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
                   className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-3 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
                 />
               </label>
-              <label className="block md:col-span-2">
-                <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Pull Quote</span>
-                <input
-                  type="text"
-                  value={chapter.pullQuote || ""}
-                  onChange={(e) => updateChapter(chapter.id, (current) => ({ ...current, pullQuote: e.target.value }))}
-                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                />
-              </label>
             </div>
 
             <div className="rounded-2xl bg-gray-50 dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 p-5 space-y-4">
@@ -543,6 +623,21 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
               )}
             </div>
 
+            <details className="group rounded-2xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-[#0F172A]">
+              <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-bold text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#16A34A] dark:text-white">
+                Advanced chapter tools
+                <ChevronDown className="h-4 w-4 transition-transform duration-200 group-open:rotate-180" />
+              </summary>
+              <div className="space-y-5 border-t border-gray-200 p-5 dark:border-gray-800">
+                <label className="block">
+                  <span className="mb-2 block text-sm font-medium text-[#0F172A] dark:text-white">Pull quote</span>
+                  <input
+                    type="text"
+                    value={chapter.pullQuote || ""}
+                    onChange={(e) => updateChapter(chapter.id, (current) => ({ ...current, pullQuote: e.target.value }))}
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#16A34A] dark:border-gray-700 dark:bg-[#1E293B] dark:text-white"
+                  />
+                </label>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               <div className="rounded-2xl bg-gray-50 dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 p-5">
                 <div className="flex items-center justify-between gap-3 mb-4">
@@ -718,9 +813,81 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
                 </div>
               </div>
             </div>
+              </div>
+            </details>
           </div>
         ))}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <button type="button" onClick={() => setCurrentStep(0)} className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-bold text-[#475569] hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">
+            <ArrowLeft className="h-4 w-4" /> Essentials
+          </button>
+          <button type="button" onClick={() => setCurrentStep(2)} className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl bg-[#0F172A] px-5 py-3 text-sm font-bold text-white hover:bg-[#1E293B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:bg-[#16A34A] dark:hover:bg-[#15803d]">
+            Review story <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
       </section>
+      )}
+
+      {currentStep === 2 && (
+        <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-[#1E293B]">
+            <div className="relative h-64 bg-[#0F172A]">
+              {draft.coverImage && <img src={draft.coverImage} alt={draft.title} className="h-full w-full object-cover opacity-70" />}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/35 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#86efac]">{draft.eyebrow}</p>
+                <h3 className="mt-2 text-3xl font-black font-outfit">{draft.title}</h3>
+              </div>
+            </div>
+            <div className="space-y-5 p-6">
+              <p className="text-base font-semibold text-[#16A34A]">{draft.subtitle}</p>
+              <p className="leading-7 text-[#475569] dark:text-gray-300">{draft.excerpt}</p>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-xl bg-gray-50 p-4 dark:bg-[#0F172A]"><p className="text-xs font-bold uppercase tracking-wide text-[#64748B]">Read time</p><p className="mt-2 font-bold dark:text-white">{calculatedReadTime}</p></div>
+                <div className="rounded-xl bg-gray-50 p-4 dark:bg-[#0F172A]"><p className="text-xs font-bold uppercase tracking-wide text-[#64748B]">Chapters</p><p className="mt-2 font-bold dark:text-white">{draft.chapters.length}</p></div>
+                <div className="rounded-xl bg-gray-50 p-4 dark:bg-[#0F172A]"><p className="text-xs font-bold uppercase tracking-wide text-[#64748B]">URL</p><p className="mt-2 truncate font-bold text-[#16A34A]">/{draft.slug}</p></div>
+              </div>
+            </div>
+          </div>
+
+          <aside className="space-y-5 rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-[#1E293B]">
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#16A34A]">Ready check</p>
+              <h3 className="mt-2 text-xl font-bold text-[#0F172A] dark:text-white">Review and publish</h3>
+            </div>
+            {validationErrors.length > 0 ? (
+              <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100">
+                <p className="flex items-center gap-2 font-bold"><AlertCircle className="h-4 w-4" /> Finish these items</p>
+                <ul className="mt-3 list-disc space-y-1 pl-5 text-sm">
+                  {validationErrors.map((error) => <li key={error}>{error}</li>)}
+                </ul>
+              </div>
+            ) : (
+              <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-100">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
+                <div><p className="font-bold">Ready to publish</p><p className="mt-1 text-sm">This story will appear in Latest Stories on the homepage.</p></div>
+              </div>
+            )}
+            <label className="flex min-h-11 cursor-pointer items-start gap-3 rounded-xl border border-gray-200 p-4 dark:border-gray-700">
+              <input type="checkbox" checked={featureAsHero} onChange={(event) => setFeatureAsHero(event.target.checked)} className="mt-1 h-4 w-4 accent-[#16A34A]" />
+              <span><span className="flex items-center gap-2 font-bold text-[#0F172A] dark:text-white"><Home className="h-4 w-4 text-[#16A34A]" /> Make homepage hero</span><span className="mt-1 block text-sm text-[#475569] dark:text-gray-400">Optional. This replaces the current homepage lead.</span></span>
+            </label>
+            <button type="button" onClick={() => void handleSave("publish")} disabled={saving || validationErrors.length > 0} className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#16A34A] px-5 py-3 font-bold text-white transition-colors duration-200 hover:bg-[#15803d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <CheckCircle2 className="h-5 w-5" /> {saving ? "Publishing…" : draft.isDraft ? "Publish story" : "Update published story"}
+            </button>
+            {published && (
+              <div aria-live="polite" className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
+                <p className="font-bold text-emerald-900 dark:text-emerald-100">Story published successfully.</p>
+                <div className="flex flex-wrap gap-2">
+                  <a href={`/stories/${draft.slug}`} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#0F172A] px-3 py-2 text-sm font-bold text-white"><Eye className="h-4 w-4" /> View story</a>
+                  <a href="/" target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-emerald-300 px-3 py-2 text-sm font-bold text-emerald-900 dark:text-emerald-100"><Home className="h-4 w-4" /> View homepage</a>
+                </div>
+              </div>
+            )}
+            <button type="button" onClick={() => setCurrentStep(1)} className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-bold text-[#475569] hover:text-[#16A34A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:text-gray-300"><ArrowLeft className="h-4 w-4" /> Back to chapters</button>
+          </aside>
+        </section>
+      )}
     </div>
   );
 }

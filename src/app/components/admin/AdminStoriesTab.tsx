@@ -1,49 +1,63 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Plus, Edit3, Trash2, Eye, Copy, BookOpen } from "lucide-react";
 import { AdminEmptyState } from "./AdminEmptyState";
 import { useNavigate } from "@/lib/router-compat";
 import { addStoryAsync, updateStoryAsync, deleteStoryAsync } from "../../lib/storyStorage";
 import type { StoryFeature } from "../../data/stories";
-import { StoryEditor } from "../StoryEditor";
+import { StoryEditor, type StorySaveOptions } from "../StoryEditor";
 import { toast } from "sonner";
 
 interface AdminStoriesTabProps {
     stories: StoryFeature[];
     setStories: React.Dispatch<React.SetStateAction<StoryFeature[]>>;
+    onFeatureStory?: (storyId: string) => Promise<void>;
 }
 
 export function AdminStoriesTab({
     stories,
     setStories,
+    onFeatureStory,
 }: AdminStoriesTabProps) {
     const navigate = useNavigate();
     const [showStoryEditor, setShowStoryEditor] = useState(false);
     const [editingStory, setEditingStory] = useState<StoryFeature | null>(null);
+    const persistedStoryRef = useRef(false);
 
     const handleCreateStory = () => {
         setEditingStory(null);
+        persistedStoryRef.current = false;
         setShowStoryEditor(true);
     };
 
     const handleEditStory = (story: StoryFeature) => {
         setEditingStory(story);
+        persistedStoryRef.current = true;
         setShowStoryEditor(true);
     };
 
-    const handleSaveStory = async (story: StoryFeature) => {
+    const handleSaveStory = async (story: StoryFeature, options: StorySaveOptions) => {
         try {
             let updatedStories;
-            if (editingStory) {
+            if (persistedStoryRef.current) {
                 updatedStories = await updateStoryAsync(story);
             } else {
                 updatedStories = await addStoryAsync(story);
+                persistedStoryRef.current = true;
             }
             setStories(updatedStories);
-            setShowStoryEditor(false);
-            setEditingStory(null);
-            toast.success("Story saved successfully!");
+            let heroPromoted = false;
+            if (options.featureAsHero && onFeatureStory) {
+                try {
+                    await onFeatureStory(story.id);
+                    heroPromoted = true;
+                } catch (error) {
+                    toast.error("Story published, but homepage hero promotion failed. You can retry it in Settings.");
+                }
+            }
+            if (options.mode === "draft") toast.success("Draft saved.");
+            if (options.mode === "publish") toast.success(heroPromoted ? "Story published and set as homepage hero." : "Story published to the homepage.");
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : "Failed to save story.");
+            if (options.mode !== "autosave") toast.error(error instanceof Error ? error.message : "Failed to save story.");
             throw error;
         }
     };
@@ -61,7 +75,7 @@ export function AdminStoriesTab({
 
     const handleDuplicateStory = async (story: StoryFeature) => {
         try {
-            const duplicate = { ...story, id: `story-${Date.now()}`, title: `${story.title} (Copy)`, slug: `${story.slug}-copy-${Date.now()}` };
+            const duplicate = { ...story, id: `story-${Date.now()}`, title: `${story.title} (Copy)`, slug: `${story.slug}-copy-${Date.now()}`, isDraft: true, publishedAt: undefined };
             const updatedStories = await addStoryAsync(duplicate);
             setStories(updatedStories);
             toast.success("Story duplicated.");
@@ -75,7 +89,7 @@ export function AdminStoriesTab({
             <StoryEditor
                 story={editingStory}
                 onSave={handleSaveStory}
-                onCancel={() => { setShowStoryEditor(false); setEditingStory(null); }}
+                onCancel={() => { setShowStoryEditor(false); setEditingStory(null); persistedStoryRef.current = false; }}
             />
         );
     }

@@ -49,6 +49,7 @@ export interface StoryFeature {
   themeFrom: string;
   themeTo: string;
   isDraft: boolean;
+  publishedAt?: string;
   updatedAt: string;
   highlights: string[];
   chapters: StoryChapter[];
