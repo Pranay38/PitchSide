@@ -36,6 +36,7 @@ Remove homepage polling, rumour/fantasy distractions, repeated content lanes, pr
 - Add an optional concise verdict, up to three sourced evidence points, a fair counterargument, a related background explainer, and an approved share quote.
 - Use homepage curation to select the lead, explainers, latest articles, and archive picks. Earlier sections take priority to prevent duplicates.
 - Review archive picks weekly: "older" alone is not a reason to feature something.
+- Keep the existing glossary and tactical concept pages, their URLs, and their content. Link them directly from the secondary navigation and from Learn. Learn is a discovery page, not a replacement glossary or a duplicate content library.
 - `/learn` links to canonical articles and the existing glossary/tactics resources. Build toward six reviewed explainers; do not publish placeholders to hit a number.
 - Preserve paid access rules. Growth work does not authorise changing membership entitlements.
 

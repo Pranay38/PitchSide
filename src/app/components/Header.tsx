@@ -242,7 +242,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             <details className="relative text-sm">
               <summary className="cursor-pointer min-h-11 flex items-center font-semibold">More</summary>
               <div className="absolute right-0 top-full z-50 w-52 rounded-xl border border-border bg-background p-2 shadow-xl">
-                {[['/collections', 'Collections'], ['/about', 'About'], ['/daily-fix', 'Daily Fix'], ['/tactics', 'Tactical board']].map(([href, label]) => <Link key={href} to={href} className="block rounded-lg p-3 hover:bg-secondary">{label}</Link>)}
+                {[['/glossary', 'Football glossary'], ['/football-tactics', 'Tactical concepts'], ['/collections', 'Collections'], ['/about', 'About'], ['/daily-fix', 'Daily Fix'], ['/tactics', 'Tactical board']].map(([href, label]) => <Link key={href} to={href} className="block rounded-lg p-3 hover:bg-secondary">{label}</Link>)}
               </div>
             </details>
             <div className="flex items-center gap-2">
@@ -303,6 +303,8 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
               ))}
 
               <div className="flex flex-wrap gap-4 border-t border-border py-3 text-sm">
+                <Link to="/glossary" onClick={() => setMobileOpen(false)}>Football glossary</Link>
+                <Link to="/football-tactics" onClick={() => setMobileOpen(false)}>Tactical concepts</Link>
                 <Link to="/collections" onClick={() => setMobileOpen(false)}>Collections</Link>
                 <Link to="/about" onClick={() => setMobileOpen(false)}>About</Link>
                 <Link to="/daily-fix" onClick={() => setMobileOpen(false)}>Daily Fix</Link>
