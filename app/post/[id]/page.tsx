@@ -15,9 +15,8 @@ import {
 import { generateHowToSchema, generateVideoSchema } from "@/lib/schema-generators";
 import { ArticleContentRenderer } from "@/app/components/ArticleContentRenderer";
 import { ArticleAudioPlayer } from "@/app/components/ArticleAudioPlayer";
-import { InlineNewsletterCard } from "@/app/components/InlineNewsletterCard";
 import { RecommendedArticles } from "@/app/components/RecommendedArticles";
-import { SupportBanner } from "@/app/components/SupportBanner";
+import { ArticleEndCTA } from "@/app/components/ArticleEndCTA";
 import { ShareBar } from "@/app/components/ShareBar";
 import { PostActionsClient } from "./PostActionsClient";
 import { PostTrackersClient } from "./PostTrackersClient";
@@ -26,7 +25,6 @@ import { AdaptiveArticleHeader } from "@/app/components/AdaptiveArticleHeader";
 import { MilestoneScrubber } from "@/app/components/MilestoneScrubber";
 import { HotTakeHeatIndex } from "@/app/components/HotTakeHeatIndex";
 import { TopicClusterNav } from "@/app/components/TopicClusterNav";
-import { OneLineNewsletter } from "@/app/components/OneLineNewsletter";
 import { auth } from "@clerk/nextjs/server";
 import { hasExceededMetering } from "@/app/lib/metering";
 export const revalidate = 3600; // 1 hour
@@ -423,7 +421,7 @@ export default async function BlogPostPage({ params }: Props) {
               )}
             </PostEmbedHydrationClient>
 
-            {!isGated && <OneLineNewsletter />}
+            <ArticleEndCTA postId={post.id} club={post.club} config={post.articleCta} />
 
             {/* Hot Take Heat Index — interactive polls from the editor */}
             {post.hotTakes && post.hotTakes.length > 0 && (
@@ -441,17 +439,10 @@ export default async function BlogPostPage({ params }: Props) {
 
             <TopicClusterNav topicLabel={post.tags?.[0] || post.club} />
 
-            <div className="mt-12">
-              <InlineNewsletterCard
-                title="Get the strongest Touchline Dribble reads in one email"
-                description="Use the newsletter as the low-noise way to keep up with new analysis and longform pieces."
-              />
-            </div>
           </article>
           
           <aside className="w-full xl:w-[280px] hidden xl:block space-y-8">
             <RecommendedArticles articleId={post.id} />
-            <SupportBanner variant="compact" />
           </aside>
         </section>
       </main>

@@ -108,6 +108,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .limit(10)
             .toArray();
 
+        // 8. End-of-article CTA funnel (last 30 days)
+        const ctaEventCounts = await db.collection("growth_events").aggregate([
+            { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+            { $group: { _id: "$event", count: { $sum: 1 } } },
+        ]).toArray();
+        const ctaCounts = Object.fromEntries(ctaEventCounts.map((entry) => [entry._id, entry.count]));
+        const ctaViews = ctaCounts.cta_view || 0;
+        const ctaSubscriptions = ctaCounts.cta_subscribe || 0;
+        const ctaSupportClicks = ctaCounts.cta_support_click || 0;
+
+        const ctaByArticle = await db.collection("growth_events").aggregate([
+            { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+            { $group: {
+                _id: "$postId",
+                views: { $sum: { $cond: [{ $eq: ["$event", "cta_view"] }, 1, 0] } },
+                subscriptions: { $sum: { $cond: [{ $eq: ["$event", "cta_subscribe"] }, 1, 0] } },
+                supportClicks: { $sum: { $cond: [{ $eq: ["$event", "cta_support_click"] }, 1, 0] } },
+            } },
+            { $sort: { subscriptions: -1, supportClicks: -1, views: -1 } },
+            { $limit: 10 },
+        ]).toArray();
+
         const analyticsData = {
             kpis: {
                 totalSubscribers,
@@ -128,6 +150,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 failed: n.failed || 0
             })),
             subscriberGrowth,
+            ctaFunnel: {
+                views: ctaViews,
+                subscriptions: ctaSubscriptions,
+                supportClicks: ctaSupportClicks,
+                conversionRate: ctaViews > 0 ? Number(((ctaSubscriptions / ctaViews) * 100).toFixed(1)) : 0,
+                byArticle: ctaByArticle.map((entry) => ({
+                    postId: entry._id,
+                    views: entry.views,
+                    subscriptions: entry.subscriptions,
+                    supportClicks: entry.supportClicks,
+                })),
+            },
             cronHealth: cronJobs.map(j => ({
                 jobName: j.jobName,
                 lastRunAt: j.lastRunAt,

@@ -146,6 +146,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             const alertPreferences = req.body?.alertPreferences;
             const clubPreferences = req.body?.clubPreferences;
+            const source = sanitizeString(req.body?.source)?.slice(0, 180) || null;
 
             if (!email || !isValidEmail(email)) {
                 return res.status(400).json({ error: "Please enter a valid email address." });
@@ -162,6 +163,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         $set: {
                             ...(alertPreferences ? { alertPreferences } : {}),
                             ...(clubPreferences ? { clubPreferences } : {}),
+                            ...(source ? { lastSignupSource: source } : {}),
                             updatedAt: new Date().toISOString(),
                         },
                     },
@@ -177,6 +179,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 welcomeSequenceState: 1, // 1 = Received Welcome, waiting for Day 1
                 ...(alertPreferences ? { alertPreferences } : {}),
                 ...(clubPreferences ? { clubPreferences } : {}),
+                ...(source ? { signupSource: source } : {}),
             };
             const insertResult = await collection.insertOne(insertedSubscriber);
             await issueSubscriberCookie(req, res, collection, {

@@ -20,6 +20,7 @@ import { RichTextCanvas } from "./editor/RichTextCanvas";
 import { SeoTools } from "./editor/SeoTools";
 import { SidebarSettings } from "./editor/SidebarSettings";
 import { VersionHistoryPanel } from "./admin/VersionHistoryPanel";
+import { ArticleCtaSettings } from "./editor/ArticleCtaSettings";
 
 const GENERAL_CATEGORIES = [
     "General",
@@ -102,6 +103,7 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
     const [relatedPostIds, setRelatedPostIds] = useState<string[]>(post?.relatedPostIds || []);
     const [syndication, setSyndication] = useState<{reddit?: boolean; substack?: boolean; medium?: boolean}>(post?.syndication || {});
     const [gatekeepPoint, setGatekeepPoint] = useState<number | "">(post?.gatekeepPoint ?? "");
+    const [articleCta, setArticleCta] = useState<NonNullable<BlogPost["articleCta"]>>(post?.articleCta || { enabled: true });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPreview, setShowPreview] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
@@ -224,6 +226,7 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
             relatedPostIds: relatedPostIds.length > 0 ? relatedPostIds : undefined,
             syndication: Object.keys(syndication).length > 0 ? syndication : undefined,
             gatekeepPoint: gatekeepPoint === "" ? undefined : gatekeepPoint,
+            articleCta,
         };
     };
 
@@ -317,7 +320,7 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
     }, [
         title, excerpt, content, coverImage, club, category, tags,
         thisWeek, mustRead, editorPick, mainStory, mediaUrl, audioUrl, playerName,
-        usePoll, poll, seriesName, seriesOrder, publishAt, relatedPostIds, submitAction
+        usePoll, poll, seriesName, seriesOrder, publishAt, relatedPostIds, articleCta, submitAction
     ]);
 
     useEffect(() => {
@@ -470,6 +473,8 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
                                     setSyndication={setSyndication}
                                     postId={post?.id}
                                 />
+
+                                <ArticleCtaSettings value={articleCta} onChange={setArticleCta} />
 
                                 <InteractiveWidgets
                                     usePoll={usePoll}

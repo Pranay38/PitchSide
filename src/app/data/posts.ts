@@ -9,6 +9,7 @@ export interface BlogPost {
   tags: string[];
   date: string;
   readTime: string;
+  views?: number;
   thisWeek?: boolean;
   mustRead?: boolean;
   editorPick?: boolean;
@@ -41,6 +42,13 @@ export interface BlogPost {
   };
   format?: "article" | "weekly-verdict"; // "article" (default) or "weekly-verdict" (short analysis)
   gatekeepPoint?: number; // Exact block/paragraph number where the content gate appears. 0 or undefined means no gate.
+  articleCta?: {
+    enabled?: boolean;
+    subscriberHeadline?: string;
+    subscriberBody?: string;
+    nonSubscriberHeadline?: string;
+    nonSubscriberBody?: string;
+  };
   armchairRatings?: {
     name: string;
     position: string;

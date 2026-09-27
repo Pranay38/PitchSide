@@ -24,3 +24,24 @@ export function trackPageView(url?: string) {
     page_path: url ?? window.location.pathname + window.location.search,
   });
 }
+
+export type GrowthEventName = "cta_view" | "cta_subscribe" | "cta_support_click";
+
+/** Record a conversion event in GA4 and the first-party growth dashboard. */
+export function trackGrowthEvent(
+  event: GrowthEventName,
+  details: { postId: string; readerState: "subscriber" | "signed_in" | "guest" },
+) {
+  window.gtag?.("event", event, {
+    article_id: details.postId,
+    reader_state: details.readerState,
+  });
+
+  void fetch("/api/growth-events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    keepalive: true,
+    body: JSON.stringify({ event, ...details }),
+  }).catch(() => undefined);
+}

@@ -44,7 +44,6 @@ const ReadingProgressBar = dynamic(() => import("../components/ReadingProgressBa
 const QuickReactBar = dynamic(() => import("../components/QuickReactBar").then(m => m.QuickReactBar));
 const SwipeNavigator = dynamic(() => import("../components/SwipeNavigator").then(m => m.SwipeNavigator));
 const ArticleEndCTA = dynamic(() => import("../components/ArticleEndCTA").then(m => m.ArticleEndCTA));
-const MobileNewsletterCTA = dynamic(() => import("../components/MobileNewsletterCTA").then(m => m.MobileNewsletterCTA));
 const TouchlineAudioPlayer = dynamic(() => import("../components/TouchlineAudioPlayer").then(m => m.TouchlineAudioPlayer));
 const ArticleContentRenderer = dynamic(() => import("../components/ArticleContentRenderer").then(m => m.ArticleContentRenderer));
 
@@ -548,7 +547,7 @@ export function BlogPostPage() {
             )}
 
             <div className="mt-12" ref={bottomRef}>
-              <ArticleEndCTA authorName="Pranay Agrawal" />
+              <ArticleEndCTA postId={post.id} club={post.club} config={post.articleCta} />
             </div>
 
             {post.poll && (
@@ -659,7 +658,6 @@ export function BlogPostPage() {
       </main>
 
       <Footer />
-      <MobileNewsletterCTA />
     </div>
   );
 }

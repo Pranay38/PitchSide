@@ -32,6 +32,7 @@ import searchHandler from "../server/endpoints/search";
 import footballDataHandler from "../server/endpoints/football-data";
 
 import welcomeSequenceHandler from "../server/endpoints/welcome-sequence";
+import growthEventsHandler from "../server/endpoints/growth-events";
 import { applyRateLimit, applyStrictRateLimit } from "../server/lib/rateLimit";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -78,6 +79,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return digestHandler(req, res);
         case "analytics":
             return analyticsHandler(req, res);
+        case "growth-events":
+            return growthEventsHandler(req, res);
         case "generate-carousel":
             return aiGenerateHandler(req, res);
         case "ai-generate":

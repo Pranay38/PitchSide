@@ -1,5 +1,5 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { Users, FileText, MessageSquare, Flame, BarChart3, Mail, RefreshCw, AlertCircle, CheckCircle, XCircle, Clock, TrendingUp, AlertTriangle, Activity, type LucideIcon } from "lucide-react";
+import { Users, FileText, MessageSquare, Flame, BarChart3, Mail, RefreshCw, AlertCircle, CheckCircle, XCircle, Clock, TrendingUp, AlertTriangle, Activity, MousePointerClick, HeartHandshake, type LucideIcon } from "lucide-react";
 
 // Cron job staleness threshold: 25 hours (24h cron cycle + 1h buffer)
 const STALE_THRESHOLD_MS = 25 * 60 * 60 * 1000;
@@ -59,6 +59,18 @@ interface AnalyticsData {
         failed: number;
     }[];
     subscriberGrowth: GrowthEntry[];
+    ctaFunnel: {
+        views: number;
+        subscriptions: number;
+        supportClicks: number;
+        conversionRate: number;
+        byArticle: Array<{
+            postId: string;
+            views: number;
+            subscriptions: number;
+            supportClicks: number;
+        }>;
+    };
     cronHealth: CronJob[];
     recentErrors: ErrorLog[];
 }
@@ -142,6 +154,7 @@ export function AdminAnalyticsTab() {
     }
 
     const { kpis, topPosts, newsletters, subscriberGrowth, cronHealth, recentErrors } = data;
+    const ctaFunnel = data.ctaFunnel || { views: 0, subscriptions: 0, supportClicks: 0, conversionRate: 0, byArticle: [] };
 
     const formatNumber = (num: number) => {
         if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -208,6 +221,47 @@ export function AdminAnalyticsTab() {
                 <KpiCard icon={MessageSquare} label="Comments" value={formatNumber(kpis.totalComments)} iconBg="bg-purple-50 dark:bg-purple-500/10" iconColor="text-purple-500" />
                 <KpiCard icon={Flame} label="Debates" value={formatNumber(kpis.totalDebates)} iconBg="bg-orange-50 dark:bg-orange-500/10" iconColor="text-orange-500" />
             </div>
+
+            <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-[#0F172A]">
+                <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <h3 className="flex items-center gap-2 text-lg font-bold text-[#0F172A] dark:text-white">
+                            <MousePointerClick className="h-5 w-5 text-[#16A34A]" /> Article CTA funnel
+                        </h3>
+                        <p className="mt-1 text-xs text-[#64748B] dark:text-gray-400">Last 30 days · subscription and reader-support intent</p>
+                    </div>
+                    <p className="text-sm font-bold text-[#16A34A]">{ctaFunnel.conversionRate}% signup conversion</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                    <KpiCard icon={MousePointerClick} label="CTA views" value={formatNumber(ctaFunnel.views)} iconBg="bg-blue-50 dark:bg-blue-500/10" iconColor="text-blue-500" />
+                    <KpiCard icon={Mail} label="Inbox signups" value={formatNumber(ctaFunnel.subscriptions)} iconBg="bg-emerald-50 dark:bg-emerald-500/10" iconColor="text-emerald-500" />
+                    <KpiCard icon={HeartHandshake} label="Razorpay clicks" value={formatNumber(ctaFunnel.supportClicks)} iconBg="bg-rose-50 dark:bg-rose-500/10" iconColor="text-rose-500" />
+                </div>
+                {ctaFunnel.byArticle.length > 0 && (
+                    <div className="mt-5 overflow-x-auto">
+                        <table className="w-full text-left text-sm">
+                            <thead>
+                                <tr className="border-b border-gray-100 text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                                    <th className="pb-3 font-semibold">Article ID</th>
+                                    <th className="pb-3 text-right font-semibold">Views</th>
+                                    <th className="pb-3 text-right font-semibold">Signups</th>
+                                    <th className="pb-3 text-right font-semibold">Support clicks</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                {ctaFunnel.byArticle.map((entry) => (
+                                    <tr key={entry.postId} className="text-[#0F172A] dark:text-white">
+                                        <td className="max-w-[280px] truncate py-3 pr-4 font-medium" title={entry.postId}>{entry.postId}</td>
+                                        <td className="py-3 text-right">{entry.views}</td>
+                                        <td className="py-3 text-right text-[#16A34A]">{entry.subscriptions}</td>
+                                        <td className="py-3 text-right">{entry.supportClicks}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </section>
 
             {/* Subscriber Growth Chart */}
             <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
