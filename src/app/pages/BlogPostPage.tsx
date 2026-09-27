@@ -1,4 +1,8 @@
 "use client";
+import { selectRelatedReading } from "../lib/matchdayContent";
+import { EditorialReading } from "../components/EditorialReading";
+import { trackContentEvent } from "../lib/analytics";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "@/lib/router-compat";
 import {
@@ -243,7 +247,10 @@ export function BlogPostPage() {
   const handleShare = (platform: "whatsapp" | "twitter" | "reddit" | "copy") => {
     if (!post) return;
 
-    const url = window.location.href;
+    const shareUrl = new URL(`/post/${post.slug || post.id}`, window.location.origin);
+    shareUrl.search = new URLSearchParams({ utm_source: platform === 'twitter' ? 'x' : platform, utm_medium: 'social', utm_campaign: post.slug || post.id, utm_content: 'article_share' }).toString();
+    const url = shareUrl.toString();
+    trackContentEvent('share_click', { article_id: post.id, platform, placement: 'article' });
     const text = post.title;
 
     if (platform === "whatsapp") {
@@ -259,9 +266,13 @@ export function BlogPostPage() {
       return;
     }
 
-    navigator.clipboard.writeText(url);
-    toast.success("Link copied to clipboard.");
+    void navigator.clipboard.writeText(url).then(() => toast.success("Link copied to clipboard.")).catch(() => toast.error("Could not copy the link. Copy the page address from your browser."));
   };
+
+  const faqSchema = useMemo(() => {
+    if (!post?.content) return null;
+    return generateFAQSchema(post.content);
+  }, [post?.content]);
 
   if (loading && !post) {
     return (
@@ -338,10 +349,6 @@ export function BlogPostPage() {
     }
   });
 
-  const faqSchema = useMemo(() => {
-    if (!post?.content) return null;
-    return generateFAQSchema(post.content);
-  }, [post?.content]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] transition-colors duration-300 dark:bg-[#0B1120]">
@@ -488,6 +495,7 @@ export function BlogPostPage() {
 
 
 
+            {post.editorial?.verdict && <aside className="my-8 rounded-2xl border border-border bg-secondary/40 p-6" aria-label="Our verdict"><p className="text-xs font-bold uppercase tracking-widest text-primary">Our verdict</p><p className="mt-3 font-headline text-2xl text-foreground">{post.editorial.verdict}</p></aside>}
             <div
               ref={articleContentRef}>
               
@@ -505,6 +513,11 @@ export function BlogPostPage() {
               </SwipeNavigator>
             </div>
 
+            {(!post.gatekeepPoint || user) && <>
+              {!!post.editorial?.evidence?.filter(item => item.text.trim()).length && <section className="my-10" aria-label="Why we think this"><h2 className="font-headline text-2xl mb-4">Why we think this</h2><ul className="space-y-4 list-disc pl-5">{post.editorial.evidence.filter(item => item.text.trim()).map((item, index) => <li key={index}>{item.text}{item.sourceUrl && /^https?:\/\//i.test(item.sourceUrl) && <a className="ml-2 text-primary underline" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">Source {index + 1}</a>}</li>)}</ul></section>}
+              {post.editorial?.counterargument && <section className="my-10 rounded-2xl border border-border p-6"><h2 className="font-headline text-2xl mb-3">The strongest counterargument</h2><p className="leading-relaxed">{post.editorial.counterargument}</p></section>}
+            </>}
+            <EditorialReading postId={post.id} {...selectRelatedReading(post, posts)} />
             {post.mediaUrl && (
               <div className="mt-12 w-full overflow-hidden rounded-2xl">
                 {post.mediaUrl.includes("spotify.com") ? (

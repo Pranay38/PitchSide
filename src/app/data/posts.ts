@@ -1,5 +1,7 @@
 export interface BlogPost {
   id: string;
+  contentKind?: "opinion" | "explainer" | null;
+  editorial?: { verdict?: string; evidence?: { text: string; sourceUrl?: string }[]; counterargument?: string; backgroundPostId?: string; shareQuote?: string };
   title: string;
   excerpt: string;
   content: string;

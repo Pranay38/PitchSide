@@ -1,3 +1,6 @@
+import { EditorialReading } from "@/app/components/EditorialReading";
+import { selectRelatedReading } from "@/app/lib/matchdayContent";
+import type { BlogPost } from "@/app/data/posts";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { getPostByIdServer, getPublishedPostsServer } from "@/lib/server-data";
@@ -107,6 +110,9 @@ export default async function BlogPostPage({ params }: Props) {
   if (post.slug && id !== post.slug) {
     permanentRedirect(`/post/${post.slug}`);
   }
+
+  const relatedReading = selectRelatedReading(post as BlogPost, await getPublishedPostsServer() as BlogPost[]);
+  const readingLink = (item?: BlogPost) => item ? { id: item.id, slug: item.slug, title: item.title } : undefined;
 
   // 3. Prepare content models
   const articleContentModel = post.content ? getArticleContentModel(post.content) : null;
@@ -414,6 +420,7 @@ export default async function BlogPostPage({ params }: Props) {
               />
             )}
 
+            {post.editorial?.verdict && <aside className="my-8 rounded-2xl border border-border bg-secondary/40 p-6" aria-label="Our verdict"><p className="text-xs font-bold uppercase tracking-widest text-primary">Our verdict</p><p className="mt-3 font-headline text-2xl text-foreground">{post.editorial.verdict}</p></aside>}
             {/* Content Renderer (Renders static HTML for crawlers, hydrating glossary on mount) */}
             <PostEmbedHydrationClient>
               {articleContentModel && (
@@ -421,6 +428,11 @@ export default async function BlogPostPage({ params }: Props) {
               )}
             </PostEmbedHydrationClient>
 
+            {!isGated && <>
+              {!!post.editorial?.evidence?.filter((item: { text: string }) => item.text.trim()).length && <section className="my-10" aria-label="Why we think this"><h2 className="font-headline text-2xl mb-4">Why we think this</h2><ul className="space-y-4 list-disc pl-5">{post.editorial.evidence.filter((item: { text: string }) => item.text.trim()).map((item: { text: string; sourceUrl?: string }, index: number) => <li key={index}>{item.text}{item.sourceUrl && /^https?:\/\//i.test(item.sourceUrl) && <a className="ml-2 text-primary underline" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">Source {index + 1}</a>}</li>)}</ul></section>}
+              {post.editorial?.counterargument && <section className="my-10 rounded-2xl border border-border p-6"><h2 className="font-headline text-2xl mb-3">The strongest counterargument</h2><p className="leading-relaxed">{post.editorial.counterargument}</p></section>}
+            </>}
+            <EditorialReading postId={post.id} background={readingLink(relatedReading.background)} perspective={readingLink(relatedReading.perspective)} />
             <ArticleEndCTA postId={post.id} club={post.club} config={post.articleCta} />
 
             {/* Hot Take Heat Index — interactive polls from the editor */}

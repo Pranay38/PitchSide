@@ -1,3 +1,4 @@
+import { EditorialSettings } from "./editor/EditorialSettings";
 import { useState, useEffect, useMemo, useRef } from "react";
 import type { BlogPost } from "../data/posts";
 import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName, deleteCustomClub, isCustomClub } from "../data/clubs";
@@ -62,6 +63,8 @@ interface PostEditorProps {
 
 export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps) {
     type SubmitAction = "draft" | "publish" | "back";
+    const [contentKind, setContentKind] = useState<BlogPost["contentKind"]>(post?.contentKind);
+    const [editorial, setEditorial] = useState<NonNullable<BlogPost["editorial"]>>(post?.editorial || {});
     const [title, setTitle] = useState(post?.title || "");
     const [format, setFormat] = useState<"article" | "weekly-verdict">(
         post?.format === "weekly-verdict" ? "weekly-verdict" : "article"
@@ -202,6 +205,9 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
             excerpt: excerpt.trim(),
             content: content,
             format,
+            category: post?.category,
+            contentKind: contentKind || null,
+            editorial: { ...editorial, evidence: editorial.evidence?.filter(item => item.text.trim()) },
             coverImage:
                 coverImage.trim() ||
                 "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
@@ -318,7 +324,7 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
             clearPendingAutoSave();
         };
     }, [
-        title, excerpt, content, coverImage, club, category, tags,
+        title, excerpt, content, coverImage, club, category, tags, contentKind, editorial,
         thisWeek, mustRead, editorPick, mainStory, mediaUrl, audioUrl, playerName,
         usePoll, poll, seriesName, seriesOrder, publishAt, relatedPostIds, articleCta, submitAction
     ]);
@@ -426,6 +432,8 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
                                     content={content}
                                     errors={errors}
                                 />
+
+                                <EditorialSettings kind={contentKind} setKind={setContentKind} editorial={editorial} setEditorial={setEditorial} posts={allPosts || []} currentId={post?.id} />
 
                                 <MetaSettings
                                     category={category}

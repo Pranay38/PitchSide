@@ -6,7 +6,6 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
 import { CSPostHogProvider } from "@/app/components/PostHogProvider";
-import { InnerCircleModal } from "@/app/components/InnerCircleModal";
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -229,7 +228,7 @@ export default function RootLayout({
             <Providers>
               <div id="main-content" tabIndex={-1} className="outline-none" />
               {children}
-              <InnerCircleModal />
+
             </Providers>
           </CSPostHogProvider>
         </ClerkProvider>

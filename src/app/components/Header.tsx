@@ -104,6 +104,7 @@ interface HeaderProps {
 export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [clubPickerOpen, setClubPickerOpen] = useState(false);
 
   const [briefcaseOpen, setBriefcaseOpen] = useState(false);
   const [archiveQuery, setArchiveQuery] = useState("");
@@ -115,15 +116,10 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   const activeClubName = favoriteClub || fanClub?.name;
 
   const navLinks = [
-    { to: "/", label: "Home", icon: <House className="w-4 h-4" /> },
-    ...(activeClubName ? [{ 
-      to: topicPath(activeClubName), 
-      label: activeClubName.length > 12 ? activeClubName.substring(0, 10) + "..." : activeClubName 
-    }] : []),
-    { to: "/archive", label: "Archive" },
+    { to: "/archive", label: "Latest", icon: <House className="w-4 h-4" /> },
+    { to: "/archive?kind=opinion", label: "Opinions" },
+    { to: "/learn", label: "Learn" },
     { to: "/stories", label: "Stories" },
-    { to: "/collections", label: "Lists" },
-    { to: "/about", label: "About" },
   ];
 
   const pillNavItems = navLinks.map(link => ({
@@ -161,7 +157,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
   return (
     <>
-      <ClubOnboardingModal />
+      <ClubOnboardingModal open={clubPickerOpen} onClose={() => setClubPickerOpen(false)} />
       <BriefcaseDrawer isOpen={briefcaseOpen} onClose={() => setBriefcaseOpen(false)} />
       
       {/* Network Bar */}
@@ -192,13 +188,13 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
               <Image src="/logo.png" width={36} height={36} alt="The Touchline Dribble" className="w-9 h-9 object-contain rounded-lg group-hover:scale-110 transition-transform duration-300" />
               <div className="absolute inset-0 rounded-lg bg-[#16A34A]/0 group-hover:bg-[#16A34A]/10 transition-colors duration-300" />
             </div>
-            <span className="hidden xl:block text-2xl font-extrabold font-headline text-[#1A1A1A] dark:text-[#EDEDED] transition-all duration-500 whitespace-nowrap">
+            <span className="hidden 2xl:block text-2xl font-extrabold font-headline text-[#1A1A1A] dark:text-[#EDEDED] transition-all duration-500 whitespace-nowrap">
               The Touchline Dribble
             </span>
           </Link>
 
           {/* Desktop Nav - Centered with PillNav */}
-          <div className="hidden lg:flex flex-1 justify-center px-4 2xl:px-8"
+          <div className="hidden xl:flex flex-1 justify-center px-4 2xl:px-8"
             style={{
               "--pill-base": "rgba(22, 163, 74, 0.1)",
               "--pill-bg": "transparent",
@@ -215,7 +211,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           </div>
 
           {/* Desktop Right side — Login right after nav, then utilities */}
-          <div className="hidden sm:flex items-center justify-end gap-2 lg:gap-3 flex-shrink-0 relative z-10">
+          <div className="hidden xl:flex items-center justify-end gap-2 lg:gap-3 flex-shrink-0 relative z-10">
             <AuthButton />
             <DesktopCommandPalette />
 
@@ -234,15 +230,21 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
             )}
 
             {/* Change club */}
-            {onChangeClub && (
+            {(
               <button
-                onClick={onChangeClub}
+                onClick={() => onChangeClub ? onChangeClub() : setClubPickerOpen(true)}
                 className="text-sm text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors font-medium"
               >
-                Change
+                {activeClubName ? "Change club" : "Choose club"}
               </button>
             )}
 
+            <details className="relative text-sm">
+              <summary className="cursor-pointer min-h-11 flex items-center font-semibold">More</summary>
+              <div className="absolute right-0 top-full z-50 w-52 rounded-xl border border-border bg-background p-2 shadow-xl">
+                {[['/collections', 'Collections'], ['/about', 'About'], ['/daily-fix', 'Daily Fix'], ['/tactics', 'Tactical board']].map(([href, label]) => <Link key={href} to={href} className="block rounded-lg p-3 hover:bg-secondary">{label}</Link>)}
+              </div>
+            </details>
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <button
@@ -260,7 +262,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           </div>
 
           {/* Mobile: hamburger + login */}
-          <div className="flex sm:hidden items-center gap-2 relative z-10">
+          <div className="flex xl:hidden items-center gap-2 relative z-10">
             {favoriteClub && club?.logo && (
               <Image src={club.logo} width={20} height={20} alt={favoriteClub} className="w-5 h-5 object-contain" />
             )}
@@ -277,7 +279,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
           {/* Mobile menu full-screen overlay */}
           {mobileOpen && (
-            <div className="sm:hidden fixed inset-0 top-[60px] z-40 glass border-t border-white/10 dark:border-white/5 px-6 py-6 overflow-y-auto animate-float-in flex flex-col gap-6">
+            <div className="xl:hidden fixed inset-0 top-[60px] z-40 glass border-t border-white/10 dark:border-white/5 px-6 py-6 overflow-y-auto animate-float-in flex flex-col gap-6">
               <form onSubmit={handleArchiveSearch} className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-[#0F172A]">
                 <Search className="w-4 h-4 text-[#94A3B8]" />
                 <input
@@ -300,6 +302,11 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                 </Link>
               ))}
 
+              <div className="flex flex-wrap gap-4 border-t border-border py-3 text-sm">
+                <Link to="/collections" onClick={() => setMobileOpen(false)}>Collections</Link>
+                <Link to="/about" onClick={() => setMobileOpen(false)}>About</Link>
+                <Link to="/daily-fix" onClick={() => setMobileOpen(false)}>Daily Fix</Link>
+              </div>
               {favoriteClub && (
                 <div className="flex items-center gap-2 py-2">
                   {club?.logo && <Image src={club.logo} width={20} height={20} alt={favoriteClub} className="w-5 h-5 object-contain" />}
@@ -307,9 +314,9 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                 </div>
               )}
 
-              {onChangeClub && (
+              {(
                 <button
-                  onClick={() => { onChangeClub(); setMobileOpen(false); }}
+                  onClick={() => { if (onChangeClub) onChangeClub(); else setClubPickerOpen(true); setMobileOpen(false); }}
                   className="block w-full text-left text-sm text-[#64748B] dark:text-gray-400 hover:text-[#16A34A] transition-colors font-medium py-2"
                 >
                   {favoriteClub ? "Change Club" : "Select Club"}

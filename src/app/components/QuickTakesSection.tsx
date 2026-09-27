@@ -1,3 +1,5 @@
+import { articleShareUrl } from "../lib/shareLinks";
+import { trackContentEvent } from "../lib/analytics";
 import { useMemo } from "react";
 import { Link } from "@/lib/router-compat";
 import { Zap, Clock, ArrowRight, Share2, Camera } from "lucide-react";
@@ -23,15 +25,15 @@ function getTimeAgo(dateStr: string): string {
   }
 }
 
-export function QuickTakesSection({ posts }: { posts: BlogPost[] }) {
+export function QuickTakesSection({ posts, selected = false }: { posts: BlogPost[]; selected?: boolean }) {
   const [sharePost, setSharePost] = useState<BlogPost | null>(null);
 
   const verdicts = useMemo(() => {
     return posts
-      .filter((p) => p.format === "weekly-verdict" && !p.isDraft)
+      .filter((p) => (selected || p.format === "weekly-verdict") && !p.isDraft)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 6);
-  }, [posts]);
+  }, [posts, selected]);
 
   if (verdicts.length === 0) return null;
 
@@ -48,10 +50,10 @@ export function QuickTakesSection({ posts }: { posts: BlogPost[] }) {
           </h2>
         </div>
         <Link
-          to="/weekly-verdicts"
+          to={selected ? "/archive?kind=opinion" : "/weekly-verdicts"}
           className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
         >
-          View all verdicts
+          View all opinions
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
@@ -96,9 +98,8 @@ export function QuickTakesSection({ posts }: { posts: BlogPost[] }) {
                   <button
                     type="button"
                     onClick={() => {
-                      const url = `${window.location.origin}/post/${post.slug || post.id}`;
-                      navigator.clipboard.writeText(url);
-                      toast.success("Link copied!");
+                      void navigator.clipboard.writeText(articleShareUrl(post, 'reader_share', 'verdict_card')).then(() => toast.success("Link copied!")).catch(() => toast.error("Could not copy the link. Open the article and copy its address."));
+                      trackContentEvent('share_click', { article_id: post.id, platform: 'copy', placement: 'verdict_card' });
                     }}
                     className="p-1.5 rounded-lg text-gray-400 hover:text-[#16A34A] hover:bg-[#16A34A]/10 transition-colors"
                     title="Share Verdict"

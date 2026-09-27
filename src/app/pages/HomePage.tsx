@@ -1,838 +1,304 @@
 "use client";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useUser, SignInButton } from "@clerk/nextjs";
+import { ArrowRight, Newspaper } from "lucide-react";
 import { Link } from "@/lib/router-compat";
-import { ArrowRight, BookOpen, Library, Newspaper, Repeat2, ScrollText, Trophy, ShieldQuestion, Flame, ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
-
-import dynamic from "next/dynamic";
-const PollOfTheWeekPanel = dynamic(() => import("../components/PollOfTheWeekPanel").then(m => m.PollOfTheWeekPanel));
-import type { RumorMill } from "../components/RumorMillWidget";
-import type { ManagerPressure } from "../components/ManagerPressureWidget";
-import { PostCard } from "../components/PostCard";
-import { ArticleCard } from "../components/ui/blog-post-card";
+import { SEO } from "../components/SEO";
 import AeroHero from "../components/ui/aero-hero";
-import Blogs from "../components/ui/blogs";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../components/ui/carousel";
-import { PageState } from "../components/PageState";
 import { SectionMarker } from "../components/SectionMarker";
 import { StoryFeatureCard } from "../components/StoryFeatureCard";
-import { TextWireSection } from "../components/TextWireSection";
-const CommunityContributorCTA = dynamic(() => import("../components/CommunityContributorCTA").then(m => m.CommunityContributorCTA));
-import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
-import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
-import { getSiteSettings, getSiteSettingsAsync, type SiteSettings } from "../lib/siteSettingsStorage";
+import { ArticleCard } from "../components/ui/blog-post-card";
+import { QuickTakesSection } from "../components/QuickTakesSection";
+import { InlineNewsletterCard } from "../components/InlineNewsletterCard";
+import { PageState } from "../components/PageState";
+import {
+  getSiteSettings,
+  getSiteSettingsAsync,
+  type SiteSettings,
+} from "../lib/siteSettingsStorage";
+import { selectMatchdayContent, storyEdition } from "../lib/matchdayContent";
+import { trackContentEvent } from "../lib/analytics";
+import { useUserPreferences } from "../hooks/useUserPreferences";
 import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
-import { safeParse, DailyFeaturesSchema } from "../lib/schemas";
-const DebateWidget = dynamic(() => import("../components/DebateWidget").then(m => m.DebateWidget));
-const SupportBanner = dynamic(() => import("../components/SupportBanner").then(m => m.SupportBanner));
-import { getClubByName } from "../data/clubs";
 
-// Dynamic below-the-fold heavy components to reduce initial bundle
-const OnThisDayWidget = dynamic(() => import("../components/OnThisDayWidget").then(m => m.OnThisDayWidget));
-const RumorMillWidget = dynamic(() => import("../components/RumorMillWidget").then(m => m.RumorMillWidget));
-const FantasyCornerWidget = dynamic(() => import("../components/FantasyCornerWidget").then(m => m.FantasyCornerWidget));
-
-const InlineNewsletterCard = dynamic(() => import("../components/InlineNewsletterCard").then(m => m.InlineNewsletterCard));
-const BlogPostsGrid = dynamic(() => import("../components/ui/blog-posts").then(m => m.BlogPostsGrid));
-
-
-const QuickTakesSection = dynamic(() => import("../components/QuickTakesSection").then(m => m.QuickTakesSection));
-
-const ChallengeTheTake = dynamic(() => import("../components/home/ChallengeTheTake").then(m => m.ChallengeTheTake));
-
-
-/** Hook: animates elements with class `scroll-reveal` when they enter viewport */
-function useScrollReveal() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' },
-    );
-
-    const elements = container.querySelectorAll('.scroll-reveal');
-    elements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, []);
-
-  return containerRef;
+async function fetchPublishedFeed<T>(path: string): Promise<T[]> {
+  const response = await fetch(path);
+  if (!response.ok) throw new Error("The published feed is unavailable");
+  const data = await response.json();
+  if (!Array.isArray(data)) throw new Error("The published feed is invalid");
+  return data as T[];
 }
-
-interface DailyFeaturesData {
-  lastUpdated: string;
-  rumorMill?: RumorMill;
-  managerPressure: ManagerPressure[];
-}
-
-function sortPosts(posts: BlogPost[]): BlogPost[] {
-  return [...posts].sort((left, right) => new Date(right.date).getTime() - new Date(left.date).getTime());
-}
-
-function dedupePostsByTitle(posts: BlogPost[]): BlogPost[] {
-  const seenTitles = new Set<string>();
-
-  return posts.filter((post) => {
-    const normalizedTitle = post.title.trim().toLowerCase();
-    if (!normalizedTitle) return true;
-    if (seenTitles.has(normalizedTitle)) return false;
-    seenTitles.add(normalizedTitle);
-    return true;
-  });
-}
-
-function sortStories(stories: StoryFeature[]): StoryFeature[] {
-  return [...stories].sort((left, right) => (
-    new Date(right.publishedAt || right.updatedAt || right.date).getTime()
-    - new Date(left.publishedAt || left.updatedAt || left.date).getTime()
-  ));
-}
-
-function pickOrderedItems<T extends { id: string }>(
-  items: T[],
-  ids: string[],
-  limit: number,
-  excludedIds: Set<string> = new Set(),
-): T[] {
-  const byId = new Map(items.map((item) => [item.id, item]));
-  const ordered = ids
-    .map((id) => byId.get(id))
-    .filter((item): item is T => item !== undefined && !excludedIds.has(item.id));
-
-  if (ordered.length >= limit) {
-    return ordered.slice(0, limit);
-  }
-
-  const filler = items.filter((item) => !excludedIds.has(item.id) && !ordered.some((selected) => selected.id === item.id));
-  return [...ordered, ...filler].slice(0, limit);
-}
-
-function StoryLinkCard({ story }: { story: StoryFeature }) {
-  return (
-    <Link
-      to={`/stories/${story.slug}`}
-      className="group block overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#16A34A]/30 hover:shadow-xl dark:border-gray-800 dark:bg-[#0F172A]"
-    >
-      <div className="aspect-[16/10] overflow-hidden relative">
-        <Image
-          src={story.coverImage}
-          alt={story.title}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-        />
-      </div>
-      <div className="space-y-3 p-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-[#16A34A]/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-            {story.eyebrow}
-          </span>
-          <span className="text-xs font-medium text-[#94A3B8]">{story.readTime}</span>
-        </div>
-        <div>
-          <h3 className="text-xl font-black font-outfit leading-tight text-[#0F172A] transition-colors group-hover:text-[#16A34A] dark:text-white">
-            {story.title}
-          </h3>
-          <p className="mt-2 line-clamp-3 text-sm leading-6 text-[#64748B] dark:text-gray-400">
-            {story.excerpt}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {story.highlights.slice(0, 3).map((item) => (
-            <span
-              key={item}
-              className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-[#475569] dark:bg-white/5 dark:text-gray-300"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function YourVoiceSection() {
-  const [activeVoiceTab, setActiveVoiceTab] = useState<"poll" | "debate" | "pots">("poll");
-  return (
-    <div className="tinted-panel rounded-[2rem] border border-gray-200 p-5 shadow-sm dark:border-gray-800">
-      <div className="mb-4 flex items-center gap-3">
-        <div className="h-6 w-1.5 rounded-full bg-[#16A34A]" />
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-            Fan Zone
-          </p>
-          <h2 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white">
-            Your Voice
-          </h2>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100/50 dark:bg-white/5 rounded-xl p-1 mb-4">
-        <button
-          onClick={() => setActiveVoiceTab("poll")}
-          className={`flex-1 py-2 rounded-lg text-[10px] font-bold transition-all ${activeVoiceTab === "poll"
-              ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
-              : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-        >
-          ⚡ Poll
-        </button>
-        <button
-          onClick={() => setActiveVoiceTab("debate")}
-          className={`flex-1 py-2 rounded-lg text-[10px] font-bold transition-all ${activeVoiceTab === "debate"
-              ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
-              : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-        >
-          🔥 Debate
-        </button>
-        <button
-          onClick={() => setActiveVoiceTab("pots")}
-          className={`flex-1 py-2 rounded-lg text-[10px] font-bold transition-all ${activeVoiceTab === "pots"
-              ? "bg-white dark:bg-[#1E293B] text-[#16A34A] shadow-sm"
-              : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-        >
-          🏆 POTS
-        </button>
-      </div>
-
-      {/* Content */}
-      <div>
-        {activeVoiceTab === "poll" && <PollOfTheWeekPanel />}
-        {activeVoiceTab === "debate" && <DebateWidget />}
-        {activeVoiceTab === "pots" && (
-            <div className="p-4 text-center">
-                <Trophy className="w-12 h-12 text-[#16A34A] mx-auto mb-4 animate-bounce" />
-                <h3 className="text-lg font-black font-outfit text-[#0F172A] dark:text-white mb-2 uppercase">Who is your POTS?</h3>
-                <p className="text-xs text-gray-500 mb-6">Cast your definitive vote for the Player of the Season 2026.</p>
-                <Link to="/pots" className="inline-block w-full bg-[#16A34A] text-white py-3 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-[#16A34A]/20">
-                    Go to Voting Page
-                </Link>
-            </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-
 
 interface HomePageProps {
-  serverPosts?: any[];
-  serverStories?: any[];
-  serverSettings?: any;
+  serverPosts?: BlogPost[];
+  serverStories?: StoryFeature[];
+  serverSettings?: SiteSettings | null;
 }
 
-export function HomePage({ serverPosts, serverStories, serverSettings }: HomePageProps = {}) {
-  const scrollRef = useScrollReveal();
-  const { isSignedIn, isLoaded: clLoaded } = useUser();
-  const clerkAvailable = typeof process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY === "string" && process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.length > 0;
-  const { data: posts = [], isLoading: isLoadingPosts, error: postsError } = useQuery({
-    queryKey: ['posts'],
-    queryFn: async () => sortPosts(await getPublishedPostsAsync()),
-    initialData: serverPosts && serverPosts.length > 0
-      ? () => sortPosts(serverPosts)
-      : () => sortPosts(getPublishedPosts()),
-    initialDataUpdatedAt: serverPosts && serverPosts.length > 0 ? Date.now() : 0,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const { data: stories = [], isLoading: isLoadingStories } = useQuery({
-    queryKey: ['stories'],
-    queryFn: async () => sortStories(await getAllStoriesAsync()),
-    initialData: serverStories && serverStories.length > 0
-      ? () => sortStories(serverStories as any)
-      : () => sortStories(getAllStories()),
-    initialDataUpdatedAt: serverStories && serverStories.length > 0 ? Date.now() : 0,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const { data: siteSettings = getSiteSettings(), isLoading: isLoadingSettings } = useQuery({
-    queryKey: ['siteSettings'],
-    queryFn: getSiteSettingsAsync,
-    initialData: serverSettings && serverSettings.id
-      ? () => serverSettings as any
-      : getSiteSettings,
-    initialDataUpdatedAt: serverSettings && serverSettings.id ? Date.now() : 0,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const DAILY_FALLBACK: DailyFeaturesData = { lastUpdated: new Date().toISOString(), managerPressure: [] };
-
-  const { data: dailyFeatures, isLoading: isLoadingDaily } = useQuery({
-    queryKey: ['dailyFeatures'],
-    queryFn: async () => {
-      // Try the API first (returns fresh scraped data from MongoDB)
-      try {
-        const apiRes = await fetch("/api/daily-features");
-        if (apiRes.ok) {
-          const raw = await apiRes.json();
-          const validated = safeParse(DailyFeaturesSchema, raw, DAILY_FALLBACK);
-          if (validated.rumorMill) return validated as DailyFeaturesData;
-        }
-      } catch { /* fall through to static file */ }
-      // Fallback to static file
-      const res = await fetch("/data/daily_features.json");
-      if (!res.ok) return DAILY_FALLBACK;
-      const raw = await res.json();
-      return safeParse(DailyFeaturesSchema, raw, DAILY_FALLBACK) as DailyFeaturesData;
-    },
-    staleTime: 1000 * 60 * 60,
-  });
-
-  const loading = isLoadingPosts || isLoadingStories || isLoadingSettings || isLoadingDaily;
-  const error = postsError ? "Could not load the homepage feed right now." : "";
-
-  const standardPosts = useMemo(() => {
-    return posts.filter(p => !p.format || p.format === "article");
-  }, [posts]);
-
-  const fallbackFeaturedPost = useMemo(() => {
-    const flagged = standardPosts.filter((post) => post.mainStory);
-    const mustReads = standardPosts.filter((post) => post.mustRead);
-    return flagged[0] || mustReads[0] || null;
-  }, [standardPosts]);
-
-
-
-  const fallbackFeaturedStory = useMemo(() => stories[0] || null, [stories]);
-  const heroSelection = useMemo(() => {
-    const hero = siteSettings.homepageCuration.hero;
-    if (hero.type === "story") {
-      const story = stories.find((item) => item.id === hero.id);
-      return story ? { type: "story" as const, story } : (fallbackFeaturedStory ? { type: "story" as const, story: fallbackFeaturedStory } : null);
-    }
-
-    const post = posts.find((item) => item.id === hero.id);
-    if (post) {
-      return { type: "post" as const, post };
-    }
-    if (fallbackFeaturedPost) {
-      return { type: "post" as const, post: fallbackFeaturedPost };
-    }
-    return fallbackFeaturedStory ? { type: "story" as const, story: fallbackFeaturedStory } : null;
-  }, [fallbackFeaturedPost, fallbackFeaturedStory, posts, siteSettings.homepageCuration.hero, stories]);
-
-  const latestPosts = useMemo(() => {
-    const excludedIds = new Set<string>();
-    if (heroSelection?.type === "post") {
-      excludedIds.add(heroSelection.post.id);
-    }
-    return pickOrderedItems(standardPosts, siteSettings.homepageCuration.latestPostIds, 6, excludedIds);
-  }, [heroSelection, standardPosts, siteSettings.homepageCuration.latestPostIds]);
-
-  const editorsPicks = useMemo(() => {
-    const excludedIds = new Set<string>();
-    if (heroSelection?.type === "post") {
-      excludedIds.add(heroSelection.post.id);
-    }
-    
-    // Explicitly selected items from Post Editor
-    // Bypass the hero exclusion if the author explicitly marked it as an Editor Pick
-    const manuallySelected = standardPosts.filter((p) => p.editorPick);
-      
-    if (manuallySelected.length >= 3) {
-      return manuallySelected.slice(0, 3);
-    }
-    
-    // Any remaining slots fall back to highlighted posts or latest posts
-    const highlightedPosts = standardPosts.filter((post) => post.mustRead || post.thisWeek);
-    const fillerSource = highlightedPosts.length > 0 ? highlightedPosts : standardPosts;
-    const filler = fillerSource.filter(
-      (p) => !excludedIds.has(p.id) && !manuallySelected.some((m) => m.id === p.id)
-    );
-    
-    return [...manuallySelected, ...filler].slice(0, 3);
-  }, [heroSelection, standardPosts]);
-
-  const mappedEditorPicks = useMemo(() => editorsPicks.map(post => ({
-    category: post.mustRead ? "Must Read" : "Editor Pick",
-    description: post.excerpt,
-    image: post.coverImage,
-    publishDate: post.readTime || "",
-    readMoreLink: `/post/${post.slug || post.id}`,
-    title: post.title,
-  })), [editorsPicks]);
-
-  const latestStories = useMemo(() => {
-    const excludedIds = new Set<string>();
-    if (heroSelection?.type === "story") {
-      excludedIds.add(heroSelection.story.id);
-    }
-    const visibleStories = stories.filter((story) => !excludedIds.has(story.id));
-    const newestStory = visibleStories[0];
-    if (!newestStory) return [];
-    const supportingStories = pickOrderedItems(
-      visibleStories.slice(1),
-      siteSettings.homepageCuration.featuredStoryIds.filter((id: string) => id !== newestStory.id),
-      2,
-    );
-    return [newestStory, ...supportingStories];
-  }, [heroSelection, siteSettings.homepageCuration.featuredStoryIds, stories]);
-  const issueDate = useMemo(() => (
-    dailyFeatures?.lastUpdated
-      ? new Date(dailyFeatures.lastUpdated).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
-      : new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
-  ), [dailyFeatures?.lastUpdated]);
-
-  const thisWeekPosts = useMemo(() => {
-    return dedupePostsByTitle(standardPosts.filter((p) => p.thisWeek));
-  }, [standardPosts]);
-
-
-  const hasContent = posts.length > 0 || stories.length > 0;
-
-  if (loading && !hasContent) {
-    return (
-      <div className="page-atmosphere min-h-screen flex flex-col transition-colors duration-300">
-        <Header />
-        {/* Skeleton for AeroHero */}
-        <div className="relative flex min-h-[75vh] w-full items-end justify-center bg-gray-200/50 dark:bg-[#0B1120]/50 animate-pulse border-b border-gray-100 dark:border-gray-800/50">
-          <div className="relative z-10 w-full max-w-7xl px-6 pb-20 text-center md:px-6 xl:px-0 flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
-            <div className="max-w-4xl space-y-6 w-full text-left">
-              <div className="h-6 w-32 bg-gray-300/50 dark:bg-gray-800/80 rounded-full" />
-              <div className="h-16 md:h-24 w-3/4 bg-gray-300/50 dark:bg-gray-800/80 rounded-3xl" />
-              <div className="h-8 md:h-12 w-1/2 bg-gray-300/50 dark:bg-gray-800/80 rounded-2xl" />
-            </div>
-            <div className="h-16 w-48 bg-gray-300/50 dark:bg-gray-800/80 rounded-full shrink-0 mt-auto" />
-          </div>
-        </div>
-
-        {/* Skeleton for Editor's Picks / Latest */}
-        <main className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
-          <div className="grid gap-6 sm:gap-8 md:grid-cols-2 xl:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="rounded-[2rem] border border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0F172A] p-5 h-96 animate-pulse flex flex-col gap-4 shadow-sm">
-                <div className="h-48 w-full bg-gray-200/80 dark:bg-gray-800/50 rounded-2xl" />
-                <div className="h-8 w-3/4 bg-gray-200/80 dark:bg-gray-800/50 rounded-xl mt-2" />
-                <div className="h-4 w-full bg-gray-200/80 dark:bg-gray-800/50 rounded-md" />
-                <div className="h-4 w-2/3 bg-gray-200/80 dark:bg-gray-800/50 rounded-md" />
-              </div>
-            ))}
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  if (!hasContent) {
-    return (
-      <div className="page-atmosphere min-h-screen transition-colors duration-300">
-        <Header />
-        <main className="mx-auto w-full max-w-[1180px] px-4 py-10 md:py-16 sm:px-6">
-          <PageState
-            icon={Library}
-            eyebrow="Homepage"
-            title="No published content yet"
-            description={error || "Publish a lead story or a longform piece and the homepage will start taking shape immediately."}
-          />
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
+function ReadingSection({
+  minute,
+  title,
+  description,
+  posts,
+  href,
+  linkLabel,
+  placement,
+}: {
+  minute: string;
+  title: string;
+  description: string;
+  posts: BlogPost[];
+  href: string;
+  linkLabel: string;
+  placement: string;
+}) {
+  if (!posts.length) return null;
   return (
-    <div ref={scrollRef} className="page-atmosphere min-h-screen transition-colors duration-300">
+    <section
+      className="mb-20 md:mb-28"
+      aria-labelledby={`${placement}-heading`}
+      onClickCapture={(event) => {
+        const anchor = (event.target as HTMLElement).closest("a");
+        if (anchor)
+          trackContentEvent("homepage_article_click", {
+            placement,
+            destination: anchor.getAttribute("href") || "",
+          });
+      }}
+    >
+      <SectionMarker minute={minute} label={title} />
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h2
+            id={`${placement}-heading`}
+            className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground"
+          >
+            {title}
+          </h2>
+          <p className="mt-3 max-w-2xl text-muted-foreground leading-relaxed">
+            {description}
+          </p>
+        </div>
+        <Link
+          to={href}
+          className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+        >
+          {linkLabel}
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+      <div
+        className={`grid gap-6 md:grid-cols-2 ${posts.length === 3 ? "xl:grid-cols-3" : ""}`}
+      >
+        {posts.map((post) => (
+          <Link
+            key={post.id}
+            to={`/post/${post.slug || post.id}`}
+            className="block h-full group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+          >
+            <ArticleCard
+              headline={post.title}
+              excerpt={post.excerpt}
+              cover={post.coverImage}
+              tag={post.club}
+              readingTime={post.readTime}
+              writer={post.author}
+              publishedAt={post.publishAt || post.date}
+              className="h-full"
+            />
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
 
+export function HomePage({
+  serverPosts,
+  serverStories,
+  serverSettings,
+}: HomePageProps = {}) {
+  const { newsletterOptIn, loading: preferencesLoading } = useUserPreferences();
+  const {
+    data: posts = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["posts"],
+    queryFn: () => fetchPublishedFeed<BlogPost>("/api/posts"),
+    initialData: serverPosts,
+    staleTime: 300000,
+  });
+  const { data: stories = [] } = useQuery({
+    queryKey: ["stories"],
+    queryFn: () => fetchPublishedFeed<StoryFeature>("/api/stories"),
+    initialData: serverStories,
+    staleTime: 300000,
+  });
+  const { data: settings = getSiteSettings() } = useQuery({
+    queryKey: ["siteSettings"],
+    queryFn: getSiteSettingsAsync,
+    initialData: serverSettings || undefined,
+    staleTime: 300000,
+  });
+  const content = useMemo(
+    () => selectMatchdayContent(posts, stories, settings.homepageCuration),
+    [posts, stories, settings],
+  );
+  const hasContent = !!content.hero || !!content.monthlyStory;
+  return (
+    <div className="page-atmosphere min-h-screen transition-colors duration-300">
       <SEO
         title="Home"
-        description="We don't do boring match reports. We break down the tactical truths"
+        description="Strong opinions on football’s biggest debates, with the evidence and knowledge behind them."
         url="https://www.thetouchlinedribble.in/"
-        schema={JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "The Touchline Dribble",
-          "url": "https://www.thetouchlinedribble.in/",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://www.thetouchlinedribble.in/archive?search={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        })}
       />
       <Header />
-
-      {/* --- MAIN STORY HERO --- */}
-      {heroSelection && (
-        <AeroHero
-          post={heroSelection.type === "story" ? heroSelection.story : heroSelection.post}
-        />
-      )}
-
-
-
-      <main className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
-        {latestStories.length > 0 && (
-          <section className="mb-20 scroll-reveal" aria-labelledby="latest-stories-heading">
-            <SectionMarker minute="8'" label="Stories" />
-            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="kicker text-primary mb-2">Immersive football narratives</p>
-                <h2 id="latest-stories-heading" className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground">
-                  Go beyond the final whistle.
-                </h2>
-              </div>
-              <Link to="/stories" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">
-                Explore all stories
-                <ArrowRight className="h-4 w-4" />
-              </Link>
+      <main>
+        {content.hero && (
+          <div
+            onClickCapture={(event) => {
+              if ((event.target as HTMLElement).closest("a"))
+                trackContentEvent("homepage_article_click", {
+                  placement: "kickoff",
+                  article_id: content.hero!.id,
+                });
+            }}
+          >
+            <div className="mx-auto max-w-7xl px-4 lg:px-6 pt-10">
+              <SectionMarker
+                minute="0′"
+                label="Kick-off · The Big Talking Point"
+              />
             </div>
-            <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-              <StoryFeatureCard story={latestStories[0]} variant="feature" label="Latest story" />
-              {latestStories.length > 1 && (
-                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-1">
-                  {latestStories.slice(1).map((story) => (
-                    <StoryFeatureCard key={story.id} story={story} variant="standard" />
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* --- QUICK TAKES --- */}
-        <section className="mb-8 scroll-reveal">
-          <SectionMarker minute="1'" label="Verdict" />
-          <QuickTakesSection posts={posts} />
-        </section>
-
-        {/* --- MATCH REACTIONS --- */}
-        <section className="scroll-reveal">
-
-        </section>
-
-        {/* --- SPACIOUS MAIN LAYOUT --- */}
-        <section className="mb-32 scroll-reveal">
-          <div className="flex flex-col gap-32">
-            
-            {/* ── This Week's Big Reads ────────────── */}
-            {thisWeekPosts.length > 0 && (
-              <div>
-                <SectionMarker minute="15'" label="The Deep Dive" />
-                <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-                  <div>
-                    <h2 className="mt-2 text-4xl sm:text-5xl font-headline tracking-tight text-foreground">
-                      Where we dissect the details.
-                    </h2>
-                  </div>
-                  <Link
-                    to="/archive?format=Weekly%20Briefing"
-                    className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
-                  >
-                    See all
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
-                <div className="relative px-8 sm:px-12">
-                  <Carousel opts={{ align: "start", loop: false }} className="w-full">
-                    <CarouselContent className="-ml-6">
-                      {thisWeekPosts.map((post) => (
-                        <CarouselItem key={post.id} className="pl-6 basis-auto">
-                          <Link
-                            to={`/post/${post.slug || post.id}`}
-                            className="group relative flex-shrink-0 block w-[300px] sm:w-[400px] rounded-[2rem] overflow-hidden ghost-border-dark dark:ghost-border bg-white dark:bg-[var(--card)] shadow-sm ambient-shadow hover:-translate-y-2 depth-card transition-all duration-500"
-                          >
-                            <div className="relative h-56 overflow-hidden">
-                              <Image
-                                src={post.coverImage}
-                                alt={post.title}
-                                fill
-                                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                              <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                                <span className="rounded-full bg-[#16A34A] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#060E20]">
-                                  {post.club || (post.tags && post.tags[0]) || 'Featured'}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="p-6 border-t border-border mt-1">
-                              <h3 className="text-xl font-headline text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                                {post.title}
-                              </h3>
-                              <p className="mt-3 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                                {post.excerpt}
-                              </p>
-                            </div>
-                          </Link>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden md:flex -left-6 lg:-left-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
-                    <CarouselNext className="hidden md:flex -right-6 lg:-right-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
-                  </Carousel>
-                </div>
-              </div>
-            )}
-
-            {/* --- TEXT WIRE: Dense headlines section --- */}
-            {standardPosts.length > 3 && (
-              <div>
-                <SectionMarker minute="30'" label="The Radar" />
-                <TextWireSection
-                  posts={standardPosts.filter((p) => {
-                    // Exclude hero and thisWeek posts to avoid duplication
-                    const heroId = heroSelection?.type === "post" ? heroSelection.post.id : null;
-                    return p.id !== heroId && !p.thisWeek;
-                  })}
-                  limit={5}
-                />
-              </div>
-            )}
-
-            {/* --- UTILITY WIDGETS (Rumor Mill, Manager Pressure, Prediction Arena) --- */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {dailyFeatures?.rumorMill ? (
-                <div className="tinted-panel rounded-3xl p-6 border border-gray-100 dark:border-gray-800/50 bg-white dark:bg-[var(--card)] shadow-sm">
-                  <h3 className="font-outfit text-xl font-bold mb-4 dark:text-white">Transfer Rumors</h3>
-                  <RumorMillWidget data={dailyFeatures.rumorMill} />
-                </div>
-              ) : null}
-              {siteSettings?.fantasyCorner?.enabled ? (
-                <div className="h-full">
-                  <FantasyCornerWidget data={siteSettings.fantasyCorner} />
-                </div>
-              ) : null}
-            </div>
-
-
-
-            {/* Latest Analysis Block */}
-            <div id="latest-articles" className="pt-8 border-t border-border">
-              <SectionMarker minute="45+2'" label="Our Latest Takes" />
-              <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <h2 className="mt-2 text-4xl sm:text-5xl font-headline tracking-tight text-foreground">
-                    What we're saying right now.
-                  </h2>
-                </div>
-                <Link
-                  to="/archive?type=article"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-[#16A34A]"
-                >
-                  Read everything we wrote
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-              <div className="relative px-8 sm:px-12">
-                <Carousel opts={{ align: "start", loop: false }} className="w-full">
-                  <CarouselContent className="-ml-6 py-4">
-                    {latestPosts.map((post) => (
-                      <CarouselItem key={post.id} className="pl-6 md:basis-1/2 lg:basis-1/3">
-                        <Link to={`/post/${post.slug || post.id}`} className="block h-full group hover:-translate-y-1 transition-transform duration-300">
-                          <ArticleCard
-                            headline={post.title}
-                            excerpt={post.excerpt}
-                            cover={post.coverImage}
-                            tag={post.club || (post.tags && post.tags[0])}
-                            readingTime={post.readTime}
-                            writer={post.author || ""}
-                            publishedAt={post.date}
-                            className="h-full border-none shadow-md bg-white dark:bg-[#0F172A] hover:shadow-xl transition-shadow rounded-2xl"
-                          />
-                        </Link>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="hidden md:flex -left-6 lg:-left-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
-                  <CarouselNext className="hidden md:flex -right-6 lg:-right-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
-                </Carousel>
-              </div>
-            </div>
+            <AeroHero post={content.hero} />
           </div>
-        </section>
-
-        {/* Section Divider */}
-        <div className="section-divider" />
-
-        {/* --- EDITOR PICKS (Horizontal Scroll) --- */}
-        {editorsPicks.length > 0 && (
-          <section className="mt-32 scroll-reveal">
-            <SectionMarker minute="HT" label="Our Favorites" />
-            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className="kicker text-primary mb-2">Curated by us</p>
-                <h2 className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground">
-                  The pieces we're proud of.
-                </h2>
-              </div>
-              <Link
-                to="/archive"
-                className="inline-flex items-center gap-2 text-sm font-bold text-primary"
-              >
-                Full archive
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <div className="relative px-8 sm:px-12">
-              <Carousel opts={{ align: "start", loop: false }} className="w-full">
-                <CarouselContent className="-ml-6">
-                  {editorsPicks.map((post) => (
-                    <CarouselItem key={post.id} className="pl-6 basis-auto">
-                      <Link
-                        to={`/post/${post.slug || post.id}`}
-                        className="group relative flex-shrink-0 block w-[340px] sm:w-[400px] rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:-translate-y-1 transition-all duration-300"
-                      >
-                        <div className="relative h-52 overflow-hidden">
-                          <Image
-                            src={post.coverImage}
-                            alt={post.title}
-                            fill
-                            className="object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                          <div className="absolute bottom-3 left-3 flex items-center gap-2">
-                            <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary-foreground">
-                              {post.mustRead ? "Must Read" : "Editor Pick"}
-                            </span>
-                            <span className="rounded-full bg-white/20 backdrop-blur-md px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white border border-white/10">
-                              {post.club}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="p-5">
-                          <h3 className="text-lg font-headline font-bold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                            {post.title}
-                          </h3>
-                          <p className="mt-2 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                            {post.excerpt}
-                          </p>
-                          <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground font-medium">
-                            <span className="font-semibold">By {post.author || "The Touchline Dribble"}</span>
-                            <span>·</span>
-                            <span>{post.readTime}</span>
-                          </div>
-                        </div>
-                      </Link>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="hidden md:flex -left-6 lg:-left-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
-                <CarouselNext className="hidden md:flex -right-6 lg:-right-12 border-none shadow-lg hover:scale-110 transition-transform bg-background/95 hover:bg-background h-12 w-12" />
-              </Carousel>
-            </div>
-          </section>
         )}
-
-        {/* --- MORE FROM THE ARCHIVE (posts older than 7 days) --- */}
-        {(() => {
-          const sevenDaysAgo = new Date();
-          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-          const olderPosts = standardPosts.filter((p) => {
-            const postDate = new Date(p.date);
-            return postDate < sevenDaysAgo;
-          }).slice(0, 6);
-          
-          if (olderPosts.length === 0) return null;
-          
-          return (
-            <section className="mt-32 scroll-reveal">
-              <SectionMarker minute="75'" label="The Vault" />
-              <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <div className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
+          {!hasContent && (
+            <PageState
+              icon={Newspaper}
+              title={
+                isLoading
+                  ? "Loading the latest reading…"
+                  : error
+                    ? "The homepage is unavailable right now"
+                    : "The next edition is on its way"
+              }
+              description="Football opinions, useful explainers, and a monthly story."
+            />
+          )}
+          {content.verdicts.length > 0 && (
+            <section
+              className="mb-20 md:mb-28"
+              aria-label="Our Verdict"
+              onClickCapture={(event) => {
+                const anchor = (event.target as HTMLElement).closest("a");
+                if (anchor)
+                  trackContentEvent("homepage_article_click", {
+                    placement: "verdict",
+                    destination: anchor.getAttribute("href") || "",
+                  });
+              }}
+            >
+              <SectionMarker minute="15′" label="Our Verdict" />
+              <QuickTakesSection posts={content.verdicts} selected />
+            </section>
+          )}
+          <ReadingSection
+            minute="30′"
+            title="Understand the Game"
+            description="The knowledge behind the talking points. Clear explanations, grounded in football."
+            posts={content.explainers}
+            href="/learn"
+            linkLabel="Explore the explainers"
+            placement="understand"
+          />
+          {content.monthlyStory && (
+            <section
+              className="mb-20 md:mb-28"
+              aria-labelledby="monthly-story-heading"
+              onClickCapture={(event) => {
+                if ((event.target as HTMLElement).closest("a"))
+                  trackContentEvent("homepage_article_click", {
+                    placement: "halftime",
+                    story_id: content.monthlyStory!.id,
+                  });
+              }}
+            >
+              <SectionMarker
+                minute="HT"
+                label="Half-time · The Monthly Story"
+              />
+              <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
                 <div>
-                  <p className="kicker text-primary mb-2">Archive</p>
-                  <h2 className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground">
-                    Takes that aged perfectly.
+                  <p className="kicker text-primary mb-2">
+                    {storyEdition(content.monthlyStory)}
+                  </p>
+                  <h2
+                    id="monthly-story-heading"
+                    className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground"
+                  >
+                    The story behind it.
                   </h2>
-                  <p className="mt-2 text-muted-foreground text-sm">
-                    Because true tactical insight doesn't expire after 90 minutes.
+                  <p className="mt-3 text-muted-foreground">
+                    One story a month. Take a moment to go deeper.
                   </p>
                 </div>
                 <Link
-                  to="/archive"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-primary"
+                  to="/stories"
+                  className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary"
                 >
-                  Browse full archive
+                  Explore all stories
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
-              <div className="grid gap-px bg-border rounded-2xl overflow-hidden border border-border">
-                {olderPosts.map((post, idx) => (
-                  <Link
-                    key={post.id}
-                    to={`/post/${post.slug || post.id}`}
-                    className="group flex gap-5 items-center bg-card p-5 hover:bg-secondary transition-colors"
-                  >
-                    <div className="h-20 w-28 shrink-0 overflow-hidden rounded-xl relative">
-                      <Image
-                        src={post.coverImage}
-                        alt={post.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">
-                          {post.category || post.club}
-                        </span>
-                        <span className="text-muted-foreground text-xs">·</span>
-                        <span className="text-xs text-muted-foreground">{post.readTime}</span>
-                      </div>
-                      <h3 className="font-headline font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                        {post.title}
-                      </h3>
-                      <p className="mt-1 text-sm text-muted-foreground line-clamp-1">
-                        {post.excerpt}
-                      </p>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 hidden sm:block" />
-                  </Link>
-                ))}
+              <div className="grid">
+                <StoryFeatureCard
+                  story={content.monthlyStory}
+                  variant="feature"
+                  label={storyEdition(content.monthlyStory)}
+                  ctaLabel="Read the monthly story"
+                />
               </div>
             </section>
-          );
-        })()}
-
-        {/* Section Divider */}
-        <div className="section-divider" />
-
-        <section className="mt-32 scroll-reveal w-full max-w-4xl mx-auto px-4 sm:px-6">
-          <SupportBanner variant="inline" />
-        </section>
-
-        {/* --- COMMUNITY CONTRIBUTOR CTA --- */}
-        <section className="mt-20 scroll-reveal">
-          <SectionMarker minute="85'" label="Community" />
-          <CommunityContributorCTA />
-        </section>
-
-        <section className="mt-20 scroll-reveal">
-          <SectionMarker minute="FT" label="Stay Connected" />
-          <InlineNewsletterCard />
-        </section>
-
-        {/* Pro Subscription Upsell (Hidden for now until audience scales) */}
-        {/* <section className="mt-8 mb-8">
-          <ProSubscriptionScroll />
-        </section> */}
-
-
-
+          )}
+          <ReadingSection
+            minute="60′"
+            title="Latest From the Touchline"
+            description="More perspectives and fresh reading from the site."
+            posts={content.latest}
+            href="/archive"
+            linkLabel="All articles"
+            placement="latest"
+          />
+          <ReadingSection
+            minute="75′"
+            title="Worth Another Read"
+            description="Selected from the archive. Ideas worth returning to."
+            posts={content.archive}
+            href="/archive"
+            linkLabel="Explore the archive"
+            placement="archive"
+          />
+          {!preferencesLoading && !newsletterOptIn && (
+            <section className="mb-12" aria-label="The Weekly Whistle">
+              <SectionMarker
+                minute="FT"
+                label="Full-time · The Weekly Whistle"
+              />
+              <InlineNewsletterCard
+                title="The Weekly Whistle"
+                description="One strong opinion. One useful football lesson. Every week. Get the next edition in your inbox."
+              />
+            </section>
+          )}
+        </div>
       </main>
-
-      <Footer />
+      <Footer hideNewsletter />
     </div>
   );
 }

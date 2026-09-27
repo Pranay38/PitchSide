@@ -31,10 +31,7 @@ export async function generateSyndicationContent(postId: string, platforms: ('re
 
 ${hook}
 
-Key Takeaways:
-- Point 1 from the analysis
-- Point 2 from the analysis
-- Point 3 from the analysis
+${post.editorial?.evidence?.length ? "Key takeaways:\n" + post.editorial.evidence.filter((item: any) => typeof item.text === "string" && item.text.trim()).slice(0, 3).map((item: any) => `- ${item.text}`).join("\n") : ""}
 
 ---
 

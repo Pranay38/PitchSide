@@ -55,7 +55,7 @@ export function ChallengeTheTake({ postId }: ChallengeTheTakeProps) {
         <h3 className="font-outfit text-sm font-semibold tracking-widest uppercase text-gray-300">Challenge the Take</h3>
       </div>
 
-      <p className="text-sm text-gray-500 mb-6 font-light">Prove me wrong below. The strongest argument gets featured tomorrow.</p>
+      <p className="text-sm text-gray-500 mb-6 font-light">Prove me wrong below. Selected reader arguments may feature in a future article.</p>
 
       <div className="relative">
         <textarea

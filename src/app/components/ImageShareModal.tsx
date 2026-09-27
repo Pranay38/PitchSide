@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Download, Instagram, Share2, Loader2, Zap } from "lucide-react";
+import { X, Download, Copy, Share2, Loader2, Zap } from "lucide-react";
 import { toast } from "sonner";
-import html2canvas from "html2canvas";
+import { articleShareUrl } from "../lib/shareLinks";
+import { trackContentEvent } from "../lib/analytics";
 import type { BlogPost } from "../data/posts";
 
 interface Props {
@@ -13,19 +14,32 @@ interface Props {
 export function ImageShareModal({ isOpen, onClose, post }: Props) {
   const [isGenerating, setIsGenerating] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const [shape, setShape] = useState<'portrait' | 'square'>('portrait');
+  useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const dialog = dialogRef.current;
+    dialog?.querySelector<HTMLButtonElement>('button')?.focus();
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+      if (event.key !== 'Tab' || !dialog) return;
+      const controls = Array.from(dialog.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], select'));
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener('keydown', keydown);
+    return () => { document.removeEventListener('keydown', keydown); previous?.focus(); };
+  }, [isOpen, onClose]);
   
-  // Clean string helper
-  const cleanContent = (html?: string) => {
-    if (!html) return "";
-    return html.replace(/<[^>]*>?/gm, '').replace(/[#*_`>]/g, "").slice(0, 450) + "...";
-  };
-
   if (!isOpen || !post) return null;
 
   const generateImage = async (): Promise<Blob | null> => {
     if (!cardRef.current) return null;
     try {
       setIsGenerating(true);
+      const { default: html2canvas } = await import("html2canvas");
       const canvas = await html2canvas(cardRef.current, {
         scale: 3, // High resolution for Instagram (e.g. 400px * 3 = 1200px width)
         useCORS: true,
@@ -58,6 +72,7 @@ export function ImageShareModal({ isOpen, onClose, post }: Props) {
     link.href = url;
     link.click();
     URL.revokeObjectURL(url);
+    trackContentEvent("share_download", { article_id: post.id, placement: "quote_card", shape });
     toast.success("Image downloaded!");
   };
 
@@ -71,7 +86,7 @@ export function ImageShareModal({ isOpen, onClose, post }: Props) {
         try {
           await navigator.share({
             title: post.title,
-            text: "Tactical insight from The Touchline Dribble",
+            text: `${post.editorial?.shareQuote || post.title} ${articleShareUrl(post, "reader_share", "quote_card")}`,
             files: [file],
           });
           toast.success("Shared successfully!");
@@ -90,17 +105,18 @@ export function ImageShareModal({ isOpen, onClose, post }: Props) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm shadow-2xl">
-      <div className="bg-[#1E293B] rounded-3xl w-full max-w-lg border border-gray-800 shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-label="Share this argument" className="bg-[#1E293B] rounded-3xl w-full max-w-lg border border-gray-800 shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-800 bg-[#0F172A]">
           <div>
             <h3 className="font-bold text-white flex items-center gap-2">
-              <Instagram className="w-5 h-5 text-pink-500" />
-              Share to Story
+              <Share2 className="w-5 h-5 text-primary" />
+              Share this argument
             </h3>
-            <p className="text-xs text-gray-400 mt-0.5">Generates a 9:16 high-res image</p>
+            <p className="text-xs text-gray-400 mt-0.5">Download a quote card or share the article link</p>
           </div>
           <button 
+            aria-label="Close sharing dialog"
             onClick={onClose}
             className="p-2 rounded-full hover:bg-white/10 text-gray-400 transition-colors"
           >
@@ -108,12 +124,13 @@ export function ImageShareModal({ isOpen, onClose, post }: Props) {
           </button>
         </div>
 
+        <div className="flex gap-3 px-4 py-3 text-white"><label className="text-sm">Image format<select value={shape} onChange={e => setShape(e.target.value as typeof shape)} className="ml-3 rounded border border-gray-600 bg-slate-900 p-2"><option value="portrait">Portrait</option><option value="square">Square</option></select></label></div>
         {/* Content Preview Container */}
         <div className="p-6 overflow-y-auto flex-1 flex justify-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-900/50">
           {/* THE CAPTURE TARGET - explicitly sized to mimic a mobile screen 9:16 */}
           <div 
             ref={cardRef}
-            className="relative w-full max-w-[360px] aspect-[9/16] bg-[#0B1120] rounded-[2rem] overflow-hidden flex flex-col shadow-2xl isolate"
+            className={`relative w-full max-w-[360px] shrink-0 ${shape === "square" ? "aspect-square" : "aspect-[9/16]"} bg-[#0B1120] rounded-[2rem] overflow-hidden flex flex-col shadow-2xl isolate`}
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
             {/* Background elements */}
@@ -125,10 +142,10 @@ export function ImageShareModal({ isOpen, onClose, post }: Props) {
             <div className="absolute inset-0 border border-white/10 rounded-[2rem] z-10 pointer-events-none" />
 
             {/* Inner Content */}
-            <div className="relative z-20 flex flex-col h-full p-8">
+            <div className="relative z-20 flex flex-col h-full p-5">
               
               {/* Header Branding */}
-              <div className="flex items-center gap-2 mb-8">
+              <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#16A34A] to-emerald-400 flex items-center justify-center">
                   <span className="font-black text-white text-xs">TD</span>
                 </div>
@@ -149,7 +166,7 @@ export function ImageShareModal({ isOpen, onClose, post }: Props) {
               {/* Main Text */}
               <h1 
                 className="font-black text-white leading-[1.15] tracking-tight mb-6 mt-auto"
-                style={{ fontSize: post.title.length > 50 ? '34px' : '42px', fontFamily: "'Outfit', sans-serif" }}
+                style={{ fontSize: shape === 'square' ? '18px' : post.title.length > 50 ? '28px' : '34px', fontFamily: "'Outfit', sans-serif" }}
               >
                 {post.title}
               </h1>
@@ -157,8 +174,8 @@ export function ImageShareModal({ isOpen, onClose, post }: Props) {
               {/* Body Text */}
               <div className="mb-auto">
                 <div className="w-10 h-1 bg-[#16A34A] rounded-full mb-6" />
-                <p className="text-gray-300 text-lg leading-relaxed font-medium">
-                  "{cleanContent(post.content)}"
+                <p className="text-gray-300 text-sm leading-relaxed font-medium line-clamp-5">
+                  &ldquo;{post.editorial?.shareQuote || post.editorial?.verdict || post.excerpt}&rdquo;
                 </p>
               </div>
 
@@ -166,16 +183,20 @@ export function ImageShareModal({ isOpen, onClose, post }: Props) {
               <div className="pt-8 border-t border-white/10 flex items-center justify-between mt-auto">
                 <div className="flex items-center gap-2 text-white/60 text-xs font-bold uppercase tracking-widest">
                   <Zap className="w-4 h-4 text-[#16A34A]" />
-                  Swipe up to read
+                  Read the full argument
                 </div>
-                <div className="text-[#16A34A] font-bold text-sm">
-                  touchlinedribble.com
+                <div className="text-[#16A34A] font-bold text-[10px]">
+                  thetouchlinedribble.in
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        <button type="button" className="mx-4 my-2 rounded-xl border border-gray-600 p-3 text-white flex items-center justify-center gap-2" onClick={async () => {
+          try { await navigator.clipboard.writeText(articleShareUrl(post, 'reader_share', 'quote_card')); trackContentEvent('share_click', { article_id: post.id, platform: 'copy', placement: 'quote_card' }); toast.success('Article link copied'); }
+          catch { toast.error('Could not copy the link. Use your browser to copy the article address.'); }
+        }}><Copy className="h-4 w-4" />Copy article link</button>
         {/* Action Buttons */}
         <div className="p-4 border-t border-gray-800 bg-[#0F172A] flex flex-col sm:flex-row gap-3">
           <button

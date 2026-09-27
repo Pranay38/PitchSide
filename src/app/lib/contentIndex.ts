@@ -1,3 +1,4 @@
+import { isOpinion, isExplainer } from "./matchdayContent";
 import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
 
@@ -17,6 +18,7 @@ export type ArchiveEntryType = "article" | "story";
 export interface ArchiveEntry {
   id: string;
   type: ArchiveEntryType;
+  contentKind?: "opinion" | "explainer";
   href: string;
   title: string;
   excerpt: string;
@@ -79,6 +81,7 @@ export function buildArchiveEntries(posts: BlogPost[], stories: StoryFeature[]):
   const postEntries = posts.map((post) => ({
     id: post.id,
     type: "article" as const,
+    contentKind: isExplainer(post) ? "explainer" as const : isOpinion(post) ? "opinion" as const : undefined,
     href: `/post/${post.slug || post.id}`,
     title: post.title,
     excerpt: post.excerpt,
@@ -133,6 +136,7 @@ export function filterArchiveEntries(
   entries: ArchiveEntry[],
   filters: {
     query?: string;
+    kind?: string;
     type?: string;
     club?: string;
     league?: string;
@@ -142,6 +146,7 @@ export function filterArchiveEntries(
   },
 ): ArchiveEntry[] {
   const filtered = entries.filter((entry) => {
+    if (filters.kind && filters.kind !== "all" && entry.contentKind !== filters.kind) return false;
     if (filters.type && filters.type !== "all" && entry.type !== filters.type) return false;
     if (filters.club && filters.club !== "all" && normalize(entry.club) !== normalize(filters.club)) return false;
     if (filters.league && filters.league !== "all" && normalize(entry.league) !== normalize(filters.league)) return false;

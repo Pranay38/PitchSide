@@ -1,3 +1,4 @@
+import { isExplainer } from "../../lib/matchdayContent";
 import type { Dispatch, SetStateAction } from "react";
 import { Mail, Send, BarChart3, RadioTower, Layout, Trash2, Sparkles, Wand2 } from "lucide-react";
 import { PollWidget } from "../PollWidget";
@@ -131,181 +132,25 @@ export function AdminSettingsTab({
     return (
         <div className="space-y-8">
             <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
-                    <div>
-                        <h2 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                            <Sparkles className="w-5 h-5 text-[#16A34A]" /> Homepage Curation
-                        </h2>
-                        <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1 max-w-3xl">
-                            Control the homepage hero and editorial lanes directly from admin. If a selected item disappears from the published feed, the homepage falls back automatically.
-                        </p>
-                    </div>
-                    <button
-                        onClick={handleSaveHomepageCuration}
-                        disabled={savingSiteSettings}
-                        className="px-4 py-2.5 bg-[#16A34A] text-white rounded-xl font-medium text-sm hover:bg-[#15803d] disabled:opacity-50"
-                    >
-                        {savingSiteSettings ? "Saving..." : "Save Homepage"}
-                    </button>
+                <div className="flex flex-wrap justify-between gap-4 mb-6">
+                    <div><h2 className="text-lg font-bold">Homepage Curation</h2><p className="mt-2 text-sm text-muted-foreground">Keep the match-minute layout. Articles appear once, and empty sections stay hidden.</p></div>
+                    <button type="button" onClick={handleSaveHomepageCuration} disabled={savingSiteSettings} className="rounded-xl bg-[#16A34A] px-4 py-2.5 font-medium text-white disabled:opacity-50">{savingSiteSettings ? "Saving…" : "Save Homepage"}</button>
                 </div>
-
-                <div className="grid gap-8 xl:grid-cols-[0.85fr_1.15fr]">
-                    <div className="space-y-5">
-                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
-                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#16A34A] mb-3">Hero Slot</p>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <label className="block">
-                                    <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Hero Type</span>
-                                    <select
-                                        value={siteSettings.homepageCuration.hero.type}
-                                        onChange={(event) => {
-                                            const type = event.target.value === "story" ? "story" : "post";
-                                            setSiteSettings((prev) => ({
-                                                ...prev,
-                                                homepageCuration: {
-                                                    ...prev.homepageCuration,
-                                                    hero: { type, id: "" },
-                                                },
-                                            }));
-                                        }}
-                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                                    >
-                                        <option value="post">Article</option>
-                                        <option value="story">Story</option>
-                                    </select>
-                                </label>
-
-                                <label className="block">
-                                    <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Hero Selection</span>
-                                    <select
-                                        value={siteSettings.homepageCuration.hero.id}
-                                        onChange={(event) => setSiteSettings((prev) => ({
-                                            ...prev,
-                                            homepageCuration: {
-                                                ...prev.homepageCuration,
-                                                hero: {
-                                                    ...prev.homepageCuration.hero,
-                                                    id: event.target.value,
-                                                },
-                                            },
-                                        }))}
-                                        className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                                    >
-                                        <option value="">Automatic fallback</option>
-                                        {heroItems.map((item) => (
-                                            <option key={item.id} value={item.id}>{item.title}</option>
-                                        ))}
-                                    </select>
-                                </label>
-                            </div>
-                            <div className="mt-4 rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
-                                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">
-                                    Current Hero
-                                </p>
-                                <p className="mt-2 text-lg font-bold text-[#0F172A] dark:text-white">
-                                    {heroItems.find((item) => item.id === siteSettings.homepageCuration.hero.id)?.title || "Automatic homepage pick"}
-                                </p>
-                                <p className="mt-2 text-sm text-[#64748B] dark:text-gray-400">
-                                    {siteSettings.homepageCuration.hero.type === "story"
-                                        ? "Uses the selected longform story as the front-page lead."
-                                        : "Uses the selected article as the front-page lead."}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
-                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#16A34A] mb-3">Selection Summary</p>
-                            <div className="grid gap-3 sm:grid-cols-2">
-                                <div className="rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Latest Analysis</p>
-                                    <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.latestPostIds.length}</p>
-                                </div>
-
-                                <div className="rounded-[1.25rem] bg-[#F8FAFC] dark:bg-[#08111f] p-4">
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">Featured Stories</p>
-                                    <p className="mt-2 text-2xl font-black text-[#0F172A] dark:text-white">{siteSettings.homepageCuration.featuredStoryIds.length}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-6">
-                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
-                            <div className="flex items-center justify-between gap-4 mb-4">
-                                <div>
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane One</p>
-                                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Latest Analysis</h3>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setSiteSettings((prev) => ({
-                                        ...prev,
-                                        homepageCuration: { ...prev.homepageCuration, latestPostIds: [] },
-                                    }))}
-                                    className="text-sm font-medium text-[#64748B] hover:text-[#16A34A]"
-                                >
-                                    Clear
-                                </button>
-                            </div>
-                            <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1 md:grid-cols-2">
-                                {publishedPosts.map((post) => (
-                                    <SelectionCard
-                                        key={post.id}
-                                        title={post.title}
-                                        meta={`${post.club} · ${post.readTime}`}
-                                        description={post.excerpt}
-                                        selectedIndex={siteSettings.homepageCuration.latestPostIds.indexOf(post.id)}
-                                        onClick={() => setSiteSettings((prev) => ({
-                                            ...prev,
-                                            homepageCuration: {
-                                                ...prev.homepageCuration,
-                                                latestPostIds: toggleSelection(prev.homepageCuration.latestPostIds, post.id, 6),
-                                            },
-                                        }))}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                        <div className="rounded-[1.5rem] border border-gray-200 dark:border-gray-800 p-5">
-                            <div className="flex items-center justify-between gap-4 mb-4">
-                                <div>
-                                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#16A34A]">Lane Two</p>
-                                    <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Featured Stories</h3>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setSiteSettings((prev) => ({
-                                        ...prev,
-                                        homepageCuration: { ...prev.homepageCuration, featuredStoryIds: [] },
-                                    }))}
-                                    className="text-sm font-medium text-[#64748B] hover:text-[#16A34A]"
-                                >
-                                    Clear
-                                </button>
-                            </div>
-                            <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1 md:grid-cols-2">
-                                {publishedStories.map((story) => (
-                                    <SelectionCard
-                                        key={story.id}
-                                        title={story.title}
-                                        meta={`${story.eyebrow} · ${story.readTime}`}
-                                        description={story.excerpt}
-                                        selectedIndex={siteSettings.homepageCuration.featuredStoryIds.indexOf(story.id)}
-                                        onClick={() => setSiteSettings((prev) => ({
-                                            ...prev,
-                                            homepageCuration: {
-                                                ...prev.homepageCuration,
-                                                featuredStoryIds: toggleSelection(prev.homepageCuration.featuredStoryIds, story.id, 3),
-                                            },
-                                        }))}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-
-                    </div>
-                </div>
+                <label className="block text-sm font-semibold">0′ · The Big Talking Point
+                    <select value={siteSettings.homepageCuration.hero.type === "post" ? siteSettings.homepageCuration.hero.id : ""} onChange={e => setSiteSettings(prev => ({ ...prev, homepageCuration: { ...prev.homepageCuration, hero: { type: "post", id: e.target.value } } }))} className="mt-2 w-full rounded-xl border border-border bg-background p-3">
+                        <option value="">Automatic lead opinion</option>{publishedPosts.map(post => <option value={post.id} key={post.id}>{post.title}</option>)}
+                    </select>
+                </label>
+                <p className="my-5 text-sm text-muted-foreground">15′ uses the next three opinions. Half-time always features the newest published story, labelled with its publication month, until the next story arrives.</p>
+                <div className="space-y-6">{([
+                    { key: "explainerPostIds", title: "30′ · Understand the Game", limit: 3, items: publishedPosts.filter(isExplainer) },
+                    { key: "latestPostIds", title: "60′ · Latest From the Touchline", limit: 4, items: publishedPosts },
+                    { key: "editorPickIds", title: "75′ · Worth Another Read", limit: 2, items: publishedPosts },
+                ] as const).map(lane => <div key={lane.key} className="rounded-2xl border border-border p-5">
+                    <div className="mb-4 flex justify-between gap-4"><h3 className="font-bold">{lane.title}</h3><button type="button" className="text-sm text-primary" onClick={() => setSiteSettings(prev => ({ ...prev, homepageCuration: { ...prev.homepageCuration, [lane.key]: [] } }))}>Clear selection</button></div>
+                    <p className="mb-4 text-xs text-muted-foreground">{lane.key === "explainerPostIds" ? "Classify posts as Explainer in the editor to include them here. Unfilled slots use the latest explainers." : lane.key === "editorPickIds" ? "Choose articles relevant again now. Only posts at least seven days old appear; Editor Pick flags also qualify." : "Unfilled slots use the latest available articles. Earlier sections take priority."}</p>
+                    <div className="grid max-h-80 gap-3 overflow-y-auto md:grid-cols-2">{lane.items.map(post => <SelectionCard key={post.id} title={post.title} meta={`${post.club} · ${post.readTime}`} description={post.excerpt} selectedIndex={(siteSettings.homepageCuration[lane.key] || []).indexOf(post.id)} onClick={() => setSiteSettings(prev => ({ ...prev, homepageCuration: { ...prev.homepageCuration, [lane.key]: toggleSelection(prev.homepageCuration[lane.key] || [], post.id, lane.limit) } }))} />)}</div>
+                </div>)}</div>
             </section>
 
             <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6 flex items-start justify-between">
@@ -545,7 +390,7 @@ export function AdminSettingsTab({
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Deadline (e.g. "Sat 11:00 AM")</label>
+                        <label className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Deadline (e.g. &ldquo;Sat 11:00 AM&rdquo;)</label>
                         <input
                             type="text"
                             value={siteSettings.fantasyCorner?.deadline || ""}
