@@ -270,6 +270,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
               onClick={() => setMobileOpen(!mobileOpen)}
               className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-full transition-colors duration-200"
               aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
             >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -279,7 +280,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
           {/* Mobile menu full-screen overlay */}
           {mobileOpen && (
-            <div className="xl:hidden fixed inset-0 top-[60px] z-40 glass border-t border-white/10 dark:border-white/5 px-6 py-6 overflow-y-auto animate-float-in flex flex-col gap-6">
+            <div className="xl:hidden absolute inset-x-0 top-full h-[calc(100dvh-64px)] z-40 bg-background border-t border-white/10 dark:border-white/5 px-6 py-6 overflow-y-auto animate-float-in flex flex-col gap-6">
               <form onSubmit={handleArchiveSearch} className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-2 dark:border-gray-700 dark:bg-[#0F172A]">
                 <Search className="w-4 h-4 text-[#94A3B8]" />
                 <input
@@ -298,7 +299,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
                   aria-label={link.label}
                   className="block text-2xl font-headline text-[#1A1A1A] dark:text-[#EDEDED] hover:text-[#16A34A] transition-colors py-2"
                 >
-                  {link.icon || link.label}
+                  {link.label}
                 </Link>
               ))}
 
