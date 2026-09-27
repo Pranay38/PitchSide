@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
+import { trackContentEvent } from "../lib/analytics";
 import { Link2, Share2, MessageCircle, Check } from "lucide-react";
 
 interface ShareBarProps {
@@ -11,32 +13,38 @@ interface ShareBarProps {
 
 export const ShareBar = ({ title, url, className = "" }: ShareBarProps) => {
   const [copied, setCopied] = useState(false);
+  const trackedUrl = (source: string) => {
+    const link = new URL(url, 'https://www.thetouchlinedribble.in');
+    link.search = new URLSearchParams({ utm_source: source, utm_medium: 'social', utm_campaign: link.pathname.split('/').pop() || 'article', utm_content: 'article_share' }).toString();
+    trackContentEvent('share_click', { destination: link.pathname, platform: source, placement: 'article' });
+    return link.toString();
+  };
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(trackedUrl("reader_share"));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Failed to copy", err);
+      toast.error("Could not copy the link. Copy the article address from your browser.");
     }
   };
 
   const handleTwitterShare = () => {
     const text = encodeURIComponent(title);
-    const urlString = encodeURIComponent(url);
+    const urlString = encodeURIComponent(trackedUrl("x"));
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${urlString}&via=TouchlineDribbl`, '_blank');
   };
 
   const handleWhatsAppShare = () => {
-    const text = encodeURIComponent(`${title} ${url}`);
+    const text = encodeURIComponent(`${title} ${trackedUrl("whatsapp")}`);
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
   const handleNativeShare = async () => {
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title, url });
+        await navigator.share({ title, url: trackedUrl("reader_share") });
       } catch (err) {
         console.error("Error sharing", err);
       }

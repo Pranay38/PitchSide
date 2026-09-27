@@ -58,6 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Static content pages (previously missing from sitemap)
   const staticPages: MetadataRoute.Sitemap = [
+    { url: `${baseUrl}/learn`, priority: 0.8, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/archive`, priority: 0.8, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/debates`, priority: 0.7, changeFrequency: 'daily' as const },
     { url: `${baseUrl}/daily-fix`, priority: 0.8, changeFrequency: 'daily' as const },

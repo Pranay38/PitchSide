@@ -85,6 +85,9 @@ export function InlineNewsletterCard({
       <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">
         <div className="flex flex-col gap-3 md:flex-row">
           <input
+            aria-label="Email address"
+            autoComplete="email"
+            required
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}

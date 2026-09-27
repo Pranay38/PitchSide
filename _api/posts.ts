@@ -1,3 +1,4 @@
+import { BlogPostSchema } from "../src/app/lib/schemas";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { applyCors, checkRateLimit, requireAuth, hasAdminAuth } from "../server/utils/security";
 import { ObjectId } from "mongodb";
@@ -119,7 +120,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // ─── POST: Create a new post ───
         if (req.method === "POST") {
             if (!(await requireAuth(req, res))) return;
-            const postData = { ...req.body };
+            const editorialInput = BlogPostSchema.pick({ contentKind: true, editorial: true }).safeParse(req.body);
+            if (!editorialInput.success) return res.status(400).json({ error: "Invalid opinion or explainer fields" });
+            const postData = { ...req.body, ...editorialInput.data };
             const id = Date.now().toString();
             if (postData.previewToken == null) delete postData.previewToken;
             if (postData.publishAt == null) delete postData.publishAt;
@@ -162,7 +165,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         // ─── PUT: Update a post ───
         if (req.method === "PUT") {
             if (!(await requireAuth(req, res))) return;
-            const { id, ...updates } = req.body;
+            const editorialInput = BlogPostSchema.pick({ contentKind: true, editorial: true }).safeParse(req.body);
+            if (!editorialInput.success) return res.status(400).json({ error: "Invalid opinion or explainer fields" });
+            const { id, ...updates } = { ...req.body, ...editorialInput.data };
             if (!id) return res.status(400).json({ error: "Missing post id" });
 
             const existing = await collection.findOne(buildIdFilter(id));

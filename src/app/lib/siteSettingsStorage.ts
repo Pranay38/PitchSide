@@ -36,6 +36,7 @@ export interface HomepageHeroSelection {
 export interface HomepageCuration {
   hero: HomepageHeroSelection;
   latestPostIds: string[];
+  explainerPostIds?: string[];
   editorPickIds: string[];
   featuredStoryIds: string[];
 }
@@ -161,6 +162,7 @@ function normalizeHomepageCuration(input?: Partial<HomepageCuration> | null): Ho
       id: String(input?.hero?.id || "").trim(),
     },
     latestPostIds: uniqueIds(input?.latestPostIds),
+    explainerPostIds: uniqueIds(input?.explainerPostIds),
     editorPickIds: uniqueIds(input?.editorPickIds),
     featuredStoryIds: uniqueIds(input?.featuredStoryIds),
   };

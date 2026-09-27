@@ -14,7 +14,7 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
         <div className="w-full lg:w-[55%] space-y-6">
           <div className="flex items-center gap-3">
              <div className="kicker px-3 py-1 bg-secondary text-primary rounded-full">
-               Must Read
+               The Big Talking Point
              </div>
              <span className="dateline flex items-center gap-1.5">
                <Clock className="w-4 h-4" />
@@ -27,7 +27,7 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-2xl">
-            {post.excerpt}
+            {("editorial" in post && post.editorial?.verdict) || post.excerpt}
           </p>
           
           <div className="pt-6">
@@ -35,7 +35,7 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
               to={'chapters' in post ? `/stories/${post.slug}` : `/post/${post.slug || post.id}`} 
               className="group inline-flex items-center gap-3 bg-foreground text-background font-bold tracking-widest uppercase text-xs px-6 py-3 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
             >
-              Read Article
+              Read the argument
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </div>
@@ -48,7 +48,8 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
                 src={post.coverImage} 
                 alt={post.title} 
                 fill
-                quality={95}
+                quality={85}
+                sizes="(max-width: 1024px) 100vw, 45vw"
                 priority
                 className="object-cover transition-transform duration-700 hover:scale-[1.02]" 
               />

@@ -110,6 +110,7 @@ export function ArchivePage() {
 
   const filters = {
     query: searchParams.get("q") || "",
+    kind: readOption(searchParams, "kind"),
     type: readOption(searchParams, "type"),
     club: readOption(searchParams, "club"),
     league: readOption(searchParams, "league"),
@@ -118,6 +119,7 @@ export function ArchivePage() {
     sort: readOption(searchParams, "sort", "newest"),
   };
   const activeFilterChips = [
+    filters.kind !== "all" ? { key: "kind", label: filters.kind === "opinion" ? "Opinions" : "Explainers" } : null,
     filters.query ? { key: "q", label: `Search: ${filters.query}` } : null,
     filters.type !== "all" ? { key: "type", label: filters.type === "story" ? "Stories only" : "Articles only" } : null,
     filters.club !== "all" ? { key: "club", label: filters.club } : null,

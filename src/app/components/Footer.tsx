@@ -9,7 +9,7 @@ import { useUserPreferences } from "../hooks/useUserPreferences";
 
 import Image from "next/image";
 
-export function Footer() {
+export function Footer({ hideNewsletter = false }: { hideNewsletter?: boolean }) {
   const { newsletterOptIn, setNewsletterOptIn, loading, fanClub, followedClubs } = useUserPreferences();
   const [email, setEmail] = useState("");
 
@@ -131,7 +131,7 @@ export function Footer() {
           </div>
 
           {/* Newsletter */}
-          {!loading && !newsletterOptIn && (
+          {!hideNewsletter && !loading && !newsletterOptIn && (
             <div>
               <h3 className="text-sm font-bold uppercase tracking-widest text-foreground mb-4">The Touchline Briefing</h3>
               <p className="text-sm text-muted-foreground mb-4">

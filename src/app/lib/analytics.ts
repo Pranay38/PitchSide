@@ -45,3 +45,8 @@ export function trackGrowthEvent(
     body: JSON.stringify({ event, ...details }),
   }).catch(() => undefined);
 }
+
+/** Editorial discovery events; no reader identifiers or free-text submissions. */
+export function trackContentEvent(event: "homepage_article_click" | "learn_article_click" | "related_article_click" | "share_click" | "share_download", details: Record<string, string>) {
+  if (typeof window !== "undefined") window.gtag?.("event", event, details);
+}

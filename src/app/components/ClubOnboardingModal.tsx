@@ -3,7 +3,7 @@ import { Search, X, ShieldAlert } from "lucide-react";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { getAllClubs, searchClubsOnline, type Club, type SearchResult } from "../data/clubs";
 
-export function ClubOnboardingModal() {
+export function ClubOnboardingModal({ open = false, onClose = () => {} }: { open?: boolean; onClose?: () => void }) {
     const { fanClub, setFanClub, loading } = useUserPreferences();
     const [isOpen, setIsOpen] = useState(false);
 
@@ -12,20 +12,7 @@ export function ClubOnboardingModal() {
     const [onlineResults, setOnlineResults] = useState<SearchResult[]>([]);
     const [searchingOnline, setSearchingOnline] = useState(false);
 
-    useEffect(() => {
-        // Persist dismissal across sessions so it doesn't keep popping up
-        const hasDismissed = localStorage.getItem("pitchside_dismissed_onboarding");
-        
-        // Wait for prefs to load. If it's loaded and fanClub is null, show modal.
-        // But only if user hasn't previously dismissed it.
-        if (!loading && fanClub === null && !hasDismissed) {
-            setIsOpen(true);
-        }
-        // If user already has a club selected, close modal and clear dismiss flag
-        if (!loading && fanClub !== null) {
-            setIsOpen(false);
-        }
-    }, [loading, fanClub]);
+    useEffect(() => { setIsOpen(open); }, [open]);
 
     // Handle online search
     useEffect(() => {
@@ -51,11 +38,13 @@ export function ClubOnboardingModal() {
     const handleDismiss = () => {
         localStorage.setItem("pitchside_dismissed_onboarding", "true");
         setIsOpen(false);
+        onClose();
     };
 
     const handleSelect = (club: { name: string; logoUrl: string | null }) => {
         setFanClub(club);
         setIsOpen(false);
+        onClose();
     };
 
     if (!isOpen) return null;
@@ -144,7 +133,7 @@ export function ClubOnboardingModal() {
 
                                 {localResults.length === 0 && onlineResults.length === 0 && !searchingOnline && searchTerm.length >= 3 && (
                                     <div className="text-center py-6 text-sm text-gray-500 border border-dashed border-gray-200 dark:border-gray-700 rounded-xl">
-                                        No clubs found for "{searchTerm}"
+                                        No clubs found for &ldquo;{searchTerm}&rdquo;
                                     </div>
                                 )}
                                 

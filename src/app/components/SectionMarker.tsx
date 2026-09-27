@@ -26,7 +26,7 @@ export function SectionMarker({ minute, label }: SectionMarkerProps) {
       </div>
 
       {/* Label */}
-      <span className="text-[11px] font-black uppercase tracking-[0.22em] text-muted-foreground whitespace-nowrap">
+      <span className="text-[11px] font-black uppercase tracking-[0.22em] text-muted-foreground min-w-0 sm:whitespace-nowrap">
         {label}
       </span>
 

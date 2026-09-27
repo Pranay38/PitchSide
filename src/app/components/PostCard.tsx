@@ -8,13 +8,15 @@ import { Clock, Star, ArrowRight, Heart, Circle, Pencil } from "lucide-react";
 import { getCategoryBadgeColor } from "./ui/utils";
 import { useUser } from "@clerk/nextjs";
 import { useState } from "react";
+import { trackContentEvent } from "../lib/analytics";
 
 interface PostCardProps {
   post: BlogPost;
   featured?: boolean;
+  trackingPlacement?: "learn";
 }
 
-export function PostCard({ post, featured = false }: PostCardProps) {
+export function PostCard({ post, featured = false, trackingPlacement }: PostCardProps) {
   const clubData = getClubByName(post.club);
   const { user } = useUser();
   const [isLiked, setIsLiked] = useState<boolean>(() => post.likedBy?.includes(user?.id || "") || false);
@@ -41,7 +43,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
       <div
         className="group block relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 bg-slate-900 aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5] xl:aspect-[1/1]"
       >
-        <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
+        <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" onClick={() => trackingPlacement && trackContentEvent("learn_article_click", { article_id: post.id, placement: trackingPlacement })} aria-label={`Read ${post.title}`} />
         <div className="absolute inset-0 overflow-hidden">
           <Image
             src={post.coverImage}
@@ -134,7 +136,7 @@ export function PostCard({ post, featured = false }: PostCardProps) {
     <div
       className="group block relative glass-card rounded-2xl hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
     >
-      <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" aria-label={`Read ${post.title}`} />
+      <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" onClick={() => trackingPlacement && trackContentEvent("learn_article_click", { article_id: post.id, placement: trackingPlacement })} aria-label={`Read ${post.title}`} />
       <div className="aspect-video overflow-hidden relative pointer-events-none">
         <Image
           src={post.coverImage}
