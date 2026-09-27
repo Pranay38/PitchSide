@@ -47,6 +47,9 @@ async function getApiErrorMessage(res: Response, fallback: string): Promise<stri
 }
 
 function getSortableTime(story: StoryFeature): number {
+  const publishedAt = story.publishedAt ? new Date(story.publishedAt).getTime() : Number.NaN;
+  if (Number.isFinite(publishedAt)) return publishedAt;
+
   const updatedAt = new Date(story.updatedAt).getTime();
   if (Number.isFinite(updatedAt)) return updatedAt;
 
@@ -56,7 +59,7 @@ function getSortableTime(story: StoryFeature): number {
   return 0;
 }
 
-function sortStories(stories: StoryFeature[]): StoryFeature[] {
+export function sortStories(stories: StoryFeature[]): StoryFeature[] {
   return [...stories].sort((left, right) => {
     if (left.isDraft !== right.isDraft) return Number(left.isDraft) - Number(right.isDraft);
 
@@ -150,6 +153,7 @@ export function normalizeStoryFeature(input?: Partial<StoryFeature> | null): Sto
     themeFrom: String(input?.themeFrom || fallback.themeFrom).trim() || fallback.themeFrom,
     themeTo: String(input?.themeTo || fallback.themeTo).trim() || fallback.themeTo,
     isDraft: Boolean(input?.isDraft ?? fallback.isDraft),
+    publishedAt: input?.publishedAt ? String(input.publishedAt) : undefined,
     updatedAt,
     highlights: highlights.length > 0 ? highlights : fallback.highlights,
     chapters: chapters.length > 0 ? chapters : fallback.chapters,
@@ -196,7 +200,7 @@ function getAllStoriesLocal(): StoryFeature[] {
   return defaults;
 }
 
-function filterPublishedStories(stories: StoryFeature[]): StoryFeature[] {
+export function filterPublishedStories(stories: StoryFeature[]): StoryFeature[] {
   return stories.filter((story) => !story.isDraft);
 }
 

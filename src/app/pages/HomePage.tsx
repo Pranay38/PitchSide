@@ -20,6 +20,7 @@ import Blogs from "../components/ui/blogs";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../components/ui/carousel";
 import { PageState } from "../components/PageState";
 import { SectionMarker } from "../components/SectionMarker";
+import { StoryFeatureCard } from "../components/StoryFeatureCard";
 import { TextWireSection } from "../components/TextWireSection";
 const CommunityContributorCTA = dynamic(() => import("../components/CommunityContributorCTA").then(m => m.CommunityContributorCTA));
 import { getPublishedPosts, getPublishedPostsAsync } from "../lib/postStorage";
@@ -98,7 +99,10 @@ function dedupePostsByTitle(posts: BlogPost[]): BlogPost[] {
 }
 
 function sortStories(stories: StoryFeature[]): StoryFeature[] {
-  return [...stories].sort((left, right) => new Date(right.updatedAt || right.date).getTime() - new Date(left.updatedAt || left.date).getTime());
+  return [...stories].sort((left, right) => (
+    new Date(right.publishedAt || right.updatedAt || right.date).getTime()
+    - new Date(left.publishedAt || left.updatedAt || left.date).getTime()
+  ));
 }
 
 function pickOrderedItems<T extends { id: string }>(
@@ -374,7 +378,15 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
     if (heroSelection?.type === "story") {
       excludedIds.add(heroSelection.story.id);
     }
-    return pickOrderedItems(stories, siteSettings.homepageCuration.featuredStoryIds, 3, excludedIds);
+    const visibleStories = stories.filter((story) => !excludedIds.has(story.id));
+    const newestStory = visibleStories[0];
+    if (!newestStory) return [];
+    const supportingStories = pickOrderedItems(
+      visibleStories.slice(1),
+      siteSettings.homepageCuration.featuredStoryIds.filter((id: string) => id !== newestStory.id),
+      2,
+    );
+    return [newestStory, ...supportingStories];
   }, [heroSelection, siteSettings.homepageCuration.featuredStoryIds, stories]);
   const issueDate = useMemo(() => (
     dailyFeatures?.lastUpdated
@@ -471,6 +483,34 @@ export function HomePage({ serverPosts, serverStories, serverSettings }: HomePag
 
 
       <main className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
+        {latestStories.length > 0 && (
+          <section className="mb-20 scroll-reveal" aria-labelledby="latest-stories-heading">
+            <SectionMarker minute="8'" label="Stories" />
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="kicker text-primary mb-2">Immersive football narratives</p>
+                <h2 id="latest-stories-heading" className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground">
+                  Go beyond the final whistle.
+                </h2>
+              </div>
+              <Link to="/stories" className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary">
+                Explore all stories
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
+              <StoryFeatureCard story={latestStories[0]} variant="feature" label="Latest story" />
+              {latestStories.length > 1 && (
+                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-1">
+                  {latestStories.slice(1).map((story) => (
+                    <StoryFeatureCard key={story.id} story={story} variant="standard" />
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         {/* --- QUICK TAKES --- */}
         <section className="mb-8 scroll-reveal">
           <SectionMarker minute="1'" label="Verdict" />
