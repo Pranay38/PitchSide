@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { GSCClient } from '@/src/lib/gsc-client';
+import { GSCClient } from '@/lib/gsc-client';
 import { Resend } from 'resend';
 
 export const dynamic = 'force-dynamic';

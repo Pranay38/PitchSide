@@ -88,7 +88,7 @@ function normalizePostRecord(raw: unknown): unknown {
   if (!raw || typeof raw !== "object") return raw;
 
   const normalized = { ...(raw as Record<string, unknown>) };
-  for (const key of ["previewToken", "publishAt", "mediaUrl", "sofascoreUrl", "playerName", "audioUrl", "isDraft", "thisWeek", "mustRead", "editorPick", "mainStory", "gatekeepPoint"]) {
+  for (const key of ["previewToken", "publishAt", "mediaUrl", "sofascoreUrl", "playerName", "audioUrl", "isDraft", "thisWeek", "mustRead", "editorPick", "mainStory", "gatekeepPoint", "articleCta"]) {
     if (normalized[key] === null) {
       delete normalized[key];
     }
@@ -376,4 +376,3 @@ export async function initializePosts(): Promise<void> {
     // API not available, localStorage already has data
   }
 }
-

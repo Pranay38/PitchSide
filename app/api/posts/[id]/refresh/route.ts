@@ -3,15 +3,16 @@ import { connectToDatabase } from "@/lib/server-data";
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     // Check if params exists
-    if (!params || !params.id) {
+    if (!resolvedParams?.id) {
       return NextResponse.json({ success: false, error: 'Missing ID' }, { status: 400 });
     }
     
-    const { id } = params;
+    const { id } = resolvedParams;
     let seoNotes = "";
 
     try {

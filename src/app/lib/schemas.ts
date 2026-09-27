@@ -48,6 +48,7 @@ export const BlogPostSchema = z.object({
   tags: z.array(z.string()).default([]),
   date: z.string().default(""),
   readTime: z.string().default(""),
+  views: z.number().optional(),
   thisWeek: nullableOptionalBoolean,
   mustRead: nullableOptionalBoolean,
   editorPick: nullableOptionalBoolean,
@@ -79,6 +80,13 @@ export const BlogPostSchema = z.object({
   
   relatedPostIds: z.array(z.string()).optional(),
   gatekeepPoint: z.number().optional(),
+  articleCta: z.object({
+    enabled: z.boolean().optional(),
+    subscriberHeadline: z.string().optional(),
+    subscriberBody: z.string().optional(),
+    nonSubscriberHeadline: z.string().optional(),
+    nonSubscriberBody: z.string().optional(),
+  }).optional(),
 });
 
 export type ValidatedBlogPost = z.infer<typeof BlogPostSchema>;

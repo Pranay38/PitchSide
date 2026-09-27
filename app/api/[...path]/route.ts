@@ -75,7 +75,7 @@ const SYS_ROUTES = new Set([
   "armchair-ratings", "armchair-ratings-vote",
   "sitemap", "notifications", "recommendations", "recommendations-track",
   "daily-features", "error-log", "rss", "ensure-indexes", "search",
-  "football-data", "welcome-sequence"
+  "football-data", "welcome-sequence", "growth-events"
 ]);
 
 /**

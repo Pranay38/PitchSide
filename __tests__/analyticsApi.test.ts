@@ -136,6 +136,21 @@ describe("Analytics API Endpoint", () => {
             ]))
           };
         }
+        if (name === "growth_events") {
+          return {
+            aggregate: vi.fn((pipeline: any[]) => ({
+              toArray: vi.fn().mockResolvedValue(
+                pipeline.some((stage) => stage?.$group?._id === "$event")
+                  ? [
+                      { _id: "cta_view", count: 20 },
+                      { _id: "cta_subscribe", count: 4 },
+                      { _id: "cta_support_click", count: 2 },
+                    ]
+                  : [{ _id: "post-1", views: 20, subscriptions: 4, supportClicks: 2 }]
+              )
+            }))
+          };
+        }
         return {
           countDocuments: vi.fn().mockResolvedValue(50)
         };
@@ -157,6 +172,12 @@ describe("Analytics API Endpoint", () => {
     expect(responseData).toHaveProperty("kpis");
     expect(responseData.kpis).toHaveProperty("totalSubscribers", 100);
     expect(responseData).toHaveProperty("subscriberGrowth");
+    expect(responseData.ctaFunnel).toMatchObject({
+      views: 20,
+      subscriptions: 4,
+      supportClicks: 2,
+      conversionRate: 20,
+    });
     expect(responseData).toHaveProperty("cronHealth");
     expect(responseData).toHaveProperty("recentErrors");
     expect(responseData.cronHealth[0].jobName).toBe("syncMatches");
