@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import { Flame } from "lucide-react";
 import { Link } from "@/lib/router-compat";

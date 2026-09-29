@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useMemo, useEffect } from "react";
 import type { BlogPost } from "../../data/posts";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Trophy, Clock, Loader2 } from "lucide-react";

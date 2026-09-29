@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Search, X, ShieldAlert } from "lucide-react";
 import { useUserPreferences } from "../hooks/useUserPreferences";

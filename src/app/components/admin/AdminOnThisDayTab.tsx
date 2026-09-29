@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Trash2, CalendarDays } from "lucide-react";
 import type { SupplementalEvent } from "../../lib/siteSettingsStorage";

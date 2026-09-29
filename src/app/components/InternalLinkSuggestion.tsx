@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useMemo } from "react";
 import type { Editor } from "@tiptap/react";
 import type { BlogPost } from "../data/posts";

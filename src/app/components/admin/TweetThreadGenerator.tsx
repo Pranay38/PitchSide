@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useCallback } from "react";
 import { Copy, Check, RefreshCw, ExternalLink, Loader2, MessageSquare, AlertTriangle } from "lucide-react";
 

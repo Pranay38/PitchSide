@@ -1,3 +1,5 @@
+"use client";
+
 import { useRef, useState } from "react";
 import { Plus, Edit3, Trash2, Eye, Copy, BookOpen } from "lucide-react";
 import { AdminEmptyState } from "./AdminEmptyState";

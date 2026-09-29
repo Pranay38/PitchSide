@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { MessageSquare, Send, Loader2, CornerDownRight, ThumbsUp, Reply } from "lucide-react";
 import { toast } from "sonner";

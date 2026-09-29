@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowRight, Clock } from "@phosphor-icons/react";
 import Image from "next/image";
 import { Link } from "@/lib/router-compat";

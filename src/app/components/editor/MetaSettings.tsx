@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Tag, Search, Loader2, Trash2, Plus, Link, Mic, User, Library, Star, Flame, Crown, CalendarDays, X, FileAudio, Shield } from "lucide-react";
 import { getAllClubNames, searchClubsOnline, addCustomClub, getClubByName, deleteCustomClub, isCustomClub } from "../../data/clubs";

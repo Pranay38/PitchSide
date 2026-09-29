@@ -1,3 +1,5 @@
+"use client";
+
 import { EditorialSettings } from "./editor/EditorialSettings";
 import { useState, useEffect, useMemo, useRef } from "react";
 import type { BlogPost } from "../data/posts";

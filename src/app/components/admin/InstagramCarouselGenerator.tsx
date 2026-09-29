@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import html2canvas from "html2canvas";
 

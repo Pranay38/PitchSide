@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useRef } from "react";
 import { Link } from "@/lib/router-compat";
 import { Search, X, Loader2, FileText, Calendar } from "lucide-react";

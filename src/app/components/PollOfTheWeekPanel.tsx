@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 import { BarChart3, RefreshCw } from "lucide-react";
 import { PollWidget } from "./PollWidget";

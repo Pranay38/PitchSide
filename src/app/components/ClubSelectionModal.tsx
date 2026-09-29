@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useMemo } from "react";
 import { clubsByLeague } from "../data/clubs";
 import type { Club } from "../data/clubs";

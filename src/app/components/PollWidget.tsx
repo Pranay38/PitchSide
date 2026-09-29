@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { AlertCircle, BarChart3, CheckCircle2, Loader2 } from "lucide-react";
 import { getDeviceId } from "../lib/deviceId";

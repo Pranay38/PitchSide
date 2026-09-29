@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Trophy, ChevronRight, Activity, CalendarClock, User, CheckCircle2 } from "lucide-react";
 import { getGuestId, getGuestUsername, setGuestUsername } from "../lib/guestAuth";

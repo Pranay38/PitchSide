@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useMemo } from "react";
 import { X, Briefcase, ChevronRight, BookmarkMinus } from "lucide-react";
 import { Link } from "@/lib/router-compat";

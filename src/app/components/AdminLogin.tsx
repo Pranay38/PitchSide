@@ -1,3 +1,5 @@
+"use client";
+
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { Lock, LogIn } from "lucide-react";

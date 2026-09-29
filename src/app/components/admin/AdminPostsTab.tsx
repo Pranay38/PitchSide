@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, Dispatch, SetStateAction } from "react";
 import { Plus, Eye, Edit3, Trash2, Send, Image as ImageIcon, Download, Upload } from "lucide-react";
 import { toast } from "sonner";

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Loader2, Plus, Trash2, Library } from "lucide-react";
 import { AdminEmptyState } from "./AdminEmptyState";

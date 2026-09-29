@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { Plus, Trash, PencilSimple, FloppyDisk, X, DotsSixVertical, ChartBar, TrendUp, Info } from '@phosphor-icons/react';
 import { type POTSSettings, type POTSContender } from '../../lib/pots';

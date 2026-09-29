@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "@/lib/router-compat";
 import { Trophy, Calendar, Loader2, ChevronLeft, ChevronRight, TableProperties, Swords, Target } from "lucide-react";

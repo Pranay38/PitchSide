@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Link, FileText, Tag, ArrowLeft, Clock } from "lucide-react";
 

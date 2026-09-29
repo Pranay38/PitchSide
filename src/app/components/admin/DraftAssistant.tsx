@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef, useCallback } from "react";
 import { Copy, Check, FileText, Heading, PenLine, BookOpen, Flame, AlignLeft, Loader2 } from "lucide-react";
 

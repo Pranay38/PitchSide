@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { AlertTriangle, Check, X, ChevronRight } from "lucide-react";
 import { findMisspellings, type SpellIssue } from "../../data/footballDictionary";

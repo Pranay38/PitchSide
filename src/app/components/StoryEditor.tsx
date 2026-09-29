@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, ArrowLeft, ArrowRight, Check, CheckCircle2, ChevronDown, ChevronUp, Eye, Home, Plus, Save, Sparkles, Trash2, Upload, X } from "lucide-react";
 import {

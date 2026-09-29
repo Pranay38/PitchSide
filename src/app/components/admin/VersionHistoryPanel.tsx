@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Clock, X, RotateCcw, Loader2 } from "lucide-react";
 import { toast } from "sonner";

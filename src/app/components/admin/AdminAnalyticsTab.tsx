@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, type ReactNode } from "react";
 import { Users, FileText, MessageSquare, Flame, BarChart3, Mail, RefreshCw, AlertCircle, CheckCircle, XCircle, Clock, TrendingUp, AlertTriangle, Activity, MousePointerClick, HeartHandshake, type LucideIcon } from "lucide-react";
 

@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * PushPrompt — A non-intrusive, dismissible prompt asking users
  * to enable push notifications for breaking transfer news and match updates.

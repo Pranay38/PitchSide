@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { Bell, BellOff, BellRing, Loader2 } from "lucide-react";
 

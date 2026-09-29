@@ -1,3 +1,5 @@
+"use client";
+
 import { Share2, Check, Link as LinkIcon, AlertTriangle } from "lucide-react";
 import { TwitterLogo } from "@phosphor-icons/react";
 import { useState, useRef, useEffect } from "react";

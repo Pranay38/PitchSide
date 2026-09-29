@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "@/lib/router-compat";
 import { Flame, ThumbsUp, ThumbsDown, Vote, ExternalLink, Loader2, ArrowRight } from "lucide-react";

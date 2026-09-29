@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * PillNav - A premium, GSAP-powered navigation component.
  * Features:

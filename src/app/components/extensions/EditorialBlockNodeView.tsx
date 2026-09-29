@@ -1,3 +1,5 @@
+"use client";
+
 import { NodeViewWrapper } from "@tiptap/react";
 import type { NodeViewProps } from "@tiptap/react";
 import { useState, useCallback } from "react";

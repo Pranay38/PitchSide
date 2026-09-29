@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Mail, Send, Users, LoaderCircle, CheckCircle2, AlertCircle, UserPlus } from "lucide-react";
 import { toast } from "sonner";

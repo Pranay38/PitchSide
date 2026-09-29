@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useEffect } from "react";
 import { lookupTerm, type GlossaryEntry } from "../data/footballGlossary";
 

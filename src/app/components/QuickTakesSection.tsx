@@ -1,3 +1,5 @@
+"use client";
+
 import { articleShareUrl } from "../lib/shareLinks";
 import { trackContentEvent } from "../lib/analytics";
 import { useMemo } from "react";
