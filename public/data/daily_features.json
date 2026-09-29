@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-09-28T11:24:07.721098",
+  "lastUpdated": "2026-09-29T11:01:48.462683",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barcelona monitor Chelsea's Estevao - Monday's gossip",
+    "text": "Man Utd & Arsenal eye Porto's Costa - Tuesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Marco Rose (BOU)",
+      "name": "Unai Emery (AVL)",
       "pressureScore": 99
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 67
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 78
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 64
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 73
     },
     {
       "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 62
+      "pressureScore": 64
     }
   ]
 }
