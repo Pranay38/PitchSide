@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Sword, Lightning, ChartBar, Clock } from '@phosphor-icons/react';
+import { Sword, Zap as Lightning, BarChart3 as ChartBar, Clock } from 'lucide-react';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
 
@@ -238,3 +238,4 @@ export default async function ComparisonPage({ params }: { params: Promise<{ slu
     </main>
   );
 }
+// Cache buster: Wed Sep 30 02:03:25 IST 2026

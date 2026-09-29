@@ -1,45 +1,61 @@
 # State
 
 ## Current Position
-- **Milestone:** 3 — SEO Growth Engine
-- **Status:** ✅ MILESTONE COMPLETE
-- **Started:** 2026-09-25
-- **Sprint 1:** ✅ COMPLETE (Phases 17-18)
-- **Sprint 2:** ✅ COMPLETE (Phases 19-21)
-- **Sprint 3:** ✅ COMPLETE (Phases 22-24)
-- **Sprint 4:** ✅ COMPLETE (Phases 25-27)
+- **Milestone:** 4 — Premium Redesign
+- **Status:** 🔄 IN PROGRESS
+- **Started:** 2026-09-29
+- **Wave 1:** ✅ DONE (Phases 28-32)
+- **Wave 2:** ✅ DONE (Phases 33-34)
+- **Wave 3:** ✅ DONE (Phases 35-37)
+- **Wave 4:** ✅ DONE (Phase 38)
 
 ## Active Phases
-- Phase 17-24: ✅ DONE
-- Phase 25: ✅ DONE — Content Refresh System
-- Phase 26: ✅ DONE — Internal Link Engine
-- Phase 27: ✅ DONE — SEO Reporting
+- Phase 28: ✅ DONE — Brand Kit Generation
+- Phase 29: ✅ DONE — Typography Refresh
+- Phase 30: ✅ DONE — Color Palette Cleanup
+- Phase 31: ✅ DONE — Motion Refinement
+- Phase 32: ✅ DONE — Content & Copy Audit
+- Phase 33: ✅ DONE — Interactive States
+- Phase 34: ✅ DONE — Layout & Spacing
+- Phase 35: ✅ DONE — Component Modernization
+- Phase 36: ✅ DONE — Typography Scale Polish
+- Phase 37: ✅ DONE — Loading/Empty/Error States
+- Phase 38: ✅ DONE — Accessibility & Production Hardening
+
+## Skills Active
+- `redesign-existing-projects` — Audit checklist, fix priority, upgrade techniques
+- `design-taste-frontend` (v2) — Anti-slop rules, 3 dials, 58-point pre-flight check
+- `brandkit` — Premium brand identity generation
+
+## Design Dials
+- DESIGN_VARIANCE: 6 (moderate asymmetry for editorial)
+- MOTION_INTENSITY: 4 (editorial restraint)
+- VISUAL_DENSITY: 3 (art gallery spacing)
 
 ## Decisions
-- [2026-09-25] GSC API: User has service account access — build full API integration + CSV fallback
-- [2026-09-25] Content calendar: Build into admin panel at /pitchside-manage-x7k9/seo-dashboard/content-calendar
-- [2026-09-25] Programmatic scale: Option B — ~500-1000 pages (managers top 20 + league hubs + player analysis + comparisons)
-- [2026-09-25] Bing Webmaster: Not set up yet — placeholder meta tag added, user will register later
-- [2026-09-25] IndexNow key: Placeholder in .env.example, user will generate UUID
+- [2026-09-29] Redesign mode: Preserve — modernize without brand disruption
+- [2026-09-29] Font swap: Inter → Geist (kill AI-default font)
+- [2026-09-29] Icon swap: Lucide → Phosphor (kill AI-default icons)
+- [2026-09-29] Single accent: Lock to #16A34A Pitch Green, kill #39FF14 neon lime
+- [2026-09-29] Remove Lenis smooth scroll (editorial sites use native scrolling)
+- [2026-09-29] Gray family: Unify to Slate scale
+- [2026-09-29] Keep: Space Grotesk (headlines), Newsreader (editorial), matchday-minute metaphor
 
-## Files Created (Sprint 1)
-- `app/api/indexnow/route.ts` — IndexNow endpoint
-- `lib/indexnow.ts` — IndexNow helper
-- `lib/schema-generators.ts` — Centralized schema generation (HowTo, Video, ItemList, Comparison, Breadcrumb, FAQ)
-- `app/api/rss/route.ts` — RSS 2.0 feed endpoint (App Router)
+## Untouchable (SEO/IA Preservation)
+- URL routes / slugs
+- Primary nav labels
+- Form field names/order
+- Brand logo / mark
+- Legal, consent, cookie copy
+- Clerk auth integration
+- TipTap editor / admin CMS
+- Analytics event tracking
 
-## Files Modified (Sprint 1)
-- `app/layout.tsx` — Added Bing verification meta tag
-- `next.config.mjs` — WebP/AVIF image optimization config
-- `.env.example` — Added INDEXNOW_API_KEY, NEXT_PUBLIC_BING_SITE_VERIFICATION, GSC vars
-
-## Files Created (Sprint 2)
-- `src/lib/seo-title-utils.ts` — Title generator, validator, meta description generator
-- `src/lib/gsc-client.ts` — GSC API client (dual-mode: API + CSV fallback)
-- `app/pitchside-manage-x7k9/seo-dashboard/layout.tsx` — Dashboard layout with sidebar nav
-- `app/pitchside-manage-x7k9/seo-dashboard/page.tsx` — Striking-distance dashboard
-- `app/pitchside-manage-x7k9/seo-dashboard/title-optimizer/page.tsx` — Title optimizer
-- `app/pitchside-manage-x7k9/seo-dashboard/content-calendar/page.tsx` — Content calendar
+## Knowledge Graph
+- Last build: 2026-09-29
+- Nodes: 5,200
+- Edges: 10,883
+- Status: FRESH
 
 ## Blockers
 (none)

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Sword, Users, Target } from '@phosphor-icons/react';
+import { Sword, Users, Target } from 'lucide-react';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
 
@@ -123,3 +123,4 @@ export default function ComparisonsIndexPage() {
     </main>
   );
 }
+// Cache buster: Wed Sep 30 02:03:25 IST 2026
