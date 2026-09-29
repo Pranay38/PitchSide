@@ -239,10 +239,10 @@ export function MetaSettings({
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <img
                                 src={club ? (getClubByName(club)?.logo || "") : ""}
-                                alt=\"\"
+                                alt=""
                                 className="absolute left-10 top-1/2 -translate-y-1/2 w-5 h-5 object-contain"
                                 style={{ display: club && getClubByName(club)?.logo ? "block" : "none" }}
-                            / aria-hidden=\"true\">
+                            aria-hidden="true" />
                             <input
                                 type="text"
                                 value={clubSearch || club}
@@ -275,10 +275,10 @@ export function MetaSettings({
                                         <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
                                             <img
                                                 src={result.logo || ""}
-                                                alt=\"\"
+                                                alt=""
                                                 className="w-5 h-5 object-contain"
                                                 style={{ display: result.logo && !brokenLogos.has(result.logo) ? "block" : "none" }}
-                                                onError={() = aria-hidden=\"true\"> {
+                                                onError={() => {
                                                     setBrokenLogos(prev => new Set(prev).add(result.logo));
                                                 }}
                                             />

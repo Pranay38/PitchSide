@@ -109,10 +109,10 @@ export function NewsTicker() {
                                             {item.imageUrl && !failedImages[item.imageUrl] ? (
                                                 <img
                                                     src={item.imageUrl}
-                                                    alt=\"\"
+                                                    alt=""
                                                     className="w-full h-full object-cover"
                                                     loading="lazy"
-                                                    onError={() = aria-hidden=\"true\"> setFailedImages(prev => ({ ...prev, [item.imageUrl!]: true }))}
+                                                    onError={() => setFailedImages(prev => ({ ...prev, [item.imageUrl!]: true }))}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-xl bg-gradient-to-br from-amber-100 to-sky-100 dark:from-amber-900/30 dark:to-sky-900/30">

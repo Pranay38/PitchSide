@@ -225,7 +225,7 @@ export function ProfilePage() {
                             {fanClub && (
                                     <span className="text-xs font-semibold text-[#16A34A] bg-[#16A34A]/10 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 inline-flex">
                                         {fanClub.logoUrl && (
-                                            <img src={fanClub.logoUrl} alt=\"\" className="w-4 h-4 object-contain" / aria-hidden=\"true\">
+                                            <img src={fanClub.logoUrl} alt="" className="w-4 h-4 object-contain" aria-hidden="true" />
                                         )}
                                         ⚽ {fanClub.name}
                                     </span>
@@ -561,7 +561,7 @@ export function ProfilePage() {
                                                     className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
                                                 >
                                                     {club.logo ? (
-                                                        <img src={club.logo} alt=\"\" className="w-6 h-6 object-contain flex-shrink-0" / aria-hidden=\"true\">
+                                                        <img src={club.logo} alt="" className="w-6 h-6 object-contain flex-shrink-0" aria-hidden="true" />
                                                     ) : (
                                                         <div className="w-6 h-6 rounded bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[10px] font-bold text-gray-500">
                                                             {club.name.charAt(0)}

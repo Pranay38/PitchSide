@@ -238,7 +238,7 @@ export function LeagueClubSeasonPage() {
                                 <div className="max-w-3xl">
                                     <div className="flex items-center gap-3">
                                         {data.leagueEmblem && (
-                                            <img src={data.leagueEmblem} alt=\"\" className="h-12 w-12 object-contain" / aria-hidden=\"true\">
+                                            <img src={data.leagueEmblem} alt="" className="h-12 w-12 object-contain" aria-hidden="true" />
                                         )}
                                         <div>
                                             <h1 className="text-4xl font-black font-outfit text-[#0F172A] dark:text-white md:text-5xl">
@@ -349,7 +349,7 @@ export function LeagueClubSeasonPage() {
                                                             className="flex items-center gap-2 hover:text-[#16A34A] transition-colors"
                                                         >
                                                             {row.crest && (
-                                                                <img src={row.crest} alt=\"\" className="w-5 h-5 object-contain" / aria-hidden=\"true\">
+                                                                <img src={row.crest} alt="" className="w-5 h-5 object-contain" aria-hidden="true" />
                                                             )}
                                                             <span className="text-[#0F172A] dark:text-white">{row.team}</span>
                                                         </Link>
@@ -400,7 +400,7 @@ export function LeagueClubSeasonPage() {
                                                         <td className="px-4 py-3 text-[#0F172A] dark:text-white font-medium">{s.player}</td>
                                                         <td className="px-4 py-3">
                                                             <div className="flex items-center gap-2">
-                                                                {s.teamCrest && <img src={s.teamCrest} alt=\"\" className="w-4 h-4 object-contain" / aria-hidden=\"true\">}
+                                                                {s.teamCrest && <img src={s.teamCrest} alt="" className="w-4 h-4 object-contain" aria-hidden="true" />}
                                                                 <span className="text-[#64748B] dark:text-gray-400">{s.team}</span>
                                                             </div>
                                                         </td>
