@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Sword, Activity, Lightning, ChartBar, Clock } from '@phosphor-icons/react';
+import { Sword, Lightning, ChartBar, Clock } from '@phosphor-icons/react';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
 
