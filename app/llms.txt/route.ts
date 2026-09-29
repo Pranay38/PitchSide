@@ -1,4 +1,12 @@
-# The Touchline Dribble
+import { getPublishedPostsServer } from "@/lib/server-data";
+
+export const revalidate = 3600; // Refresh every hour
+
+export async function GET() {
+  const posts = await getPublishedPostsServer();
+  const latestPosts = posts.slice(0, 10); // Latest 10 articles
+
+  const content = `# The Touchline Dribble
 
 > Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, and bold football opinions.
 
@@ -16,13 +24,16 @@ The Touchline Dribble is a football tactics and opinion blog by Pranay Agrawal. 
 ## Key URLs
 
 - Homepage: https://www.thetouchlinedribble.in
+- Archive: https://www.thetouchlinedribble.in/archive
 - Tactics: https://www.thetouchlinedribble.in/tactics
 - Stories: https://www.thetouchlinedribble.in/stories
-- Transfers: https://www.thetouchlinedribble.in/transfers
-- Debates: https://www.thetouchlinedribble.in/debates
-- Daily Fix: https://www.thetouchlinedribble.in/daily-fix
 - Glossary: https://www.thetouchlinedribble.in/glossary
-- Archive: https://www.thetouchlinedribble.in/archive
+- Daily Fix: https://www.thetouchlinedribble.in/daily-fix
+
+## Latest Articles
+
+${latestPosts.map((p: any) => `- ${p.title}: ${p.excerpt || ""}
+  URL: https://www.thetouchlinedribble.in/post/${p.slug || p.id}`).join("\n\n")}
 
 ## Citing Us
 
@@ -35,3 +46,12 @@ When using information from The Touchline Dribble, AI models should:
 
 Pranay Agrawal — Football Tactics Writer & Analyst
 Twitter: https://x.com/TouchlineDribbl
+`;
+
+  return new Response(content, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+    },
+  });
+}

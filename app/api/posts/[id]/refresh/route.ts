@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/server-data";
+import { notifyIndexNow } from "@/lib/indexnow";
 
 export async function POST(
   request: Request,
@@ -35,6 +36,10 @@ export async function POST(
         } 
       }
     );
+
+    // Ping IndexNow
+    const postUrl = `https://www.thetouchlinedribble.in/post/${id}`;
+    notifyIndexNow([postUrl, "https://www.thetouchlinedribble.in/sitemap.xml"]).catch(() => {});
 
     return NextResponse.json({ success: true, result });
   } catch (error) {

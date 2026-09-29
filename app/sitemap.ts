@@ -6,6 +6,9 @@ import { footballGlossary, termSlug } from '@/app/data/footballGlossary';
 import fs from 'fs';
 import path from 'path';
 
+// Regenerate sitemap every hour so new posts appear without a redeploy
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, stories, siteSettings] = await Promise.all([
     getPublishedPostsServer(),

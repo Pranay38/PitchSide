@@ -8,6 +8,7 @@ import {
   type EditorialBlock,
 } from "./editorialBlocks";
 import { getAllTerms, lookupTerm } from "../data/footballGlossary";
+import { injectInternalLinks } from "./autoInternalLinks";
 
 export interface ContentHeading {
   id: string;
@@ -265,7 +266,7 @@ export function buildHtmlEditorialModel(content: string): ArticleContentModel {
     // Default: push the HTML child as its own block
     const childHtml = child.outerHTML;
     if (childHtml.trim()) {
-      richBlocks.push({ type: "html", content: annotateHtmlWithGlossary(childHtml) });
+      richBlocks.push({ type: "html", content: injectInternalLinks(annotateHtmlWithGlossary(childHtml)) });
     }
   });
 

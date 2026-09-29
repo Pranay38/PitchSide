@@ -56,9 +56,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Use the raw cover image for social previews if available, otherwise fallback to the generated one
   const socialImage = post.coverImage || ogImageUrl;
 
-  const seoTitle = post.seo?.title || post.title;
-  const seoDescription = post.seo?.description || post.excerpt || "";
-  const keywords = post.seo?.focusKeywords || [];
+  // ── Auto SEO Title ──
+  const rawTitle = post.seo?.title || post.title;
+  const seoTitle = (() => {
+    let t = rawTitle.replace(/^The Touchline Dribble['']s\s+/i, "");
+    if (t.length <= 57) return t;
+    const truncated = t.substring(0, 57).replace(/\s+\S*$/, "");
+    return truncated.length > 20 ? truncated : t.substring(0, 57);
+  })();
+
+  // ── Auto Meta Description ──
+  const seoDescription = post.seo?.description 
+    || (post.excerpt?.length > 155 
+      ? post.excerpt.substring(0, 152).replace(/\s+\S*$/, "") + "..." 
+      : post.excerpt || "");
+
+  // ── Auto Focus Keywords ──
+  const keywords = post.seo?.focusKeywords?.length 
+    ? post.seo.focusKeywords 
+    : (() => {
+        const stopWords = new Set(["the", "a", "an", "and", "or", "in", "of", "to", "for", "is", "at", "by", "on", "s", "it", "its"]);
+        const titleWords = (post.title || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9\s'-]/g, "")
+          .split(/\s+/)
+          .filter((w: string) => w.length > 2 && !stopWords.has(w));
+        const tagKeywords = (post.tags || []).map((t: string) => t.toLowerCase());
+        const clubKeyword = post.club && post.club !== "General" ? [post.club.toLowerCase()] : [];
+        return [...new Set([...tagKeywords, ...clubKeyword, ...titleWords])].slice(0, 7);
+      })();
 
   return {
     title: seoTitle,
@@ -148,9 +174,9 @@ export default async function BlogPostPage({ params }: Props) {
     "@context": "https://schema.org",
     "@type": ["Article", "BlogPosting"],
     ...(isMedical && { additionalType: "MedicalWebPage" }),
-    headline: post.seo?.title || post.title,
-    description: post.seo?.description || post.excerpt || "",
-    ...(post.seo?.focusKeywords && post.seo.focusKeywords.length > 0 && { keywords: post.seo.focusKeywords.join(", ") }),
+    headline: seoTitle,
+    description: seoDescription,
+    ...(keywords.length > 0 && { keywords: keywords.join(", ") }),
     image: [post.coverImage],
     datePublished: post.publishAt || post.date
       ? new Date(post.publishAt || post.date).toISOString()
@@ -160,7 +186,7 @@ export default async function BlogPostPage({ params }: Props) {
       : post.publishAt || post.date
         ? new Date(post.publishAt || post.date).toISOString()
         : undefined,
-    articleSection: post.club || "Football",
+    articleSection: (post.club && post.club !== "General" ? post.club : post.tags?.[0]) || "Football",
     wordCount: post.content?.split(/\s+/).length || 0,
     speakable: {
       "@type": "SpeakableSpecification",
@@ -264,6 +290,47 @@ export default async function BlogPostPage({ params }: Props) {
       })),
     };
     schemaArray.push(faqJsonLd);
+  } else if (articleContentModel?.headings && post.content) {
+    const questionHeadings = articleContentModel.headings.filter((h: any) =>
+      /\?\s*$/.test(h.text) || /^(who|why|how|what|is|can|should|does|do|will)\s/i.test(h.text)
+    );
+
+    if (questionHeadings.length >= 2) {
+      const contentLower = post.content;
+      const faqEntries: { question: string; answer: string }[] = [];
+
+      for (const qh of questionHeadings) {
+        const headingPattern = new RegExp(
+          `<h[23][^>]*id=["']${qh.id}["'][^>]*>.*?</h[23]>\\s*(<p[^>]*>.*?</p>)`,
+          "is"
+        );
+        const match = contentLower.match(headingPattern);
+        if (match && match[1]) {
+          const answerText = match[1].replace(/<[^>]*>/g, "").trim();
+          if (answerText.length > 30) {
+            faqEntries.push({
+              question: qh.text.replace(/\?\s*$/, "") + "?",
+              answer: answerText,
+            });
+          }
+        }
+      }
+
+      if (faqEntries.length >= 2) {
+        schemaArray.push({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqEntries.map(item => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.answer,
+            },
+          })),
+        });
+      }
+    }
   }
 
   // SportsEvent / Person Schema based on tags
@@ -290,6 +357,35 @@ export default async function BlogPostPage({ params }: Props) {
         jobTitle: "Soccer Player",
       };
       schemaArray.push(personJsonLd);
+    }
+  }
+
+  // ItemList Schema for ranked/numbered posts
+  if (articleContentModel?.headings) {
+    const rankedHeadings = articleContentModel.headings.filter((h: any) =>
+      /^\d+\.\s+/.test(h.text)
+    );
+
+    if (rankedHeadings.length >= 5) {
+      const itemListJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: seoTitle,
+        description: seoDescription,
+        numberOfItems: rankedHeadings.length,
+        itemListOrder: "https://schema.org/ItemListOrderDescending",
+        itemListElement: rankedHeadings.map((h: any, idx: number) => {
+          const nameMatch = h.text.match(/^\d+\.\s+(.+)/);
+          const playerName = nameMatch ? nameMatch[1] : h.text;
+          return {
+            "@type": "ListItem",
+            position: idx + 1,
+            name: playerName,
+            url: `https://www.thetouchlinedribble.in/post/${post.slug || post.id}#${h.id}`,
+          };
+        }),
+      };
+      schemaArray.push(itemListJsonLd);
     }
   }
 
