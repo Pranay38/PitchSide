@@ -96,7 +96,7 @@ export function PostCard({ post, featured = false, trackingPlacement }: PostCard
 
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white gradient-accent rounded-full shadow-md">
-              {clubData?.logo && <img src={clubData.logo} alt=\"\" className="w-4 h-4 object-contain" / aria-hidden=\"true\">}
+              {clubData?.logo && <img src={clubData.logo} alt="" className="w-4 h-4 object-contain" aria-hidden="true" />}
               {post.club}
             </span>
             {post.tags
@@ -176,7 +176,7 @@ export function PostCard({ post, featured = false, trackingPlacement }: PostCard
           })()}
           <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-md bg-black/50 border border-white/20 rounded-full shadow-sm">
-              {clubData?.logo && <img src={clubData.logo} alt=\"\" className="w-3.5 h-3.5 object-contain" / aria-hidden=\"true\">}
+              {clubData?.logo && <img src={clubData.logo} alt="" className="w-3.5 h-3.5 object-contain" aria-hidden="true" />}
               {post.club}
             </span>
             {post.tags

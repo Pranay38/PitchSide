@@ -131,7 +131,7 @@ export function AdminPOTSTab({ settings, onFloppyDisk }: AdminPOTSTabProps) {
                             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                                        {contender.image && <img src={contender.image} alt=\"\" className="w-full h-full object-cover" / aria-hidden=\"true\">}
+                                        {contender.image && <img src={contender.image} alt="" className="w-full h-full object-cover" aria-hidden="true" />}
                                     </div>
                                     <span className="font-bold text-sm">{contender.name || "Unnamed Player"}</span>
                                 </div>

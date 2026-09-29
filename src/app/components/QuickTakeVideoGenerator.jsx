@@ -21,7 +21,7 @@ const Bar = () => (
 );
 
 const BgImg = ({ src }) => src ? (
-  <img src={src} alt=\"\" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} / aria-hidden=\"true\">
+  <img src={src} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} aria-hidden="true" />
 ) : ( <div style={{ position: "absolute", inset: 0, background: "#111", zIndex: 0 }} /> );
 
 const wrap = { width: WIDTH, height: HEIGHT, position: "relative", overflow: "hidden", flexShrink: 0, background: "#0B0B0B" };
