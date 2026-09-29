@@ -1,7 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Newspaper } from "lucide-react";
+import { ArrowRight, Newspaper, CheckCircle } from "@phosphor-icons/react";
 import { Link } from "@/lib/router-compat";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -55,11 +55,10 @@ function ReadingSection({
   linkLabel: string;
   placement: string;
 }) {
-  if (!posts.length) return null;
   return (
     <section
-      className="mb-20 md:mb-28"
-      aria-labelledby={`${placement}-heading`}
+      className="py-24 md:py-32"
+      aria-label={title}
       onClickCapture={(event) => {
         const anchor = (event.target as HTMLElement).closest("a");
         if (anchor)
@@ -70,48 +69,50 @@ function ReadingSection({
       }}
     >
       <SectionMarker minute={minute} label={title} />
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2
-            id={`${placement}-heading`}
-            className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground"
-          >
+          <h2 className="text-4xl sm:text-5xl font-headline font-bold tracking-tight text-foreground">
             {title}
           </h2>
-          <p className="mt-3 max-w-2xl text-muted-foreground leading-relaxed">
+          <p className="mt-3 text-lg text-muted-foreground max-w-2xl">
             {description}
           </p>
         </div>
         <Link
           to={href}
-          className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
+          className="inline-flex min-h-11 items-center gap-2 text-sm font-bold text-primary hover:text-primary/80 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
         >
           {linkLabel}
           <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
-      <div
-        className={`grid gap-6 md:grid-cols-2 ${posts.length === 3 ? "xl:grid-cols-3" : ""}`}
-      >
-        {posts.map((post) => (
-          <Link
-            key={post.id}
-            to={`/post/${post.slug || post.id}`}
-            className="block h-full group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-          >
-            <ArticleCard
-              headline={post.title}
-              excerpt={post.excerpt}
-              cover={post.coverImage}
-              tag={post.club}
-              readingTime={post.readTime}
-              writer={post.author}
-              publishedAt={post.publishAt || post.date}
-              className="h-full"
-            />
-          </Link>
-        ))}
-      </div>
+      
+      {!posts.length ? (
+        <div className="w-full py-12 rounded-xl border border-dashed border-border bg-card/50 flex flex-col items-center justify-center text-center">
+          <p className="text-muted-foreground">More content arriving before the next whistle.</p>
+        </div>
+      ) : (
+        <div className={`grid gap-6 md:grid-cols-2 ${posts.length === 3 ? "xl:grid-cols-[2fr_1fr]" : ""}`}>
+          {posts.map((post, index) => (
+            <Link
+              key={post.id}
+              to={`/post/${post.slug || post.id}`}
+              className={`block h-full group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 ${posts.length === 3 && index === 0 ? "xl:row-span-2" : ""}`}
+            >
+              <ArticleCard
+                headline={post.title}
+                excerpt={post.excerpt}
+                cover={post.coverImage}
+                tag={post.club}
+                readingTime={post.readTime}
+                writer={post.author}
+                publishedAt={post.publishAt || post.date}
+                className="h-full"
+              />
+            </Link>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -150,7 +151,7 @@ export function HomePage({
   );
   const hasContent = !!content.hero || !!content.monthlyStory;
   return (
-    <div className="page-atmosphere min-h-screen transition-colors duration-300">
+    <div className="page-atmosphere min-h-[100dvh] transition-colors duration-300">
       <SEO
         title="Home"
         description="Strong opinions on football’s biggest debates, with the evidence and knowledge behind them."
@@ -177,7 +178,7 @@ export function HomePage({
             <AeroHero post={content.hero} />
           </div>
         )}
-        <div className="mx-auto w-full max-w-[1240px] px-4 py-10 md:py-16 sm:px-6">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           {!hasContent && (
             <PageState
               icon={Newspaper}
@@ -191,9 +192,9 @@ export function HomePage({
               description="Football opinions, useful explainers, and a monthly story."
             />
           )}
-          {content.verdicts.length > 0 && (
+          {true && (
             <section
-              className="mb-20 md:mb-28"
+              className="py-24 md:py-32"
               aria-label="Our Verdict"
               onClickCapture={(event) => {
                 const anchor = (event.target as HTMLElement).closest("a");
@@ -217,9 +218,9 @@ export function HomePage({
             linkLabel="Explore the explainers"
             placement="understand"
           />
-          {content.monthlyStory && (
+          {true && (
             <section
-              className="mb-20 md:mb-28"
+              className="py-24 md:py-32"
               aria-labelledby="monthly-story-heading"
               onClickCapture={(event) => {
                 if ((event.target as HTMLElement).closest("a"))
@@ -284,18 +285,41 @@ export function HomePage({
             linkLabel="Explore the archive"
             placement="archive"
           />
-          {!preferencesLoading && !newsletterOptIn && (
-            <section className="mb-12" aria-label="The Weekly Whistle">
-              <SectionMarker
-                minute="FT"
-                label="Full-time · The Weekly Whistle"
-              />
-              <InlineNewsletterCard
-                title="The Weekly Whistle"
-                description="One strong opinion. One useful football lesson. Every week. Get the next edition in your inbox."
-              />
-            </section>
-          )}
+          <section className="py-24 md:py-32" aria-label="Added Time">
+          <SectionMarker minute="90′" label="Added Time · Support & Subscribe" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {!preferencesLoading && !newsletterOptIn ? (
+              <div className="lg:col-span-2 h-full">
+                <InlineNewsletterCard
+                  title="The Weekly Whistle"
+                  description="One strong opinion. One useful football lesson. Every week. Get the next edition in your inbox."
+                />
+              </div>
+            ) : (
+              <div className="lg:col-span-2 h-full rounded-2xl bg-card border border-border p-8 flex items-center justify-center">
+                 <p className="text-muted-foreground font-medium flex items-center gap-2">
+                    <CheckCircle weight="fill" className="w-5 h-5 text-primary" /> You're subscribed to The Weekly Whistle.
+                 </p>
+              </div>
+            )}
+            
+            <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6 sm:p-8 flex flex-col justify-center items-start shadow-xl relative overflow-hidden group">
+              <div className="absolute -right-12 -top-12 w-40 h-40 bg-primary/10 rounded-full blur-3xl animate-pulse group-hover:bg-primary/20 transition-all duration-700"></div>
+              <h3 className="text-xl font-headline font-bold text-white relative z-10">Keep the Pitch Green</h3>
+              <p className="mt-2 text-sm text-slate-400 mb-6 relative z-10">
+                The Touchline Dribble is independent. If you enjoy the tactical deep dives, a small contribution helps keep the servers running.
+              </p>
+              <a 
+                href="https://rzp.io/l/your-link-here" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="relative z-10 inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/25 active:scale-[0.98] w-full sm:w-auto"
+              >
+                Support via Razorpay
+              </a>
+            </div>
+          </div>
+        </section>
         </div>
       </main>
       <Footer hideNewsletter />

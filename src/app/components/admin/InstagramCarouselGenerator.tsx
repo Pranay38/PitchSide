@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import html2canvas from "html2canvas";
 
-const AC = "#39FF14"; // Neon green
+const AC = "#16A34A"; // Neon green
 const HOT = "#FF3D00"; // Hot orange
 const W = "#FFFFFF";
 const DIM = "rgba(255,255,255,0.45)";
@@ -58,9 +58,9 @@ const Bar = () => (
 
 // ── BG image layer ────────────────────────────────────────────────────────────
 const BgImg = ({ src }: { src: string | null }) => src ? (
-  <img src={src} alt=""
+  <img src={src} alt=\"\"
     style={{ position: "absolute", inset: 0, width: "100%", height: "100%",
-      objectFit: "cover", zIndex: 0 }} />
+      objectFit: "cover", zIndex: 0 }} / aria-hidden=\"true\">
 ) : (
   <div style={{ position: "absolute", inset: 0, background: "#111", zIndex: 0 }} />
 );
@@ -261,7 +261,7 @@ function UploadZone({ img, onImg, label }: { img: string | null, onImg: (url: st
       }}>
       {img
         ? <>
-            <img src={img} alt="" style={{ width:52, height:52, objectFit:"cover", flexShrink:0 }} />
+            <img src={img} alt=\"\" style={{ width:52, height:52, objectFit:"cover", flexShrink:0 }} / aria-hidden=\"true\">
             <span style={{ fontSize:12, color:"var(--color-text-secondary, #9CA3AF)" }}>
               {label} — click to change
             </span>

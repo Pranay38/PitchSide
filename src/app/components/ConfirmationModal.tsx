@@ -44,7 +44,7 @@ export default function ConfirmationModal({
             className={`px-6 py-3 font-outfit font-bold uppercase tracking-wider text-black transition-transform hover:-translate-y-1 active:translate-y-0 ${
               isDestructive 
                 ? 'bg-red-500 hover:shadow-[4px_4px_0px_#7f1d1d]' 
-                : 'bg-[#39FF14] hover:shadow-[4px_4px_0px_#166534]'
+                : 'bg-[#16A34A] hover:shadow-[4px_4px_0px_#166534]'
             }`}
           >
             {confirmText}

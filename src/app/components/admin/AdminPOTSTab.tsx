@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Edit3, Save, X, GripVertical, BarChart3, TrendingUp, Info } from 'lucide-react';
+import { Plus, Trash, PencilSimple, FloppyDisk, X, DotsSixVertical, ChartBar, TrendUp, Info } from '@phosphor-icons/react';
 import { type POTSSettings, type POTSContender } from '../../lib/pots';
 import { toast } from 'sonner';
 
 interface AdminPOTSTabProps {
     settings: POTSSettings;
-    onSave: (settings: POTSSettings) => Promise<void>;
+    onFloppyDisk: (settings: POTSSettings) => Promise<void>;
 }
 
-export function AdminPOTSTab({ settings, onSave }: AdminPOTSTabProps) {
+export function AdminPOTSTab({ settings, onFloppyDisk }: AdminPOTSTabProps) {
     const [draft, setDraft] = useState<POTSSettings>(settings);
     const [saving, setSaving] = useState(false);
 
@@ -57,10 +57,10 @@ export function AdminPOTSTab({ settings, onSave }: AdminPOTSTabProps) {
         setDraft(prev => ({ ...prev, contenders: newContenders }));
     };
 
-    const handleSave = async () => {
+    const handleFloppyDisk = async () => {
         setSaving(true);
         try {
-            await onSave(draft);
+            await onFloppyDisk(draft);
             toast.success("POTS settings saved!");
         } catch (err) {
             toast.error("Failed to save POTS settings.");
@@ -114,7 +114,7 @@ export function AdminPOTSTab({ settings, onSave }: AdminPOTSTabProps) {
             <div className="space-y-6">
                 <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-[#16A34A]" />
+                        <TrendUp className="w-5 h-5 text-[#16A34A]" />
                         Contenders Shortlist ({draft.contenders.length}/8)
                     </h3>
                     <button 
@@ -131,12 +131,12 @@ export function AdminPOTSTab({ settings, onSave }: AdminPOTSTabProps) {
                             <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                                        {contender.image && <img src={contender.image} alt="" className="w-full h-full object-cover" />}
+                                        {contender.image && <img src={contender.image} alt=\"\" className="w-full h-full object-cover" / aria-hidden=\"true\">}
                                     </div>
                                     <span className="font-bold text-sm">{contender.name || "Unnamed Player"}</span>
                                 </div>
                                 <button onClick={() => removeContender(idx)} className="text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 p-2 rounded-lg transition-colors">
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash className="w-4 h-4" />
                                 </button>
                             </div>
 
@@ -233,14 +233,14 @@ export function AdminPOTSTab({ settings, onSave }: AdminPOTSTabProps) {
                 </div>
             </div>
 
-            {/* Save Action */}
+            {/* FloppyDisk Action */}
             <div className="flex justify-end pt-4">
                 <button
                     disabled={saving}
-                    onClick={handleSave}
+                    onClick={handleFloppyDisk}
                     className="flex items-center gap-2 px-8 py-3 bg-[#16A34A] text-white rounded-xl font-bold hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-[#16A34A]/20"
                 >
-                    {saving ? "Saving..." : <><Save className="w-5 h-5" /> Save POTS Configuration</>}
+                    {saving ? "Saving..." : <><FloppyDisk className="w-5 h-5" /> FloppyDisk POTS Configuration</>}
                 </button>
             </div>
         </div>

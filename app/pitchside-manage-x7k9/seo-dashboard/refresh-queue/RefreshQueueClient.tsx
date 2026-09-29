@@ -55,7 +55,7 @@ export default function RefreshQueueClient({ posts }: { posts: BlogPost[] }) {
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-outfit p-8">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-[#39FF14]">
+        <h1 className="text-3xl font-bold mb-8 text-[#16A34A]">
           SEO Content Refresh Queue
         </h1>
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
@@ -94,7 +94,7 @@ export default function RefreshQueueClient({ posts }: { posts: BlogPost[] }) {
                           className={`px-2 py-1 text-xs rounded-full font-medium ${
                             isStale
                               ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                              : "bg-[#39FF14]/20 text-[#39FF14] border border-[#39FF14]/30"
+                              : "bg-[#16A34A]/20 text-[#16A34A] border border-[#16A34A]/30"
                           }`}
                         >
                           {stalenessDays} days
@@ -104,7 +104,7 @@ export default function RefreshQueueClient({ posts }: { posts: BlogPost[] }) {
                         <input
                           type="text"
                           placeholder="e.g. Added 2026 stats"
-                          className="bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-sm w-full focus:outline-none focus:border-[#39FF14] text-white"
+                          className="bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-sm w-full focus:outline-none focus:border-[#16A34A] text-white"
                           value={notes[post.id] || ""}
                           onChange={(e) =>
                             setNotes({ ...notes, [post.id]: e.target.value })
@@ -120,7 +120,7 @@ export default function RefreshQueueClient({ posts }: { posts: BlogPost[] }) {
                         <button
                           onClick={() => handleRefresh(post.id)}
                           disabled={loadingId === post.id}
-                          className="bg-[#39FF14]/10 hover:bg-[#39FF14]/20 text-[#39FF14] border border-[#39FF14]/30 px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-50"
+                          className="bg-[#16A34A]/10 hover:bg-[#16A34A]/20 text-[#16A34A] border border-[#16A34A]/30 px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-50"
                         >
                           {loadingId === post.id ? "Saving..." : "Mark Refreshed"}
                         </button>

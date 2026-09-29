@@ -185,7 +185,7 @@ export function CommentSection({ postId, userName, isSignedIn }: CommentSectionP
                             {comment.clubBadge?.name && (
                                 <span className="text-[10px] font-semibold text-[#16A34A] bg-[#16A34A]/10 px-1.5 py-0.5 rounded-full flex items-center gap-1">
                                     {comment.clubBadge.logoUrl && (
-                                        <img src={comment.clubBadge.logoUrl} alt="" className="w-3 h-3 object-contain" />
+                                        <img src={comment.clubBadge.logoUrl} alt=\"\" className="w-3 h-3 object-contain" / aria-hidden=\"true\">
                                     )}
                                     {comment.clubBadge.name}
                                 </span>

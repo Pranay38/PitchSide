@@ -1,4 +1,5 @@
-import { Share2, Check, Twitter, Link as LinkIcon, AlertTriangle } from "lucide-react";
+import { Share2, Check, Link as LinkIcon, AlertTriangle } from "lucide-react";
+import { TwitterLogo } from "@phosphor-icons/react";
 import { useState, useRef, useEffect } from "react";
 
 export interface ManagerPressure {
@@ -84,7 +85,7 @@ export function ManagerPressureWidget({ data }: ManagerPressureWidgetProps) {
                     {shareOpen && (
                         <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-gray-700 rounded-xl p-1.5 z-[100] shadow-lg">
                             <button onClick={shareToX} className="w-full text-left px-3 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/80 hover:text-[#1DA1F2] rounded-lg transition-colors flex items-center justify-between">
-                                Share on X <Twitter className="w-3.5 h-3.5" />
+                                Share on X <TwitterLogo className="w-3.5 h-3.5" />
                             </button>
                             <button onClick={copyLink} className="w-full text-left px-3 py-2.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/80 rounded-lg transition-colors flex items-center justify-between">
                                 Copy Link <LinkIcon className="w-3.5 h-3.5" />

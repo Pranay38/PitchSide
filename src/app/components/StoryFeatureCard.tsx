@@ -75,7 +75,7 @@ export function StoryFeatureCard({
               fill
               quality={95}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.04] group-hover:scale-105 transition-transform duration-700 ease-out"
             />
             <div
               className="absolute inset-0"
@@ -151,7 +151,7 @@ export function StoryFeatureCard({
           alt={story.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.04] group-hover:scale-105 transition-transform duration-700 ease-out"
         />
         <div
           className="absolute inset-0"

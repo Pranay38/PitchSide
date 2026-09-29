@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 
-const AC  = "#39FF14"; // Neon green
+const AC  = "#16A34A"; // Neon green
 const HOT = "#FF3D00"; // Hot Red
 const W   = "#FFFFFF";
 const DIM = "rgba(255,255,255,0.45)";
@@ -21,7 +21,7 @@ const Bar = () => (
 );
 
 const BgImg = ({ src }) => src ? (
-  <img src={src} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
+  <img src={src} alt=\"\" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} / aria-hidden=\"true\">
 ) : ( <div style={{ position: "absolute", inset: 0, background: "#111", zIndex: 0 }} /> );
 
 const wrap = { width: WIDTH, height: HEIGHT, position: "relative", overflow: "hidden", flexShrink: 0, background: "#0B0B0B" };
@@ -182,23 +182,23 @@ export function QuickTakeVideoGenerator() {
 
   return (
     <div className="bg-[#0f172a] text-white p-8 rounded-3xl w-full mx-auto font-sans shadow-2xl border border-gray-800">
-      <h2 className="text-3xl font-black font-outfit uppercase tracking-wider mb-2 text-[#39FF14]">Auto-Social Reels Generator</h2>
+      <h2 className="text-3xl font-black font-outfit uppercase tracking-wider mb-2 text-[#16A34A]">Auto-Social Reels Generator</h2>
       <p className="text-gray-400 mb-6 text-sm">Dump full text below and auto-generate a 15-second 9:16 webm video.</p>
 
       <textarea
           value={article} onChange={e => setArticle(e.target.value)}
           placeholder="Paste match reaction or quick take here..."
-          className="w-full bg-[#1e293b] border border-gray-700 rounded-xl p-4 h-32 text-sm focus:outline-none focus:border-[#39FF14] mb-4"
+          className="w-full bg-[#1e293b] border border-gray-700 rounded-xl p-4 h-32 text-sm focus:outline-none focus:border-[#16A34A] mb-4"
       />
       
-      <button onClick={generate} disabled={loading} className="w-full bg-[#39FF14] text-black font-black uppercase tracking-widest py-4 rounded-xl hover:bg-white transition-colors mb-8">
+      <button onClick={generate} disabled={loading} className="w-full bg-[#16A34A] text-black font-black uppercase tracking-widest py-4 rounded-xl hover:bg-white transition-colors mb-8">
         {loading ? "Generating Hook & Body..." : "1. Setup Slides"}
       </button>
 
       {slides.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-[1fr,540px] gap-8">
               <div>
-                  <h3 className="font-bold uppercase tracking-widest text-[#39FF14] mb-4 text-xs">2. Upload Slide Backgrounds</h3>
+                  <h3 className="font-bold uppercase tracking-widest text-[#16A34A] mb-4 text-xs">2. Upload Slide Backgrounds</h3>
                   <div className="space-y-4">
                       {slides.map((s, i) => (
                           <div key={i} className="flex items-center gap-4 bg-[#1e293b] p-4 rounded-xl border border-gray-700">
@@ -217,7 +217,7 @@ export function QuickTakeVideoGenerator() {
                       ))}
                   </div>
 
-                  <h3 className="font-bold uppercase tracking-widest text-[#39FF14] mt-8 mb-4 text-xs">3. Generate & Download Reel</h3>
+                  <h3 className="font-bold uppercase tracking-widest text-[#16A34A] mt-8 mb-4 text-xs">3. Generate & Download Reel</h3>
                   <button onClick={recordVideo} disabled={recordState === "recording"} className="w-full bg-[#FF3D00] text-white font-black uppercase tracking-widest py-4 rounded-xl hover:bg-red-500 transition-colors shadow-[0_0_20px_rgba(255,61,0,0.4)]">
                      {recordState === "recording" ? "Recording Canvas (Do not switch tabs)..." : "Record to .WebM Video"}
                   </button>

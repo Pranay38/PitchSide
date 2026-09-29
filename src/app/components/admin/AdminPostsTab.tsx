@@ -160,7 +160,7 @@ export function AdminPostsTab({
                         <div key={post.id} className="flex items-center gap-4 p-4 bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-all group">
                             {post.coverImage && (
                                 <div className="hidden sm:block w-20 h-14 rounded-lg overflow-hidden flex-shrink-0">
-                                    <img src={post.coverImage} alt="" className="w-full h-full object-cover" />
+                                    <img src={post.coverImage} alt=\"\" className="w-full h-full object-cover" / aria-hidden=\"true\">
                                 </div>
                             )}
                             <div className="flex-1 min-w-0">

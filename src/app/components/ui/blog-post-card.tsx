@@ -47,7 +47,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   const hasFooter = writer || publishedAt;
 
   return (
-    <Card className={cn("group flex w-full flex-col gap-3 overflow-hidden glass-card rounded-2xl hover:border-primary/30 transition-all duration-300 cursor-pointer", className)}>
+    <Card className={cn("group flex w-full flex-col gap-3 overflow-hidden glass-card rounded-2xl hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-900/10 transition-all duration-300 ease-out cursor-pointer", className)}>
       {cover && (
         <CardHeader className="p-0">
           <div className="relative h-56 w-full overflow-hidden">
@@ -55,7 +55,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               src={cover}
               alt={headline}
               loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-hover:scale-105 transition-transform duration-700 ease-out"
             />
             {/* Gradient overlay for depth */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

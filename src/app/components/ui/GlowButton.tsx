@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@phosphor-icons/react';
 import { Link } from '@/lib/router-compat';
 
 export interface GlowButtonProps {

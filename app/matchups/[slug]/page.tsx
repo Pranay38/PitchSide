@@ -37,7 +37,7 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
   const data = await getMatchupData(slug);
 
   return (
-    <main className="min-h-screen bg-zinc-950 font-outfit selection:bg-[#39FF14] selection:text-black">
+    <main className="min-h-screen bg-zinc-950 font-outfit selection:bg-[#16A34A] selection:text-black">
       <Header />
       
       {/* JSON-LD: SportsEvent Schema for Rich Results */}
@@ -86,7 +86,7 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
           <span>/</span>
           <Link href="/matchups" className="hover:text-white transition-colors">Matchups</Link>
           <span>/</span>
-          <span className="text-[#39FF14]">{data.homeTeam} vs {data.awayTeam}</span>
+          <span className="text-[#16A34A]">{data.homeTeam} vs {data.awayTeam}</span>
         </nav>
 
         {/* Hero Scoreboard Style */}
@@ -107,7 +107,7 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
               </p>
             </div>
             
-            <div className="bg-[#39FF14] text-black px-6 py-4 font-black text-3xl italic shadow-[4px_4px_0_0_#fff] transform -skew-x-12">
+            <div className="bg-[#16A34A] text-black px-6 py-4 font-black text-3xl italic shadow-[4px_4px_0_0_#fff] transform -skew-x-12">
               VS
             </div>
             
@@ -129,13 +129,13 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
             
             {/* The Tactical Verdict */}
             <section className="bg-zinc-900 border-2 border-zinc-800 p-8 relative">
-              <div className="absolute top-0 right-0 bg-[#39FF14] text-black text-xs font-black uppercase px-3 py-1 shadow-[-2px_2px_0_0_#000]">
+              <div className="absolute top-0 right-0 bg-[#16A34A] text-black text-xs font-black uppercase px-3 py-1 shadow-[-2px_2px_0_0_#000]">
                 Tactical Verdict
               </div>
               <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-4 flex items-center gap-2">
-                 <Swords className="w-6 h-6 text-[#39FF14]" /> How It Will Be Won
+                 <Swords className="w-6 h-6 text-[#16A34A]" /> How It Will Be Won
               </h2>
-              <p className="text-zinc-300 text-lg leading-relaxed border-l-4 border-[#39FF14] pl-4">
+              <p className="text-zinc-300 text-lg leading-relaxed border-l-4 border-[#16A34A] pl-4">
                 {data.tacticalTakeaway}
               </p>
             </section>
@@ -149,7 +149,7 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
                      <h4 className="text-zinc-400 font-bold uppercase text-sm mb-4">{data.homeTeam}</h4>
                      <div className="flex gap-2">
                         {data.homeForm.map((res: any, i: number) => (
-                           <div key={i} className={`w-10 h-10 flex items-center justify-center font-black font-mono text-lg border-2 ${res === 'W' ? 'border-[#39FF14] text-[#39FF14]' : res === 'L' ? 'border-red-500 text-red-500' : 'border-zinc-500 text-zinc-500'}`}>
+                           <div key={i} className={`w-10 h-10 flex items-center justify-center font-black font-mono text-lg border-2 ${res === 'W' ? 'border-[#16A34A] text-[#16A34A]' : res === 'L' ? 'border-red-500 text-red-500' : 'border-zinc-500 text-zinc-500'}`}>
                               {res}
                            </div>
                         ))}
@@ -160,7 +160,7 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
                      <h4 className="text-zinc-400 font-bold uppercase text-sm mb-4">{data.awayTeam}</h4>
                      <div className="flex gap-2">
                         {data.awayForm.map((res: any, i: number) => (
-                           <div key={i} className={`w-10 h-10 flex items-center justify-center font-black font-mono text-lg border-2 ${res === 'W' ? 'border-[#39FF14] text-[#39FF14]' : res === 'L' ? 'border-red-500 text-red-500' : 'border-zinc-500 text-zinc-500'}`}>
+                           <div key={i} className={`w-10 h-10 flex items-center justify-center font-black font-mono text-lg border-2 ${res === 'W' ? 'border-[#16A34A] text-[#16A34A]' : res === 'L' ? 'border-red-500 text-red-500' : 'border-zinc-500 text-zinc-500'}`}>
                               {res}
                            </div>
                         ))}
@@ -170,16 +170,16 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
             </section>
 
             {/* Key Battle (Data Driven) */}
-            <section className="bg-zinc-900 border-2 border-zinc-800 p-8 border-l-8 border-l-[#39FF14]">
+            <section className="bg-zinc-900 border-2 border-zinc-800 p-8 border-l-8 border-l-[#16A34A]">
                <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-6 flex items-center gap-2">
-                  <Zap className="w-6 h-6 text-[#39FF14]" /> Key Battleground
+                  <Zap className="w-6 h-6 text-[#16A34A]" /> Key Battleground
                </h3>
                <div className="flex items-center justify-between mb-6">
                   <div className="text-center">
                      <div className="text-xl font-black text-white">{data.keyBattle.homePlayer}</div>
                      <div className="text-sm font-bold text-zinc-500 uppercase">{data.homeTeam}</div>
                   </div>
-                  <div className="text-[#39FF14] font-black italic">VS</div>
+                  <div className="text-[#16A34A] font-black italic">VS</div>
                   <div className="text-center">
                      <div className="text-xl font-black text-white">{data.keyBattle.awayPlayer}</div>
                      <div className="text-sm font-bold text-zinc-500 uppercase">{data.awayTeam}</div>
@@ -197,7 +197,7 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
           <div className="lg:col-span-4 space-y-8">
              
              {/* Prediction Poll (Viral Loop) */}
-             <div className="bg-white p-6 text-black border-4 border-zinc-800 shadow-[6px_6px_0_0_#39FF14]">
+             <div className="bg-white p-6 text-black border-4 border-zinc-800 shadow-[6px_6px_0_0_#16A34A]">
                 <h3 className="text-xl font-black uppercase tracking-tighter leading-none mb-4 flex items-center gap-2">
                    <Activity className="w-5 h-5" /> Who Takes It?
                 </h3>
@@ -223,7 +223,7 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
                 <ul className="space-y-4">
                    <li>
                       <Link href={`/club/${data.homeTeam.toLowerCase().replace(' ', '-')}`} className="group block">
-                         <div className="text-zinc-400 hover:text-[#39FF14] text-sm font-bold uppercase transition-colors">
+                         <div className="text-zinc-400 hover:text-[#16A34A] text-sm font-bold uppercase transition-colors">
                             {data.homeTeam} Tactical Hub
                          </div>
                          <div className="text-xs text-zinc-600 mt-1">Full season analysis</div>
@@ -231,7 +231,7 @@ export default async function MatchupPreviewPage({ params }: { params: Promise<{
                    </li>
                    <li>
                       <Link href={`/club/${data.awayTeam.toLowerCase().replace(' ', '-')}`} className="group block">
-                         <div className="text-zinc-400 hover:text-[#39FF14] text-sm font-bold uppercase transition-colors">
+                         <div className="text-zinc-400 hover:text-[#16A34A] text-sm font-bold uppercase transition-colors">
                             {data.awayTeam} Tactical Hub
                          </div>
                          <div className="text-xs text-zinc-600 mt-1">Full season analysis</div>

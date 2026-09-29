@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Link } from "@/lib/router-compat";
-import { Instagram, Mail, Heart } from "lucide-react";
+import { Mail, Heart } from "lucide-react";
+import { InstagramLogo } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { topicPath } from "../lib/contentPaths";
 import { useUserPreferences } from "../hooks/useUserPreferences";
@@ -95,7 +96,7 @@ export function Footer({ hideNewsletter = false }: { hideNewsletter?: boolean })
               </a>
               <a href="https://www.instagram.com/thetouchlinedribble/" target="_blank" rel="noopener noreferrer"
                 className="p-2.5 rounded-xl bg-secondary hover:bg-[#E4405F]/20 hover:text-[#E4405F] transition-all duration-300">
-                <Instagram className="w-4 h-4" />
+                <InstagramLogo className="w-4 h-4" />
               </a>
               <a href="mailto:thetouchlinedribble@gmail.com"
                 className="p-2.5 rounded-xl bg-secondary hover:bg-primary/20 hover:text-primary transition-all duration-300">

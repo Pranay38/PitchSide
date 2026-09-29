@@ -2,7 +2,8 @@
 import { Link } from "@/lib/router-compat";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
-import { Instagram, Mail, ArrowRight, Crosshair, Swords, MessageSquare, Zap, BookOpen } from "lucide-react";
+import { Mail, ArrowRight, Crosshair, Swords, MessageSquare, Zap, BookOpen } from "lucide-react";
+import { InstagramLogo } from "@phosphor-icons/react";
 import { useClubPreference } from "../hooks/useClubPreference";
 import { SEO } from "../components/SEO";
 import { SupportBanner } from "../components/SupportBanner";
@@ -146,7 +147,7 @@ export function AboutPage() {
                                     className="p-2.5 rounded-xl bg-secondary hover:bg-[#E4405F] hover:text-white text-muted-foreground transition-all"
                                     aria-label="Follow on Instagram"
                                 >
-                                    <Instagram className="w-4 h-4" />
+                                    <InstagramLogo className="w-4 h-4" />
                                 </a>
                                 <a href="mailto:thetouchlinedribble@gmail.com"
                                     className="p-2.5 rounded-xl bg-secondary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all"

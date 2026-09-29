@@ -41,7 +41,7 @@ export function PostCard({ post, featured = false, trackingPlacement }: PostCard
   if (featured) {
     return (
       <div
-        className="group block relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#16A34A]/10 transition-all duration-500 bg-slate-900 aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5] xl:aspect-[1/1]"
+        className="group block relative rounded-3xl overflow-hidden shadow-sm hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-900/10 transition-all duration-300 ease-out bg-slate-900 aspect-[4/5] md:aspect-[16/11] lg:aspect-[4/5] xl:aspect-[1/1]"
       >
         <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" onClick={() => trackingPlacement && trackContentEvent("learn_article_click", { article_id: post.id, placement: trackingPlacement })} aria-label={`Read ${post.title}`} />
         <div className="absolute inset-0 overflow-hidden">
@@ -96,7 +96,7 @@ export function PostCard({ post, featured = false, trackingPlacement }: PostCard
 
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white gradient-accent rounded-full shadow-md">
-              {clubData?.logo && <img src={clubData.logo} alt="" className="w-4 h-4 object-contain" />}
+              {clubData?.logo && <img src={clubData.logo} alt=\"\" className="w-4 h-4 object-contain" / aria-hidden=\"true\">}
               {post.club}
             </span>
             {post.tags
@@ -134,7 +134,7 @@ export function PostCard({ post, featured = false, trackingPlacement }: PostCard
 
   return (
     <div
-      className="group block relative glass-card rounded-2xl hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+      className="group block relative glass-card rounded-2xl hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-900/10 transition-all duration-300 ease-out overflow-hidden"
     >
       <Link to={`/post/${post.slug || post.id}`} className="absolute inset-0 z-10" onClick={() => trackingPlacement && trackContentEvent("learn_article_click", { article_id: post.id, placement: trackingPlacement })} aria-label={`Read ${post.title}`} />
       <div className="aspect-video overflow-hidden relative pointer-events-none">
@@ -176,7 +176,7 @@ export function PostCard({ post, featured = false, trackingPlacement }: PostCard
           })()}
           <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-md bg-black/50 border border-white/20 rounded-full shadow-sm">
-              {clubData?.logo && <img src={clubData.logo} alt="" className="w-3.5 h-3.5 object-contain" />}
+              {clubData?.logo && <img src={clubData.logo} alt=\"\" className="w-3.5 h-3.5 object-contain" / aria-hidden=\"true\">}
               {post.club}
             </span>
             {post.tags

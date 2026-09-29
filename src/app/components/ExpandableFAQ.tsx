@@ -34,7 +34,7 @@ export default function ExpandableFAQ({ items }: ExpandableFAQProps) {
               <h3 className="text-lg md:text-xl font-outfit font-bold uppercase tracking-wide text-white pr-8">
                 {item.question}
               </h3>
-              <span className={`text-[#39FF14] text-2xl font-black transition-transform duration-300 ${isOpen ? 'rotate-45' : 'rotate-0'}`}>
+              <span className={`text-[#16A34A] text-2xl font-black transition-transform duration-300 ${isOpen ? 'rotate-45' : 'rotate-0'}`}>
                 +
               </span>
             </button>

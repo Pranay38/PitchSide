@@ -247,10 +247,10 @@ export function OnThisDayWidget() {
               <div className="flex-shrink-0 w-[60px] h-[60px] rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <img
                   src={current.thumbnail}
-                  alt=""
+                  alt=\"\"
                   className="w-full h-full object-cover"
                   loading="lazy"
-                />
+                / aria-hidden=\"true\">
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg p-2 min-w-[60px] border border-gray-200 dark:border-gray-700">

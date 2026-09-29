@@ -86,7 +86,7 @@ export function InternalLinkSuggestion({
     return (
         <div className="mt-4 bg-zinc-900 border-2 border-zinc-800 p-4 font-mono">
             <div className="flex items-center gap-2 mb-4 border-b border-zinc-800 pb-2">
-                <Zap className="w-4 h-4 text-[#39FF14]" />
+                <Zap className="w-4 h-4 text-[#16A34A]" />
                 <span className="text-sm font-bold text-white uppercase tracking-widest">
                     SEO Link Engine
                 </span>
@@ -111,12 +111,12 @@ export function InternalLinkSuggestion({
                         {suggestions.map((suggestion, idx) => {
                             const url = `/post/${suggestion.targetPost.slug || suggestion.targetPost.id}`;
                             return (
-                                <div key={idx} className="bg-black border border-zinc-800 p-3 group hover:border-[#39FF14] transition-colors">
+                                <div key={idx} className="bg-black border border-zinc-800 p-3 group hover:border-[#16A34A] transition-colors">
                                     <div className="flex justify-between items-start mb-2">
                                         <p className="text-sm text-zinc-200 font-bold leading-tight flex-1">
                                             {suggestion.targetPost.title}
                                         </p>
-                                        <span className="text-[10px] bg-zinc-800 text-[#39FF14] px-1.5 py-0.5 ml-2 font-bold whitespace-nowrap">
+                                        <span className="text-[10px] bg-zinc-800 text-[#16A34A] px-1.5 py-0.5 ml-2 font-bold whitespace-nowrap">
                                             AUTH: {suggestion.authorityScore.toFixed(1)}
                                         </span>
                                     </div>
@@ -126,7 +126,7 @@ export function InternalLinkSuggestion({
                                     <button
                                         type="button"
                                         onClick={() => handleInsertLink(url, suggestion.suggestedAnchor)}
-                                        className="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-[#39FF14] hover:text-black text-[#39FF14] text-xs font-bold py-1.5 transition-colors"
+                                        className="w-full flex items-center justify-center gap-2 bg-zinc-800 hover:bg-[#16A34A] hover:text-black text-[#16A34A] text-xs font-bold py-1.5 transition-colors"
                                     >
                                         <span>Link using anchor: <span className="underline decoration-black">{suggestion.suggestedAnchor}</span></span>
                                         <ArrowRight className="w-3 h-3" />

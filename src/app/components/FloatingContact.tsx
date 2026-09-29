@@ -19,7 +19,7 @@ export default function FloatingContact({
         {label}
       </div>
       
-      <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#39FF14] border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.5)] flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-2 group-active:translate-y-0 group-hover:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]">
+      <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-[#16A34A] border-4 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.5)] flex items-center justify-center transition-transform duration-300 group-hover:-translate-y-2 group-active:translate-y-0 group-hover:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]">
         <svg 
           xmlns="http://www.w3.org/2000/svg" 
           width="24" 

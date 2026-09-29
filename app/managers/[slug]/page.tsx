@@ -40,7 +40,7 @@ export default async function ManagerPressurePage({ params }: { params: Promise<
   const barColor = isCritical ? "#FF3333" : "#FDE047";
 
   return (
-    <main className="min-h-screen bg-zinc-950 font-outfit selection:bg-[#39FF14] selection:text-black">
+    <main className="min-h-screen bg-zinc-950 font-outfit selection:bg-[#16A34A] selection:text-black">
       <Header />
       
       {/* JSON-LD: Article Schema for Rich Results */}
@@ -85,7 +85,7 @@ export default async function ManagerPressurePage({ params }: { params: Promise<
           <span>/</span>
           <Link href={`/club/${data.club.toLowerCase().replace(' ', '-')}`} className="hover:text-white transition-colors">{data.club}</Link>
           <span>/</span>
-          <span className="text-[#39FF14]">Manager Pressure</span>
+          <span className="text-[#16A34A]">Manager Pressure</span>
         </nav>
 
         {/* Hero Section */}
@@ -152,8 +152,8 @@ export default async function ManagerPressurePage({ params }: { params: Promise<
                <h3 className="text-2xl font-black text-white uppercase tracking-tight">The Form Guide</h3>
                <div className="grid grid-cols-3 gap-4">
                   {data.recentResults.map((match: any, i: number) => (
-                    <div key={i} className={`p-4 border-2 ${match.result === 'W' ? 'border-[#39FF14]/30 bg-[#39FF14]/5' : match.result === 'L' ? 'border-red-500/30 bg-red-500/5' : 'border-zinc-700 bg-zinc-900'}`}>
-                       <div className={`text-2xl font-black mb-1 ${match.result === 'W' ? 'text-[#39FF14]' : match.result === 'L' ? 'text-red-500' : 'text-zinc-400'}`}>
+                    <div key={i} className={`p-4 border-2 ${match.result === 'W' ? 'border-[#16A34A]/30 bg-[#16A34A]/5' : match.result === 'L' ? 'border-red-500/30 bg-red-500/5' : 'border-zinc-700 bg-zinc-900'}`}>
+                       <div className={`text-2xl font-black mb-1 ${match.result === 'W' ? 'text-[#16A34A]' : match.result === 'L' ? 'text-red-500' : 'text-zinc-400'}`}>
                           {match.result}
                        </div>
                        <div className="text-white font-black font-mono mb-2">{match.score}</div>
@@ -174,7 +174,7 @@ export default async function ManagerPressurePage({ params }: { params: Promise<
           {/* Right Column: Interactive & Hub Spoke Links */}
           <div className="space-y-8">
              {/* The Viral Interaction Poll */}
-             <div className="bg-[#39FF14] p-6 text-black border-4 border-black shadow-[4px_4px_0_0_#fff]">
+             <div className="bg-[#16A34A] p-6 text-black border-4 border-black shadow-[4px_4px_0_0_#fff]">
                 <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-4">
                    Should {data.name} Be Sacked?
                 </h3>
@@ -183,7 +183,7 @@ export default async function ManagerPressurePage({ params }: { params: Promise<
                    <button className="w-full bg-black text-white font-black uppercase py-3 hover:bg-zinc-800 transition-colors">
                       Sack Him Now
                    </button>
-                   <button className="w-full bg-transparent border-2 border-black text-black font-black uppercase py-3 hover:bg-black hover:text-[#39FF14] transition-colors">
+                   <button className="w-full bg-transparent border-2 border-black text-black font-black uppercase py-3 hover:bg-black hover:text-[#16A34A] transition-colors">
                       Give Him Time
                    </button>
                 </div>
@@ -199,17 +199,17 @@ export default async function ManagerPressurePage({ params }: { params: Promise<
                 </h4>
                 <ul className="space-y-3">
                    <li>
-                      <Link href={`/club/${data.club.toLowerCase().replace(' ', '-')}/tactics`} className="text-zinc-400 hover:text-[#39FF14] text-sm font-bold uppercase transition-colors">
+                      <Link href={`/club/${data.club.toLowerCase().replace(' ', '-')}/tactics`} className="text-zinc-400 hover:text-[#16A34A] text-sm font-bold uppercase transition-colors">
                          → Tactical Breakdown
                       </Link>
                    </li>
                    <li>
-                      <Link href={`/club/${data.club.toLowerCase().replace(' ', '-')}/transfers`} className="text-zinc-400 hover:text-[#39FF14] text-sm font-bold uppercase transition-colors">
+                      <Link href={`/club/${data.club.toLowerCase().replace(' ', '-')}/transfers`} className="text-zinc-400 hover:text-[#16A34A] text-sm font-bold uppercase transition-colors">
                          → Transfer Targets
                       </Link>
                    </li>
                    <li>
-                      <Link href={`/club/${data.club.toLowerCase().replace(' ', '-')}`} className="text-zinc-400 hover:text-[#39FF14] text-sm font-bold uppercase transition-colors">
+                      <Link href={`/club/${data.club.toLowerCase().replace(' ', '-')}`} className="text-zinc-400 hover:text-[#16A34A] text-sm font-bold uppercase transition-colors">
                          → Club Hub
                       </Link>
                    </li>

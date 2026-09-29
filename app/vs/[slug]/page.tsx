@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Swords, Activity, Zap, BarChart3, Clock } from 'lucide-react';
+import { Sword, Activity, Lightning, ChartBar, Clock } from '@phosphor-icons/react';
 import { Header } from '@/app/components/Header';
 import { Footer } from '@/app/components/Footer';
 
@@ -62,7 +62,7 @@ export default async function ComparisonPage({ params }: { params: Promise<{ slu
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 font-outfit selection:bg-[#39FF14] selection:text-black">
+    <main className="min-h-screen bg-zinc-950 font-outfit selection:bg-[#16A34A] selection:text-black">
       <Header />
       
       {/* JSON-LD: BreadcrumbList */}
@@ -103,13 +103,13 @@ export default async function ComparisonPage({ params }: { params: Promise<{ slu
           <span>/</span>
           <Link href="/vs" className="hover:text-white transition-colors">Comparisons</Link>
           <span>/</span>
-          <span className="text-[#39FF14]">{data.entityA.name} vs {data.entityB.name}</span>
+          <span className="text-[#16A34A]">{data.entityA.name} vs {data.entityB.name}</span>
         </nav>
 
         {/* Hero Scoreboard Style */}
         <header className="mb-16 border-b-4 border-zinc-800 pb-12 text-center">
-          <div className="inline-flex items-center gap-2 bg-zinc-900 text-[#39FF14] font-bold uppercase tracking-widest text-xs px-4 py-2 border border-zinc-700 mb-8">
-            <Zap className="w-4 h-4" />
+          <div className="inline-flex items-center gap-2 bg-zinc-900 text-[#16A34A] font-bold uppercase tracking-widest text-xs px-4 py-2 border border-zinc-700 mb-8">
+            <Lightning className="w-4 h-4" />
             {data.type} Comparison
           </div>
           
@@ -124,7 +124,7 @@ export default async function ComparisonPage({ params }: { params: Promise<{ slu
               </p>
             </div>
             
-            <div className="bg-[#39FF14] text-black px-6 py-4 font-black text-3xl italic shadow-[4px_4px_0_0_#fff] transform -skew-x-12">
+            <div className="bg-[#16A34A] text-black px-6 py-4 font-black text-3xl italic shadow-[4px_4px_0_0_#fff] transform -skew-x-12">
               VS
             </div>
             
@@ -145,11 +145,11 @@ export default async function ComparisonPage({ params }: { params: Promise<{ slu
             
             {/* The Tactical Verdict */}
             <section className="bg-zinc-900 border-2 border-zinc-800 p-8 relative">
-              <div className="absolute top-0 right-0 bg-[#39FF14] text-black text-xs font-black uppercase px-3 py-1 shadow-[-2px_2px_0_0_#000]">
+              <div className="absolute top-0 right-0 bg-[#16A34A] text-black text-xs font-black uppercase px-3 py-1 shadow-[-2px_2px_0_0_#000]">
                 The Verdict
               </div>
               <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-4 flex items-center gap-2">
-                 <Swords className="w-6 h-6 text-[#39FF14]" /> {data.verdict}
+                 <Sword className="w-6 h-6 text-[#16A34A]" /> {data.verdict}
               </h2>
             </section>
 
@@ -163,9 +163,9 @@ export default async function ComparisonPage({ params }: { params: Promise<{ slu
 
             {/* Stats Comparison */}
             {(data.type === 'player' || data.type === 'team') && (
-              <section className="bg-zinc-900 border-2 border-zinc-800 p-8 border-l-8 border-l-[#39FF14]">
+              <section className="bg-zinc-900 border-2 border-zinc-800 p-8 border-l-8 border-l-[#16A34A]">
                  <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-6 flex items-center gap-2">
-                    <BarChart3 className="w-6 h-6 text-[#39FF14]" /> Head to Head Stats
+                    <ChartBar className="w-6 h-6 text-[#16A34A]" /> Head to Head Stats
                  </h3>
                  <div className="space-y-6">
                     {Object.keys(data.stats.entityA).map((statKey) => (
@@ -197,7 +197,7 @@ export default async function ComparisonPage({ params }: { params: Promise<{ slu
                 <ul className="space-y-2">
                   {data.keyAspects.map((aspect: string, i: number) => (
                     <li key={i} className="text-zinc-400 font-bold uppercase text-sm flex items-center gap-2">
-                      <span className="w-2 h-2 bg-[#39FF14] block"></span> {aspect}
+                      <span className="w-2 h-2 bg-[#16A34A] block"></span> {aspect}
                     </li>
                   ))}
                 </ul>
@@ -213,14 +213,14 @@ export default async function ComparisonPage({ params }: { params: Promise<{ slu
                      <>
                        <li>
                           <Link href={`/club/${data.entityA.team.toLowerCase().replace(/\s+/g, '-')}`} className="group block">
-                             <div className="text-zinc-400 hover:text-[#39FF14] text-sm font-bold uppercase transition-colors">
+                             <div className="text-zinc-400 hover:text-[#16A34A] text-sm font-bold uppercase transition-colors">
                                 {data.entityA.team} Hub
                              </div>
                           </Link>
                        </li>
                        <li>
                           <Link href={`/club/${data.entityB.team.toLowerCase().replace(/\s+/g, '-')}`} className="group block">
-                             <div className="text-zinc-400 hover:text-[#39FF14] text-sm font-bold uppercase transition-colors">
+                             <div className="text-zinc-400 hover:text-[#16A34A] text-sm font-bold uppercase transition-colors">
                                 {data.entityB.team} Hub
                              </div>
                           </Link>

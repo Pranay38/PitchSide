@@ -87,7 +87,7 @@ function MatchRow({ match, competition }: { match: Match; competition: string })
             {/* Home */}
             <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {match.homeTeam.crest && <img src={match.homeTeam.crest} alt="" className="w-4 h-4 object-contain flex-shrink-0" onError={e => (e.currentTarget.style.display = "none")} />}
+                    {match.homeTeam.crest && <img src={match.homeTeam.crest} alt=\"\" className="w-4 h-4 object-contain flex-shrink-0" onError={e = aria-hidden=\"true\"> (e.currentTarget.style.display = "none")} />}
                     <span className="text-[13px] font-medium text-[#0F172A] dark:text-white truncate">{match.homeTeam.name}</span>
                 </div>
                 <span className={`text-[13px] font-bold min-w-[20px] text-right ${hasScore ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8]"}`}>{match.score.home ?? "-"}</span>
@@ -95,7 +95,7 @@ function MatchRow({ match, competition }: { match: Match; competition: string })
             {/* Away */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {match.awayTeam.crest && <img src={match.awayTeam.crest} alt="" className="w-4 h-4 object-contain flex-shrink-0" onError={e => (e.currentTarget.style.display = "none")} />}
+                    {match.awayTeam.crest && <img src={match.awayTeam.crest} alt=\"\" className="w-4 h-4 object-contain flex-shrink-0" onError={e = aria-hidden=\"true\"> (e.currentTarget.style.display = "none")} />}
                     <span className="text-[13px] font-medium text-[#0F172A] dark:text-white truncate">{match.awayTeam.name}</span>
                 </div>
                 <span className={`text-[13px] font-bold min-w-[20px] text-right ${hasScore ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8]"}`}>{match.score.away ?? "-"}</span>
@@ -233,7 +233,7 @@ export function FixturesWidget() {
                                 {standings.map(e => (
                                     <tr key={e.position} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                         <td className="py-2 px-3 font-bold text-[#0F172A] dark:text-white">{e.position}</td>
-                                        <td className="py-2 px-1"><div className="flex items-center gap-2">{e.team.crest && <img src={e.team.crest} alt="" className="w-4 h-4 object-contain flex-shrink-0" onError={ev => ((ev.currentTarget as HTMLImageElement).style.display = "none")} />}<span className="font-medium text-[#0F172A] dark:text-white truncate">{e.team.name}</span></div></td>
+                                        <td className="py-2 px-1"><div className="flex items-center gap-2">{e.team.crest && <img src={e.team.crest} alt=\"\" className="w-4 h-4 object-contain flex-shrink-0" onError={ev = aria-hidden=\"true\"> ((ev.currentTarget as HTMLImageElement).style.display = "none")} />}<span className="font-medium text-[#0F172A] dark:text-white truncate">{e.team.name}</span></div></td>
                                         <td className="py-2 px-1 text-center text-[#64748B]">{e.played}</td>
                                         <td className="py-2 px-1 text-center text-[#64748B]">{e.won}</td>
                                         <td className="py-2 px-1 text-center text-[#64748B]">{e.draw}</td>

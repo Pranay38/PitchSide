@@ -11,7 +11,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from '@/lib/router-compat';
 import { gsap } from 'gsap';
-import { Menu, X } from 'lucide-react';
+import { List, X } from '@phosphor-icons/react';
 
 export type PillNavItem = {
   label: string;
@@ -40,7 +40,7 @@ export interface PillNavProps {
   /** Default text color for the pills */
   pillTextColor?: string;
   /** Callback for mobile menu toggle */
-  onMobileMenuClick?: () => void;
+  onMobileListClick?: () => void;
   /** Whether to play an entrance animation on mount */
   initialLoadAnimation?: boolean;
 }
@@ -55,11 +55,11 @@ export const PillNav: React.FC<PillNavProps> = ({
   pillColor = 'var(--pill-bg)',
   hoveredPillTextColor = 'var(--pill-hover-text)',
   pillTextColor,
-  onMobileMenuClick,
+  onMobileListClick,
   initialLoadAnimation = true
 }) => {
   const resolvedPillTextColor = pillTextColor ?? 'var(--pill-text)';
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileListOpen, setIsMobileListOpen] = useState(false);
   const location = useLocation();
   const activeHref = location.pathname;
   
@@ -69,7 +69,7 @@ export const PillNav: React.FC<PillNavProps> = ({
   const logoImgRef = useRef<HTMLImageElement | null>(null);
   const logoTweenRef = useRef<gsap.core.Tween | null>(null);
   const hamburgerRef = useRef<HTMLButtonElement | null>(null);
-  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+  const mobileListRef = useRef<HTMLDivElement | null>(null);
   const navItemsRef = useRef<HTMLDivElement | null>(null);
   const logoRef = useRef<HTMLAnchorElement | HTMLDivElement | null>(null);
 
@@ -241,11 +241,11 @@ export const PillNav: React.FC<PillNavProps> = ({
     });
   };
 
-  const toggleMobileMenu = () => {
-    const newState = !isMobileMenuOpen;
-    setIsMobileMenuOpen(newState);
+  const toggleMobileList = () => {
+    const newState = !isMobileListOpen;
+    setIsMobileListOpen(newState);
     
-    const menu = mobileMenuRef.current;
+    const menu = mobileListRef.current;
     if (menu) {
       if (newState) {
         gsap.set(menu, { display: 'block', opacity: 0, y: -20 });
@@ -267,7 +267,7 @@ export const PillNav: React.FC<PillNavProps> = ({
         });
       }
     }
-    onMobileMenuClick?.();
+    onMobileListClick?.();
   };
 
   const isExternalLink = (href: string) =>
@@ -332,7 +332,7 @@ export const PillNav: React.FC<PillNavProps> = ({
           </div>
         )}
 
-        {/* Desktop Menu */}
+        {/* Desktop List */}
         <div
           ref={navItemsRef}
           className="hidden md:flex items-center rounded-full px-1"
@@ -349,8 +349,6 @@ export const PillNav: React.FC<PillNavProps> = ({
               const isActive = activeHref === item.href || (item.href !== '/' && activeHref.startsWith(item.href));
               
               const pillStyle: React.CSSProperties = {
-                background: isActive ? 'var(--pill-base)' : 'transparent',
-                color: isActive ? 'var(--pill-hover-text)' : 'inherit',
                 paddingLeft: 'var(--pill-pad-x)',
                 paddingRight: 'var(--pill-pad-x)',
                 boxShadow: isActive ? '0 0 20px rgba(22, 163, 74, 0.3)' : 'none',
@@ -403,7 +401,7 @@ export const PillNav: React.FC<PillNavProps> = ({
                     <Link
                       role="menuitem"
                       to={item.href}
-                      className={`${basePillClasses} ${isActive ? 'text-[var(--pill-hover-text)]' : 'text-[var(--pill-text)]'}`}
+                      className={`${basePillClasses} ${isActive ? 'bg-green-600 text-white' : 'text-[var(--pill-text)]'}`}
                       style={pillStyle}
                       aria-label={item.ariaLabel || item.label}
                       onMouseEnter={isActive ? undefined : () => handleEnter(i)}
@@ -415,7 +413,7 @@ export const PillNav: React.FC<PillNavProps> = ({
                     <a
                       role="menuitem"
                       href={item.href}
-                      className={`${basePillClasses} ${isActive ? 'text-[var(--pill-hover-text)]' : 'text-[var(--pill-text)]'}`}
+                      className={`${basePillClasses} ${isActive ? 'bg-green-600 text-white' : 'text-[var(--pill-text)]'}`}
                       style={pillStyle}
                       aria-label={item.ariaLabel || item.label}
                       onMouseEnter={isActive ? undefined : () => handleEnter(i)}
@@ -434,9 +432,9 @@ export const PillNav: React.FC<PillNavProps> = ({
         {items.length > 0 && (
           <button
             ref={hamburgerRef}
-            onClick={toggleMobileMenu}
+            onClick={toggleMobileList}
             aria-label="Toggle menu"
-            aria-expanded={isMobileMenuOpen}
+            aria-expanded={isMobileListOpen}
             className="md:hidden flex items-center justify-center rounded-full transition-transform active:scale-90"
             style={{
               width: 'var(--logo-size)',
@@ -445,14 +443,14 @@ export const PillNav: React.FC<PillNavProps> = ({
               color: 'var(--pill-bg)'
             }}
           >
-            {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            {isMobileListOpen ? <X size={18} /> : <List size={18} />}
           </button>
         )}
       </nav>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile List Dropdown */}
       <div
-        ref={mobileMenuRef}
+        ref={mobileListRef}
         className="md:hidden absolute top-full left-0 right-0 mt-3 rounded-2xl overflow-hidden shadow-2xl z-[999] hidden border border-border/10 dark:bg-[#1E293B] bg-white border border-gray-100 dark:border-gray-800"
       >
         <ul className="list-none m-0 p-3 flex flex-col gap-1.5">
@@ -468,7 +466,7 @@ export const PillNav: React.FC<PillNavProps> = ({
                         ? 'bg-[#16A34A] text-white' 
                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#0F172A]'
                     }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => setIsMobileListOpen(false)}
                   >
                     {item.icon} {item.label}
                   </Link>
@@ -480,7 +478,7 @@ export const PillNav: React.FC<PillNavProps> = ({
                         ? 'bg-[#16A34A] text-white' 
                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#0F172A]'
                     }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => setIsMobileListOpen(false)}
                   >
                     {item.icon} {item.label}
                   </a>

@@ -43,3 +43,5 @@ research/
 build-log.txt
 build_output.txt
 ts_errors.txt
+scratch/
+graphify-out/

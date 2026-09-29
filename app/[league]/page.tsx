@@ -30,12 +30,12 @@ export default async function LeagueHubPage({ params }: { params: Promise<{ leag
   
   if (!leagueData) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-white font-outfit selection:bg-[#39FF14] selection:text-black">
+      <main className="min-h-screen bg-zinc-950 text-white font-outfit selection:bg-[#16A34A] selection:text-black">
         <Header />
         <div className="max-w-4xl mx-auto px-4 py-24 text-center">
           <h1 className="text-4xl font-black uppercase tracking-tighter mb-4">League Not Found</h1>
           <p className="text-zinc-500">We couldn't find data for this league.</p>
-          <Link href="/" className="mt-8 inline-block text-[#39FF14] font-bold uppercase hover:underline">Return Home</Link>
+          <Link href="/" className="mt-8 inline-block text-[#16A34A] font-bold uppercase hover:underline">Return Home</Link>
         </div>
         <Footer />
       </main>
@@ -63,7 +63,7 @@ export default async function LeagueHubPage({ params }: { params: Promise<{ leag
   } catch (e) {}
 
   return (
-    <main className="min-h-screen bg-zinc-950 font-outfit selection:bg-[#39FF14] selection:text-black">
+    <main className="min-h-screen bg-zinc-950 font-outfit selection:bg-[#16A34A] selection:text-black">
       <Header />
 
       <script
@@ -101,7 +101,7 @@ export default async function LeagueHubPage({ params }: { params: Promise<{ leag
         <nav className="flex items-center space-x-2 text-zinc-400 text-xs font-black uppercase tracking-widest mb-12">
           <Link href="/" className="hover:text-white transition-colors">Home</Link>
           <span>/</span>
-          <span className="text-[#39FF14]">{leagueData.name}</span>
+          <span className="text-[#16A34A]">{leagueData.name}</span>
         </nav>
 
         <header className="mb-16 border-b-4 border-zinc-800 pb-8">
@@ -127,11 +127,11 @@ export default async function LeagueHubPage({ params }: { params: Promise<{ leag
                 <div className="space-y-6">
                   {leaguePosts.map((post: any) => (
                     <Link href={`/p/${post.slug || post.id}`} key={post.id} className="block group">
-                      <div className="bg-zinc-900 border border-zinc-800 p-6 group-hover:border-[#39FF14] transition-colors">
-                        <div className="text-[#39FF14] text-xs font-black uppercase tracking-widest mb-2">
+                      <div className="bg-zinc-900 border border-zinc-800 p-6 group-hover:border-[#16A34A] transition-colors">
+                        <div className="text-[#16A34A] text-xs font-black uppercase tracking-widest mb-2">
                           {post.category || 'Analysis'}
                         </div>
-                        <h3 className="text-2xl font-black text-white uppercase tracking-tight group-hover:text-[#39FF14] transition-colors mb-3">
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tight group-hover:text-[#16A34A] transition-colors mb-3">
                           {post.title}
                         </h3>
                         <p className="text-zinc-400 line-clamp-2">
@@ -154,23 +154,23 @@ export default async function LeagueHubPage({ params }: { params: Promise<{ leag
                 <h2 className="text-3xl font-black text-white uppercase tracking-tighter">
                   Players to Watch
                 </h2>
-                <Link href="/players" className="text-[#39FF14] text-sm font-black uppercase tracking-widest hover:underline">
+                <Link href="/players" className="text-[#16A34A] text-sm font-black uppercase tracking-widest hover:underline">
                   View All →
                 </Link>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {leaguePlayers.map((player: any) => (
                   <Link href={`/players/${player.slug}`} key={player.slug} className="group block">
-                    <div className="bg-zinc-900 border border-zinc-800 p-4 group-hover:bg-[#39FF14]/5 transition-colors h-full flex flex-col justify-between">
+                    <div className="bg-zinc-900 border border-zinc-800 p-4 group-hover:bg-[#16A34A]/5 transition-colors h-full flex flex-col justify-between">
                       <div>
-                        <h4 className="text-white font-black uppercase group-hover:text-[#39FF14] transition-colors">
+                        <h4 className="text-white font-black uppercase group-hover:text-[#16A34A] transition-colors">
                           {player.name}
                         </h4>
                         <p className="text-zinc-500 text-xs font-bold uppercase">{player.team}</p>
                       </div>
                       <div className="mt-4 flex justify-between items-end">
                         <span className="text-xs text-zinc-400 uppercase font-black">{player.position}</span>
-                        <span className="text-[#39FF14] font-mono font-bold text-sm bg-zinc-950 px-2 py-1">{player.seasonStats.rating}</span>
+                        <span className="text-[#16A34A] font-mono font-bold text-sm bg-zinc-950 px-2 py-1">{player.seasonStats.rating}</span>
                       </div>
                     </div>
                   </Link>
@@ -190,12 +190,12 @@ export default async function LeagueHubPage({ params }: { params: Promise<{ leag
                 {leagueManagers.sort((a, b) => b.pressureScore - a.pressureScore).slice(0, 5).map((manager: any) => (
                   <Link href={`/managers/${manager.slug}`} key={manager.slug} className="flex items-center justify-between group">
                     <div>
-                      <div className="text-white font-black uppercase group-hover:text-[#39FF14] transition-colors text-sm">
+                      <div className="text-white font-black uppercase group-hover:text-[#16A34A] transition-colors text-sm">
                         {manager.name}
                       </div>
                       <div className="text-zinc-500 text-xs font-bold uppercase">{manager.club}</div>
                     </div>
-                    <div className={`font-mono font-black ${manager.pressureScore > 75 ? 'text-red-500' : manager.pressureScore > 50 ? 'text-yellow-400' : 'text-[#39FF14]'}`}>
+                    <div className={`font-mono font-black ${manager.pressureScore > 75 ? 'text-red-500' : manager.pressureScore > 50 ? 'text-yellow-400' : 'text-[#16A34A]'}`}>
                       {manager.pressureScore}%
                     </div>
                   </Link>
@@ -204,8 +204,8 @@ export default async function LeagueHubPage({ params }: { params: Promise<{ leag
             </div>
 
             {/* Club Hubs Index */}
-            <div className="bg-[#39FF14]/5 border-2 border-[#39FF14]/20 p-6">
-              <h3 className="text-xl font-black text-[#39FF14] uppercase tracking-tighter mb-4">
+            <div className="bg-[#16A34A]/5 border-2 border-[#16A34A]/20 p-6">
+              <h3 className="text-xl font-black text-[#16A34A] uppercase tracking-tighter mb-4">
                 Club Hubs
               </h3>
               <p className="text-zinc-400 text-sm mb-6">Access deep tactical analysis for every team.</p>
@@ -214,7 +214,7 @@ export default async function LeagueHubPage({ params }: { params: Promise<{ leag
                   <Link 
                     key={team} 
                     href={`/club/${team.toLowerCase().replace(/ /g, '-')}`}
-                    className="text-zinc-300 hover:text-[#39FF14] text-xs font-black uppercase truncate transition-colors"
+                    className="text-zinc-300 hover:text-[#16A34A] text-xs font-black uppercase truncate transition-colors"
                   >
                     {team}
                   </Link>

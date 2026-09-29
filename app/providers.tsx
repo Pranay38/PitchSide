@@ -10,6 +10,7 @@ import { UserPreferencesProvider } from "@/app/hooks/useUserPreferences";
 import { MobileBottomNav } from "@/app/components/MobileBottomNav";
 import { useState, Suspense } from "react";
 import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "next-themes";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -27,7 +28,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ErrorBoundary>
       <SessionProvider>
-        <UserPreferencesProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <UserPreferencesProvider>
           <QueryClientProvider client={queryClient}>
             <Suspense fallback={null}>
               <OfflineIndicator />
@@ -39,6 +41,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <CookieBanner />
           </QueryClientProvider>
         </UserPreferencesProvider>
+        </ThemeProvider>
       </SessionProvider>
     </ErrorBoundary>
   );

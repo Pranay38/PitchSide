@@ -9,12 +9,18 @@ import { CSPostHogProvider } from "@/app/components/PostHogProvider";
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { Inter, Newsreader, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono, Newsreader, Space_Grotesk } from "next/font/google";
 
-const inter = Inter({
+const geist = Geist({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-geist",
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-geist-mono",
 });
 
 const newsreader = Newsreader({
@@ -104,7 +110,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${newsreader.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${geistMono.variable} ${newsreader.variable} ${spaceGrotesk.variable}`}>
       <head>
         {/* Preconnect to frequently used external services */}
         <link rel="preconnect" href="https://api.football-data.org" />
@@ -112,12 +118,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://api.football-data.org" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
 
-        {/* Inline theme script to prevent FOUC */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('pitchside_theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
-          }}
-        />
+        
 
         {/* JSON-LD for WebSite */}
         <script
@@ -170,7 +171,7 @@ export default function RootLayout({
       </head>
 
       <body className="overflow-x-hidden antialiased">
-        <NextTopLoader color="#39FF14" showSpinner={false} />
+        <NextTopLoader color="#16A34A" showSpinner={false} />
         <Toaster theme="dark" richColors position="top-center" />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[9999] bg-[#16A34A] text-white px-4 py-2 rounded-md font-bold shadow-lg">Skip to main content</a>
         {/* GA4 */}

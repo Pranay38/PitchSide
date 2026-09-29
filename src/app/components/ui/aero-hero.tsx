@@ -1,4 +1,4 @@
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Clock } from "@phosphor-icons/react";
 import Image from "next/image";
 import { Link } from "@/lib/router-compat";
 import type { BlogPost } from "../../data/posts";
@@ -11,7 +11,7 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
     <section className="relative w-full max-w-7xl mx-auto px-4 lg:px-6 py-12 md:py-20 lg:py-24">
       <div className="flex flex-col-reverse lg:flex-row gap-8 lg:gap-16 items-center">
         {/* Left Column */}
-        <div className="w-full lg:w-[55%] space-y-6">
+        <div className="w-full lg:w-[55%] space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-1000 ease-out fill-mode-both">
           <div className="flex items-center gap-3">
              <div className="kicker px-3 py-1 bg-secondary text-primary rounded-full">
                The Big Talking Point
@@ -42,7 +42,7 @@ export default function AeroHero({ post }: { post: BlogPost | StoryFeature | nul
         </div>
         
         {/* Right Column */}
-        <div className="w-full lg:w-[45%]">
+        <div className="w-full lg:w-[45%] animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200 ease-out fill-mode-both">
            <div className="relative aspect-[4/5] sm:aspect-[4/3] lg:aspect-[4/5] rounded-xl overflow-hidden glass-card">
               <Image 
                 src={post.coverImage} 

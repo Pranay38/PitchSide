@@ -44,15 +44,15 @@
 |-------|--------|--------|-------|--------------|------------------|
 | Phase 17 | 🔄 In Progress | Sprint 1 | Foundation Hardening | FR-1.1–1.2 | Bing verification, WebP/AVIF image config |
 | Phase 18 | 🔄 In Progress | Sprint 1 | IndexNow + Schema | FR-1.3–1.5 | IndexNow auto-ping on publish, schema generators lib, RSS verified |
-| Phase 19 | 🔄 In Progress | Sprint 2 | SEO Title Engine | FR-2.1, FR-2.4 | Title utilities lib, title optimizer admin page |
-| Phase 20 | 🔄 In Progress | Sprint 2 | GSC Integration | FR-2.2–2.3 | GSC API client, striking-distance dashboard |
-| Phase 21 | 🔄 In Progress | Sprint 2 | Content Calendar | FR-2.5 | Publishing cadence tracker, intent distribution view |
-| Phase 22 | 📅 Planned | Sprint 3 | Comparison Pages | FR-3.1–3.2 | VS page template, comparison data model + CRUD |
-| Phase 23 | 📅 Planned | Sprint 3 | League & Player Hubs | FR-3.3–3.5 | League hub pages, player analysis pages, 20 managers |
-| Phase 24 | 📅 Planned | Sprint 3 | Schema & Coverage | FR-3.6–3.8 | Batch generator, HowTo/Video schema, sitemap update |
-| Phase 25 | 📅 Planned | Sprint 4 | Content Refresh System | FR-4.1–4.2 | Post model SEO fields, refresh tracker admin page |
-| Phase 26 | 📅 Planned | Sprint 4 | Internal Link Engine | FR-4.3–4.4 | Link scorer, enhanced suggestions in editor |
-| Phase 27 | 📅 Planned | Sprint 4 | SEO Reporting | FR-4.5–4.6 | Weekly metrics email, vercel.json cron |
+| Phase 19 | ✅ Done | Sprint 2 | SEO Title Engine | FR-2.1, FR-2.4 | Title utilities lib, title optimizer admin page |
+| Phase 20 | ✅ Done | Sprint 2 | GSC Integration | FR-2.2–2.3 | GSC API client, striking-distance dashboard |
+| Phase 21 | ✅ Done | Sprint 2 | Content Calendar | FR-2.5 | Publishing cadence tracker, intent distribution view |
+| Phase 22 | ✅ Done | Sprint 3 | Comparison Pages | FR-3.1–3.2 | VS page template, comparison data model + CRUD |
+| Phase 23 | ✅ Done | Sprint 3 | League & Player Hubs | FR-3.3–3.5 | League hub pages, player analysis pages, 20 managers |
+| Phase 24 | ✅ Done | Sprint 3 | Schema & Coverage | FR-3.6–3.8 | Batch generator, HowTo/Video schema, sitemap update |
+| Phase 25 | ✅ Done | Sprint 4 | Content Refresh System | FR-4.1–4.2 | Post model SEO fields, refresh tracker admin page |
+| Phase 26 | ✅ Done | Sprint 4 | Internal Link Engine | FR-4.3–4.4 | Link scorer, enhanced suggestions in editor |
+| Phase 27 | ✅ Done | Sprint 4 | SEO Reporting | FR-4.5–4.6 | Weekly metrics email, vercel.json cron |
 
 ### Dependencies
 ```
@@ -69,27 +69,67 @@ Phase 23 ──→ Phase 24 (pages exist before sitemap/batch generation)
 Phase 25 ──→ Phase 26 (post model fields before link scorer)
 ```
 
+---
+
+## Milestone 4: Premium Redesign (Active)
+
+**Goal:** Transform PitchSide from a functional editorial platform into a premium, anti-slop frontend using `redesign-existing-projects`, `design-taste-frontend` (v2), and `brandkit` skills. Preserve IA, URL structure, content, SEO, and the matchday-minute structural metaphor.
+
+**Design Dials (taste-skill):** `DESIGN_VARIANCE: 6` | `MOTION_INTENSITY: 4` | `VISUAL_DENSITY: 3`
+
+**Redesign Mode:** Preserve — modernize without brand disruption.
+
+| Phase | Status | Wave | Focus | Success Criteria |
+|-------|--------|------|-------|-----------------|
+| Phase 28 | ✅ Done | Wave 1 | Brand Kit Generation | Brand identity board generated, visual direction locked |
+| Phase 29 | ✅ Done | Wave 1 | Typography Refresh | Inter → Geist swap, weight hierarchy, text-wrap balance, Geist Mono for data |
+| Phase 30 | ✅ Done | Wave 1 | Color Palette Cleanup | Single accent #16A34A, kill #39FF14, unify to Slate grays, tint shadows |
+| Phase 31 | ✅ Done | Wave 1 | Motion Refinement | Remove Lenis, simplify scroll reveals, wrap reduced-motion, kill decorative animations |
+| Phase 32 | ✅ Done | Wave 1 | Content & Copy Audit | Zero em-dashes, zero AI clichés, zero scroll cues, organic data |
+| Phase 33 | ✅ Done | Wave 2 | Interactive States | Hover/active/focus on all elements, global transition baseline, nav active indicator |
+| Phase 34 | ✅ Done | Wave 2 | Layout & Spacing | py-24/py-32 sections, kill 3-equal-cards, min-h-[100dvh], section diversity |
+| Phase 35 | ✅ Done | Wave 3 | Component Modernization | Lucide → Phosphor, shadcn audit, glassmorphism refinement, SectionMarker upgrade |
+| Phase 36 | ✅ Done | Wave 3 | Typography Scale Polish | 8-level type scale, headline presence, kicker style, data typography |
+| Phase 37 | ✅ Done | Wave 3 | Loading/Empty/Error States | Skeleton loaders, composed empty states, inline errors, branded 404 |
+| Phase 38 | ✅ Done | Wave 4 | Accessibility & Hardening | Semantic HTML, alt text, WCAG AA contrast, meta tags, legal links |
+
+### Dependencies
+```
+Phase 28 ──→ Phase 29 (brand kit locks visual direction for typography)
+Phase 28 ──→ Phase 30 (brand kit locks palette)
+Phase 30 ──→ Phase 33 (colors before interactive states)
+Phase 29 + 30 ──→ Phase 34 (typography + color before layout)
+Phase 29 + 30 + 33 ──→ Phase 35 (foundation before component swap)
+Phase 35 ──→ Phase 37 (components before states)
+Phase 29-35 ──→ Phase 38 (all visual changes before a11y audit)
+```
+
 ### Phase Grouping (Parallelizable)
 ```
-┌─ Sprint 1 ─────────────────────────────┐
-│  Phase 17 ──→ Phase 18                 │  Foundation + IndexNow
+┌─ Wave 1 ───────────────────────────────┐
+│  Phase 28 (brand kit)                  │  Foundation
+│  Phase 29 (typography)  ── parallel ── │
+│  Phase 30 (color)       ── parallel ── │  Core Theme
+│  Phase 31 (motion)      ── parallel ── │
+│  Phase 32 (copy audit)  ── parallel ── │  Independent
 └────────────────────────────────────────┘
 
-┌─ Sprint 2 ─────────────────────────────┐
-│  Phase 19 (titles)    ── parallel ──   │
-│  Phase 20 (GSC)       ── parallel ──   │  Quick Win Tools
-│  Phase 21 (calendar)                   │
+┌─ Wave 2 ───────────────────────────────┐
+│  Phase 33 (interactive)  ── parallel ──│
+│  Phase 34 (layout)       ── parallel ──│  Structure
 └────────────────────────────────────────┘
 
-┌─ Sprint 3 ─────────────────────────────┐
-│  Phase 22 ──→ Phase 23 ──→ Phase 24   │  Coverage Expansion
+┌─ Wave 3 ───────────────────────────────┐
+│  Phase 35 (components)                 │
+│  Phase 36 (type polish)  ── parallel ──│  Polish
+│  Phase 37 (states)                     │
 └────────────────────────────────────────┘
 
-┌─ Sprint 4 ─────────────────────────────┐
-│  Phase 25 ──→ Phase 26                 │
-│  Phase 27 (parallel with 25-26)        │  Compound & Track
+┌─ Wave 4 ───────────────────────────────┐
+│  Phase 38 (accessibility)              │  Hardening
 └────────────────────────────────────────┘
 ```
 
 ---
-*Updated: 2026-09-25 — Milestone 3 kickoff (SEO Growth Engine)*
+*Updated: 2026-09-29 — Milestone 4 kickoff (Premium Redesign)*
+
