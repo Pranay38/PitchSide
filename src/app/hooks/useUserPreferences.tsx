@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useUser } from "@clerk/nextjs";
 import { safeParse, UserPreferencesSchema } from "../lib/schemas";

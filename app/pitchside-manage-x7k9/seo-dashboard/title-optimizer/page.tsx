@@ -1,3 +1,5 @@
+"use client";
+
 'use client';
 import { useState, useEffect } from 'react';
 import { validateTitle, suggestTitleImprovements } from '@/lib/seo-title-utils';
