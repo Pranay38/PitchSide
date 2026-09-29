@@ -102,7 +102,7 @@ function expandClubTokens(value: string): string {
   return expandedTokens.join(" ").trim().replace(/\s+/g, " ");
 }
 
-function canonicalClubName(value: string): string {
+export function canonicalClubName(value: string): string {
   const normalized = expandClubTokens(value);
   const canonicalEntry = Object.entries(CLUB_ALIASES).find(([canonical, aliases]) => {
     const allNames = [canonical, ...aliases].map(expandClubTokens);

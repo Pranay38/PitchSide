@@ -169,6 +169,36 @@ export default async function BlogPostPage({ params }: Props) {
     }
   }
 
+  // ── Auto SEO Title ──
+  const rawTitle = post.seo?.title || post.title;
+  const seoTitle = (() => {
+    let t = rawTitle.replace(/^The Touchline Dribble['']s\s+/i, "");
+    if (t.length <= 57) return t;
+    const truncated = t.substring(0, 57).replace(/\s+\S*$/, "");
+    return truncated.length > 20 ? truncated : t.substring(0, 57);
+  })();
+
+  // ── Auto Meta Description ──
+  const seoDescription = post.seo?.description 
+    || (post.excerpt?.length > 155 
+      ? post.excerpt.substring(0, 152).replace(/\s+\S*$/, "") + "..." 
+      : post.excerpt || "");
+
+  // ── Auto Focus Keywords ──
+  const keywords = post.seo?.focusKeywords?.length 
+    ? post.seo.focusKeywords 
+    : (() => {
+        const stopWords = new Set(["the", "a", "an", "and", "or", "in", "of", "to", "for", "is", "at", "by", "on", "s", "it", "its"]);
+        const titleWords = (post.title || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9\s'-]/g, "")
+          .split(/\s+/)
+          .filter((w: string) => w.length > 2 && !stopWords.has(w));
+        const tagKeywords = (post.tags || []).map((t: string) => t.toLowerCase());
+        const clubKeyword = post.club && post.club !== "General" ? [post.club.toLowerCase()] : [];
+        return [...new Set([...tagKeywords, ...clubKeyword, ...titleWords])].slice(0, 7);
+      })();
+
   // JSON-LD structured data for the article
   const jsonLd = {
     "@context": "https://schema.org",

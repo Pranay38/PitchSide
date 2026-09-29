@@ -1,4 +1,5 @@
 "use client";
+import { postMatchesClub } from "../lib/postClubs";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "@/lib/router-compat";
 import { ArrowRight, Search, Heart, Shield, Target, Calendar, Trophy, MessageSquare, Activity } from "lucide-react";
@@ -125,11 +126,7 @@ export function ClubHubPage() {
   };
 
   const matchingPosts = useMemo(() => {
-    const clubMatches = posts.filter((post) => {
-      // Direct club match or tag match
-      return post.club?.toLowerCase() === normalizedSlug.replace(/-/g, " ") ||
-             post.tags.some(t => t.toLowerCase() === normalizedSlug.replace(/-/g, " "));
-    });
+    const clubMatches = posts.filter((post) => postMatchesClub(post, clubLabel));
 
     const filteredByQuery = query.trim()
       ? clubMatches.filter((post) => {
@@ -139,7 +136,7 @@ export function ClubHubPage() {
       : clubMatches;
 
     return sortPosts(filteredByQuery, sort);
-  }, [normalizedSlug, posts, query, sort]);
+  }, [clubLabel, posts, query, sort]);
 
   const matchingStories = useMemo(() => {
     return stories.filter(story => {
