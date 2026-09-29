@@ -976,7 +976,7 @@ export function AdminPage() {
                 {activeTab === "pots" && (
                     <AdminPOTSTab 
                         settings={siteSettings.pots} 
-                        onSave={async (pots) => { await updateSiteSettingsAsync({ pots }); }} 
+                        onFloppyDisk={async (pots: any) => { await updateSiteSettingsAsync({ pots }); }} 
                     />
                 )}
             </main>
