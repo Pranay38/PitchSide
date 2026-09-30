@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-09-29T11:01:48.462683",
+  "lastUpdated": "2026-09-30T10:52:09.343658",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd & Arsenal eye Porto's Costa - Tuesday's gossip",
+    "text": "Real Madrid considering Van Dijk - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 92
+    },
+    {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 99
+      "pressureScore": 70
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 78
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 68
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 73
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 62
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 64
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 60
     }
   ]
 }
