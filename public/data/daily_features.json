@@ -1,32 +1,32 @@
 {
-  "lastUpdated": "2026-09-30T10:52:09.343658",
+  "lastUpdated": "2026-10-01T11:18:52.765650",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid considering Van Dijk - Wednesday's gossip",
+    "text": "Liverpool contenders for Schade - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
       "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 92
-    },
-    {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 70
+      "pressureScore": 99
     },
     {
       "name": "Keith Andrews (BRE)",
-      "pressureScore": 68
+      "pressureScore": 96
     },
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 62
+      "name": "David Moyes (EVE)",
+      "pressureScore": 93
     },
     {
-      "name": "Marco Rose (BOU)",
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 80
+    },
+    {
+      "name": "Mikel Arteta (ARS)",
       "pressureScore": 60
     }
   ]
