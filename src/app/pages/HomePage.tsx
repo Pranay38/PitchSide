@@ -192,7 +192,7 @@ export function HomePage({
               description="Football opinions, useful explainers, and a monthly story."
             />
           )}
-          {true && (
+          {content.verdicts.length > 0 && (
             <section
               className="py-24 md:py-32"
               aria-label="Our Verdict"
@@ -218,7 +218,7 @@ export function HomePage({
             linkLabel="Explore the explainers"
             placement="understand"
           />
-          {true && (
+          {content.monthlyStory && (
             <section
               className="py-24 md:py-32"
               aria-labelledby="monthly-story-heading"
@@ -298,7 +298,7 @@ export function HomePage({
             ) : (
               <div className="lg:col-span-2 h-full rounded-2xl bg-card border border-border p-8 flex items-center justify-center">
                  <p className="text-muted-foreground font-medium flex items-center gap-2">
-                    <CheckCircle weight="fill" className="w-5 h-5 text-primary" /> You're subscribed to The Weekly Whistle.
+                    <CheckCircle weight="fill" className="w-5 h-5 text-primary" /> You&apos;re subscribed to The Weekly Whistle.
                  </p>
               </div>
             )}
