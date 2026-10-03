@@ -7,14 +7,16 @@ export function EditorialReading({
   postId,
   background,
   perspective,
+  perspectiveUsesCurrentExplainer = false,
 }: {
   postId: string;
   background?: ReadingLink;
   perspective?: ReadingLink;
+  perspectiveUsesCurrentExplainer?: boolean;
 }) {
   const links = [
-    { post: background, label: "Understand the background" },
-    { post: perspective, label: "Another perspective" },
+    { post: background, label: "Understand the background", placement: "Understand the background" },
+    { post: perspective, label: perspectiveUsesCurrentExplainer ? "See this idea in an argument" : "Explore a related argument", placement: "Another perspective" },
   ].filter((item) => item.post);
   if (!links.length) return null;
   return (
@@ -31,7 +33,7 @@ export function EditorialReading({
             trackContentEvent("related_article_click", {
               article_id: postId,
               destination_article_id: item.post!.id,
-              placement: item.label,
+              placement: item.placement,
             })
           }
         >

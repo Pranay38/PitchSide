@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "@/lib/router-compat";
 import { BookOpen, Library, ScrollText, Search, SlidersHorizontal, X } from "lucide-react";
 import { SEO } from "../components/SEO";
@@ -16,6 +16,10 @@ import { getAllStories, getAllStoriesAsync } from "../lib/storyStorage";
 
 function readOption(searchParams: URLSearchParams, key: string, fallback = "all"): string {
   return searchParams.get(key) || fallback;
+}
+
+function formatLabel(value: string): string {
+  return value === "Scrollytelling" ? "Visual stories" : value;
 }
 
 function unique(values: string[]): string[] {
@@ -42,7 +46,7 @@ function ArchiveCard({ entry }: { entry: ArchiveEntry }) {
             {entry.type === "story" ? "Story" : "Article"}
           </span>
           <span className="rounded-full bg-gray-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#64748B] dark:bg-white/5 dark:text-gray-300">
-            {entry.format}
+            {formatLabel(entry.format)}
           </span>
           {entry.league && (
             <span className="rounded-full bg-gray-100 px-3 py-1 text-[11px] font-medium text-[#475569] dark:bg-white/5 dark:text-gray-300">
@@ -118,6 +122,12 @@ export function ArchivePage() {
     format: readOption(searchParams, "format"),
     sort: readOption(searchParams, "sort", "newest"),
   };
+  const advancedFilterCount = [filters.type, filters.club, filters.league, filters.format].filter(value => value !== "all").length;
+  const advancedFilterKey = [filters.type, filters.club, filters.league, filters.format].join("|");
+  const advancedFiltersRef = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    if (advancedFiltersRef.current) advancedFiltersRef.current.open = advancedFilterCount > 0;
+  }, [advancedFilterKey, advancedFilterCount]);
   const activeFilterChips = [
     filters.kind !== "all" ? { key: "kind", label: filters.kind === "opinion" ? "Opinions" : "Explainers" } : null,
     filters.query ? { key: "q", label: `Search: ${filters.query}` } : null,
@@ -125,7 +135,7 @@ export function ArchivePage() {
     filters.club !== "all" ? { key: "club", label: filters.club } : null,
     filters.league !== "all" ? { key: "league", label: filters.league } : null,
     filters.topic !== "all" ? { key: "topic", label: filters.topic } : null,
-    filters.format !== "all" ? { key: "format", label: filters.format } : null,
+    filters.format !== "all" ? { key: "format", label: formatLabel(filters.format) } : null,
     filters.sort !== "newest" ? { key: "sort", label: filters.sort === "oldest" ? "Oldest first" : "A-Z" } : null,
   ].filter(Boolean) as Array<{ key: string; label: string }>;
 
@@ -156,7 +166,7 @@ export function ArchivePage() {
   };
 
   const clearFilters = () => {
-    setSearchParams({});
+    setSearchParams(new URLSearchParams());
   };
 
   return (
@@ -210,46 +220,61 @@ export function ArchivePage() {
 
           <div className="relative mt-7 flex flex-wrap gap-2">
             <Link to="/archive?type=article" className="filter-chip">Analysis feed</Link>
-            <Link to="/archive?type=story" className="filter-chip">Scrollytelling</Link>
+            <Link to="/archive?type=story" className="filter-chip">Visual stories</Link>
             <Link to="/archive?topic=Premier%20League" className="filter-chip">Premier League</Link>
             <Link to="/archive?format=Must%20Read" className="filter-chip">Must Reads</Link>
           </div>
 
           <div className="relative mt-8 rounded-[1.75rem] border border-gray-200 bg-white/82 p-4 backdrop-blur-sm dark:border-gray-800 dark:bg-[#08111f]/92">
-            <div className="grid gap-3 lg:grid-cols-[2fr_repeat(5,minmax(0,1fr))]">
+            <div className="grid gap-3 lg:grid-cols-[2fr_1fr_1fr]">
               <label className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-4 py-3 dark:border-gray-700 dark:bg-[#0F172A]">
                 <Search className="h-4 w-4 text-[#94A3B8]" />
                 <input
                   type="search"
+                  aria-label="Search archive"
                   value={filters.query}
                   onChange={(event) => updateFilter("q", event.target.value)}
                   placeholder="Search titles, clubs, topics, formats..."
-                  className="w-full bg-transparent text-sm text-[#0F172A] outline-none placeholder:text-[#94A3B8] dark:text-white"
+                  className="min-w-0 w-full bg-transparent text-sm text-[#0F172A] outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] placeholder:text-[#94A3B8] dark:text-white"
                 />
               </label>
+              <select aria-label="Filter by article kind" value={filters.kind} onChange={(event) => updateFilter("kind", event.target.value)} className="min-w-0 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
+                <option value="all">All</option>
+                <option value="opinion">Opinions</option>
+                <option value="explainer">Explainers</option>
+              </select>
+              <select aria-label="Filter by topic" value={filters.topic} onChange={(event) => updateFilter("topic", event.target.value)} className="min-w-0 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
+                <option value="all">All topics</option>
+                {filters.topic !== "all" && !topics.includes(filters.topic) && <option value={filters.topic}>{filters.topic}</option>}
+                {topics.map((topic) => <option key={topic} value={topic}>{topic}</option>)}
+              </select>
+            </div>
 
-              <select value={filters.type} onChange={(event) => updateFilter("type", event.target.value)} className="rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
+            <details ref={advancedFiltersRef} open={advancedFilterCount > 0} className="mt-4">
+              <summary className="cursor-pointer rounded-lg py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-600">More filters{advancedFilterCount > 0 ? ` (${advancedFilterCount} active)` : ""}</summary>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <select aria-label="Filter by content type" value={filters.type} onChange={(event) => updateFilter("type", event.target.value)} className="min-w-0 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
                 <option value="all">All content</option>
                 <option value="article">Articles</option>
                 <option value="story">Stories</option>
               </select>
-              <select value={filters.club} onChange={(event) => updateFilter("club", event.target.value)} className="rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
+              <select aria-label="Filter by club" value={filters.club} onChange={(event) => updateFilter("club", event.target.value)} className="min-w-0 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
                 <option value="all">All clubs</option>
+                {filters.club !== "all" && !clubs.includes(filters.club) && <option value={filters.club}>{filters.club}</option>}
                 {clubs.map((club) => <option key={club} value={club}>{club}</option>)}
               </select>
-              <select value={filters.league} onChange={(event) => updateFilter("league", event.target.value)} className="rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
+              <select aria-label="Filter by league" value={filters.league} onChange={(event) => updateFilter("league", event.target.value)} className="min-w-0 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
                 <option value="all">All leagues</option>
+                {filters.league !== "all" && !leagues.includes(filters.league) && <option value={filters.league}>{filters.league}</option>}
                 {leagues.map((league) => <option key={league} value={league}>{league}</option>)}
               </select>
-              <select value={filters.topic} onChange={(event) => updateFilter("topic", event.target.value)} className="rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
-                <option value="all">All topics</option>
-                {topics.map((topic) => <option key={topic} value={topic}>{topic}</option>)}
-              </select>
-              <select value={filters.format} onChange={(event) => updateFilter("format", event.target.value)} className="rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
+              <select aria-label="Filter by format" value={filters.format} onChange={(event) => updateFilter("format", event.target.value)} className="min-w-0 w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-[#0F172A] outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
                 <option value="all">All formats</option>
-                {formats.map((format) => <option key={format} value={format}>{format}</option>)}
+                {filters.format !== "all" && !formats.includes(filters.format) && <option value={filters.format}>{formatLabel(filters.format)}</option>}
+                {formats.map((format) => <option key={format} value={format}>{formatLabel(format)}</option>)}
               </select>
-            </div>
+              </div>
+            </details>
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#94A3B8]">
@@ -257,7 +282,7 @@ export function ArchivePage() {
                 Filters
               </div>
               <div className="flex items-center gap-3">
-                <select value={filters.sort} onChange={(event) => updateFilter("sort", event.target.value)} className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-[#0F172A] outline-none dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
+                <select aria-label="Sort results" value={filters.sort} onChange={(event) => updateFilter("sort", event.target.value)} className="rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-[#0F172A] outline-none focus-visible:ring-2 focus-visible:ring-[#16A34A] dark:border-gray-700 dark:bg-[#0F172A] dark:text-white">
                   <option value="newest">Newest first</option>
                   <option value="oldest">Oldest first</option>
                   <option value="a-z">A-Z</option>
@@ -279,6 +304,7 @@ export function ArchivePage() {
                   <button
                     key={`${chip.key}-${chip.label}`}
                     type="button"
+                    aria-label={`Remove filter: ${chip.label}`}
                     onClick={() => updateFilter(chip.key, "all")}
                     className="filter-chip"
                   >

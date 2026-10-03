@@ -558,7 +558,7 @@ export default async function BlogPostPage({ params }: Props) {
               {!!post.editorial?.evidence?.filter((item: { text: string }) => item.text.trim()).length && <section className="my-10" aria-label="Why we think this"><h2 className="font-headline text-2xl mb-4">Why we think this</h2><ul className="space-y-4 list-disc pl-5">{post.editorial.evidence.filter((item: { text: string }) => item.text.trim()).map((item: { text: string; sourceUrl?: string }, index: number) => <li key={index}>{item.text}{item.sourceUrl && /^https?:\/\//i.test(item.sourceUrl) && <a className="ml-2 text-primary underline" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">Source {index + 1}</a>}</li>)}</ul></section>}
               {post.editorial?.counterargument && <section className="my-10 rounded-2xl border border-border p-6"><h2 className="font-headline text-2xl mb-3">The strongest counterargument</h2><p className="leading-relaxed">{post.editorial.counterargument}</p></section>}
             </>}
-            <EditorialReading postId={post.id} background={readingLink(relatedReading.background)} perspective={readingLink(relatedReading.perspective)} />
+            <EditorialReading postId={post.id} perspectiveUsesCurrentExplainer={relatedReading.perspectiveUsesCurrentExplainer} background={readingLink(relatedReading.background)} perspective={readingLink(relatedReading.perspective)} />
             <ArticleEndCTA postId={post.id} club={post.club} config={post.articleCta} />
 
             {/* Hot Take Heat Index — interactive polls from the editor */}

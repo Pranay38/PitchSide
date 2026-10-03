@@ -152,5 +152,6 @@ export function selectRelatedReading(post: BlogPost, posts: BlogPost[]) {
   const perspective = [...curated, ...referencingOpinions, ...relevant].find(
     (p) => p.id !== background?.id && isOpinion(p),
   );
-  return { background, perspective };
+  const perspectiveUsesCurrentExplainer = isExplainer(post) && perspective?.editorial?.backgroundPostId === post.id;
+  return { background, perspective, perspectiveUsesCurrentExplainer };
 }
