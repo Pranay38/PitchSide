@@ -237,3 +237,34 @@ describe("Subscribers API Endpoint", () => {
     });
   });
 });
+
+describe("reader-growth subscription behavior", () => {
+  it("stores only allowlisted campaign context and starts the welcome journey pending", async () => {
+    vi.mocked(isMailerConfigured).mockReturnValueOnce(false);
+    const collection = { findOne: vi.fn().mockResolvedValue(null), insertOne: vi.fn().mockResolvedValue({ insertedId: "new" }), updateOne: vi.fn() };
+    vi.mocked(connectToDatabase).mockResolvedValue({ db: { collection: () => collection } } as any);
+    const res = createMockResponse();
+    await handler(createMockRequest("POST", { email: "reader@example.com", source: "subscribe_page", campaign: { utm_source: "x", utm_campaign: "reader@example.com", email: "reader@example.com" } }), res);
+    expect(collection.insertOne).toHaveBeenCalledWith(expect.objectContaining({ welcomeSequenceState: 0, signupSource: "subscribe_page", signupCampaign: { utm_source: "x" } }));
+    expect(collection.updateOne).not.toHaveBeenCalledWith(expect.anything(), { $set: expect.objectContaining({ welcomeSequenceState: 1 }) });
+  });
+  it("does not report an opted-out reader as subscribed or silently re-enroll them", async () => {
+    const collection = { findOne: vi.fn().mockResolvedValue({ _id: "old", status: "unsubscribed" }), updateOne: vi.fn() };
+    vi.mocked(connectToDatabase).mockResolvedValue({ db: { collection: () => collection } } as any);
+    const statusRes = createMockResponse();
+    const statusReq = createMockRequest("GET"); statusReq.query = { action: "status", email: "reader@example.com" };
+    await handler(statusReq, statusRes);
+    expect(statusRes.json).toHaveBeenCalledWith({ subscribed: false });
+    const signupRes = createMockResponse();
+    await handler(createMockRequest("POST", { email: "reader@example.com" }), signupRes);
+    expect(signupRes.status).toHaveBeenCalledWith(409);
+    expect(collection.updateOne).not.toHaveBeenCalled();
+  });
+  it("redirects legacy unsubscribe links to the preferences page on the canonical site", async () => {
+    vi.mocked(connectToDatabase).mockResolvedValue({ db: { collection: () => ({}) } } as any);
+    const req = createMockRequest("GET"); req.query = { action: "unsubscribe", email: "Reader@example.com" };
+    const response = createMockResponse() as any; response.redirect = vi.fn();
+    await handler(req, response);
+    expect(response.redirect).toHaveBeenCalledWith(302, "https://www.thetouchlinedribble.in/preferences?email=reader%40example.com");
+  });
+});

@@ -1,5 +1,7 @@
 "use client";
 
+import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
+
 import { useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { Mail, Heart } from "lucide-react";
@@ -11,22 +13,21 @@ import { useUserPreferences } from "../hooks/useUserPreferences";
 import Image from "next/image";
 
 export function Footer({ hideNewsletter = false }: { hideNewsletter?: boolean }) {
+  const { subscribe, exposureRef } = useNewsletterTracking("footer");
   const { newsletterOptIn, setNewsletterOptIn, loading, fanClub, followedClubs } = useUserPreferences();
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     if (!email.trim() || !email.includes("@")) {
       toast.error("Please enter a valid email address");
       return;
     }
+    setSubmitting(true);
     try {
-      const res = await fetch("/api/subscribers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-        credentials: "same-origin",
-      });
+      const res = await subscribe({ email: email.trim() });
       const data = await res.json();
       if (res.ok) {
         setNewsletterOptIn(true);
@@ -40,6 +41,8 @@ export function Footer({ hideNewsletter = false }: { hideNewsletter?: boolean })
       }
     } catch {
       toast.error("Could not save your subscription. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
     setEmail("");
   };
@@ -134,13 +137,16 @@ export function Footer({ hideNewsletter = false }: { hideNewsletter?: boolean })
           {/* Newsletter */}
           {!hideNewsletter && !loading && !newsletterOptIn && (
             <div>
-              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground mb-4">The Touchline Briefing</h3>
+              <h3 className="text-sm font-bold uppercase tracking-widest text-foreground mb-4">The Weekly Whistle</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Every Friday: the week&apos;s biggest tactical talking point + a weekend match preview. The email your group chat will thank you for.
+                One strong football opinion and one useful lesson, every week.
               </p>
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
+              <form ref={exposureRef} onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="email"
+                  aria-label="Email address"
+                  autoComplete="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
@@ -148,6 +154,7 @@ export function Footer({ hideNewsletter = false }: { hideNewsletter?: boolean })
                 />
                 <button
                   type="submit"
+                  disabled={submitting}
                   className="w-full sm:w-auto px-6 py-2.5 bg-primary text-primary-foreground text-sm font-bold rounded-xl shadow-sm hover:bg-primary/90 active:scale-95 transition-all duration-300 flex-shrink-0"
                 >
                   Subscribe

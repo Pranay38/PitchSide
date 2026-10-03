@@ -1,3 +1,5 @@
+> **Superseded for current execution (2 October 2026).** Historical material only. Follow `.agents/product-marketing-context.md`, `docs/MARKETING-AND-GROWTH-STRATEGY.md`, and `docs/READER-GROWTH-OPERATIONS.md` instead. Do not revive conflicting channels, provocative copy, subscriber claims or schedules from this document.
+
 # Phase 3: The "Retention Trap" Email Sequence
 
 This 3-part automated email sequence is triggered immediately when a user signs up or subscribes to a specific club's hub (e.g., from the Manager Pressure page or Matchup Preview page). It is designed to establish your brand's "Tactical Elegance," drive users back to high-value pages, and build an owned audience.

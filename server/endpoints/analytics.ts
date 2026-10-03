@@ -108,7 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .limit(10)
             .toArray();
 
-        // 8. End-of-article CTA funnel (last 30 days)
+        // 8. Newsletter outcomes across placements (last 30 days)
         const ctaEventCounts = await db.collection("growth_events").aggregate([
             { $match: { createdAt: { $gte: thirtyDaysAgo } } },
             { $group: { _id: "$event", count: { $sum: 1 } } },
@@ -118,8 +118,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const ctaSubscriptions = ctaCounts.cta_subscribe || 0;
         const ctaSupportClicks = ctaCounts.cta_support_click || 0;
 
-        const ctaByArticle = await db.collection("growth_events").aggregate([
+        const newsletterByPlacement = await db.collection("growth_events").aggregate([
             { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+            { $group: {
+                _id: { placement: { $ifNull: ["$placement", "article_end"] }, source: { $ifNull: ["$campaign.utm_source", "unattributed"] } },
+                subscriptions: { $sum: { $cond: [{ $eq: ["$event", "cta_subscribe"] }, 1, 0] } },
+                existing: { $sum: { $cond: [{ $eq: ["$event", "cta_already_subscribed"] }, 1, 0] } },
+                failed: { $sum: { $cond: [{ $eq: ["$event", "cta_subscribe_failed"] }, 1, 0] } },
+            } },
+            { $sort: { subscriptions: -1 } },
+            { $limit: 50 },
+        ]).toArray();
+
+        const ctaByArticle = await db.collection("growth_events").aggregate([
+            { $match: { createdAt: { $gte: thirtyDaysAgo }, postId: { $exists: true, $ne: "" } } },
             { $group: {
                 _id: "$postId",
                 views: { $sum: { $cond: [{ $eq: ["$event", "cta_view"] }, 1, 0] } },
@@ -153,6 +165,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             ctaFunnel: {
                 views: ctaViews,
                 subscriptions: ctaSubscriptions,
+                existingSubscriptions: ctaCounts.cta_already_subscribed || 0,
+                failedSubscriptions: ctaCounts.cta_subscribe_failed || 0,
+                byPlacement: newsletterByPlacement.map(entry => ({ placement: entry._id.placement, source: entry._id.source, subscriptions: entry.subscriptions, existing: entry.existing, failed: entry.failed })),
                 supportClicks: ctaSupportClicks,
                 conversionRate: ctaViews > 0 ? Number(((ctaSubscriptions / ctaViews) * 100).toFixed(1)) : 0,
                 byArticle: ctaByArticle.map((entry) => ({

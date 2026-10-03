@@ -116,9 +116,9 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
         prefsResult.status === "fulfilled"
           ? safeParse(UserPreferencesSchema, prefsResult.value, EMPTY_PREFS)
           : EMPTY_PREFS;
-      const newsletterOptIn =
-        validated.newsletterOptIn ||
-        (newsletterResult.status === "fulfilled" ? newsletterResult.value : false);
+      const newsletterOptIn = newsletterResult.status === "fulfilled"
+        ? newsletterResult.value
+        : validated.newsletterOptIn;
 
       if (!cancelled) {
         setPrefs({

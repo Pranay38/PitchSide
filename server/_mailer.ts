@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
-const resend = new Resend(RESEND_API_KEY);
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 /**
  * Send an email asynchronously using Resend.
@@ -11,19 +11,20 @@ export async function sendEmail(options: {
     bcc?: string | string[];
     subject: string;
     html: string;
+    idempotencyKey?: string;
 }): Promise<void> {
     if (!isMailerConfigured()) {
-        console.warn("Mailer not configured. Skipping email send.");
-        return;
+        throw new Error("Mailer not configured");
     }
 
-    await resend.emails.send({
+    const { error } = await resend!.emails.send({
         from: "The Touchline Dribble <noreply@thetouchlinedribble.in>",
         to: Array.isArray(options.to) ? options.to : [options.to],
         bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc : [options.bcc]) : undefined,
         subject: options.subject,
         html: options.html,
-    });
+    }, options.idempotencyKey ? { idempotencyKey: options.idempotencyKey } : undefined);
+    if (error) throw new Error(`Email provider rejected send: ${error.message}`);
 }
 
 /**
@@ -35,8 +36,7 @@ export async function sendBatchEmails(optionsList: Array<{
     html: string;
 }>): Promise<void> {
     if (!isMailerConfigured()) {
-        console.warn("Mailer not configured. Skipping batch email send.");
-        return;
+        throw new Error("Mailer not configured");
     }
 
     const batchData = optionsList.map(opt => ({
@@ -49,7 +49,8 @@ export async function sendBatchEmails(optionsList: Array<{
     // Resend batch API accepts up to 100 emails at a time
     for (let i = 0; i < batchData.length; i += 100) {
         const chunk = batchData.slice(i, i + 100);
-        await resend.batch.send(chunk);
+        const { error } = await resend!.batch.send(chunk);
+        if (error) throw new Error(`Email provider rejected batch: ${error.message}`);
     }
 }
 

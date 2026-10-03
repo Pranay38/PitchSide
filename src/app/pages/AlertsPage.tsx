@@ -1,4 +1,6 @@
 "use client";
+
+import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { Bell, Mail, Plus, Repeat2, ShieldAlert, UserRound, X } from "lucide-react";
@@ -13,6 +15,7 @@ import { buildSiteAlerts, type SiteAlert } from "../lib/alertCenter";
 import { toast } from "sonner";
 
 export function AlertsPage() {
+  const { subscribe, exposureRef } = useNewsletterTracking("alerts");
   const { favoriteClub } = useClubPreference();
   const posts = useMemo(() => getPublishedPosts(), []);
   
@@ -81,18 +84,7 @@ export function AlertsPage() {
     }
 
     try {
-      const res = await fetch("/api/subscribers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim(),
-          alertPreferences: {
-            clubs: followedClubs,
-            players: followedPlayers,
-            emailAlerts: true,
-          },
-        }),
-      });
+      const res = await subscribe({ email: email.trim(), alertPreferences: { clubs: followedClubs, players: followedPlayers, emailAlerts: true } });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || "Failed to save preferences");
       setNewsletterOptIn(true);
@@ -235,7 +227,7 @@ export function AlertsPage() {
 
             </div>
 
-            <form onSubmit={saveEmailAlerts} className="rounded-2xl border border-[#16A34A]/20 bg-[#16A34A]/5 p-5 relative overflow-hidden">
+            <form ref={exposureRef} onSubmit={saveEmailAlerts} className="rounded-2xl border border-[#16A34A]/20 bg-[#16A34A]/5 p-5 relative overflow-hidden">
               <div className="pointer-events-none absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-[#16A34A]/20 blur-3xl" />
               <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">

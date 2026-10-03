@@ -139,7 +139,7 @@ export function selectRelatedReading(post: BlogPost, posts: BlogPost[]) {
   const relevant = available.filter(
     (p) =>
       (post.club && p.club === post.club) ||
-      p.tags.some((tag) => post.tags.includes(tag)),
+      (p.tags || []).some((tag) => (post.tags || []).includes(tag)),
   );
   const curated = (post.relatedPostIds || [])
     .map((id) => available.find((p) => p.id === id))
@@ -148,7 +148,8 @@ export function selectRelatedReading(post: BlogPost, posts: BlogPost[]) {
     available.find(
       (p) => p.id === post.editorial?.backgroundPostId && isExplainer(p),
     ) || [...curated, ...relevant].find(isExplainer);
-  const perspective = [...curated, ...relevant].find(
+  const referencingOpinions = available.filter(p => isOpinion(p) && p.editorial?.backgroundPostId === post.id);
+  const perspective = [...curated, ...referencingOpinions, ...relevant].find(
     (p) => p.id !== background?.id && isOpinion(p),
   );
   return { background, perspective };

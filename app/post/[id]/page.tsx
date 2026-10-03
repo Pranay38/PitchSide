@@ -550,7 +550,7 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Content Renderer (Renders static HTML for crawlers, hydrating glossary on mount) */}
             <PostEmbedHydrationClient>
               {articleContentModel && (
-                 <ArticleContentRenderer model={articleContentModel} isServerGated={isGated} gatekeepPoint={post.gatekeepPoint || 0} />
+                 <ArticleContentRenderer postId={post.id} model={articleContentModel} isServerGated={isGated} gatekeepPoint={post.gatekeepPoint || 0} />
               )}
             </PostEmbedHydrationClient>
 

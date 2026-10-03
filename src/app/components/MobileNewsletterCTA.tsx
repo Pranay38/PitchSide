@@ -1,11 +1,14 @@
 "use client";
 
+import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
+
 import { useState, useEffect } from "react";
 import { Send, X } from "lucide-react";
 import { toast } from "sonner";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 
 export function MobileNewsletterCTA() {
+  const { subscribe, exposureRef } = useNewsletterTracking("mobile_newsletter");
   const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -73,12 +76,7 @@ export function MobileNewsletterCTA() {
     setSubmitting(true);
 
     try {
-      const res = await fetch("/api/subscribers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), clubPreferences: [] }),
-        credentials: "same-origin",
-      });
+      const res = await subscribe({ email: email.trim(), clubPreferences: [] });
       const payload = await res.json().catch(() => ({}));
 
       if (!res.ok) {
@@ -117,11 +115,14 @@ export function MobileNewsletterCTA() {
           <X className="w-4 h-4" />
         </button>
         <div className="text-white text-sm font-bold mb-3">
-          Get tactical breakdowns in your inbox →
+          The Weekly Whistle: one opinion, one lesson, every week.
         </div>
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form ref={exposureRef} onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="email"
+            aria-label="Email address"
+            autoComplete="email"
+            required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="Email address"
@@ -129,6 +130,7 @@ export function MobileNewsletterCTA() {
           />
           <button
             type="submit"
+            aria-label="Subscribe to The Weekly Whistle"
             disabled={submitting}
             className="flex-shrink-0 inline-flex items-center justify-center gap-1.5 rounded-full bg-[#16A34A] px-4 py-2 text-sm font-bold text-white transition-all hover:bg-[#15803d] disabled:opacity-60"
           >

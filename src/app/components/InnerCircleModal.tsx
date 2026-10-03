@@ -1,5 +1,7 @@
 "use client";
 
+import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
+
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Mail, X, FileText, Send, Loader2, CheckCircle2 } from "lucide-react";
 import { useUserPreferences } from "../hooks/useUserPreferences";
@@ -9,6 +11,7 @@ import { toast } from "sonner";
 const ARTICLES_READ_KEY = "pitchside_articles_read";
 
 export function InnerCircleModal() {
+  const { subscribe, exposureRef } = useNewsletterTracking("newsletter_modal");
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
@@ -114,17 +117,13 @@ export function InnerCircleModal() {
     
     setSubmitting(true);
     try {
-      const res = await fetch("/api/subscribers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), clubPreferences: selectedClubs }),
-      });
+      const res = await subscribe({ email: email.trim(), clubPreferences: selectedClubs });
       
       if (!res.ok) throw new Error("Failed to subscribe");
       
       setNewsletterOptIn(true);
       setSuccess(true);
-      toast.success("Welcome to the Inner Circle!");
+      toast.success("You’re subscribed to The Weekly Whistle!");
       
       setTimeout(() => {
         setIsOpen(false);
@@ -159,14 +158,14 @@ export function InnerCircleModal() {
               </div>
               
               <h2 className="text-2xl md:text-3xl font-black font-outfit text-center text-white mb-4">
-                Unlock the <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#16A34A] to-emerald-300">Inner Circle</span>
+                Read <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#16A34A] to-emerald-300">The Weekly Whistle</span>
               </h2>
               
               <p className="text-gray-400 text-center text-sm md:text-base leading-relaxed mb-8">
-                Join 5,000+ tactical nerds. Get our exclusive deep-dive tactical analysis email every Friday. No fluff, just pure football intelligence.
+                One strong football opinion and one useful lesson, every week. From The Touchline Dribble.
               </p>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+              <form ref={exposureRef} onSubmit={handleSubmit} className="flex flex-col gap-3">
                 <input
                   type="email"
                   required
@@ -203,7 +202,7 @@ export function InnerCircleModal() {
                 >
                   {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                     <>
-                      <Send className="w-4 h-4" /> Join the Inner Circle
+                      <Send className="w-4 h-4" /> Subscribe to The Weekly Whistle
                     </>
                   )}
                 </button>

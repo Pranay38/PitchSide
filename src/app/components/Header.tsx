@@ -169,7 +169,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
         <div className="flex items-center gap-6">
           <a href="https://x.com/TouchlineDribbl" target="_blank" rel="noreferrer" className="hover:text-[#16A34A] transition-colors">Twitter</a>
           <a href="https://instagram.com/thetouchlinedribble" target="_blank" rel="noreferrer" className="hover:text-[#16A34A] transition-colors">Instagram</a>
-          <Link to="/about#newsletter" className="hover:text-gray-300 transition-colors">Newsletter</Link>
+          <Link to="/subscribe" className="hover:text-gray-300 transition-colors">Newsletter</Link>
         </div>
       </div>
 

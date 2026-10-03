@@ -73,7 +73,7 @@ export function GlossaryTermPage({ entry }: Props) {
             <p className="text-muted-foreground">Join our community for deeper analysis, bold opinions, and ad-free reading.</p>
           </div>
           <SupportBanner variant="compact" />
-          <InlineNewsletterCard />
+          <InlineNewsletterCard placement="glossary" />
         </section>
       </main>
 

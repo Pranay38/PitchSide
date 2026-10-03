@@ -110,12 +110,14 @@ const GatedInlineWall = ({ onSignupStarted }: { onSignupStarted: () => void }) =
 
 export function ArticleContentRenderer({
   model,
+  postId,
   className = "pitchside-article-content",
   gatekeepPoint = 0,
   isSignedIn = false,
   isServerGated = false,
 }: {
   model: ArticleContentModel;
+  postId?: string;
   className?: string;
   gatekeepPoint?: number;
   isSignedIn?: boolean;
@@ -172,7 +174,7 @@ export function ArticleContentRenderer({
                     <Fragment key={`frag-${i}`}>
                       {element}
                       <div className="my-10" key={`newsletter-${i}`}>
-                        <InlineNewsletterCard />
+                        <InlineNewsletterCard placement="article_inline" postId={postId} />
                       </div>
                     </Fragment>
                   );
@@ -241,7 +243,7 @@ export function ArticleContentRenderer({
                 <Fragment key={`frag-${index}`}>
                   {element}
                   <div className="my-10" key={`newsletter-${index}`}>
-                    <InlineNewsletterCard />
+                    <InlineNewsletterCard placement="article_inline" postId={postId} />
                   </div>
                 </Fragment>
               );

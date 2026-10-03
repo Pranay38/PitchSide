@@ -104,7 +104,7 @@ export function CompetitorPage({ competitorName, competitorDescription, whySwitc
         
         <section className="w-full max-w-2xl mx-auto space-y-12">
           <SupportBanner variant="compact" />
-          <InlineNewsletterCard />
+          <InlineNewsletterCard placement="comparison" />
         </section>
       </main>
 

@@ -4,6 +4,9 @@ import { connectToDatabase } from "../_db";
 import { sendEmail, sendBatchEmails, isMailerConfigured } from "../_mailer";
 import { createHash, randomBytes } from "crypto";
 
+import { sanitizeCampaign } from "../../src/app/lib/growth";
+import { loadWelcomeReading, welcomeMessage, SITE_URL } from "../utils/welcomeJourney";
+
 const COLLECTION = "subscribers";
 const SUBSCRIBER_COOKIE_NAME = "ttd_newsletter";
 const SUBSCRIBER_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -122,7 +125,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 });
             }
 
-            if (!subscriber) {
+            if (!subscriber || subscriber.status === "unsubscribed") {
                 return res.status(200).json({ subscribed: false });
             }
 
@@ -146,7 +149,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             const alertPreferences = req.body?.alertPreferences;
             const clubPreferences = req.body?.clubPreferences;
-            const source = sanitizeString(req.body?.source)?.slice(0, 180) || null;
+            const sourceValue = sanitizeString(req.body?.source);
+            const source = typeof sourceValue === "string" && /^[a-zA-Z0-9_:-]{1,180}$/.test(sourceValue) ? sourceValue : null;
+            const campaign = sanitizeCampaign(req.body?.campaign);
 
             if (!email || !isValidEmail(email)) {
                 return res.status(400).json({ error: "Please enter a valid email address." });
@@ -157,6 +162,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             // Check for duplicates
             const existing = await collection.findOne({ email: normalizedEmail });
             if (existing) {
+                if (existing.status === "unsubscribed") {
+                    return res.status(409).json({ error: "This email is unsubscribed. Update your email preferences to rejoin." });
+                }
                 await collection.updateOne(
                     { email: normalizedEmail },
                     {
@@ -176,7 +184,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const insertedSubscriber = {
                 email: normalizedEmail,
                 subscribedAt: new Date().toISOString(),
-                welcomeSequenceState: 1, // 1 = Received Welcome, waiting for Day 1
+                welcomeSequenceState: 0, // Advance only after the provider accepts the welcome email.
+                signupCampaign: campaign,
                 ...(alertPreferences ? { alertPreferences } : {}),
                 ...(clubPreferences ? { clubPreferences } : {}),
                 ...(source ? { signupSource: source } : {}),
@@ -191,43 +200,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             let emailSent = false;
             if (isMailerConfigured()) {
                 try {
-                    const unSubUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host || "www.thetouchlinedribble.in"}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(normalizedEmail)}`;
-                    
-                    const { buildEditorialEmail } = await import("../utils/emailTemplate");
-                    const html = buildEditorialEmail({
-                        title: "Welcome to The Touchline Dribble ⚽",
-                        previewText: "You're in. Here is what to expect from us.",
-                        unsubscribeUrl: unSubUrl,
-                        content: `
-                            <p style="font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; color: #16A34A; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 8px 0;">Welcome Aboard</p>
-                            <h2 style="font-family: 'Space Grotesk', 'Inter', sans-serif; font-size: 26px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; color: #0F172A; margin: 0 0 20px 0;">You're in the Inner Circle.</h2>
-                            <p style="font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: #334155; margin: 0 0 20px 0;">
-                                Hi there,<br><br>
-                                Thanks for trusting us with your inbox. I know it's a crowded space, so I'll make sure every email we send is worth your time.
-                            </p>
-                            <p style="font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: #334155; margin: 0 0 20px 0;">
-                                You are now on the list to receive our sharpest tactical breakdowns, exclusive opinion pieces, and in-depth analysis before anyone else. We don't do clickbait or standard match reports. We focus on the <strong style="color: #0F172A;">"why"</strong> and <strong style="color: #0F172A;">"how"</strong> of the beautiful game.
-                            </p>
-                            <div style="background-color: #F8FAFC; border-left: 3px solid #16A34A; border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 0 0 24px 0; font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; color: #475569;">
-                                <strong style="color: #0F172A;">What's next?</strong><br>
-                                Keep an eye out over the next few days. I'll be sending over a curated selection of our best timeless pieces to get you acquainted with our style of analysis.
-                            </div>
-                            <p style="font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: #334155; margin: 0 0 20px 0;">
-                                If there's a specific team or tactical concept you want us to cover, just hit reply to this email. I read every single one.
-                            </p>
-                            <p style="font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.7; color: #334155; margin: 24px 0 0 0;">
-                                Speak soon,<br>
-                                <strong style="color: #0F172A;">Pranay Agarwal</strong><br>
-                                <span style="color: #16A34A; font-weight: 500;">Editor, The Touchline Dribble</span>
-                            </p>
-                        `
-                    });
-
+                    const reading = await loadWelcomeReading(db);
                     await sendEmail({
-                        to: normalizedEmail,
-                        subject: "Welcome to The Touchline Dribble ⚽",
-                        html,
+                        ...welcomeMessage(0, normalizedEmail, reading),
+                        idempotencyKey: `welcome-${insertResult.insertedId}-0`,
                     });
+                    await collection.updateOne({ _id: insertResult.insertedId }, { $set: {
+                        welcomeSequenceState: 1,
+                        welcomeLastSentAt: new Date().toISOString(),
+                    } });
                     emailSent = true;
                 } catch (emailError) {
                     console.error("Failed to send welcome email:", emailError);
@@ -263,7 +244,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(400).send("Invalid email address.");
             }
 
-            const unSubUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host || "www.thetouchlinedribble.in"}/preferences?email=${encodeURIComponent(normalizedEmail)}`;
+            const unSubUrl = `${SITE_URL}/preferences?email=${encodeURIComponent(normalizedEmail)}`;
             return res.redirect(302, unSubUrl);
         }
 

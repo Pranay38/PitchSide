@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { ArrowUpRight, Heart, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import type { BlogPost } from "../data/posts";
 import { useUserPreferences } from "../hooks/useUserPreferences";
+import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
 import { trackGrowthEvent } from "../lib/analytics";
 
 const SUPPORT_URL = "https://razorpay.me/@thetouchlinedribble";
@@ -17,29 +18,16 @@ interface ArticleEndCTAProps {
 }
 
 export function ArticleEndCTA({ postId, club, config }: ArticleEndCTAProps) {
-  const { user, isSignedIn, isLoaded: userLoaded } = useUser();
+  const { user, isLoaded: userLoaded } = useUser();
   const { newsletterOptIn, setNewsletterOptIn, loading: preferencesLoading } = useUserPreferences();
   const accountEmail = user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || "";
   const [email, setEmail] = useState(accountEmail);
   const [submitting, setSubmitting] = useState(false);
-  const trackedView = useRef<string | null>(null);
+  const { subscribe, exposureRef } = useNewsletterTracking("article_end", postId);
 
   useEffect(() => {
     if (accountEmail) setEmail(accountEmail);
   }, [accountEmail]);
-
-  const readerState = useMemo<"subscriber" | "signed_in" | "guest">(() => {
-    if (newsletterOptIn) return "subscriber";
-    return isSignedIn ? "signed_in" : "guest";
-  }, [isSignedIn, newsletterOptIn]);
-
-  useEffect(() => {
-    if (!userLoaded || preferencesLoading || config?.enabled === false) return;
-    const viewKey = `${postId}:${readerState}`;
-    if (trackedView.current === viewKey) return;
-    trackedView.current = viewKey;
-    trackGrowthEvent("cta_view", { postId, readerState });
-  }, [config?.enabled, postId, preferencesLoading, readerState, userLoaded]);
 
   if (config?.enabled === false || !userLoaded || preferencesLoading) return null;
 
@@ -53,22 +41,12 @@ export function ArticleEndCTA({ postId, club, config }: ArticleEndCTAProps) {
 
     setSubmitting(true);
     try {
-      const response = await fetch("/api/subscribers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({
-          email: normalizedEmail,
-          clubPreferences: club ? [club] : [],
-          source: `article:${postId}`,
-        }),
-      });
+      const response = await subscribe({ email: normalizedEmail, clubPreferences: club ? [club] : [] });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(typeof payload.error === "string" ? payload.error : "Could not save your subscription.");
       }
 
-      trackGrowthEvent("cta_subscribe", { postId, readerState });
       setNewsletterOptIn(true);
       toast.success(payload.alreadySubscribed ? "You're already on the list." : "The next edition is heading to your inbox.");
     } catch (error) {
@@ -80,7 +58,7 @@ export function ArticleEndCTA({ postId, club, config }: ArticleEndCTAProps) {
 
   if (newsletterOptIn) {
     return (
-      <aside className="my-12 border-y border-border py-8" aria-label="Support The Touchline Dribble">
+      <aside ref={exposureRef} className="my-12 border-y border-border py-8" aria-label="Support The Touchline Dribble">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="max-w-2xl">
             <p className="mb-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-[#16A34A]">
@@ -108,17 +86,17 @@ export function ArticleEndCTA({ postId, club, config }: ArticleEndCTAProps) {
   }
 
   return (
-    <aside className="my-12 border-y border-border py-8" aria-label="Subscribe to The Touchline Dribble">
+    <aside ref={exposureRef} className="my-12 border-y border-border py-8" aria-label="Subscribe to The Touchline Dribble">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,420px)] lg:items-end">
         <div className="max-w-2xl">
           <p className="mb-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-[#16A34A]">
             <Mail className="h-4 w-4" aria-hidden="true" /> Delivered to your inbox
           </p>
           <h2 className="font-headline text-2xl font-bold text-foreground">
-            {config?.nonSubscriberHeadline || "Want the next tactical breakdown delivered to you?"}
+            {config?.nonSubscriberHeadline || "Get The Weekly Whistle"}
           </h2>
           <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
-            {config?.nonSubscriberBody || "Get new match analysis, stories, and sharp football opinions sent directly to your email inbox."}
+            {config?.nonSubscriberBody || "One strong football opinion and one useful lesson, every week."}
           </p>
         </div>
 

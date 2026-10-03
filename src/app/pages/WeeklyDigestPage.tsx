@@ -181,7 +181,7 @@ export function WeeklyDigestPage({ initialPosts }: WeeklyDigestPageProps) {
         {/* ── Bottom Section ── */}
         <section className="w-full max-w-4xl mx-auto space-y-12">
           <SupportBanner variant="compact" />
-          <InlineNewsletterCard />
+          <InlineNewsletterCard placement="weekly_digest" />
         </section>
 
       </main>

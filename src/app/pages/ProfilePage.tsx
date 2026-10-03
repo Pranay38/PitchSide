@@ -1,4 +1,6 @@
 "use client";
+
+import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "@/lib/router-compat";
 import { Header } from "../components/Header";
@@ -30,6 +32,7 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 export function ProfilePage() {
+    const { subscribe, exposureRef } = useNewsletterTracking("profile");
     const { user } = useUser();
     const { 
         savedPosts, 
@@ -174,12 +177,7 @@ export function ProfilePage() {
 
         setNewsletterSubmitting(true);
         try {
-            const res = await fetch("/api/subscribers", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: newsletterEmail }),
-                credentials: "same-origin",
-            });
+            const res = await subscribe({ email: newsletterEmail });
             const payload = await res.json().catch(() => ({}));
 
             if (!res.ok) {
@@ -633,6 +631,7 @@ export function ProfilePage() {
                                         </span>
                                     ) : (
                                         <button
+                                            ref={exposureRef}
                                             onClick={subscribeToNewsletter}
                                             disabled={newsletterSubmitting || !newsletterEmail}
                                             className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#16A34A] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#16A34A]/20 transition-all hover:bg-[#15803d] disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"

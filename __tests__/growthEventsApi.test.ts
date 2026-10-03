@@ -55,3 +55,19 @@ describe("growth events endpoint", () => {
     expect(res.status).toHaveBeenCalledWith(400);
   });
 });
+
+describe("placement and campaign validation", () => {
+  it("records a non-article signup and drops personal or arbitrary fields", async () => {
+    const insertOne = vi.fn().mockResolvedValue({});
+    vi.mocked(connectToDatabase).mockResolvedValue({ db: { collection: () => ({ insertOne }) } } as any);
+    const res = response();
+    await handler(request({ event: "cta_already_subscribed", placement: "subscribe_page", readerState: "signed_in", email: "private@example.com", campaign: { utm_source: "x", utm_campaign: "private@example.com", email: "private@example.com" } }), res);
+    expect(insertOne).toHaveBeenCalledWith({ event: "cta_already_subscribed", placement: "subscribe_page", readerState: "signed_in", campaign: { utm_source: "x" }, createdAt: expect.any(Date) });
+    expect(res.status).toHaveBeenCalledWith(201);
+  });
+  it("requires a valid article or placement context", async () => {
+    const res = response();
+    await handler(request({ event: "cta_subscribe", readerState: "guest", placement: "person@example.com" }), res);
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+});

@@ -9,6 +9,10 @@
  * Usage: call `trackPageView()` in a router subscriber (see routes.tsx).
  */
 
+import { analyticsSlug, sanitizeCampaign, type GrowthDetails, type GrowthEventName } from "./growth";
+import { captureCampaign } from "./campaignAttribution";
+export type { GrowthEventName } from "./growth";
+
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
@@ -25,24 +29,32 @@ export function trackPageView(url?: string) {
   });
 }
 
-export type GrowthEventName = "cta_view" | "cta_subscribe" | "cta_support_click";
-
 /** Record a conversion event in GA4 and the first-party growth dashboard. */
 export function trackGrowthEvent(
   event: GrowthEventName,
-  details: { postId: string; readerState: "subscriber" | "signed_in" | "guest" },
+  details: GrowthDetails,
 ) {
-  window.gtag?.("event", event, {
-    article_id: details.postId,
-    reader_state: details.readerState,
-  });
-
+  if (typeof window === "undefined") return;
+  try {
+    if (window.localStorage.getItem("pitchside_cookie_consent") === "declined") return;
+  } catch { /* Storage may be blocked. */ }
+  const postId = analyticsSlug(details.postId);
+  const placement = analyticsSlug(details.placement) || (postId ? "article_end" : "newsletter");
+  const campaign = sanitizeCampaign(details.campaign || captureCampaign());
+  try {
+    window.gtag?.("event", event, {
+      ...(postId ? { article_id: postId } : {}),
+      placement,
+      reader_state: details.readerState,
+      ...campaign,
+    });
+  } catch { /* Analytics cannot fail a successful signup. */ }
   void fetch("/api/growth-events", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "same-origin",
     keepalive: true,
-    body: JSON.stringify({ event, ...details }),
+    body: JSON.stringify({ event, postId, placement, readerState: details.readerState, campaign }),
   }).catch(() => undefined);
 }
 

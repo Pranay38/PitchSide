@@ -1,3 +1,5 @@
+> **Superseded for current execution (2 October 2026).** Historical material only. Follow `.agents/product-marketing-context.md`, `docs/MARKETING-AND-GROWTH-STRATEGY.md`, and `docs/READER-GROWTH-OPERATIONS.md` instead. Do not revive conflicting channels, provocative copy, subscriber claims or schedules from this document.
+
 # 📱 LAUNCH DAY — Copy-Paste Social Media Content
 **Platform:** The Touchline Dribble | **Date:** [INSERT LAUNCH DATE]
 

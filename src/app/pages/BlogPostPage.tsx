@@ -508,7 +508,7 @@ export function BlogPostPage() {
                 nextUrl={nextInCategory ? `/post/${nextInCategory.slug || nextInCategory.id}` : undefined}
               >
                 {articleContentModel && (
-                  <ArticleContentRenderer model={articleContentModel} gatekeepPoint={post.gatekeepPoint} isSignedIn={!!user} />
+                  <ArticleContentRenderer postId={post.id} model={articleContentModel} gatekeepPoint={post.gatekeepPoint} isSignedIn={!!user} />
                 )}
               </SwipeNavigator>
             </div>

@@ -11,6 +11,7 @@ import { MobileBottomNav } from "@/app/components/MobileBottomNav";
 import { useState, Suspense } from "react";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
+import { GrowthAttribution } from "@/app/components/GrowthAttribution";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -31,6 +32,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <UserPreferencesProvider>
           <QueryClientProvider client={queryClient}>
+            <Suspense fallback={null}>
+              <GrowthAttribution />
+            </Suspense>
             <Suspense fallback={null}>
               <OfflineIndicator />
               <div className="pb-16 sm:pb-0">{children}</div>

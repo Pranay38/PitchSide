@@ -1,5 +1,7 @@
 "use client";
 
+import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
+
 import { useState } from "react";
 import { X, Loader2, Mail, Lock } from "lucide-react";
 
@@ -11,7 +13,8 @@ interface VotingGatewayModalProps {
 }
 
 export function VotingGatewayModal({ isOpen, onClose, onComplete, featureName = "cast your vote" }: VotingGatewayModalProps) {
-    const [email, setEmail] = useState("");
+    const { subscribe, exposureRef } = useNewsletterTracking("voting_gateway");
+  const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
@@ -28,14 +31,10 @@ export function VotingGatewayModal({ isOpen, onClose, onComplete, featureName = 
         setError("");
 
         try {
-            const res = await fetch("/api/subscribers", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email })
-            });
+            const res = await subscribe({ email });
 
-            // We treat both 200/201 (success) and 409 (already subscribed) as success to let them pass
-            if (res.ok || res.status === 409) {
+            // Only a confirmed subscription unlocks this flow.
+            if (res.ok) {
                 // Save to local storage so they aren't asked again
                 localStorage.setItem("pitchside_subscriber_email", email);
                 onComplete(email);
@@ -66,14 +65,14 @@ export function VotingGatewayModal({ isOpen, onClose, onComplete, featureName = 
                         <Lock className="w-6 h-6" />
                     </div>
                     <h2 className="text-2xl font-black font-outfit text-[#0F172A] dark:text-white mb-2">
-                        Join the Inner Circle
+                        The Weekly Whistle
                     </h2>
                     <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                        Join 5,000+ football fanatics. Enter your email to {featureName} and get our tactical breakdowns sent straight to your inbox.
+                        Subscribe to {featureName}. The Weekly Whistle brings one strong football opinion and one useful lesson, every week.
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form ref={exposureRef} onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <div className="relative">
                             <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

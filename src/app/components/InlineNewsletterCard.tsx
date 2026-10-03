@@ -1,21 +1,28 @@
 "use client";
 
+import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
+
 import { useState } from "react";
 import { Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 
 interface InlineNewsletterCardProps {
+  placement?: string;
+  postId?: string;
   title?: string;
   description?: string;
   className?: string;
 }
 
 export function InlineNewsletterCard({
-  title = "Stop arguing with emotion. Start arguing with data.",
-  description = "Mainstream pundits won't give you the unadulterated tactical truth. Subscribe to get one brutal, data-backed breakdown every week before the timeline catches on.",
+  title = "The Weekly Whistle",
+  description = "One strong football opinion and one useful lesson, every week.",
   className = "",
+  placement = "newsletter_inline",
+  postId,
 }: InlineNewsletterCardProps) {
+  const { subscribe, exposureRef } = useNewsletterTracking(placement, postId);
   const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
   const [email, setEmail] = useState("");
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
@@ -43,12 +50,7 @@ export function InlineNewsletterCard({
     setSubmitting(true);
 
     try {
-      const res = await fetch("/api/subscribers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), clubPreferences: selectedClubs }),
-        credentials: "same-origin",
-      });
+      const res = await subscribe({ email: email.trim(), clubPreferences: selectedClubs });
       const payload = await res.json().catch(() => ({}));
 
       if (!res.ok) {
@@ -68,7 +70,7 @@ export function InlineNewsletterCard({
   };
 
   return (
-    <section className={`overflow-hidden rounded-[2rem] border border-[#16A34A]/15 bg-gradient-to-br from-[#0F172A] via-[#0B1B2F] to-[#10203A] p-6 text-white shadow-xl ${className}`}>
+    <section ref={exposureRef} className={`overflow-hidden rounded-[2rem] border border-[#16A34A]/15 bg-gradient-to-br from-[#0F172A] via-[#0B1B2F] to-[#10203A] p-6 text-white shadow-xl ${className}`}>
       <div className="max-w-2xl">
         <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/8 px-3 py-1 text-[11px] font-black uppercase tracking-[0.22em] text-[#86efac]">
           <Mail className="h-3.5 w-3.5" />

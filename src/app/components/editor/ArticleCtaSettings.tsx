@@ -9,8 +9,8 @@ interface ArticleCtaSettingsProps {
 const DEFAULTS = {
   subscriberHeadline: "Enjoying the analysis?",
   subscriberBody: "If The Touchline Dribble makes matchdays more interesting, consider supporting the independent writing and helping fund more tactical deep dives.",
-  nonSubscriberHeadline: "Want the next tactical breakdown delivered to you?",
-  nonSubscriberBody: "Get new match analysis, stories, and sharp football opinions sent directly to your email inbox.",
+  nonSubscriberHeadline: "Get The Weekly Whistle",
+  nonSubscriberBody: "One strong football opinion and one useful lesson, every week.",
 };
 
 export function ArticleCtaSettings({ value, onChange }: ArticleCtaSettingsProps) {

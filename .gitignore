@@ -36,6 +36,9 @@ node_modules/
 .agent/
 .gemini/
 skills/
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/touchline-distribution/
 research/
 .vercel/
 

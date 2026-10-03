@@ -62,6 +62,9 @@ interface AnalyticsData {
     }[];
     subscriberGrowth: GrowthEntry[];
     ctaFunnel: {
+        existingSubscriptions?: number;
+        failedSubscriptions?: number;
+        byPlacement?: Array<{ placement: string; source: string; subscriptions: number; existing: number; failed: number }>;
         views: number;
         subscriptions: number;
         supportClicks: number;
@@ -228,17 +231,23 @@ export function AdminAnalyticsTab() {
                 <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <h3 className="flex items-center gap-2 text-lg font-bold text-[#0F172A] dark:text-white">
-                            <MousePointerClick className="h-5 w-5 text-[#16A34A]" /> Article CTA funnel
+                            <MousePointerClick className="h-5 w-5 text-[#16A34A]" /> Newsletter signup outcomes
                         </h3>
-                        <p className="mt-1 text-xs text-[#64748B] dark:text-gray-400">Last 30 days · subscription and reader-support intent</p>
+                        <p className="mt-1 text-xs text-[#64748B] dark:text-gray-400">Last 30 days · tracked outcomes, not unique readers. Visibility measurement changed with the reader-growth release.</p>
                     </div>
-                    <p className="text-sm font-bold text-[#16A34A]">{ctaFunnel.conversionRate}% signup conversion</p>
+                    <p className="text-sm font-bold text-[#16A34A]">{ctaFunnel.conversionRate}% signups / observed CTA views</p>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-3">
                     <KpiCard icon={MousePointerClick} label="CTA views" value={formatNumber(ctaFunnel.views)} iconBg="bg-blue-50 dark:bg-blue-500/10" iconColor="text-blue-500" />
                     <KpiCard icon={Mail} label="Inbox signups" value={formatNumber(ctaFunnel.subscriptions)} iconBg="bg-emerald-50 dark:bg-emerald-500/10" iconColor="text-emerald-500" />
                     <KpiCard icon={HeartHandshake} label="Razorpay clicks" value={formatNumber(ctaFunnel.supportClicks)} iconBg="bg-rose-50 dark:bg-rose-500/10" iconColor="text-rose-500" />
                 </div>
+                <p className="mt-4 text-sm text-muted-foreground">Existing-subscriber submissions: {ctaFunnel.existingSubscriptions || 0} · Failed submissions: {ctaFunnel.failedSubscriptions || 0}</p>
+                {!!ctaFunnel.byPlacement?.length && <div className="mt-4 overflow-x-auto"><table className="w-full text-left text-sm">
+                    <caption className="text-left font-bold mb-2">Signup placement and campaign source</caption>
+                    <thead><tr><th className="p-2">Placement</th><th className="p-2">Source</th><th className="p-2">New</th><th className="p-2">Existing</th><th className="p-2">Failed</th></tr></thead>
+                    <tbody>{ctaFunnel.byPlacement.map(entry => <tr key={`${entry.placement}:${entry.source}`}><td className="p-2">{entry.placement}</td><td className="p-2">{entry.source}</td><td className="p-2">{entry.subscriptions}</td><td className="p-2">{entry.existing}</td><td className="p-2">{entry.failed}</td></tr>)}</tbody>
+                </table></div>}
                 {ctaFunnel.byArticle.length > 0 && (
                     <div className="mt-5 overflow-x-auto">
                         <table className="w-full text-left text-sm">

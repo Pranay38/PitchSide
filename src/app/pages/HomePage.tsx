@@ -291,8 +291,9 @@ export function HomePage({
             {!preferencesLoading && !newsletterOptIn ? (
               <div className="lg:col-span-2 h-full">
                 <InlineNewsletterCard
+                  placement="homepage"
                   title="The Weekly Whistle"
-                  description="One strong opinion. One useful football lesson. Every week. Get the next edition in your inbox."
+                  description="One strong football opinion and one useful lesson, every week."
                 />
               </div>
             ) : (

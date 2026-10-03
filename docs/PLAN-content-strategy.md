@@ -1,3 +1,5 @@
+> **Superseded for current execution (2 October 2026).** Historical material only. Follow `.agents/product-marketing-context.md`, `docs/MARKETING-AND-GROWTH-STRATEGY.md`, and `docs/READER-GROWTH-OPERATIONS.md` instead. Do not revive conflicting channels, provocative copy, subscriber claims or schedules from this document.
+
 ## 🧠 Brainstorm: Content Strategy (Zero Budget)
 
 ### Context

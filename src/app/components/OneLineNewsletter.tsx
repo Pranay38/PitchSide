@@ -1,18 +1,28 @@
 "use client";
 
+import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
+
 import { useState } from "react";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 
-export function OneLineNewsletter({ className = "" }: { className?: string }) {
+export function OneLineNewsletter({ className = "", placement = "newsletter_inline", nextArticle }: { className?: string; placement?: string; nextArticle?: { href: string; title: string } }) {
+  const { subscribe, exposureRef } = useNewsletterTracking(placement);
   const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  if (loading || newsletterOptIn) {
-    return null;
-  }
+  if (loading) return <p role="status" className="p-4 text-sm">Checking your subscription…</p>;
+  if (newsletterOptIn) return (
+    <div role="status" className={`p-6 text-center ${className}`}>
+      <h2 className="text-xl font-bold">You’re subscribed to The Weekly Whistle.</h2>
+      <p className="mt-2 text-sm">One strong football opinion and one useful lesson, every week.</p>
+      <a className="mt-4 inline-block font-bold text-green-600 underline" href={nextArticle?.href || "/learn"}>
+        {nextArticle ? `Read next: ${nextArticle.title}` : "Find your next useful football read"}
+      </a>
+    </div>
+  );
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -24,12 +34,7 @@ export function OneLineNewsletter({ className = "" }: { className?: string }) {
     setSubmitting(true);
 
     try {
-      const res = await fetch("/api/subscribers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), clubPreferences: [] }),
-        credentials: "same-origin",
-      });
+      const res = await subscribe({ email: email.trim(), clubPreferences: [] });
       const payload = await res.json().catch(() => ({}));
 
       if (!res.ok) {
@@ -49,15 +54,17 @@ export function OneLineNewsletter({ className = "" }: { className?: string }) {
   };
 
   return (
-    <div className={`mt-12 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 ${className}`}>
+    <div ref={exposureRef} className={`mt-12 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 ${className}`}>
       <div className="flex flex-col md:flex-row items-center gap-4">
         <div className="flex-1 w-full text-center md:text-left">
-          <h3 className="font-bold text-slate-900 dark:text-white text-lg">Never miss a tactical breakdown</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Get the post-match analysis directly in your inbox.</p>
+          <h3 className="font-bold text-slate-900 dark:text-white text-lg">The Weekly Whistle</h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">One strong football opinion and one useful lesson, every week.</p>
         </div>
         <form onSubmit={handleSubmit} className="flex w-full md:w-auto flex-col sm:flex-row gap-2">
           <input
             type="email"
+            aria-label="Email address"
+            autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="you@example.com"
