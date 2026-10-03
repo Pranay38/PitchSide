@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-10-02T10:51:28.426759",
+  "lastUpdated": "2026-10-03T10:10:32.541512",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid keen on Quansah - Friday's gossip",
-    "sentimentScore": 60
+    "text": "Chiesa eyes Liverpool exit - Saturday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 99
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 97
     },
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 88
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 95
     },
     {
-      "name": "Marco Rose (BOU)",
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 82
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 75
+    },
+    {
+      "name": "Oliver Glasner (NFO)",
       "pressureScore": 71
-    },
-    {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 66
     }
   ]
 }
