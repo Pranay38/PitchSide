@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-10-03T10:10:32.541512",
+  "lastUpdated": "2026-10-04T10:51:51.754008",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chiesa eyes Liverpool exit - Saturday's gossip",
+    "text": "Man Utd & Arsenal eye Croatia striker - Sunday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
+      "name": "Pierre Sage (CRY)",
       "pressureScore": 97
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 95
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 76
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 82
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 73
     },
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 75
-    },
-    {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 71
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 68
     }
   ]
 }
