@@ -1,3 +1,4 @@
+import { serializePostPayload } from "./postPayload";
 import type { BlogPost } from "../data/posts";
 import { blogPosts as defaultPosts } from "../data/posts";
 import { safeParseArray, BlogPostSchema } from "./schemas";
@@ -74,6 +75,7 @@ async function isApiAvailable(): Promise<boolean> {
 }
 
 async function getApiErrorMessage(res: Response, fallback: string): Promise<string> {
+  if (res.status === 413) return "This post is too large to save. Reduce uploaded images or use hosted image URLs, then try again. Your editor content has been kept.";
   try {
     const data = await res.json() as { error?: unknown; message?: unknown };
     if (typeof data.error === "string" && data.error.trim()) return data.error;
@@ -188,7 +190,7 @@ export async function addPostAsync(
       "Authorization": `Bearer ${getAuthToken()}`,
       "x-csrf-token": "1"
     },
-    body: JSON.stringify(post),
+    body: await serializePostPayload(post),
   });
 
   if (!res.ok) {
@@ -237,7 +239,7 @@ export async function updatePostAsync(
       "Authorization": `Bearer ${getAuthToken()}`,
       "x-csrf-token": "1"
     },
-    body: JSON.stringify({ id, ...updates }),
+    body: await serializePostPayload({ id, ...updates }),
   });
 
   if (!res.ok) {

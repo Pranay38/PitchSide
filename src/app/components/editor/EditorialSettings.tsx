@@ -36,8 +36,9 @@ export function EditorialSettings({
         </select>
       </label>
       <p className="text-xs text-muted-foreground">
-        Explainers appear in Learn and are eligible for the 30′ section.
-        Existing posts can stay unclassified.
+        Choose Explainer, then publish or update the post to add it to Learn.
+        The homepage’s 30′ “Understand the Game” section shows up to three
+        published explainers; posts already featured above are not repeated.
       </p>
       <label className="block text-sm font-semibold">
         Our verdict
