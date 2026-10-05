@@ -3,3 +3,22 @@
 
 @import 'tw-animate-css';
 @import '../src/styles/theme.css';
+
+/* Markdown tables remain readable in the editor and published article. */
+:is(.tiptap, .prose, article, .pitchside-article-content) table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+:is(.tiptap, .prose, article, .pitchside-article-content) :is(th, td) {
+  border: 1px solid #94a3b8;
+  padding: 0.65rem 0.85rem;
+  vertical-align: top;
+  min-width: 6rem;
+}
+:is(.tiptap, .prose, article, .pitchside-article-content) th { background: rgb(148 163 184 / 12%); font-weight: 700; }
+:is(.tiptap, .prose, article, .pitchside-article-content) ul[data-type="taskList"] { list-style: none; padding-left: 0; }
+:is(.tiptap, .prose, article, .pitchside-article-content) li[data-type="taskItem"] { display: flex; gap: 0.6rem; align-items: baseline; }
+:is(.tiptap, .prose, article, .pitchside-article-content) li[data-type="taskItem"] > div { flex: 1; min-width: 0; }

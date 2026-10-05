@@ -1,4 +1,5 @@
 "use client";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "@/lib/router-compat";
 import { signOut } from "next-auth/react";
@@ -66,6 +67,7 @@ type Tab = "notifications" | "pots" | "posts" | "stories" | "collections" | "deb
 
 
 export function AdminPage() {
+    const queryClient = useQueryClient();
     const navigate = useNavigate();
         const [view, setView] = useState<View>("list");
     const [activeTab, setActiveTab] = useState<Tab>("notifications");
@@ -203,6 +205,7 @@ export function AdminPage() {
             if (createdDraftIdRef.current) {
                 const updated = await updatePostAsync(createdDraftIdRef.current, postData);
                 setPosts(updated);
+                void queryClient.invalidateQueries({ queryKey: ["posts"] });
 
                 if (isLeaving) {
                     createdDraftIdRef.current = null;
@@ -229,6 +232,7 @@ export function AdminPage() {
             const previousPostIds = new Set(posts.map((item) => item.id));
             const updated = await addPostAsync(postData);
             setPosts(updated);
+                void queryClient.invalidateQueries({ queryKey: ["posts"] });
 
             if (isLeaving) {
                 setView("list");
@@ -281,6 +285,7 @@ export function AdminPage() {
             try {
                 const updated = await updatePostAsync(editingPost.id, postData);
                 setPosts(updated);
+                void queryClient.invalidateQueries({ queryKey: ["posts"] });
 
                 if (isLeaving) {
                     setView("list");
@@ -314,6 +319,7 @@ export function AdminPage() {
             try {
                 const updated = await deletePostAsync(id);
                 setPosts(updated);
+                void queryClient.invalidateQueries({ queryKey: ["posts"] });
                 toast.success("Post deleted.");
             } catch (error) {
                 toast.error(error instanceof Error ? error.message : "Failed to delete post.");

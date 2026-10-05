@@ -1,6 +1,8 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
+import { TableKit } from "@tiptap/extension-table";
+import { TaskList, TaskItem } from "@tiptap/extension-list";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
@@ -117,8 +119,11 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
-                heading: { levels: [1, 2, 3] },
+                heading: { levels: [1, 2, 3, 4, 5, 6] },
             }),
+            TableKit,
+            TaskList,
+            TaskItem.configure({ nested: true }),
             Underline,
             TextAlign.configure({
                 types: ["heading", "paragraph"],

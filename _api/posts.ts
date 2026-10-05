@@ -109,7 +109,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     if (!p.publishAt) return true; // No schedule = visible immediately
                     return new Date(p.publishAt) <= now;
                 });
-                res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
+                res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             } else {
                 res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
             }

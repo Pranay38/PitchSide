@@ -1,3 +1,4 @@
+import { MarkdownUpload } from "./MarkdownUpload";
 import { FileText, CheckCircle2, MessageSquare } from "lucide-react";
 import { calculateReadTime, getAllPosts } from "../../lib/postStorage";
 import { SpellcheckBar } from "../admin/SpellcheckBar";
@@ -56,6 +57,7 @@ export function EditorCanvas({
             {errors.content && (
                 <p className="text-red-500 text-xs mb-2">{errors.content}</p>
             )}
+            <div className="mb-4"><MarkdownUpload content={content} onImport={setContent} /></div>
             <SpellcheckBar
                 content={content}
                 onFix={(found, replacement) => {
