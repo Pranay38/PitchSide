@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-10-05T12:00:09.389788",
+  "lastUpdated": "2026-10-06T11:43:28.724811",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid join race for Scott - Monday's gossip",
-    "sentimentScore": 56
+    "text": "Juventus & Atletico Madrid eye Madueke - Tuesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 97
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 95
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 96
+      "pressureScore": 82
     },
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 65
-    },
-    {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 61
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 63
     }
   ]
 }
