@@ -2,7 +2,7 @@
     "erik-ten-hag": {
         "name": "Erik Ten Hag",
         "club": "Manchester United",
-        "pressureScore": 87,
+        "pressureScore": 89,
         "status": "Critical",
         "trend": "up",
         "sackingOdds": "1/4",
@@ -40,7 +40,7 @@
             "Midfield structural collapse",
             "Poor substitutions"
         ],
-        "lastUpdated": "2026-10-05T23:31:05.617277"
+        "lastUpdated": "2026-10-06T04:05:41.124154"
     },
     "mauricio-pochettino": {
         "name": "Mauricio Pochettino",
@@ -83,6 +83,6 @@
             "Defensive set-piece vulnerabilities",
             "Game management"
         ],
-        "lastUpdated": "2026-10-05T23:31:05.617289"
+        "lastUpdated": "2026-10-06T04:05:41.124164"
     }
 }
