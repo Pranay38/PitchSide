@@ -229,7 +229,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             return res.status(201).json({
                 message: emailSent
-                    ? "Subscribed successfully! Check your inbox for a welcome email ⚽"
+                    ? "Subscribed successfully! Your welcome email has been submitted for delivery."
                     : "Subscribed successfully! Welcome email may be slightly delayed ⚽",
                 emailSent,
             });
@@ -277,7 +277,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             }
 
             // Fetch active subscribers
-            const query: any = {};
+            const query: any = { status: { $ne: "unsubscribed" }, "preferences.digest": { $ne: false } };
             const targetClub = req.query.club;
             if (targetClub && typeof targetClub === "string" && targetClub !== "All") {
                 query.clubPreferences = targetClub;
@@ -287,20 +287,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(400).json({ error: "No subscribers found." });
             }
 
-            const { buildEditorialEmail } = await import("../utils/emailTemplate");
+            const { buildSubscriberEmail } = await import("../utils/emailTemplate");
 
             const batchList = subscribers.map(s => {
-                const unSubUrl = `${req.headers["x-forwarded-proto"] || "http"}://${req.headers.host || "www.thetouchlinedribble.in"}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(s.email)}`;
-                const wrappedHtml = buildEditorialEmail({
+                const message = buildSubscriberEmail({
+                    email: s.email,
                     title: subject,
                     previewText: subject,
-                    unsubscribeUrl: unSubUrl,
                     content: htmlContent,
                 });
                 return {
                     to: s.email,
                     subject,
-                    html: wrappedHtml,
+                    ...message,
                 };
             });
 

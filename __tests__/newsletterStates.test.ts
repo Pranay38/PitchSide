@@ -12,16 +12,16 @@ describe("standalone newsletter states", () => {
     preferences.loading = false; preferences.newsletterOptIn = false;
     const html = renderToStaticMarkup(React.createElement(OneLineNewsletter));
     expect(html).toContain('aria-label="Email address"'); expect(html).toContain('type="email"');
-    expect(html).toContain("The Weekly Whistle");
+    expect(html).toContain("The Weekly Whistle"); expect(html).not.toContain("move it to Primary");
   });
   it("shows a loading state instead of prematurely saying subscribed", () => {
     preferences.loading = true;
     const html = renderToStaticMarkup(React.createElement(OneLineNewsletter));
-    expect(html).toContain("Checking your subscription"); expect(html).not.toContain('<form');
+    expect(html).not.toContain("move it to Primary"); expect(html).toContain("Checking your subscription"); expect(html).not.toContain('<form');
   });
   it("offers an actual next article to an existing subscriber", () => {
     preferences.loading = false; preferences.newsletterOptIn = true;
     const html = renderToStaticMarkup(React.createElement(OneLineNewsletter, { nextArticle: { href: "/post/midfield", title: "Understanding midfield" } }));
-    expect(html).toContain("You’re subscribed"); expect(html).toContain('href="/post/midfield"'); expect(html).not.toContain('<form');
+    expect(html).toContain("move it to Primary"); expect(html).toContain("You’re subscribed"); expect(html).toContain('href="/post/midfield"'); expect(html).not.toContain('<form');
   });
 });

@@ -20,15 +20,16 @@ function buildPostUrl(postId?: string): string {
   return `https://www.thetouchlinedribble.in/post/${postId}`;
 }
 
-import { buildEditorialEmail } from "../utils/emailTemplate";
+import { buildSubscriberEmail } from "../utils/emailTemplate";
 
-function buildPostEmailHtml(title: string, excerpt: string | undefined, postUrl: string): string {
+export function buildPostEmailHtml(email: string, title: string, excerpt: string | undefined, postUrl: string) {
   const safeTitle = escapeHtml(title);
   const safeExcerpt = excerpt ? escapeHtml(excerpt) : "";
 
-  return buildEditorialEmail({
+  return buildSubscriberEmail({
+    email,
     title: `New Post: ${title}`,
-    previewText: excerpt ? safeExcerpt.substring(0, 80) + "..." : "New tactical analysis available.",
+    previewText: excerpt ? excerpt.substring(0, 80) + "..." : "New tactical analysis available.",
     content: `
       <div class="kicker sans">New Article</div>
       <h2 class="headline serif">${safeTitle}</h2>
@@ -52,17 +53,16 @@ export async function notifySubscribersAboutPost(
     return { sent: 0, skippedReason: "mailer-not-configured" };
   }
 
-  const subscribers = await db.collection("subscribers").find({}).toArray();
+  const subscribers = await db.collection("subscribers").find({ status: { $ne: "unsubscribed" }, "preferences.newArticles": { $ne: false } }).toArray();
   if (subscribers.length === 0) {
     return { sent: 0, skippedReason: "no-subscribers" };
   }
 
   const postUrl = buildPostUrl(post.id);
-  const html = buildPostEmailHtml(post.title, post.excerpt ?? undefined, postUrl);
   const batchList = subscribers.map((subscriber: { email: string }) => ({
     to: subscriber.email,
     subject: `New Post: ${post.title} ⚽`,
-    html,
+    ...buildPostEmailHtml(subscriber.email, post.title, post.excerpt ?? undefined, postUrl),
   }));
 
   await sendBatchEmails(batchList);

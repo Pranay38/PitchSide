@@ -48,7 +48,7 @@ export function ArticleEndCTA({ postId, club, config }: ArticleEndCTAProps) {
       }
 
       setNewsletterOptIn(true);
-      toast.success(payload.alreadySubscribed ? "You're already on the list." : "The next edition is heading to your inbox.");
+      toast.success(payload.alreadySubscribed ? "You're already on the list." : "You’re subscribed to The Weekly Whistle.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not save your subscription.");
     } finally {

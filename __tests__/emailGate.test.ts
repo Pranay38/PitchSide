@@ -36,7 +36,7 @@ function mockRes() {
 describe("Email Gate & Subscriber Funnel Tests", () => {
   let mockCollection: any;
 
-  beforeEach(() => {
+  beforeEach(() => { vi.stubEnv("JWT_SECRET", "test-unsubscribe-secret");
     vi.clearAllMocks();
     (checkRateLimit as any).mockReturnValue(true);
     (checkOrigin as any).mockReturnValue(true);

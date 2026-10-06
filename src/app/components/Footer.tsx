@@ -34,7 +34,7 @@ export function Footer({ hideNewsletter = false }: { hideNewsletter?: boolean })
         if (data.alreadySubscribed) {
           toast.info("You're already subscribed! 🎉");
         } else {
-          toast.success("Subscribed! Check your inbox for a welcome email ⚽");
+          toast.success("You’re subscribed to The Weekly Whistle.");
         }
       } else {
         toast.error(data.error || "Something went wrong. Please try again.");

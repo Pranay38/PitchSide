@@ -1,5 +1,6 @@
 "use client";
 
+import { GMAIL_INBOX_GUIDANCE } from "../lib/newsletterDelivery";
 import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
 
 import { useState } from "react";
@@ -24,6 +25,7 @@ export function InlineNewsletterCard({
 }: InlineNewsletterCardProps) {
   const { subscribe, exposureRef } = useNewsletterTracking(placement, postId);
   const { newsletterOptIn, setNewsletterOptIn, loading } = useUserPreferences();
+  const [justSubscribed, setJustSubscribed] = useState(false);
   const [email, setEmail] = useState("");
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -36,6 +38,7 @@ export function InlineNewsletterCard({
     );
   };
 
+  if (justSubscribed) return <section role="status" className={`p-6 rounded-2xl border border-green-600/20 ${className}`}><p className="font-bold">You’re subscribed to The Weekly Whistle.</p><p className="mt-2 text-sm">{GMAIL_INBOX_GUIDANCE}</p></section>;
   if (loading || newsletterOptIn) {
     return null;
   }
@@ -59,6 +62,7 @@ export function InlineNewsletterCard({
         );
       }
 
+      setJustSubscribed(!payload.alreadySubscribed);
       setNewsletterOptIn(true);
       toast.success(payload.alreadySubscribed ? "You're already subscribed." : "Subscribed.");
       setEmail("");

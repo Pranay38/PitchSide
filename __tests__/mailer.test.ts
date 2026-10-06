@@ -24,3 +24,16 @@ describe("email provider acknowledgement", () => {
     await expect(sendEmail({ to: "test@example.com", subject: "test", html: "test" })).rejects.toThrow("not configured");
   });
 });
+
+
+describe("subscriber delivery headers", () => {
+  it("sets the approved identity, reply inbox, text, and one-click headers in single and batch sends", async () => {
+    send.mockResolvedValue({ error: null }); batchSend.mockResolvedValue({ error: null });
+    const { sendEmail, sendBatchEmails } = await import("../server/_mailer");
+    const message = { to: "reader@example.com", subject: "Weekly Whistle", html: "<p>Hello</p>", text: "Hello", unsubscribeUrl: "https://www.thetouchlinedribble.in/api/unsubscribe?token=signed" };
+    await sendEmail(message); await sendBatchEmails([message]);
+    const expected = expect.objectContaining({ from: "Pranay at The Touchline Dribble <noreply@thetouchlinedribble.in>", replyTo: "thetouchlinedribble@gmail.com", text: "Hello", html: "<p>Hello</p>", headers: { "List-Unsubscribe": `<${message.unsubscribeUrl}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" } });
+    expect(send).toHaveBeenCalledWith(expected, undefined);
+    expect(batchSend).toHaveBeenCalledWith([expected]);
+  });
+});

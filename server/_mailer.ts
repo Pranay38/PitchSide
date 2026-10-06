@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { emailToText } from "./utils/emailTemplate";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
@@ -11,6 +12,8 @@ export async function sendEmail(options: {
     bcc?: string | string[];
     subject: string;
     html: string;
+    text?: string;
+    unsubscribeUrl?: string;
     idempotencyKey?: string;
 }): Promise<void> {
     if (!isMailerConfigured()) {
@@ -18,11 +21,14 @@ export async function sendEmail(options: {
     }
 
     const { error } = await resend!.emails.send({
-        from: "The Touchline Dribble <noreply@thetouchlinedribble.in>",
+        from: "Pranay at The Touchline Dribble <noreply@thetouchlinedribble.in>",
+        replyTo: "thetouchlinedribble@gmail.com",
         to: Array.isArray(options.to) ? options.to : [options.to],
         bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc : [options.bcc]) : undefined,
         subject: options.subject,
         html: options.html,
+        text: options.text || emailToText(options.html),
+        headers: unsubscribeHeaders(options.unsubscribeUrl),
     }, options.idempotencyKey ? { idempotencyKey: options.idempotencyKey } : undefined);
     if (error) throw new Error(`Email provider rejected send: ${error.message}`);
 }
@@ -34,16 +40,21 @@ export async function sendBatchEmails(optionsList: Array<{
     to: string;
     subject: string;
     html: string;
+    text?: string;
+    unsubscribeUrl?: string;
 }>): Promise<void> {
     if (!isMailerConfigured()) {
         throw new Error("Mailer not configured");
     }
 
     const batchData = optionsList.map(opt => ({
-        from: "The Touchline Dribble <noreply@thetouchlinedribble.in>",
+        from: "Pranay at The Touchline Dribble <noreply@thetouchlinedribble.in>",
+        replyTo: "thetouchlinedribble@gmail.com",
         to: [opt.to],
         subject: opt.subject,
         html: opt.html,
+        text: opt.text || emailToText(opt.html),
+        headers: unsubscribeHeaders(opt.unsubscribeUrl),
     }));
 
     // Resend batch API accepts up to 100 emails at a time
@@ -59,4 +70,8 @@ export async function sendBatchEmails(optionsList: Array<{
  */
 export function isMailerConfigured(): boolean {
     return !!RESEND_API_KEY;
+}
+
+function unsubscribeHeaders(url?: string) {
+    return url ? { "List-Unsubscribe": `<${url}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" } : undefined;
 }

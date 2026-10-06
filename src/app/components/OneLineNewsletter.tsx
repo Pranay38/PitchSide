@@ -1,5 +1,6 @@
 "use client";
 
+import { GMAIL_INBOX_GUIDANCE } from "../lib/newsletterDelivery";
 import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
 
 import { useState } from "react";
@@ -18,6 +19,7 @@ export function OneLineNewsletter({ className = "", placement = "newsletter_inli
     <div role="status" className={`p-6 text-center ${className}`}>
       <h2 className="text-xl font-bold">You’re subscribed to The Weekly Whistle.</h2>
       <p className="mt-2 text-sm">One strong football opinion and one useful lesson, every week.</p>
+      <p className="mt-3 text-sm text-slate-500">{GMAIL_INBOX_GUIDANCE}</p>
       <a className="mt-4 inline-block font-bold text-green-600 underline" href={nextArticle?.href || "/learn"}>
         {nextArticle ? `Read next: ${nextArticle.title}` : "Find your next useful football read"}
       </a>

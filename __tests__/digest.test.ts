@@ -46,7 +46,7 @@ describe("Digest Cron Endpoint", () => {
   let mockNewsletterLogCollection: any;
   let mockUserPrefsCollection: any;
 
-  beforeEach(() => {
+  beforeEach(() => { vi.stubEnv("JWT_SECRET", "test-unsubscribe-secret");
     vi.clearAllMocks();
     process.env.CRON_SECRET = "test-secret";
 
@@ -66,6 +66,7 @@ describe("Digest Cron Endpoint", () => {
             toArray: vi.fn().mockResolvedValue([
               {
                 title: "Test Post",
+                id: "test-post", category: "Opinion", tags: [],
                 slug: "test-post",
                 excerpt: "A test post",
                 publishAt: new Date().toISOString(),
@@ -106,6 +107,19 @@ describe("Digest Cron Endpoint", () => {
       ok: false,
       json: () => Promise.resolve([])
     }));
+  });
+
+  it("does not dispatch when admin authentication fails or the cron secret is absent", async () => {
+    vi.mocked(requireAuth).mockResolvedValueOnce(false);
+    const adminRequest = createCronRequest(); adminRequest.method = "POST";
+    await handler(adminRequest, createMockResponse());
+    expect(sendBatchEmails).not.toHaveBeenCalled();
+    vi.stubEnv("CRON_SECRET", "");
+    const response = createMockResponse();
+    const cronRequest = createCronRequest(); cronRequest.headers = {}; cronRequest.query = {};
+    await handler(cronRequest, response);
+    expect(response.status).toHaveBeenCalledWith(401);
+    expect(sendBatchEmails).not.toHaveBeenCalled();
   });
 
   it("should skip when no active subscribers exist", async () => {
@@ -155,6 +169,7 @@ describe("Digest Cron Endpoint", () => {
     const res = createMockResponse();
     await handler(req, res);
 
+    expect(mockSubscribersCollection.find).toHaveBeenCalledWith({ status: { $ne: "unsubscribed" }, "preferences.digest": { $ne: false } });
     expect(sendBatchEmails).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({ to: "test@example.com" }),

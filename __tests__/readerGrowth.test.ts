@@ -13,7 +13,7 @@ const storage = () => {
 };
 let win: any;
 let fetchMock: ReturnType<typeof vi.fn>;
-beforeEach(() => {
+beforeEach(() => { vi.stubEnv("JWT_SECRET", "test-unsubscribe-secret");
   win = { location: { search: "?utm_source=x&utm_campaign=midfield&utm_content=evidence" }, localStorage: storage(), sessionStorage: storage(), gtag: vi.fn() };
   vi.stubGlobal("window", win);
   fetchMock = vi.fn().mockImplementation(async (url: string) => new Response(JSON.stringify(url === "/api/subscribers" ? { emailSent: true } : { success: true }), { status: 201 }));
@@ -130,7 +130,7 @@ describe("newsletter reading and welcome content", () => {
   });
   it.each([0, 1, 2] as const)("stage %s has one tracked primary CTA and an unsubscribe link", stage => {
     const message = welcomeMessage(stage, "reader@example.com", { opinion: undefined, explainer: undefined });
-    expect(message.html).toContain("action=unsubscribe");
+    expect(message.html).toContain("/api/unsubscribe?token=");
     expect((message.html.match(/utm_campaign=welcome/g) || [])).toHaveLength(1);
     expect(message.html).not.toContain("post/football-formations");
   });

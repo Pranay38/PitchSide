@@ -1,7 +1,8 @@
+import { GMAIL_INBOX_GUIDANCE } from "../../src/app/lib/newsletterDelivery";
 import type { Db } from "mongodb";
 import type { BlogPost } from "../../src/app/data/posts";
 import { newsletterReading, NEWSLETTER_PROMISE } from "../../src/app/lib/newsletterReading";
-import { buildEditorialEmail } from "./emailTemplate";
+import { buildSubscriberEmail } from "./emailTemplate";
 
 export const SITE_URL = "https://www.thetouchlinedribble.in";
 export async function loadWelcomeReading(db: Pick<Db, "collection">) {
@@ -30,11 +31,11 @@ export function welcomeMessage(stage: 0 | 1 | 2, email: string, reading: ReturnT
   return {
     to: email,
     subject,
-    html: buildEditorialEmail({
+    ...buildSubscriberEmail({
+      email,
       title: subject,
       previewText: stage === 0 ? NEWSLETTER_PROMISE : text,
-      unsubscribeUrl: `${SITE_URL}/api/subscribers?action=unsubscribe&email=${encodeURIComponent(email)}`,
-      content: `<h2>${escape(subject)}</h2><p>${escape(text)}</p>${stage !== 2 && chosen?.excerpt ? `<p>${escape(chosen.excerpt)}</p>` : ""}<p><a href="${escape(url.toString())}">${escape(label)} →</a></p><p>Pranay Agarwal<br>The Touchline Dribble</p>`,
+      content: `<h2>${escape(subject)}</h2><p>${escape(text)}</p>${stage === 0 ? `<p>What football question is on your mind? Hit reply — I’d like to hear it.</p><p>${GMAIL_INBOX_GUIDANCE}</p>` : ""}${stage !== 2 && chosen?.excerpt ? `<p>${escape(chosen.excerpt)}</p>` : ""}<p><a href="${escape(url.toString())}">${escape(label)} →</a></p><p>Pranay Agarwal<br>The Touchline Dribble</p>`,
     }),
   };
 }

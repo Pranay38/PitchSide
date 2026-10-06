@@ -16,7 +16,7 @@ function setup(subs: any[] = []) {
     : { find: () => ({ toArray: async () => subs }), findOne, updateOne, insertOne } } } as any);
   return { updateOne, findOne };
 }
-beforeEach(() => { vi.clearAllMocks(); vi.stubEnv("CRON_SECRET", "test-secret"); vi.mocked(isMailerConfigured).mockReturnValue(true); vi.mocked(sendEmail).mockResolvedValue(undefined); });
+beforeEach(() => { vi.stubEnv("JWT_SECRET", "test-unsubscribe-secret"); vi.clearAllMocks(); vi.stubEnv("CRON_SECRET", "test-secret"); vi.mocked(isMailerConfigured).mockReturnValue(true); vi.mocked(sendEmail).mockResolvedValue(undefined); });
 afterEach(() => vi.unstubAllEnvs());
 const subscriber = (stage: number) => ({ _id: "reader", email: "reader@example.com", welcomeSequenceState: stage, subscribedAt: "2025-01-01", welcomeLastSentAt: "2025-01-02" });
 describe("welcome journey dispatch", () => {

@@ -1,60 +1,36 @@
-import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
+import { NextRequest, NextResponse } from "next/server";
+import { verifyWebhook } from "@clerk/nextjs/webhooks";
+import { connectToDatabase } from "../../../../server/_db";
+import { sendEmail, isMailerConfigured } from "../../../../server/_mailer";
+import { loadWelcomeReading, welcomeMessage } from "../../../../server/utils/welcomeJourney";
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
+  const signingSecret = process.env.CLERK_WEBHOOK_SIGNING_SECRET || process.env.CLERK_WEBHOOK_SECRET;
+  if (!signingSecret) return NextResponse.json({ error: "Webhook verification is not configured" }, { status: 503 });
+  let event: Awaited<ReturnType<typeof verifyWebhook>>;
   try {
-    // Note: For production, you should verify the webhook signature using `svix`
-    // and process.env.CLERK_WEBHOOK_SECRET. 
-    // We are skipping it here for the MVP to ensure immediate delivery.
-    const payload = await req.json();
-    
-    if (payload.type === 'user.created') {
-      const email = payload.data.email_addresses?.[0]?.email_address;
-      const firstName = payload.data.first_name || '';
-      
-      if (email) {
-        // 1. Add to Resend Audience (Newsletter list)
-        // You need to set RESEND_AUDIENCE_ID in your .env.local
-        if (process.env.RESEND_AUDIENCE_ID) {
-          await resend.contacts.create({
-            email: email,
-            firstName: firstName,
-            audienceId: process.env.RESEND_AUDIENCE_ID,
-            unsubscribed: false,
-          });
-        }
-        
-        // 2. Send Welcome Email
-        await resend.emails.send({
-          from: 'The Touchline Dribble <newsletter@thetouchlinedribble.in>',
-          to: [email],
-          subject: 'Welcome to The Touchline Dribble! ⚽',
-          html: `
-            <div style="font-family: sans-serif; max-w-2xl mx-auto; color: #333;">
-              <h2 style="color: #16A34A;">Welcome to PitchSide!</h2>
-              <p>Hi ${firstName ? firstName : 'there'},</p>
-              <p>Thanks for creating a free account at <strong>The Touchline Dribble</strong>.</p>
-              <p>You now have full access to:</p>
-              <ul>
-                <li>Deep-dive tactical breakdowns</li>
-                <li>Data-driven match analysis</li>
-                <li>Our matchday newsletter</li>
-              </ul>
-              <p>We're excited to have you on board!</p>
-              <br/>
-              <p>Cheers,<br/>The Touchline Dribble Team</p>
-            </div>
-          `
-        });
-      }
-    }
-    
+    event = await verifyWebhook(request, { signingSecret });
+  } catch {
+    return NextResponse.json({ error: "Invalid webhook signature" }, { status: 400 });
+  }
+  if (event.type !== "user.created") return NextResponse.json({ success: true });
+  const email = event.data.email_addresses.find(address => address.id === event.data.primary_email_address_id)?.email_address.trim().toLowerCase();
+  if (!email) return NextResponse.json({ success: true });
+  try {
+    const { db } = await connectToDatabase();
+    const subscribers = db.collection("subscribers");
+    // Account creation is not newsletter consent. Never create or reactivate an audience contact here.
+    const reader = await subscribers.findOne({ email, status: { $ne: "unsubscribed" }, welcomeSequenceState: 0 });
+    if (!reader) return NextResponse.json({ success: true });
+    if (!isMailerConfigured()) return NextResponse.json({ error: "Email is temporarily unavailable" }, { status: 503 });
+    const reading = await loadWelcomeReading(db);
+    // Recheck after loading content, just as the scheduled welcome sender does.
+    const filter = { _id: reader._id, status: { $ne: "unsubscribed" }, welcomeSequenceState: 0 };
+    if (!await subscribers.findOne(filter)) return NextResponse.json({ success: true });
+    await sendEmail({ ...welcomeMessage(0, email, reading), idempotencyKey: `welcome-${reader._id}-0` });
+    await subscribers.updateOne(filter, { $set: { welcomeSequenceState: 1, welcomeLastSentAt: new Date().toISOString() } });
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Clerk webhook error:', error);
-    return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Could not process welcome email" }, { status: 503 });
   }
 }

@@ -43,7 +43,7 @@ function createMockRequest(method: string, body?: any): VercelRequest {
 }
 
 describe("Subscribers API Endpoint", () => {
-  beforeEach(() => {
+  beforeEach(() => { vi.stubEnv("JWT_SECRET", "test-unsubscribe-secret");
     vi.clearAllMocks();
     (checkRateLimit as any).mockReturnValue(true);
     (checkOrigin as any).mockReturnValue(true);
@@ -100,7 +100,7 @@ describe("Subscribers API Endpoint", () => {
       expect(res.status).toHaveBeenCalledWith(201);
       
       const responseData = (res.json as any).mock.calls[0][0];
-      expect(responseData).toHaveProperty("message", "Subscribed successfully! Check your inbox for a welcome email ⚽");
+      expect(responseData).toHaveProperty("message", "Subscribed successfully! Your welcome email has been submitted for delivery.");
       expect(responseData).toHaveProperty("emailSent", true);
       expect(res.setHeader).toHaveBeenCalledWith("Set-Cookie", expect.stringContaining("ttd_newsletter="));
     });
@@ -228,9 +228,10 @@ describe("Subscribers API Endpoint", () => {
 
       await handler(req, res);
 
+      expect(mockCollection.find).toHaveBeenCalledWith({ status: { $ne: "unsubscribed" }, "preferences.digest": { $ne: false } });
       expect(sendBatchEmails).toHaveBeenCalledWith([
-        { to: "test1@example.com", subject: "Weekly Digest", html: expect.stringContaining("<p>Digest content</p>") },
-        { to: "test2@example.com", subject: "Weekly Digest", html: expect.stringContaining("<p>Digest content</p>") }
+        expect.objectContaining({ to: "test1@example.com", subject: "Weekly Digest", html: expect.stringContaining("<p>Digest content</p>"), text: expect.stringContaining("Digest content"), unsubscribeUrl: expect.stringContaining("/api/unsubscribe?token=") }),
+        expect.objectContaining({ to: "test2@example.com", subject: "Weekly Digest", html: expect.stringContaining("<p>Digest content</p>") })
       ]);
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ message: "Digest sent to 2 subscribers!" });

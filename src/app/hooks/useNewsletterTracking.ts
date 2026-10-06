@@ -1,4 +1,6 @@
 "use client";
+import { toast } from "sonner";
+import { GMAIL_INBOX_GUIDANCE } from "../lib/newsletterDelivery";
 import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
@@ -34,6 +36,12 @@ export function useNewsletterTracking(placement: string, postId?: string) {
   }, [element, placement, postId, readerState, pathname]);
   return {
     exposureRef,
-    subscribe: (body: Record<string, unknown>) => newsletterSignup(body, { placement, postId, readerState }),
+    subscribe: async (body: Record<string, unknown>) => {
+      const response = await newsletterSignup(body, { placement, postId, readerState });
+      if (response.status === 201) {
+        toast.info("A tip for your next newsletter", { description: GMAIL_INBOX_GUIDANCE, duration: 12000 });
+      }
+      return response;
+    },
   };
 }
