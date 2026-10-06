@@ -1,5 +1,6 @@
 @import 'tailwindcss' source(none);
 @source '../src/**/*.{js,ts,jsx,tsx}';
+@source './**/*.{js,ts,jsx,tsx}';
 
 @import 'tw-animate-css';
 @import '../src/styles/theme.css';
@@ -22,3 +23,6 @@
 :is(.tiptap, .prose, article, .pitchside-article-content) ul[data-type="taskList"] { list-style: none; padding-left: 0; }
 :is(.tiptap, .prose, article, .pitchside-article-content) li[data-type="taskItem"] { display: flex; gap: 0.6rem; align-items: baseline; }
 :is(.tiptap, .prose, article, .pitchside-article-content) li[data-type="taskItem"] > div { flex: 1; min-width: 0; }
+
+/* The article container controls reading width on every viewport. */
+.pitchside-article-content p { max-width: none; }

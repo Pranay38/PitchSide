@@ -526,7 +526,7 @@ export default async function BlogPostPage({ params }: Props) {
             <MilestoneScrubber />
           </aside>
           
-          <article className="min-w-0 xl:px-4">
+          <article className="mx-auto w-full min-w-0 max-w-[760px] xl:max-w-none xl:px-4">
             {/* Interactive actions block (Like, Bookmark, Follow) */}
             <PostActionsClient 
               post={{
