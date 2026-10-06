@@ -5,7 +5,7 @@ import { Upload } from "lucide-react";
 import { toast } from "sonner";
 import { importMarkdownFiles } from "../../lib/markdownImport";
 
-export function MarkdownUpload({ content, onImport }: { content: string; onImport: (html: string) => void }) {
+export function MarkdownUpload({ content, onImport, replacementMessage = "Replace the current article body with this Markdown file?", successMessage = "Markdown imported. Review your article before publishing." }: { content: string; onImport: (html: string) => void; replacementMessage?: string; successMessage?: string }) {
     const input = useRef<HTMLInputElement>(null);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
@@ -24,10 +24,10 @@ export function MarkdownUpload({ content, onImport }: { content: string; onImpor
                             throw new Error(`Select the .md file again together with these images: ${result.missingImages.join(", ")}`);
                         }
                         if (content.replace(/<[^>]*>/g, "").trim() || /<(img|table|div)\b/i.test(content)) {
-                            if (!window.confirm("Replace the current article body with this Markdown file?")) return;
+                            if (!window.confirm(replacementMessage)) return;
                         }
                         onImport(result.html);
-                        toast.success("Markdown imported. Review your article before publishing.");
+                        toast.success(successMessage);
                     } catch (cause) {
                         setError(cause instanceof Error ? cause.message : "Unable to read this file. Please try again.");
                     } finally { setBusy(false); }

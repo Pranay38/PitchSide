@@ -16,6 +16,8 @@ import {
 import { normalizeStoryFeature, saveStoryPreview } from "../lib/storyStorage";
 import { RichTextEditor } from "./RichTextEditor";
 import { EditorSidebar } from "./editor/EditorSidebar";
+import { MarkdownUpload } from "./editor/MarkdownUpload";
+import { storyFromImportedHtml } from "../lib/storyMarkdownImport";
 
 function compressImage(file: File, maxWidth = 1400, quality = 0.82): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -313,6 +315,27 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
 
       {currentStep === 0 && (
       <>
+      <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6 space-y-3">
+        <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Import a Markdown story</h3>
+        <p className="text-sm text-[#64748B] dark:text-gray-400">Use # for the story title and ## for chapter titles. Text before the first chapter becomes an introduction. Review your excerpt, cover image, and chapters before publishing.</p>
+        <MarkdownUpload
+          content={draft.title === "New Story" && draft.chapters.length === 1 && draft.chapters[0].title === "New Chapter" && draft.chapters[0].body.join("") === "Write this chapter here." ? "" : "Existing story"}
+          replacementMessage="Replace this story’s chapters and import its Markdown title? Other story settings will stay the same."
+          successMessage="Markdown imported. Review your story before publishing."
+          onImport={(html) => {
+            const imported = storyFromImportedHtml(html);
+            updateStory((current) => ({
+              ...current,
+              title: imported.title || current.title,
+              slug: current.title === "New Story" && imported.title ? slugifyStoryValue(imported.title) : current.slug,
+              chapters: imported.chapters,
+            }));
+            setSelectedTemplateId("");
+            setPublished(false);
+            setCurrentStep(1);
+          }}
+        />
+      </section>
       <section className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
           <div>
