@@ -1,16 +1,12 @@
 import {
   storyFeatures as defaultStories,
-  createEmptyStoryBar,
   createEmptyStoryChapter,
   createEmptyStoryFeature,
   createEmptyStoryImage,
-  createEmptyStoryMetric,
   slugifyStoryValue,
-  type StoryBar,
   type StoryChapter,
   type StoryChapterImage,
   type StoryFeature,
-  type StoryMetric,
 } from "../data/stories";
 
 const STORIES_KEY = "pitchside_stories";
@@ -71,22 +67,6 @@ export function sortStories(stories: StoryFeature[]): StoryFeature[] {
   });
 }
 
-function normalizeMetric(input?: Partial<StoryMetric> | null): StoryMetric {
-  return {
-    label: String(input?.label || createEmptyStoryMetric().label).trim() || "Metric",
-    value: String(input?.value || createEmptyStoryMetric().value).trim() || "0",
-    hint: String(input?.hint || "").trim(),
-  };
-}
-
-function normalizeBar(input?: Partial<StoryBar> | null): StoryBar {
-  const parsedValue = typeof input?.value === "number" ? input.value : Number(input?.value);
-  return {
-    label: String(input?.label || createEmptyStoryBar().label).trim() || "Signal",
-    value: Number.isFinite(parsedValue) ? Math.max(0, Math.min(100, Math.round(parsedValue))) : 50,
-  };
-}
-
 function normalizeChapterImage(input?: Partial<StoryChapterImage> | null): StoryChapterImage {
   const fallback = createEmptyStoryImage();
   return {
@@ -101,30 +81,17 @@ function normalizeChapter(input?: Partial<StoryChapter> | null): StoryChapter {
   const body = Array.isArray(input?.body)
     ? input.body.map((paragraph) => String(paragraph || "").trim()).filter(Boolean)
     : fallback.body;
-  const metrics = Array.isArray(input?.metrics)
-    ? input.metrics.map((metric) => normalizeMetric(metric)).filter((metric) => metric.label || metric.value)
-    : fallback.metrics;
-  const bars = Array.isArray(input?.visual?.bars)
-    ? input.visual.bars.map((bar) => normalizeBar(bar)).filter((bar) => bar.label)
-    : fallback.visual.bars;
 
   return {
     id: String(input?.id || fallback.id),
-    kicker: String(input?.kicker || fallback.kicker).trim() || fallback.kicker,
+    kicker: String(input?.kicker ?? fallback.kicker).trim(),
     title: String(input?.title || fallback.title).trim() || fallback.title,
     body: body.length > 0 ? body : fallback.body,
-    takeaway: String(input?.takeaway || fallback.takeaway).trim() || fallback.takeaway,
     pullQuote: String(input?.pullQuote || "").trim(),
     image: normalizeChapterImage(input?.image),
-    metrics: metrics.length > 0 ? metrics : fallback.metrics,
-    visual: {
-      eyebrow: String(input?.visual?.eyebrow || fallback.visual.eyebrow).trim() || fallback.visual.eyebrow,
-      headline: String(input?.visual?.headline || fallback.visual.headline).trim() || fallback.visual.headline,
-      subheadline: String(input?.visual?.subheadline || fallback.visual.subheadline).trim() || fallback.visual.subheadline,
-      primaryValue: String(input?.visual?.primaryValue || fallback.visual.primaryValue).trim() || fallback.visual.primaryValue,
-      primaryLabel: String(input?.visual?.primaryLabel || fallback.visual.primaryLabel).trim() || fallback.visual.primaryLabel,
-      bars: bars.length > 0 ? bars : fallback.visual.bars,
-    },
+    ...(input?.takeaway !== undefined ? { takeaway: input.takeaway } : {}),
+    ...(input?.metrics !== undefined ? { metrics: input.metrics } : {}),
+    ...(input?.visual !== undefined ? { visual: input.visual } : {}),
   };
 }
 
@@ -132,9 +99,6 @@ export function normalizeStoryFeature(input?: Partial<StoryFeature> | null): Sto
   const fallback = createEmptyStoryFeature();
   const title = String(input?.title || fallback.title).trim() || fallback.title;
   const slug = slugifyStoryValue(String(input?.slug || title || fallback.slug));
-  const highlights = Array.isArray(input?.highlights)
-    ? input.highlights.map((item) => String(item || "").trim()).filter(Boolean)
-    : fallback.highlights;
   const chapters = Array.isArray(input?.chapters)
     ? input.chapters.map((chapter) => normalizeChapter(chapter)).filter((chapter) => chapter.title)
     : fallback.chapters;
@@ -145,17 +109,19 @@ export function normalizeStoryFeature(input?: Partial<StoryFeature> | null): Sto
     slug: slug || fallback.slug,
     eyebrow: String(input?.eyebrow || fallback.eyebrow).trim() || fallback.eyebrow,
     title,
-    subtitle: String(input?.subtitle || fallback.subtitle).trim() || fallback.subtitle,
-    excerpt: String(input?.excerpt || fallback.excerpt).trim() || fallback.excerpt,
+    subtitle: String(input?.subtitle ?? fallback.subtitle).trim(),
+    excerpt: String(input?.excerpt ?? fallback.excerpt).trim(),
     readTime: String(input?.readTime || fallback.readTime).trim() || fallback.readTime,
     date: String(input?.date || fallback.date).trim() || fallback.date,
-    coverImage: String(input?.coverImage || fallback.coverImage).trim() || fallback.coverImage,
+    coverImage: String(input?.coverImage ?? fallback.coverImage).trim(),
     themeFrom: String(input?.themeFrom || fallback.themeFrom).trim() || fallback.themeFrom,
     themeTo: String(input?.themeTo || fallback.themeTo).trim() || fallback.themeTo,
     isDraft: Boolean(input?.isDraft ?? fallback.isDraft),
     publishedAt: input?.publishedAt ? String(input.publishedAt) : undefined,
     updatedAt,
-    highlights: highlights.length > 0 ? highlights : fallback.highlights,
+    ...(input?.highlights !== undefined ? { highlights: input.highlights } : {}),
+    ...(input?.audioUrl !== undefined ? { audioUrl: input.audioUrl } : {}),
+    ...(input?.reactions !== undefined ? { reactions: input.reactions } : {}),
     chapters: chapters.length > 0 ? chapters : fallback.chapters,
   };
 }

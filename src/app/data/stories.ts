@@ -29,11 +29,11 @@ export interface StoryChapter {
   kicker: string;
   title: string;
   body: string[];
-  takeaway: string;
+  takeaway?: string;
   pullQuote?: string;
   image?: StoryChapterImage;
-  metrics: StoryMetric[];
-  visual: StoryChapterVisual;
+  metrics?: StoryMetric[];
+  visual?: StoryChapterVisual;
 }
 
 export interface StoryFeature {
@@ -51,7 +51,7 @@ export interface StoryFeature {
   isDraft: boolean;
   publishedAt?: string;
   updatedAt: string;
-  highlights: string[];
+  highlights?: string[];
   chapters: StoryChapter[];
   reactions?: {
     fire: number;
@@ -297,18 +297,8 @@ export function createEmptyStoryChapter(): StoryChapter {
     kicker: "Chapter",
     title: "New Chapter",
     body: ["Write this chapter here."],
-    takeaway: "Add the key takeaway from this section.",
     pullQuote: "",
     image: createEmptyStoryImage(),
-    metrics: [createEmptyStoryMetric()],
-    visual: {
-      eyebrow: "Visual",
-      headline: "Sticky visual headline",
-      subheadline: "Support the chapter with one sharp sentence.",
-      primaryValue: "00",
-      primaryLabel: "Primary label",
-      bars: [createEmptyStoryBar(), { label: "Pressure", value: 65 }, { label: "Control", value: 40 }],
-    },
   };
 }
 
@@ -329,7 +319,6 @@ export function createEmptyStoryFeature(): StoryFeature {
     themeTo: "#16A34A",
     isDraft: true,
     updatedAt: now.toISOString(),
-    highlights: ["Hook", "Tension", "Insight"],
     chapters: [createEmptyStoryChapter()],
   };
 }
@@ -349,7 +338,6 @@ export const storyTemplates: StoryTemplateDefinition[] = [
       coverImage: "https://images.unsplash.com/photo-1518604666860-9ed391f76460?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1400",
       themeFrom: "#0F172A",
       themeTo: "#16A34A",
-      highlights: ["Turning points", "Narrative swings", "Momentum shifts"],
       chapters: [
         {
           id: createId("chapter"),
@@ -359,25 +347,8 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Open with the baseline. Explain what the situation looked like before the story accelerated.",
             "Use this section to frame the expectations, assumptions, and mood at the start of the timeline.",
           ],
-          takeaway: "Set the baseline before the swing.",
           pullQuote: "Every timeline story needs a stable starting point before the drama lands.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Starting point", value: "Stable", hint: "How the situation felt at the beginning" },
-            { label: "Pressure", value: "Low", hint: "Public urgency before the turn" },
-          ],
-          visual: {
-            eyebrow: "Timeline Start",
-            headline: "The story looked calm on the surface",
-            subheadline: "This is where the reader understands what changed and why the rest matters.",
-            primaryValue: "T0",
-            primaryLabel: "Starting phase",
-            bars: [
-              { label: "Control", value: 72 },
-              { label: "Pressure", value: 28 },
-              { label: "Volatility", value: 34 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -387,24 +358,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Describe the first event that made the story feel different.",
             "This should be where the narrative stopped being background noise and started moving the public mood.",
           ],
-          takeaway: "Show the first moment the story became real.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Catalyst", value: "1 result", hint: "The event that changed perception" },
-            { label: "Mood change", value: "Sharp", hint: "How fast sentiment moved" },
-          ],
-          visual: {
-            eyebrow: "First Turn",
-            headline: "The first shift changed the conversation",
-            subheadline: "Small table movement can create a much bigger emotional swing.",
-            primaryValue: "+1",
-            primaryLabel: "Catalyst moment",
-            bars: [
-              { label: "Narrative impact", value: 78 },
-              { label: "Table impact", value: 42 },
-              { label: "Emotional shift", value: 83 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -414,24 +368,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Show the period where events stacked and the story accelerated.",
             "Explain why this stretch mattered more than the individual moments viewed in isolation.",
           ],
-          takeaway: "Compression is often the real story engine.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Critical window", value: "7 days", hint: "Where the pressure clusters" },
-            { label: "Key events", value: "3", hint: "Moments that stacked together" },
-          ],
-          visual: {
-            eyebrow: "Compression",
-            headline: "The story moved in a tight burst",
-            subheadline: "This is where the reader feels why the sequence mattered more than any single beat.",
-            primaryValue: "7 days",
-            primaryLabel: "Pressure cluster",
-            bars: [
-              { label: "Intensity", value: 81 },
-              { label: "Clarity", value: 64 },
-              { label: "Risk", value: 76 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -441,24 +378,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Close the timeline by explaining what determines the next stage.",
             "This should leave the reader with one forward-looking lens rather than a generic conclusion.",
           ],
-          takeaway: "A good timeline closes by clarifying the next hinge point.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Next hinge", value: "Defined", hint: "What now matters most" },
-            { label: "Margin for error", value: "Thin", hint: "Why the story remains live" },
-          ],
-          visual: {
-            eyebrow: "Endgame",
-            headline: "The final turn is now easy to define",
-            subheadline: "Leave the reader with the exact variable that decides what happens next.",
-            primaryValue: "Next",
-            primaryLabel: "Hinge variable",
-            bars: [
-              { label: "Clarity", value: 74 },
-              { label: "Tension", value: 79 },
-              { label: "Closure", value: 52 },
-            ],
-          },
         },
       ],
     },
@@ -477,7 +397,6 @@ export const storyTemplates: StoryTemplateDefinition[] = [
       coverImage: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1400",
       themeFrom: "#082F49",
       themeTo: "#0EA5E9",
-      highlights: ["Shape", "Key matchup", "Adjustment", "Decisive phase"],
       chapters: [
         {
           id: createId("chapter"),
@@ -487,24 +406,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Explain the starting shapes and why the matchup mattered before kickoff.",
             "Clarify what each side wanted to control and which spaces were under stress immediately.",
           ],
-          takeaway: "Every tactical story starts with the map of the match.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Shape", value: "4-3-3", hint: "Starting reference point" },
-            { label: "Target zone", value: "Half-space", hint: "Primary area of attack" },
-          ],
-          visual: {
-            eyebrow: "Structure",
-            headline: "The opening shape defined the first problem",
-            subheadline: "Set the board before explaining why one side started to gain leverage.",
-            primaryValue: "Base",
-            primaryLabel: "Starting map",
-            bars: [
-              { label: "Width", value: 62 },
-              { label: "Compactness", value: 66 },
-              { label: "Risk", value: 38 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -514,24 +416,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Identify the repeatable pattern that created control: overloads, pressing triggers, or release points.",
             "Keep this section concrete. The reader should be able to picture the repeated action.",
           ],
-          takeaway: "The story turns when the same pattern starts succeeding again and again.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Trigger", value: "Repeatable", hint: "The pattern that kept working" },
-            { label: "Pressure", value: "High", hint: "Why the opponent started bending" },
-          ],
-          visual: {
-            eyebrow: "Pattern",
-            headline: "One repeatable action kept opening the game",
-            subheadline: "The strongest tactical stories explain patterns, not isolated moments.",
-            primaryValue: "3x",
-            primaryLabel: "Repeated success",
-            bars: [
-              { label: "Control", value: 78 },
-              { label: "Access", value: 73 },
-              { label: "Opponent stress", value: 69 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -541,24 +426,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Explain how the opponent tried to correct the issue and whether that response solved the real problem.",
             "This is where you show whether the tactical battle genuinely changed or just moved shape.",
           ],
-          takeaway: "The most revealing moment is usually the answer to the first problem.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Adjustment", value: "Visible", hint: "The tactical response" },
-            { label: "Effect", value: "Partial", hint: "Whether it actually fixed the issue" },
-          ],
-          visual: {
-            eyebrow: "Adjustment",
-            headline: "The counter changed the picture, not the root problem",
-            subheadline: "Use this chapter to separate cosmetic changes from real tactical correction.",
-            primaryValue: "2nd half",
-            primaryLabel: "Response phase",
-            bars: [
-              { label: "Adaptation", value: 67 },
-              { label: "Stability", value: 54 },
-              { label: "Control regained", value: 49 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -568,24 +436,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Close by connecting the tactical pattern to the decisive phase of the game.",
             "Make the final insight feel inevitable based on the chapters before it.",
           ],
-          takeaway: "The tactical conclusion should feel earned, not decorative.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Decisive phase", value: "Late", hint: "Where the tilt became irreversible" },
-            { label: "Tactical edge", value: "Clear", hint: "Why the winner deserved the flow" },
-          ],
-          visual: {
-            eyebrow: "Tilt",
-            headline: "By the end, the tactical edge was obvious",
-            subheadline: "This chapter should crystallize the mechanism that actually won the game.",
-            primaryValue: "Tilted",
-            primaryLabel: "Final state",
-            bars: [
-              { label: "Control", value: 81 },
-              { label: "Execution", value: 76 },
-              { label: "Stress on opponent", value: 84 },
-            ],
-          },
         },
       ],
     },
@@ -604,7 +455,6 @@ export const storyTemplates: StoryTemplateDefinition[] = [
       coverImage: "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1400",
       themeFrom: "#78350F",
       themeTo: "#F59E0B",
-      highlights: ["Why now", "Tactical fit", "Negotiation leverage", "Final outcome"],
       chapters: [
         {
           id: createId("chapter"),
@@ -614,24 +464,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Set the transfer scene. Why did this name start circulating, and why did this club need the profile now?",
             "Anchor the rumor in actual squad logic so the story starts with purpose.",
           ],
-          takeaway: "A transfer story gets sharper when the need is defined first.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Need level", value: "High", hint: "How urgent the profile is" },
-            { label: "Market timing", value: "Now", hint: "Why the link surfaced" },
-          ],
-          visual: {
-            eyebrow: "Need",
-            headline: "The move made sense before the noise arrived",
-            subheadline: "The first chapter should prove the link is structurally plausible.",
-            primaryValue: "Fit",
-            primaryLabel: "Reason it started",
-            bars: [
-              { label: "Squad need", value: 82 },
-              { label: "Timing", value: 70 },
-              { label: "Noise", value: 36 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -641,24 +474,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Explain role, style, and tactical compatibility rather than generic talent talk.",
             "If the fit is weak, say so directly. The story should earn credibility here.",
           ],
-          takeaway: "Transfer stories become useful when they separate talent from fit.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Role fit", value: "Strong", hint: "How naturally the player slots in" },
-            { label: "Style fit", value: "Debatable", hint: "Where the tension lives" },
-          ],
-          visual: {
-            eyebrow: "Fit",
-            headline: "The player suits some needs more than others",
-            subheadline: "Clarify what the signing would solve and what it would not.",
-            primaryValue: "Role",
-            primaryLabel: "Primary fit",
-            bars: [
-              { label: "Tactical fit", value: 74 },
-              { label: "Squad overlap", value: 41 },
-              { label: "Upgrade level", value: 68 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -668,24 +484,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Map the leverage: price, selling club stance, deadline pressure, or competing interest.",
             "This chapter should explain why a logical move still becomes hard to complete.",
           ],
-          takeaway: "Good transfer stories explain friction, not just desire.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Leverage", value: "Seller", hint: "Who controls the pace" },
-            { label: "Fee stress", value: "Real", hint: "Main obstacle to completion" },
-          ],
-          visual: {
-            eyebrow: "Leverage",
-            headline: "The hard part was never the fit. It was the terms.",
-            subheadline: "Move from squad logic into market realism here.",
-            primaryValue: "$",
-            primaryLabel: "Deal pressure",
-            bars: [
-              { label: "Negotiation ease", value: 33 },
-              { label: "Competition", value: 58 },
-              { label: "Completion risk", value: 72 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -695,24 +494,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Close with the most honest state of the move: likely, unlikely, overpriced, or smart if the terms change.",
             "This chapter should leave the reader with a strong final read rather than a vague maybe.",
           ],
-          takeaway: "A transfer saga should end with a verdict, not a shrug.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Current read", value: "Live", hint: "Where the move stands now" },
-            { label: "Best outcome", value: "Conditional", hint: "What would make it worthwhile" },
-          ],
-          visual: {
-            eyebrow: "Verdict",
-            headline: "The move is live, but only on the right terms",
-            subheadline: "Finish by separating feasibility from desirability.",
-            primaryValue: "Live",
-            primaryLabel: "State of play",
-            bars: [
-              { label: "Reliability", value: 57 },
-              { label: "Fit", value: 72 },
-              { label: "Value", value: 48 },
-            ],
-          },
         },
       ],
     },
@@ -731,7 +513,6 @@ export const storyTemplates: StoryTemplateDefinition[] = [
       coverImage: "https://images.unsplash.com/photo-1508098682722-e99c643e7485?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1400",
       themeFrom: "#312E81",
       themeTo: "#8B5CF6",
-      highlights: ["Expectation", "Peak", "Break", "What remains"],
       chapters: [
         {
           id: createId("chapter"),
@@ -741,24 +522,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Set expectations and internal targets before you judge the campaign.",
             "This chapter should define the lens through which the season deserves to be viewed.",
           ],
-          takeaway: "You cannot evaluate a season without defining the target first.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Expectation", value: "Top four", hint: "The original goal" },
-            { label: "Context", value: "Transitional", hint: "The starting conditions" },
-          ],
-          visual: {
-            eyebrow: "Baseline",
-            headline: "The campaign started with a clear brief",
-            subheadline: "Establish the expectations before the story starts judging outcomes.",
-            primaryValue: "Start",
-            primaryLabel: "Season brief",
-            bars: [
-              { label: "Expectation", value: 76 },
-              { label: "Stability", value: 54 },
-              { label: "Margin for error", value: 43 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -768,24 +532,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Identify the phase where the team genuinely looked like its best self.",
             "The point is to preserve what was real, not just list flattering results.",
           ],
-          takeaway: "Every season recap needs the phase where belief felt earned.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Peak phase", value: "8 games", hint: "Most convincing stretch" },
-            { label: "Control", value: "Real", hint: "Why the optimism was justified" },
-          ],
-          visual: {
-            eyebrow: "Peak",
-            headline: "For a while, the plan really worked",
-            subheadline: "Capture the best version of the side before the season changed shape.",
-            primaryValue: "Peak",
-            primaryLabel: "Best stretch",
-            bars: [
-              { label: "Control", value: 82 },
-              { label: "Belief", value: 79 },
-              { label: "Sustainability", value: 58 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -795,24 +542,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Explain the part of the season where the structure bent: injuries, schedule, bad planning, or tactical ceilings.",
             "This should be the chapter that turns the recap from flattering to honest.",
           ],
-          takeaway: "The real recap begins at the moment the season stopped cooperating.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Stress point", value: "Visible", hint: "Where the campaign changed" },
-            { label: "Recovery", value: "Incomplete", hint: "Why the fix never fully landed" },
-          ],
-          visual: {
-            eyebrow: "Crack",
-            headline: "The season stopped absorbing pressure",
-            subheadline: "This is where the campaign reveals what it was actually built to survive.",
-            primaryValue: "Break",
-            primaryLabel: "Turning phase",
-            bars: [
-              { label: "Resilience", value: 39 },
-              { label: "Fatigue", value: 76 },
-              { label: "Control loss", value: 72 },
-            ],
-          },
         },
         {
           id: createId("chapter"),
@@ -822,24 +552,7 @@ export const storyTemplates: StoryTemplateDefinition[] = [
             "Finish with the lasting lesson: what should carry forward, and what must be reworked before next season.",
             "End with a verdict that combines performance, trajectory, and realism.",
           ],
-          takeaway: "A recap is strongest when it turns the season into a forward lens.",
           image: createEmptyStoryImage(),
-          metrics: [
-            { label: "Final read", value: "Mixed", hint: "How the campaign should be remembered" },
-            { label: "Next priority", value: "Defined", hint: "What the club must do next" },
-          ],
-          visual: {
-            eyebrow: "Aftermath",
-            headline: "The season leaves one clear instruction behind",
-            subheadline: "Close with the lesson that should shape the next campaign.",
-            primaryValue: "Next",
-            primaryLabel: "Required move",
-            bars: [
-              { label: "Lessons learned", value: 84 },
-              { label: "Carry-over value", value: 66 },
-              { label: "Need for change", value: 71 },
-            ],
-          },
         },
       ],
     },
@@ -862,17 +575,11 @@ export function createStoryFromTemplate(templateId: StoryTemplateId): StoryFeatu
     isDraft: true,
     date: formatStoryDate(now),
     updatedAt: now.toISOString(),
-    highlights: [...template.story.highlights],
     chapters: template.story.chapters.map((chapter) => ({
       ...chapter,
       id: createId("chapter"),
       body: [...chapter.body],
       image: chapter.image ? { ...chapter.image } : createEmptyStoryImage(),
-      metrics: chapter.metrics.map((metric) => ({ ...metric })),
-      visual: {
-        ...chapter.visual,
-        bars: chapter.visual.bars.map((bar) => ({ ...bar })),
-      },
     })),
   };
 }
@@ -882,7 +589,8 @@ export function duplicateStoryFeature(source: StoryFeature): StoryFeature {
   const duplicatedSlugBase = slugifyStoryValue(`${source.slug || source.title}-copy`) || `story-${Date.now().toString(36)}`;
 
   return {
-    ...source,
+    ...structuredClone(source),
+    publishedAt: undefined,
     id: createId("story"),
     slug: `${duplicatedSlugBase}-${Date.now().toString(36).slice(-4)}`,
     title: `${source.title} (Copy)`,
@@ -893,13 +601,7 @@ export function duplicateStoryFeature(source: StoryFeature): StoryFeature {
       ...chapter,
       id: createId("chapter"),
       image: chapter.image ? { ...chapter.image } : createEmptyStoryImage(),
-      metrics: chapter.metrics.map((metric) => ({ ...metric })),
-      visual: {
-        ...chapter.visual,
-        bars: chapter.visual.bars.map((bar) => ({ ...bar })),
-      },
     })),
-    highlights: [...source.highlights],
   };
 }
 

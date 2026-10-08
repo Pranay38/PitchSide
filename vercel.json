@@ -16,6 +16,10 @@
         {
             "path": "/api/seo-weekly-report",
             "schedule": "0 9 * * 1"
+        },
+        {
+            "path": "/api/story-emails",
+            "schedule": "*/5 * * * *"
         }
     ]
 }

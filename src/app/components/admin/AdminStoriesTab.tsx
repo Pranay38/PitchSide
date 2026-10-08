@@ -7,6 +7,7 @@ import { useNavigate } from "@/lib/router-compat";
 import { addStoryAsync, updateStoryAsync, deleteStoryAsync } from "../../lib/storyStorage";
 import type { StoryFeature } from "../../data/stories";
 import { StoryEditor, type StorySaveOptions } from "../StoryEditor";
+import { StoryEmailStatus } from "./StoryEmailStatus";
 import { toast } from "sonner";
 
 interface AdminStoriesTabProps {
@@ -100,7 +101,7 @@ export function AdminStoriesTab({
         <>
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">Scrollytelling Stories</h1>
+                    <h1 className="text-2xl font-bold text-[#0F172A] dark:text-white">Stories</h1>
                     <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
                         {stories.length} stor{stories.length !== 1 ? "ies" : "y"} total · {stories.filter((story) => !story.isDraft).length} published · {stories.filter((story) => story.isDraft).length} drafts
                     </p>
@@ -117,7 +118,7 @@ export function AdminStoriesTab({
                 <AdminEmptyState
                     icon={BookOpen}
                     title="No stories yet"
-                    description="Create your first scrollytelling story with chapters, metrics, and sticky visuals."
+                    description="Create your first story with chapters, photography, and quotations."
                     action={
                         <button
                             onClick={handleCreateStory}
@@ -168,16 +169,8 @@ export function AdminStoriesTab({
                                             <p className="text-sm text-[#64748B] dark:text-gray-400 mt-4 max-w-3xl">
                                                 {story.excerpt}
                                             </p>
-                                            <div className="flex flex-wrap gap-2 mt-4">
-                                                {story.highlights.slice(0, 4).map((highlight) => (
-                                                    <span
-                                                        key={`${story.id}-${highlight}`}
-                                                        className="px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-[#334155] dark:bg-[#0F172A] dark:text-gray-200"
-                                                    >
-                                                        {highlight}
-                                                    </span>
-                                                ))}
-                                            </div>
+                                            <StoryEmailStatus storyId={story.id} isDraft={story.isDraft} updatedAt={story.updatedAt} />
+
                                         </div>
 
                                         <div className="flex items-center gap-2 flex-shrink-0">

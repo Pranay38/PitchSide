@@ -4,10 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, ArrowLeft, ArrowRight, Check, CheckCircle2, ChevronDown, ChevronUp, Eye, Home, Plus, Save, Sparkles, Trash2, Upload, X } from "lucide-react";
 import {
   createStoryFromTemplate,
-  createEmptyStoryBar,
   createEmptyStoryChapter,
   createEmptyStoryFeature,
-  createEmptyStoryMetric,
   formatStoryDate,
   storyTemplates,
   slugifyStoryValue,
@@ -422,44 +420,6 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
           )}
         </div>
 
-        <div>
-          <div className="flex items-center justify-between gap-3 mb-3">
-            <span className="text-sm font-medium text-[#0F172A] dark:text-white">Landing Highlights</span>
-            <button
-              type="button"
-              onClick={() => updateStory((current) => ({ ...current, highlights: [...current.highlights, "New highlight"] }))}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-[#16A34A] hover:bg-[#16A34A]/5"
-            >
-              <Plus className="w-4 h-4" />
-              Add highlight
-            </button>
-          </div>
-          <div className="space-y-2">
-            {draft.highlights.map((highlight, index) => (
-              <div key={`${highlight}-${index}`} className="flex gap-2">
-                <input
-                  type="text"
-                  value={highlight}
-                  onChange={(e) => updateStory((current) => ({
-                    ...current,
-                    highlights: current.highlights.map((item, itemIndex) => itemIndex === index ? e.target.value : item),
-                  }))}
-                  className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                />
-                <button
-                  type="button"
-                  onClick={() => updateStory((current) => ({
-                    ...current,
-                    highlights: current.highlights.filter((_, itemIndex) => itemIndex !== index),
-                  }))}
-                  className="px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
 
       <div className="flex justify-end">
@@ -475,7 +435,7 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">Chapters</h3>
-            <p className="text-sm text-[#64748B] dark:text-gray-400">Each chapter becomes one scrollytelling stop.</p>
+            <p className="text-sm text-[#64748B] dark:text-gray-400">Organize your story into readable chapters.</p>
           </div>
           <button
             type="button"
@@ -558,15 +518,7 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
                   }))}
                 />
               </label>
-              <label className="block md:col-span-2">
-                <span className="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Takeaway</span>
-                <textarea
-                  value={chapter.takeaway}
-                  onChange={(e) => updateChapter(chapter.id, (current) => ({ ...current, takeaway: e.target.value }))}
-                  rows={3}
-                  className="w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-3 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                />
-              </label>
+
             </div>
 
             <div className="rounded-2xl bg-gray-50 dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 p-5 space-y-4">
@@ -650,7 +602,7 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
 
             <details className="group rounded-2xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-[#0F172A]">
               <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-bold text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#16A34A] dark:text-white">
-                Advanced chapter tools
+                Quotation
                 <ChevronDown className="h-4 w-4 transition-transform duration-200 group-open:rotate-180" />
               </summary>
               <div className="space-y-5 border-t border-gray-200 p-5 dark:border-gray-800">
@@ -663,181 +615,6 @@ export function StoryEditor({ story, onSave, onCancel }: StoryEditorProps) {
                     className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:ring-2 focus:ring-[#16A34A] dark:border-gray-700 dark:bg-[#1E293B] dark:text-white"
                   />
                 </label>
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-              <div className="rounded-2xl bg-gray-50 dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 p-5">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <h5 className="text-sm font-black uppercase tracking-[0.18em] text-[#16A34A]">Metrics</h5>
-                  <button
-                    type="button"
-                    onClick={() => updateChapter(chapter.id, (current) => ({
-                      ...current,
-                      metrics: [...current.metrics, createEmptyStoryMetric()],
-                    }))}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-[#16A34A] hover:bg-[#16A34A]/5"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add metric
-                  </button>
-                </div>
-                <div className="space-y-3">
-                  {chapter.metrics.map((metric, metricIndex) => (
-                    <div key={`${chapter.id}-metric-${metricIndex}`} className="rounded-xl bg-white dark:bg-[#1E293B] border border-gray-100 dark:border-gray-800 p-4 space-y-3">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <input
-                          type="text"
-                          value={metric.label}
-                          onChange={(e) => updateChapter(chapter.id, (current) => ({
-                            ...current,
-                            metrics: current.metrics.map((item, itemIndex) => itemIndex === metricIndex ? { ...item, label: e.target.value } : item),
-                          }))}
-                          placeholder="Label"
-                          className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                        />
-                        <input
-                          type="text"
-                          value={metric.value}
-                          onChange={(e) => updateChapter(chapter.id, (current) => ({
-                            ...current,
-                            metrics: current.metrics.map((item, itemIndex) => itemIndex === metricIndex ? { ...item, value: e.target.value } : item),
-                          }))}
-                          placeholder="Value"
-                          className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={metric.hint || ""}
-                          onChange={(e) => updateChapter(chapter.id, (current) => ({
-                            ...current,
-                            metrics: current.metrics.map((item, itemIndex) => itemIndex === metricIndex ? { ...item, hint: e.target.value } : item),
-                          }))}
-                          placeholder="Hint"
-                          className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0F172A] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => updateChapter(chapter.id, (current) => ({
-                            ...current,
-                            metrics: current.metrics.filter((_, itemIndex) => itemIndex !== metricIndex),
-                          }))}
-                          className="px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-2xl bg-gray-50 dark:bg-[#0F172A] border border-gray-100 dark:border-gray-800 p-5 space-y-4">
-                <h5 className="text-sm font-black uppercase tracking-[0.18em] text-[#16A34A]">Sticky Visual</h5>
-                <div className="grid grid-cols-1 gap-4">
-                  <input
-                    type="text"
-                    value={chapter.visual.eyebrow}
-                    onChange={(e) => updateChapter(chapter.id, (current) => ({ ...current, visual: { ...current.visual, eyebrow: e.target.value } }))}
-                    placeholder="Visual eyebrow"
-                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                  />
-                  <input
-                    type="text"
-                    value={chapter.visual.headline}
-                    onChange={(e) => updateChapter(chapter.id, (current) => ({ ...current, visual: { ...current.visual, headline: e.target.value } }))}
-                    placeholder="Visual headline"
-                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                  />
-                  <textarea
-                    value={chapter.visual.subheadline}
-                    onChange={(e) => updateChapter(chapter.id, (current) => ({ ...current, visual: { ...current.visual, subheadline: e.target.value } }))}
-                    rows={3}
-                    placeholder="Visual subheadline"
-                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] px-4 py-3 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                  />
-                  <div className="grid grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      value={chapter.visual.primaryValue}
-                      onChange={(e) => updateChapter(chapter.id, (current) => ({ ...current, visual: { ...current.visual, primaryValue: e.target.value } }))}
-                      placeholder="Primary value"
-                      className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                    />
-                    <input
-                      type="text"
-                      value={chapter.visual.primaryLabel}
-                      onChange={(e) => updateChapter(chapter.id, (current) => ({ ...current, visual: { ...current.visual, primaryLabel: e.target.value } }))}
-                      placeholder="Primary label"
-                      className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                    />
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm font-medium text-[#0F172A] dark:text-white">Bars</span>
-                      <button
-                        type="button"
-                        onClick={() => updateChapter(chapter.id, (current) => ({
-                          ...current,
-                          visual: {
-                            ...current.visual,
-                            bars: [...current.visual.bars, createEmptyStoryBar()],
-                          },
-                        }))}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-[#16A34A] hover:bg-[#16A34A]/5"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add bar
-                      </button>
-                    </div>
-                    {chapter.visual.bars.map((bar, barIndex) => (
-                      <div key={`${chapter.id}-bar-${barIndex}`} className="flex gap-2">
-                        <input
-                          type="text"
-                          value={bar.label}
-                          onChange={(e) => updateChapter(chapter.id, (current) => ({
-                            ...current,
-                            visual: {
-                              ...current.visual,
-                              bars: current.visual.bars.map((item, itemIndex) => itemIndex === barIndex ? { ...item, label: e.target.value } : item),
-                            },
-                          }))}
-                          placeholder="Bar label"
-                          className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                        />
-                        <input
-                          type="number"
-                          min={0}
-                          max={100}
-                          value={bar.value}
-                          onChange={(e) => updateChapter(chapter.id, (current) => ({
-                            ...current,
-                            visual: {
-                              ...current.visual,
-                              bars: current.visual.bars.map((item, itemIndex) => itemIndex === barIndex ? { ...item, value: Number(e.target.value) } : item),
-                            },
-                          }))}
-                          className="w-24 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1E293B] px-4 py-2.5 text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#16A34A]"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => updateChapter(chapter.id, (current) => ({
-                            ...current,
-                            visual: {
-                              ...current.visual,
-                              bars: current.visual.bars.filter((_, itemIndex) => itemIndex !== barIndex),
-                            },
-                          }))}
-                          className="px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
               </div>
             </details>
           </div>

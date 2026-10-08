@@ -26,3 +26,29 @@
 
 /* The article container controls reading width on every viewport. */
 .pitchside-article-content p { max-width: none; }
+
+/* Stories use an uninterrupted editorial column, including imported rich text. */
+.story-prose .pitchside-article-content {
+  font: inherit;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+.story-prose .pitchside-article-content p { line-height: inherit; }
+.story-prose .pitchside-article-content :is(h1, h2, h3) {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-weight: 500;
+}
+.story-prose .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media) {
+  background: none;
+  box-shadow: none;
+  border: 0;
+  border-left: 2px solid #15803d;
+  border-radius: 0;
+  margin: 2rem 0;
+  padding: 0 0 0 1.5rem;
+  color: inherit;
+}
+.story-prose .pitchside-article-content blockquote:not(.twitter-tweet):not(.instagram-media)::before { content: none; }
+.story-prose .pitchside-article-content img { border-radius: 0; box-shadow: none; }

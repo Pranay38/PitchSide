@@ -108,9 +108,9 @@ export function buildArchiveEntries(posts: BlogPost[], stories: StoryFeature[]):
     readTime: story.readTime,
     club: "",
     player: "",
-    league: inferLeague([story.title, story.subtitle, story.excerpt, ...story.highlights]),
+    league: inferLeague([story.title, story.subtitle, story.excerpt, story.eyebrow]),
     format: inferStoryFormat(),
-    topics: unique([story.eyebrow, ...story.highlights]),
+    topics: unique([story.eyebrow]),
   }));
 
   return [...postEntries, ...storyEntries].sort((left, right) => right.timestamp - left.timestamp);

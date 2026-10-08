@@ -12,8 +12,7 @@ export function storyFromImportedHtml(html: string) {
   const flush = () => {
     if (!body.trim() && chapterTitle === "Introduction" && !chapters.length) return;
     const chapter = createEmptyStoryChapter();
-    chapters.push({ ...chapter, title: chapterTitle, body: [body], takeaway: "", metrics: [],
-      visual: { eyebrow: "", headline: chapterTitle, subheadline: "", primaryValue: "", primaryLabel: "", bars: [] } });
+    chapters.push({ ...chapter, title: chapterTitle, body: [body] });
     body = "";
   };
   for (const node of Array.from(doc.body.childNodes)) {

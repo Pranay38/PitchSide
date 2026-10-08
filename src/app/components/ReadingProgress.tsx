@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export function ReadingProgress() {
+export function ReadingProgress({ editorial = false }: { editorial?: boolean }) {
     const [progress, setProgress] = useState(0);
 
     useEffect(() => {
@@ -20,10 +20,10 @@ export function ReadingProgress() {
     }, []);
 
     return (
-        <div className="fixed top-0 left-0 right-0 z-[200] h-1 bg-gray-200/50 dark:bg-gray-800/50">
+        <div className={`fixed top-0 left-0 right-0 z-[200] ${editorial ? "h-0.5" : "h-1 bg-gray-200/50 dark:bg-gray-800/50"}`}>
             <div
-                className="h-full bg-gradient-to-r from-[#16A34A] to-[#4ade80] shadow-sm shadow-[#16A34A]/50"
-                style={{ width: `${progress}%`, transition: "width 150ms ease-out" }}
+                className={`h-full motion-safe:transition-[width] motion-safe:duration-150 ${editorial ? "bg-green-700 dark:bg-green-400" : "bg-gradient-to-r from-[#16A34A] to-[#4ade80] shadow-sm shadow-[#16A34A]/50"}`}
+                style={{ width: `${progress}%` }}
             />
         </div>
     );

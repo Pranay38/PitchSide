@@ -138,8 +138,8 @@ function PreferencesForm() {
                 className="mt-1 h-4 w-4 text-green-600 rounded border-slate-300 focus:ring-green-500 bg-white dark:bg-slate-900"
               />
               <div>
-                <span className="block font-medium text-slate-900 dark:text-slate-200">New Articles</span>
-                <span className="block text-sm text-slate-500 dark:text-slate-400">Be the first to read new articles the moment they are published.</span>
+                <span className="block font-medium text-slate-900 dark:text-slate-200">New articles and stories</span>
+                <span className="block text-sm text-slate-500 dark:text-slate-400">Receive an email when a new article or story is published.</span>
               </div>
             </label>
 

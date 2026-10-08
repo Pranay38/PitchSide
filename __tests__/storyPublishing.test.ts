@@ -36,3 +36,24 @@ describe("story publishing", () => {
     expect(story.publishedAt).toBe(publishedAt);
   });
 });
+
+it("preserves legacy supplementary data and audio without adding panels to new stories", async () => {
+  const { storyFeatures, storyTemplates, createStoryFromTemplate } = await import("../src/app/data/stories");
+  const legacy = { ...storyFeatures[0], audioUrl: "https://example.com/story.mp3", reactions: { fire: 3, mindblown: 0, thumbsdown: 0, target: 0, cold: 0 } };
+  const normalized = normalizeStoryFeature(legacy);
+  expect(normalized.chapters[0].visual).toEqual(legacy.chapters[0].visual);
+  expect(normalized.chapters[0].metrics).toEqual(legacy.chapters[0].metrics);
+  expect(normalized.chapters[0].takeaway).toBe(legacy.chapters[0].takeaway);
+  expect(normalized.highlights).toEqual(legacy.highlights);
+  expect(normalized.audioUrl).toBe(legacy.audioUrl);
+  expect(normalized.reactions).toEqual(legacy.reactions);
+  for (const story of [createEmptyStoryFeature(), ...storyTemplates.map(template => createStoryFromTemplate(template.id))]) {
+    const next = normalizeStoryFeature(story);
+    expect(next.highlights).toBeUndefined();
+    for (const chapter of next.chapters) {
+      expect(chapter.visual).toBeUndefined();
+      expect(chapter.metrics).toBeUndefined();
+      expect(chapter.takeaway).toBeUndefined();
+    }
+  }
+});

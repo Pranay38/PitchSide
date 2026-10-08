@@ -1,15 +1,16 @@
 "use client";
+import Image from "next/image";
 import DOMPurify from "isomorphic-dompurify";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "@/lib/router-compat";
-import { ArrowLeft, ArrowRight, Quote, Sparkles, BookOpen } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ReadingProgress } from "../components/ReadingProgress";
 import { CommentSection } from "../components/CommentSection";
-import type { StoryChapter, StoryFeature } from "../data/stories";
+import type { StoryFeature } from "../data/stories";
 import {
   getStoryBySlug,
   getStoryBySlugAsync,
@@ -19,46 +20,6 @@ import {
 import { ReactionUI } from "../components/ReactionUI";
 import { StoryFeatureCard } from "../components/StoryFeatureCard";
 import { TouchlineAudioPlayer } from "../components/TouchlineAudioPlayer";
-
-function StoryVisual({ story, chapter }: { story: StoryFeature; chapter: StoryChapter }) {
-  return (
-    <div
-      className="rounded-[2rem] overflow-hidden text-white border border-white/10 shadow-2xl shadow-[#0F172A]/30"
-      style={{ background: `linear-gradient(150deg, ${story.themeFrom}, ${story.themeTo})` }}
-    >
-      <div className="p-6 md:p-7">
-        <p className="text-[11px] font-black uppercase tracking-[0.24em] text-white/70 mb-3">
-          {chapter.visual.eyebrow}
-        </p>
-        <h3 className="text-3xl md:text-4xl font-black font-outfit leading-[0.95] max-w-md">
-          {chapter.visual.headline}
-        </h3>
-        <p className="text-sm md:text-base text-white/72 mt-4 max-w-md">
-          {chapter.visual.subheadline}
-        </p>
-
-        <div className="mt-8 rounded-[1.5rem] bg-black/20 border border-white/10 p-5">
-          <p className="text-5xl font-black font-outfit">{chapter.visual.primaryValue}</p>
-          <p className="text-sm font-semibold text-white/70 mt-1">{chapter.visual.primaryLabel}</p>
-        </div>
-
-        <div className="mt-6 space-y-4">
-          {chapter.visual.bars.map((bar) => (
-            <div key={bar.label}>
-              <div className="flex items-center justify-between text-xs font-semibold text-white/85 mb-1.5">
-                <span>{bar.label}</span>
-                <span>{bar.value}</span>
-              </div>
-              <div className="h-2.5 rounded-full bg-white/15 overflow-hidden">
-                <div className="h-full rounded-full bg-white" style={{ width: `${bar.value}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function StoryPage() {
   const params = useParams();
@@ -77,31 +38,21 @@ export function StoryPage() {
   const readingTime = story 
     ? Math.max(1, Math.ceil(story.chapters.reduce((total, ch) => total + ch.body.join(" ").split(" ").length, 0) / 200))
     : 0;
-  const activeChapterIndex = story
-    ? Math.max(0, story.chapters.findIndex((chapter) => chapter.id === activeChapterId))
-    : 0;
-  const chapterProgress = story
-    ? ((activeChapterIndex + 1) / Math.max(story.chapters.length, 1)) * 100
-    : 0;
   const relatedStories = useMemo(() => {
     if (!story) return [];
-
-    return getAllStories()
-      .filter((candidate) => candidate.id !== story.id)
-      .map((candidate) => {
-        const sharedHighlights = candidate.highlights.filter((item) => story.highlights.includes(item)).length;
-        const sameEyebrow = candidate.eyebrow === story.eyebrow ? 2 : 0;
-        const reactionScore = (candidate.reactions?.fire || 0) + (candidate.reactions?.target || 0);
-
-        return {
-          candidate,
-          score: sharedHighlights * 3 + sameEyebrow + reactionScore,
-        };
-      })
-      .sort((left, right) => right.score - left.score)
-      .map((item) => item.candidate)
-      .slice(0, 3);
+    const words = (item: StoryFeature) => new Set(`${item.title} ${item.subtitle} ${item.excerpt}`.toLowerCase().match(/\b[a-z]{4,}\b/g) || []);
+    const currentWords = words(story);
+    return getAllStories().filter(item => item.id !== story.id)
+      .map(candidate => ({ candidate, score: (candidate.eyebrow === story.eyebrow ? 3 : 0) + [...words(candidate)].filter(word => currentWords.has(word)).length }))
+      .sort((a, b) => b.score - a.score || Date.parse(b.candidate.publishedAt || b.candidate.date) - Date.parse(a.candidate.publishedAt || a.candidate.date))
+      .slice(0, 3).map(item => item.candidate);
   }, [story]);
+  const jumpToChapter = (id: string) => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    chapterRefs.current[id]?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    setActiveChapterId(id);
+    chapterRefs.current[id]?.focus({ preventScroll: true });
+  };
 
   useEffect(() => {
     const localPreviewStory = isPreviewMode ? getStoryPreview(previewId, slug) : undefined;
@@ -146,7 +97,7 @@ export function StoryPage() {
 
         const topEntry = visibleEntries[0];
         if (topEntry) {
-          setActiveChapterId(topEntry.target.getAttribute("data-chapter-id") || story.chapters[0].id);
+          setActiveChapterId(topEntry.target.getAttribute("data-chapter-id") || story.chapters[0]?.id || "");
         }
       },
       {
@@ -170,7 +121,7 @@ export function StoryPage() {
               Story not found
             </h1>
             <p className="text-[#64748B] dark:text-gray-400 mb-6">
-              This scrollytelling piece does not exist or has not been published yet.
+              This story does not exist or has not been published yet.
             </p>
             <Link
               to="/stories"
@@ -186,7 +137,6 @@ export function StoryPage() {
     );
   }
 
-  const activeChapter = story.chapters.find((chapter) => chapter.id === activeChapterId) || story.chapters[0];
 
   const storySchema = JSON.stringify({
     "@context": "https://schema.org",
@@ -210,326 +160,66 @@ export function StoryPage() {
     }
   });
 
+  const chapterLinks = (
+    <nav aria-label="Story chapters" className="space-y-1">
+      {story.chapters.map((chapter) => (
+        <button key={chapter.id} type="button" aria-current={activeChapterId === chapter.id ? "location" : undefined}
+          onClick={() => jumpToChapter(chapter.id)}
+          className={`block min-h-11 w-full border-l-2 px-4 py-2 text-left text-sm leading-6 transition-colors motion-reduce:transition-none focus-visible:outline-green-600 ${activeChapterId === chapter.id ? "border-green-700 text-green-700 dark:border-green-400 dark:text-green-400" : "border-transparent text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"}`}>
+          {chapter.title}
+        </button>
+      ))}
+    </nav>
+  );
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] transition-colors duration-300">
-      <SEO
-        title={isPreviewMode ? `${story.title} Preview` : story.title}
-        description={story.excerpt}
-        image={story.coverImage}
-        url={`https://www.thetouchlinedribble.in/stories/${story.slug}`}
-        type="article"
-        date={story.date}
-        schema={storySchema}
-      />
-      <ReadingProgress />
+    <div className="min-h-screen bg-[#faf9f6] text-stone-900 dark:bg-[#101412] dark:text-stone-100">
+      <SEO title={isPreviewMode ? `${story.title} Preview` : story.title} description={story.excerpt} image={story.coverImage}
+        url={`https://www.thetouchlinedribble.in/stories/${story.slug}`} type="article" date={story.date} schema={storySchema} />
+      <ReadingProgress editorial />
       <Header />
-
-      <main>
-        <section
-          className="relative overflow-hidden text-white"
-          style={{ background: `linear-gradient(145deg, ${story.themeFrom}, ${story.themeTo})` }}
-        >
-          <div className="absolute inset-0 opacity-25">
-            <img src={story.coverImage} alt={story.title} className="w-full h-full object-cover" />
+      <main id="main-content" className="mx-auto max-w-[1180px] px-5 sm:px-8">
+        <header className="pb-10 pt-10 md:pb-14 md:pt-16">
+          <Link to="/stories" className="mb-10 inline-flex min-h-11 items-center gap-2 text-sm text-stone-600 hover:text-green-700 dark:text-stone-400"><ArrowLeft className="h-4 w-4" />Stories</Link>
+          <div className="max-w-[960px]">
+            <p className="mb-5 text-xs font-medium uppercase tracking-[0.14em] text-green-700 dark:text-green-400">{story.eyebrow}{isPreviewMode ? " · Preview" : ""}{story.isDraft ? " · Draft" : ""}</p>
+            <h1 className="font-newsreader text-[clamp(2.75rem,6vw,5.5rem)] font-medium leading-[1.03] tracking-tight [overflow-wrap:anywhere]">{story.title}</h1>
+            {story.subtitle && <p className="mt-6 max-w-[740px] font-newsreader text-2xl leading-snug text-stone-600 dark:text-stone-300 md:text-3xl">{story.subtitle}</p>}
+            {story.excerpt && <p className="mt-5 max-w-[65ch] text-base leading-7 text-stone-600 dark:text-stone-400">{story.excerpt}</p>}
+            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm text-stone-500 dark:text-stone-400"><span>{story.date}</span><span>{readingTime} min read</span></div>
           </div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.22),transparent_40%),linear-gradient(to_bottom,rgba(15,23,42,0.18),rgba(15,23,42,0.78))]" />
-
-          <div className="relative max-w-[1180px] mx-auto px-4 sm:px-6 py-12 md:py-16 lg:py-20">
-            <Link
-              to="/stories"
-              className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-white/80 hover:text-white mb-8"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to stories
-            </Link>
-
-            <div className="max-w-4xl">
-              <div className="flex flex-wrap gap-3 mb-5">
-                <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#bbf7d0]">
-                  {story.eyebrow}
-                </p>
-                {isPreviewMode && (
-                  <span className="px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] bg-amber-400/15 text-amber-100 border border-white/10">
-                    Preview
-                  </span>
-                )}
-                {story.isDraft && (
-                  <span className="px-3 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] bg-white/10 text-white border border-white/10">
-                    Draft
-                  </span>
-                )}
-              </div>
-              <h1 className="text-4xl md:text-6xl font-black font-outfit leading-[0.92]">
-                {story.title}
-              </h1>
-              <p className="text-xl md:text-2xl text-white/82 font-semibold mt-4 max-w-3xl">
-                {story.subtitle}
-              </p>
-              <p className="text-base md:text-lg text-white/72 mt-6 max-w-3xl">
-                {story.excerpt}
-              </p>
-
-              <div className="flex flex-wrap gap-3 mt-8">
-                
-                <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm font-semibold">
-                  <BookOpen className="w-4 h-4 text-[#16A34A]" /> {readingTime} min read
-                </span>
-                <span className="px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm font-semibold">
-                  {story.date}
-                </span>
-                <span className="px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm font-semibold">
-                  {story.chapters.length} chapters
-                </span>
-              </div>
-
-              {story.audioUrl && (
-                <TouchlineAudioPlayer audioUrl={story.audioUrl} title={`${story.title} (Audio Breakdown)`} />
-              )}
-
-              <div className="mt-8 max-w-2xl rounded-[1.5rem] border border-white/10 bg-black/20 p-5 backdrop-blur-sm">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#bbf7d0]">
-                      Story Progress
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-white/84">
-                      Chapter {activeChapterIndex + 1} of {story.chapters.length}
-                    </p>
+        </header>
+        {story.coverImage && <figure className="relative mb-12 aspect-[4/3] overflow-hidden bg-stone-200 dark:bg-stone-900 md:mb-16 md:aspect-[16/9]">
+          <Image src={story.coverImage} alt={story.title} fill priority sizes="(max-width: 1180px) 100vw, 1120px" className="object-cover" />
+        </figure>}
+        <div className="grid items-start gap-12 lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-16">
+          <aside className="hidden lg:sticky lg:top-28 lg:block">
+            <p className="mb-4 text-xs font-medium uppercase tracking-[0.12em] text-stone-500">In this story</p>{chapterLinks}
+          </aside>
+          <article className="min-w-0 max-w-[720px]">
+            {story.chapters.length > 1 && <details className="mb-10 border-y border-stone-300 py-3 dark:border-stone-700 lg:hidden"><summary className="min-h-11 cursor-pointer py-3 text-sm font-medium">In this story</summary>{chapterLinks}</details>}
+            {story.audioUrl && <div className="mb-10"><TouchlineAudioPlayer audioUrl={story.audioUrl} title={story.title} /></div>}
+            <div className="space-y-14 md:space-y-20">
+              {story.chapters.map(chapter => (
+                <section key={chapter.id} id={chapter.id} tabIndex={-1} ref={node => { chapterRefs.current[chapter.id] = node; }} data-chapter-id={chapter.id} className="scroll-mt-28 focus:outline-none">
+                  {chapter.kicker && <p className="mb-3 text-xs font-medium uppercase tracking-[0.12em] text-green-700 dark:text-green-400">{chapter.kicker}</p>}
+                  <h2 className="mb-7 font-newsreader text-3xl font-medium leading-tight tracking-tight [overflow-wrap:anywhere] md:text-4xl">{chapter.title}</h2>
+                  <div className="story-prose space-y-6 font-newsreader text-[21px] leading-[1.65] text-stone-800 dark:text-stone-200 md:text-[23px]">
+                    {chapter.body.map((paragraph, index) => paragraph.trim().startsWith("<") ? (
+                      <div key={index} className="pitchside-article-content" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(paragraph) }} />
+                    ) : <p key={index}>{paragraph}</p>)}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => chapterRefs.current[story.chapters[0]?.id]?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                    className="rounded-full border border-white/10 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-white/10"
-                  >
-                    Start reading
-                  </button>
-                </div>
-                <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full rounded-full bg-[#4ade80]" style={{ width: `${chapterProgress}%` }} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="max-w-[1180px] mx-auto px-4 sm:px-6 py-10 md:py-12">
-          <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,0.95fr)_420px] gap-8 xl:gap-10">
-            <div className="space-y-8">
-              <div className="xl:hidden rounded-[1.75rem] bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A]">
-                      Chapter Navigation
-                    </p>
-                    <h2 className="mt-2 text-xl font-black font-outfit text-[#0F172A] dark:text-white">
-                      Jump through the story
-                    </h2>
-                  </div>
-                  <div className="rounded-full bg-[#16A34A]/10 px-3 py-1 text-xs font-bold text-[#16A34A]">
-                    {activeChapterIndex + 1}/{story.chapters.length}
-                  </div>
-                </div>
-                <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-                  {story.chapters.map((chapter, index) => {
-                    const isActive = chapter.id === activeChapter.id;
-                    return (
-                      <button
-                        key={chapter.id}
-                        type="button"
-                        onClick={() => chapterRefs.current[chapter.id]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                        className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-                          isActive
-                            ? "bg-[#16A34A] text-white"
-                            : "bg-[#F8FAFC] text-[#475569] dark:bg-[#08111f] dark:text-gray-300"
-                        }`}
-                      >
-                        {index + 1}. {chapter.title}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {story.chapters.map((chapter, index) => (
-                <section
-                  key={chapter.id}
-                  ref={(node) => {
-                    chapterRefs.current[chapter.id] = node;
-                  }}
-                  data-chapter-id={chapter.id}
-                  className="min-h-[72vh] flex items-center"
-                >
-                  <div className="w-full rounded-[2rem] bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 p-6 md:p-8 lg:p-10 shadow-sm">
-                    <div className="flex items-center justify-between gap-3 mb-5">
-                      <div>
-                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-2">
-                          {chapter.kicker}
-                        </p>
-                        <h2 className="text-3xl md:text-4xl font-black font-outfit text-[#0F172A] dark:text-white leading-[0.97]">
-                          {chapter.title}
-                        </h2>
-                      </div>
-                      <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-full bg-gray-100 dark:bg-white/5 text-xs font-bold text-[#475569] dark:text-gray-300">
-                        <Sparkles className="w-3.5 h-3.5 text-[#16A34A]" />
-                        {index + 1} / {story.chapters.length}
-                      </div>
-                    </div>
-
-                    <div className="xl:hidden mb-6">
-                      <StoryVisual story={story} chapter={chapter} />
-                    </div>
-
-                    <div className="space-y-4">
-                      {chapter.body.length === 1 && chapter.body[0].trim().startsWith("<") ? (
-                        <div
-                          className="pitchside-article-content text-base md:text-lg leading-8 text-[#334155] dark:text-gray-200"
-                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(chapter.body[0]) }}
-                        />
-                      ) : (
-                        chapter.body.map((paragraph) => (
-                          <p
-                            key={paragraph.slice(0, 32)}
-                            className="text-base md:text-lg leading-8 text-[#334155] dark:text-gray-200"
-                          >
-                            {paragraph}
-                          </p>
-                        ))
-                      )}
-                    </div>
-
-                    {chapter.image?.src && (
-                      <figure className="mt-10 mb-8 w-full">
-                        <img
-                          src={chapter.image.src}
-                          alt={chapter.image.alt || chapter.title}
-                          className="w-full max-h-[520px] object-cover rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.06)]"
-                        />
-                        {chapter.image.caption && (
-                          <figcaption className="mt-3 pr-2 text-right flex items-center justify-end gap-1.5 text-xs text-[#94A3B8] font-medium italic">
-                            <span className="opacity-70 text-[10px] not-italic">📷</span> {chapter.image.caption}
-                          </figcaption>
-                        )}
-                      </figure>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-8">
-                      {chapter.metrics.map((metric) => (
-                        <div
-                          key={metric.label}
-                          className="rounded-[1.25rem] bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 p-4"
-                        >
-                          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8]">
-                            {metric.label}
-                          </p>
-                          <p className="text-2xl font-black font-outfit text-[#0F172A] dark:text-white mt-2">
-                            {metric.value}
-                          </p>
-                          {metric.hint && (
-                            <p className="text-sm text-[#64748B] dark:text-gray-400 mt-2">
-                              {metric.hint}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    {chapter.pullQuote && (
-                      <div className="mt-8 rounded-[1.5rem] border border-[#16A34A]/15 bg-[#16A34A]/5 p-5 md:p-6">
-                        <div className="flex items-start gap-3">
-                          <Quote className="w-5 h-5 text-[#16A34A] shrink-0 mt-1" />
-                          <p className="text-lg md:text-xl font-semibold text-[#0F172A] dark:text-white leading-8">
-                            {chapter.pullQuote}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="mt-8 rounded-[1.5rem] bg-[#0F172A] text-white p-5 md:p-6">
-                      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#4ade80] mb-2">
-                        What this chapter means
-                      </p>
-                      <p className="text-base md:text-lg text-white/86 leading-8">
-                        {chapter.takeaway}
-                      </p>
-                    </div>
-                  </div>
+                  {chapter.image?.src && <figure className="my-9"><img src={chapter.image.src} alt={chapter.image.alt || chapter.title} loading="lazy" className="h-auto w-full" />{chapter.image.caption && <figcaption className="mt-3 text-sm leading-6 text-stone-500 dark:text-stone-400">{chapter.image.caption}</figcaption>}</figure>}
+                  {chapter.pullQuote && <blockquote className="my-10 border-l-2 border-green-700 pl-6 font-newsreader text-3xl leading-snug tracking-tight dark:border-green-400">{chapter.pullQuote}</blockquote>}
                 </section>
               ))}
-
-              <ReactionUI itemId={story.id} itemType="story" />
             </div>
-
-            <aside className="hidden xl:block">
-              <div className="sticky top-24 space-y-5">
-                <StoryVisual story={story} chapter={activeChapter} />
-
-                <div className="rounded-[1.75rem] bg-white dark:bg-[#0F172A] border border-gray-200 dark:border-gray-800 p-5">
-                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[#16A34A] mb-4">
-                    Chapter Map
-                  </p>
-                  <div className="space-y-2">
-                    {story.chapters.map((chapter, index) => {
-                      const isActive = chapter.id === activeChapter.id;
-                      return (
-                        <button
-                          key={chapter.id}
-                          onClick={() => chapterRefs.current[chapter.id]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                          className={`w-full text-left rounded-2xl px-4 py-3 transition-all duration-300 ${
-                            isActive
-                              ? "bg-[#16A34A]/10 border border-[#16A34A]/20"
-                              : "hover:bg-gray-50 dark:hover:bg-white/5 border border-transparent"
-                          }`}
-                        >
-                          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#94A3B8] mb-1">
-                            Chapter {index + 1}
-                          </p>
-                          <p className={`text-sm font-bold ${isActive ? "text-[#16A34A]" : "text-[#0F172A] dark:text-white"}`}>
-                            {chapter.title}
-                          </p>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </section>
-        
-        {/* Related Stories Section */}
-        {relatedStories.length > 0 && (
-          <section className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#0B1120] py-16">
-            <div className="max-w-[1180px] mx-auto px-4 sm:px-6">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-1.5 h-6 rounded-full gradient-accent" />
-                <h2 className="text-2xl font-black font-outfit uppercase tracking-tight text-[#0F172A] dark:text-white">
-                  Read Next In This Lane
-                </h2>
-              </div>
-              <p className="mb-6 max-w-3xl text-sm leading-6 text-[#64748B] dark:text-gray-400">
-                These picks are weighted toward shared themes and adjacent story signals, so the next click feels like a continuation rather than a reset.
-              </p>
-              <div className="grid grid-cols-1 gap-6">
-                {relatedStories.map((related, index) => (
-                  <StoryFeatureCard
-                    key={related.id}
-                    story={related}
-                    variant="compact"
-                    label={index === 0 ? "Start here next" : "Continue reading"}
-                    ctaLabel="Open story"
-                  />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+            <div className="mt-12 border-t border-stone-300 pt-6 dark:border-stone-700"><ReactionUI itemId={story.id} itemType="story" /></div>
+            <div className="py-12"><CommentSection postId={`story-${story.slug}`} /></div>
+          </article>
+        </div>
+        {relatedStories.length > 0 && <section className="border-t border-stone-300 py-12 dark:border-stone-700 md:py-16"><h2 className="mb-8 font-newsreader text-4xl">More stories</h2><div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">{relatedStories.map(related => <StoryFeatureCard key={related.id} story={related} />)}</div></section>}
       </main>
-
-      {/* Comments */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 pb-12">
-        <CommentSection postId={`story-${story.slug}`} />
-      </div>
-
       <Footer />
     </div>
   );
