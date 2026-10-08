@@ -16,8 +16,9 @@ are excluded. Preferences are checked again immediately before delivery.
 ## Processing and recovery
 
 Publication attempts delivery immediately. The protected `/api/story-emails`
-worker drains pending campaigns every five minutes after deployment. Configure
-`CRON_SECRET` and ensure the hosting plan supports that cadence; the existing
+worker drains pending campaigns daily at 11:00 UTC, matching the current hosting
+plan limits. Publication still attempts delivery immediately; admins can retry
+pending deliveries at any time. Configure `CRON_SECRET`; the existing
 newsletter schedule is unchanged. MongoDB and the existing verified Resend sender
 must also be available. There is no live broadcast or deployment in this change.
 
