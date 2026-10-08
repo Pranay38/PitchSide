@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-10-07T11:29:05.010248",
+  "lastUpdated": "2026-10-08T11:44:46.380141",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Villa eye Endrick loan deal - Wednesday's gossip",
+    "text": "Man Utd and Liverpool eye Truffert - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 99
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 86
     },
     {
-      "name": "Oliver Glasner (NFO)",
+      "name": "Enzo Maresca (MCI)",
       "pressureScore": 77
     },
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 62
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 75
+    },
+    {
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 64
     }
   ]
 }
