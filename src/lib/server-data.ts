@@ -163,7 +163,8 @@ export async function getStoryBySlugServer(slug: string, includeDrafts = false) 
     return sanitizePost(story);
   } catch (error) {
     logServerDataError(`getStoryBySlugServer(${slug})`, error);
-    return null;
+    // A database outage is a server error, not evidence the article is missing.
+    throw error;
   }
 }
 

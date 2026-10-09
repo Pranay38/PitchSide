@@ -1,27 +1,27 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getStoryBySlugServer, getStoriesServer } from '@/lib/server-data';
+import { getStoryBySlugServer } from '@/lib/server-data';
 import { StoryPage as StoryPageClient } from '@/app/pages/StoryPage';
+import type { StoryFeature } from '@/app/data/stories';
 
-export const revalidate = 3600; // 1 hour
+// Render the article on the server, including components using search params.
+// A static route can otherwise fall back to the surrounding empty Suspense shell.
+export const dynamic = 'force-dynamic';
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string; storyId?: string }>;
 }
 
-export async function generateStaticParams() {
-  const stories = await getStoriesServer();
-  return stories.map((story: any) => ({
-    slug: story.slug,
-  }));
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  if ((await searchParams).preview === '1') {
+    return { title: 'Story Preview', robots: { index: false, follow: false } };
+  }
   const { slug } = await params;
   const story = await getStoryBySlugServer(slug);
 
   if (!story) {
-    return { title: 'Story Not Found' };
+    notFound();
   }
 
   const ogImageUrl = `https://www.thetouchlinedribble.in/api/og?title=${encodeURIComponent(story.title)}&club=${encodeURIComponent(story.eyebrow || '')}&date=${encodeURIComponent(story.date || '')}${story.coverImage ? `&image=${encodeURIComponent(story.coverImage)}` : ''}`;
@@ -58,13 +58,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function StoryPageServer({ params }: Props) {
+export default async function StoryPageServer({ params, searchParams }: Props) {
   const { slug } = await params;
+  const isPreview = (await searchParams).preview === '1';
   const story = await getStoryBySlugServer(slug);
 
-  if (!story && process.env.NODE_ENV !== 'development') {
-    // In dev we might rely on the client fallback
-  }
+  if (!story && !isPreview) notFound();
 
-  return <StoryPageClient />;
+  return <StoryPageClient key={slug} initialStory={story as StoryFeature | undefined} />;
 }

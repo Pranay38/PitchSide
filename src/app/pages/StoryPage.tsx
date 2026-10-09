@@ -21,7 +21,7 @@ import { ReactionUI } from "../components/ReactionUI";
 import { StoryFeatureCard } from "../components/StoryFeatureCard";
 import { TouchlineAudioPlayer } from "../components/TouchlineAudioPlayer";
 
-export function StoryPage() {
+export function StoryPage({ initialStory }: { initialStory?: StoryFeature | null }) {
   const params = useParams();
   const slug = params.slug ? String(params.slug) : "";
   const [searchParams] = useSearchParams();
@@ -29,7 +29,7 @@ export function StoryPage() {
   const previewId = searchParams.get("storyId") || "";
   const initialPreviewStory = isPreviewMode ? getStoryPreview(previewId, slug) : undefined;
   const [story, setStory] = useState<StoryFeature | undefined>(() => (
-    initialPreviewStory || getStoryBySlug(slug, isPreviewMode)
+    initialStory || initialPreviewStory || getStoryBySlug(slug, isPreviewMode)
   ));
   const [activeChapterId, setActiveChapterId] = useState(story?.chapters[0]?.id || "");
   const chapterRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -55,6 +55,12 @@ export function StoryPage() {
   };
 
   useEffect(() => {
+    // Published content is authoritative and must not disappear when local
+    // storage is empty or the browser API request is blocked by a crawler.
+    if (initialStory && !isPreviewMode) {
+      setStory(initialStory);
+      return;
+    }
     const localPreviewStory = isPreviewMode ? getStoryPreview(previewId, slug) : undefined;
     if (localPreviewStory) {
       setStory(localPreviewStory);
@@ -77,7 +83,7 @@ export function StoryPage() {
     return () => {
       isMounted = false;
     };
-  }, [slug, isPreviewMode, previewId]);
+  }, [slug, isPreviewMode, previewId, initialStory]);
 
   useEffect(() => {
     if (!story) return;

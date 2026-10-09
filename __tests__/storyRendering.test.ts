@@ -17,7 +17,7 @@ vi.mock("../src/app/lib/storyStorage", async importOriginal => ({
   ...await importOriginal<any>(),
   getStoryBySlug: () => state.story,
   getStoryPreview: () => state.preview ? state.story : undefined,
-  getAllStories: () => [state.story],
+  getAllStories: () => state.story ? [state.story] : [],
 }));
 vi.mock("next/image", () => ({ default: ({ fill, priority, sizes, quality, ...props }: any) => React.createElement("img", { ...props, style: fill ? { position: "absolute", height: "100%", width: "100%", inset: 0 } : undefined }) }));
 vi.mock("../src/app/components/Header", () => ({ Header: () => null }));
@@ -35,6 +35,14 @@ function artifact(name: string, html: string) {
 }
 
 describe("editorial story rendering", () => {
+  it("renders server-provided chapters without a browser cache or API request", () => {
+    const publishedStory = structuredClone(state.story);
+    state.story = undefined;
+    const html = renderToStaticMarkup(React.createElement<{ initialStory?: typeof publishedStory }>(StoryPage, { initialStory: publishedStory }));
+    expect(html).toContain(publishedStory.title);
+    expect(html).toContain(publishedStory.chapters[0].body[0]);
+    expect(html).not.toContain("Story not found");
+  });
   it("renders prose and authored quotes without legacy panels", () => {
     state.story.audioUrl = "https://example.com/story.mp3";
     const html = renderToStaticMarkup(React.createElement(StoryPage));
