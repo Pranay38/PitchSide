@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-10-08T11:44:46.380141",
+  "lastUpdated": "2026-10-09T11:37:45.862529",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd and Liverpool eye Truffert - Thursday's gossip",
+    "text": "Real seek McTominay move - Friday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 89
+    },
+    {
       "name": "Daniel Farke (LEE)",
+      "pressureScore": 88
+    },
+    {
+      "name": "Fabian H\u00fcrzeler (BHA)",
       "pressureScore": 86
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 77
-    },
-    {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 75
-    },
-    {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 64
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 73
     }
   ]
 }
