@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-10-09T11:37:45.862529",
+  "lastUpdated": "2026-10-10T10:55:24.178076",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real seek McTominay move - Friday's gossip",
+    "text": "Arsenal eye deal for teenager Mora - Saturday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Xabi Alonso (CHE)",
+      "name": "Frank Lampard (COV)",
       "pressureScore": 89
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 88
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 87
     },
     {
       "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 86
-    },
-    {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 73
+      "pressureScore": 76
     }
   ]
 }
