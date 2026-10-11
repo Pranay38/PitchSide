@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-10T10:55:24.178076",
+  "lastUpdated": "2026-10-11T11:10:10.780701",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
@@ -10,16 +10,24 @@
   },
   "managerPressure": [
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 89
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 97
     },
     {
       "name": "Pierre Sage (CRY)",
-      "pressureScore": 87
+      "pressureScore": 92
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 91
+    },
+    {
+      "name": "Michael Carrick (MUN)",
       "pressureScore": 76
+    },
+    {
+      "name": "David Moyes (EVE)",
+      "pressureScore": 67
     }
   ]
 }
