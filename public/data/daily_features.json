@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-10-11T11:10:10.780701",
+  "lastUpdated": "2026-10-12T12:42:07.551897",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal eye deal for teenager Mora - Saturday's gossip",
+    "text": "Aston Villa planning Endrick move - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 97
-    },
-    {
       "name": "Pierre Sage (CRY)",
-      "pressureScore": 92
+      "pressureScore": 81
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 91
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 66
     },
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 76
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 67
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 65
     }
   ]
 }
