@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-10-12T12:42:07.551897",
+  "lastUpdated": "2026-10-13T12:25:37.715604",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
@@ -10,16 +10,24 @@
   },
   "managerPressure": [
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 81
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 97
     },
     {
-      "name": "Oliver Glasner (NFO)",
+      "name": "Mikel Arteta (ARS)",
       "pressureScore": 66
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 65
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 62
+    },
+    {
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 60
+    },
+    {
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 60
     }
   ]
 }
