@@ -81,6 +81,7 @@ function compressImage(file: File, maxWidth = 900, quality = 0.75): Promise<stri
 }
 
 import { ToolbarButton, ToolbarDivider } from "./editor/EditorToolbar";
+import { LinkControl } from "./editor/LinkControl";
 
 export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTextEditorProps) {
     const imageInputRef = useRef<HTMLInputElement>(null);
@@ -119,6 +120,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
+                link: false,
                 heading: { levels: [1, 2, 3, 4, 5, 6] },
             }),
             TableKit,
@@ -172,13 +174,6 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
     }, [content, editor]);
 
     if (!editor) return null;
-
-    const addLink = () => {
-        const url = window.prompt("Enter URL:");
-        if (url) {
-            editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-        }
-    };
 
     const addImageByUrl = () => {
         const url = window.prompt("Enter image URL:");
@@ -360,9 +355,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                 >
                     <Minus className="w-4 h-4" />
                 </ToolbarButton>
-                <ToolbarButton onClick={addLink} isActive={editor.isActive("link")} title="Add Link">
-                    <LinkIcon className="w-4 h-4" />
-                </ToolbarButton>
+                <LinkControl editor={editor} />
                 <ToolbarButton onClick={triggerImageUpload} title="Upload Image from Device">
                     <ImagePlus className="w-4 h-4" />
                 </ToolbarButton>
