@@ -1,3 +1,4 @@
+import { articleAuthor, publicationPublisher, serializeJsonLd } from "@/app/lib/publication";
 import { EditorialReading } from "@/app/components/EditorialReading";
 import { selectRelatedReading } from "@/app/lib/matchdayContent";
 import type { BlogPost } from "@/app/data/posts";
@@ -222,33 +223,8 @@ export default async function BlogPostPage({ params }: Props) {
       "@type": "SpeakableSpecification",
       cssSelector: ["article h1", "article .quick-summary", "article h2", "article h2 + p"],
     },
-    ...(post.author ? {
-      author: [
-        {
-          "@type": "Person",
-          name: post.author,
-          url: "https://www.thetouchlinedribble.in/about",
-          sameAs: ["https://x.com/TouchlineDribbl", "https://www.instagram.com/thetouchlinedribble/"],
-        },
-      ]
-    } : {
-      author: [
-        {
-          "@type": "Person",
-          name: "Pranay Agrawal",
-          url: "https://www.thetouchlinedribble.in/about",
-          sameAs: ["https://x.com/TouchlineDribbl", "https://www.instagram.com/thetouchlinedribble/"],
-        },
-      ]
-    }),
-    publisher: {
-      "@type": "Organization",
-      name: "The Touchline Dribble",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://www.thetouchlinedribble.in/logo.png",
-      },
-    },
+    author: [articleAuthor(post.author)],
+    publisher: publicationPublisher,
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": `https://www.thetouchlinedribble.in/post/${post.slug || post.id}`,
@@ -444,12 +420,12 @@ export default async function BlogPostPage({ params }: Props) {
         <script
           key={`schema-${index}`}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }}
         />
       ))}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
       />
       
       <Header />

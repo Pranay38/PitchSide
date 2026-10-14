@@ -1,3 +1,4 @@
+import { PUBLICATION_DESCRIPTION } from "@/app/lib/publication";
 import type { Metadata } from "next";
 import { HomePageClient } from "./HomePageClient";
 import { getPublishedPostsServer, getStoriesServer, getSiteSettingsServer } from "@/lib/server-data";
@@ -7,11 +8,11 @@ export const revalidate = 3600; // ISR: revalidate every hour to save Vercel ISR
 export const metadata: Metadata = {
   title: "The Touchline Dribble — Football Tactics, Analysis & Bold Opinions",
   description:
-    "Strong opinions on football’s biggest debates, with the evidence and knowledge behind them.",
+    PUBLICATION_DESCRIPTION,
   openGraph: {
     title: "The Touchline Dribble — Football Tactics, Analysis & Bold Opinions",
     description:
-      "Strong opinions on football’s biggest debates, with the evidence and knowledge behind them.",
+      PUBLICATION_DESCRIPTION,
     type: "website",
     url: "https://www.thetouchlinedribble.in",
     siteName: "The Touchline Dribble",
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
         url: "/og-default.png",
         width: 1200,
         height: 630,
-        alt: "The Touchline Dribble — Tactical breakdowns your pundit missed",
+        alt: "The Touchline Dribble — Independent football opinions and explainers",
       },
     ],
   },
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "The Touchline Dribble — Football Tactics & Bold Opinions",
     description:
-      "Strong opinions on football’s biggest debates, with the evidence and knowledge behind them.",
+      PUBLICATION_DESCRIPTION,
     site: "@TouchlineDribbl",
     creator: "@TouchlineDribbl",
   },

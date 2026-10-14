@@ -1,4 +1,6 @@
 "use client";
+import { PUBLICATION_DESCRIPTION, PUBLICATION_ID, EDITOR_ID } from "../lib/publication";
+import { NEWSLETTER_PROMISE } from "../lib/newsletterReading";
 import { Link } from "@/lib/router-compat";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
@@ -23,7 +25,7 @@ export function AboutPage() {
         <div className="page-atmosphere min-h-screen transition-colors duration-300">
             <SEO
                 title="About"
-                description="The Touchline Dribble — tactical breakdowns, bold opinions, and the analysis your pundit missed. Built for fans who want more than vibes."
+                description={PUBLICATION_DESCRIPTION}
             />
             {/* Person JSON-LD for E-E-A-T author entity */}
             <script
@@ -32,16 +34,14 @@ export function AboutPage() {
                     __html: JSON.stringify({
                         "@context": "https://schema.org",
                         "@type": "Person",
+                        "@id": EDITOR_ID,
                         name: "Pranay Agrawal",
                         url: "https://www.thetouchlinedribble.in/about",
                         jobTitle: "Football Tactics Writer & Analyst",
-                        description: "Tactical writer and football obsessive. Founder of The Touchline Dribble — post-match breakdowns, formation deep dives, and the bold opinions your pundit won't give you.",
-                        sameAs: [
-                            "https://x.com/TouchlineDribbl",
-                            "https://www.instagram.com/thetouchlinedribble/"
-                        ],
+                        description: "Founder and writer of The Touchline Dribble.",
                         worksFor: {
                             "@type": "Organization",
+                            "@id": PUBLICATION_ID,
                             name: "The Touchline Dribble",
                             url: "https://www.thetouchlinedribble.in",
                             logo: "https://www.thetouchlinedribble.in/logo.png"
@@ -57,10 +57,10 @@ export function AboutPage() {
                 <section className="mb-20 text-center">
                     <p className="kicker text-primary mb-4">About</p>
                     <h1 className="font-headline font-bold text-5xl md:text-6xl lg:text-7xl text-foreground tracking-[-0.03em] leading-[1.02] mb-6">
-                        Analysis your pundit<br className="hidden md:block" /> won&apos;t give you.
+                        Strong opinions.<br className="hidden md:block" /> Evidence behind them.
                     </h1>
                     <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                        The Touchline Dribble breaks down what actually happened on the pitch — the tactical shifts, the managerial gambles, the moments everyone else missed. Sharp analysis. Bold opinions. Zero PR fluff.
+                        {PUBLICATION_DESCRIPTION}
                     </p>
                 </section>
 
@@ -105,21 +105,29 @@ export function AboutPage() {
                                     Get the sharpest reads,<br />straight to your inbox.
                                 </h2>
                                 <p className="text-sm opacity-70 leading-relaxed max-w-md">
-                                    Every week: one tactical deep dive, one bold opinion, and the analysis that matters. No spam, no fluff — just football that makes you think.
+                                    The Weekly Whistle: {NEWSLETTER_PROMISE}
                                 </p>
                             </div>
                             <div className="shrink-0 w-full md:w-auto">
                                 <Link
-                                    to="/#newsletter"
+                                    to="/subscribe"
                                     className="inline-flex items-center justify-center gap-2 w-full md:w-auto bg-primary text-primary-foreground font-bold text-sm uppercase tracking-widest px-8 py-4 rounded-full hover:bg-primary/90 transition-colors"
                                 >
                                     Subscribe Free
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
-                                <p className="text-xs opacity-50 text-center mt-3">Join 500+ football thinkers</p>
+                                <p className="text-xs opacity-50 text-center mt-3">Start with a short welcome series.</p>
                             </div>
                         </div>
                     </div>
+                </section>
+
+                <section className="mb-20" aria-labelledby="editorial-standards">
+                    <h2 id="editorial-standards" className="font-headline text-3xl font-bold mb-5">How we approach the argument</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-4">Our editorial standard is a clear argument supported by observable evidence, with room for the strongest reasonable counterargument. Explainers answer a specific football question, show an example, and explain the limits of the answer.</p>
+                    <p className="text-muted-foreground leading-relaxed mb-4">We prioritize original sources: competition rules, official statements, and the data provider’s own definitions. Reported claims should remain attributed reports; statistics need their competition, period, and source. Opinion and inference should be distinguishable from established fact.</p>
+                    <p className="text-muted-foreground leading-relaxed">Found an error or a source we should consider? Email <a className="underline" href="mailto:thetouchlinedribble@gmail.com">thetouchlinedribble@gmail.com</a> with the article link, the passage, and supporting evidence.</p>
+                    <p className="mt-5"><Link className="underline" to="/learn">Explore football explainers</Link> · <Link className="underline" to="/stories">Read long-form stories</Link></p>
                 </section>
 
                 {/* ── Author ── */}
@@ -163,7 +171,7 @@ export function AboutPage() {
                     <div className="mt-16 bg-primary/5 rounded-3xl p-8 border border-primary/20 text-center">
                         <h3 className="font-headline font-bold text-2xl text-foreground mb-3">Think you can do better?</h3>
                         <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-6">
-                            We're always looking for sharp tactical minds to join the roster. If you can break down a low block better than the pundits on TV, we want you writing for us.
+                            We&apos;re always looking for sharp tactical minds to join the roster. If you can break down a low block better than the pundits on TV, we want you writing for us.
                         </p>
                         <a href="mailto:thetouchlinedribble@gmail.com?subject=Joining the Team" className="inline-flex items-center gap-2 bg-primary text-primary-foreground font-bold text-sm uppercase tracking-widest px-6 py-3 rounded-full hover:bg-primary/90 transition-colors">
                             Pitch us an article

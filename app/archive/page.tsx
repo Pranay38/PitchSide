@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { ArchivePage as ArchivePageOriginal } from "@/app/pages/ArchivePage";
 
+// Query-driven archive filters must render on the server, without a page-wide
+// client-rendering fallback when search parameters are read.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Archive — Every Article We've Published",
   description:

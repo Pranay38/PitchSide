@@ -1,4 +1,5 @@
 "use client";
+import { PUBLICATION_DESCRIPTION } from "../lib/publication";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Newspaper, CheckCircle } from "@phosphor-icons/react";
@@ -156,11 +157,12 @@ export function HomePage({
     <div className="page-atmosphere min-h-[100dvh] transition-colors duration-300">
       <SEO
         title="Home"
-        description="Strong opinions on football’s biggest debates, with the evidence and knowledge behind them."
+        description={PUBLICATION_DESCRIPTION}
         url="https://www.thetouchlinedribble.in/"
       />
       <Header />
       <main>
+        <p className="mx-auto max-w-7xl px-4 pt-6 text-sm leading-relaxed text-muted-foreground lg:px-6">{PUBLICATION_DESCRIPTION}</p>
         {content.hero && (
           <div
             onClickCapture={(event) => {
@@ -301,7 +303,7 @@ export function HomePage({
             ) : (
               <div className="lg:col-span-2 h-full rounded-2xl bg-card border border-border p-8 flex items-center justify-center">
                  <p className="text-muted-foreground font-medium flex items-center gap-2">
-                    <CheckCircle weight="fill" className="w-5 h-5 text-primary" /> You're subscribed to The Weekly Whistle.
+                    <CheckCircle weight="fill" className="w-5 h-5 text-primary" /> You&apos;re subscribed to The Weekly Whistle.
                  </p>
               </div>
             )}

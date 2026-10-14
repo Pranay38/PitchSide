@@ -1,4 +1,5 @@
 "use client";
+import { articleAuthor, publicationPublisher, serializeJsonLd, validContentDate } from "../lib/publication";
 import Image from "next/image";
 import DOMPurify from "isomorphic-dompurify";
 
@@ -144,26 +145,17 @@ export function StoryPage({ initialStory }: { initialStory?: StoryFeature | null
   }
 
 
-  const storySchema = JSON.stringify({
+  const storySchema = serializeJsonLd({
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": story.title,
     "description": story.excerpt,
     "image": [story.coverImage],
-    "datePublished": new Date(story.date).toISOString(),
-    "author": [{
-      "@type": "Person",
-      "name": "Pranay Agrawal",
-      "url": "https://x.com/TouchlineDribbl"
-    }],
-    "publisher": {
-      "@type": "Organization",
-      "name": "The Touchline Dribble",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://www.thetouchlinedribble.in/logo.png"
-      }
-    }
+    datePublished: validContentDate(story.publishedAt || story.date)?.toISOString(),
+    dateModified: validContentDate(story.updatedAt)?.toISOString(),
+    author: [articleAuthor()],
+    publisher: publicationPublisher,
+    mainEntityOfPage: { "@type": "WebPage", "@id": `https://www.thetouchlinedribble.in/stories/${story.slug}` },
   });
 
   const chapterLinks = (
@@ -182,6 +174,7 @@ export function StoryPage({ initialStory }: { initialStory?: StoryFeature | null
     <div className="min-h-screen bg-[#faf9f6] text-stone-900 dark:bg-[#101412] dark:text-stone-100">
       <SEO title={isPreviewMode ? `${story.title} Preview` : story.title} description={story.excerpt} image={story.coverImage}
         url={`https://www.thetouchlinedribble.in/stories/${story.slug}`} type="article" date={story.date} schema={storySchema} />
+      {!isPreviewMode && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: storySchema }} />}
       <ReadingProgress editorial />
       <Header />
       <main id="main-content" className="mx-auto max-w-[1180px] px-5 sm:px-8">
@@ -190,6 +183,7 @@ export function StoryPage({ initialStory }: { initialStory?: StoryFeature | null
           <div className="max-w-[960px]">
             <p className="mb-5 text-xs font-medium uppercase tracking-[0.14em] text-green-700 dark:text-green-400">{story.eyebrow}{isPreviewMode ? " · Preview" : ""}{story.isDraft ? " · Draft" : ""}</p>
             <h1 className="font-newsreader text-[clamp(2.75rem,6vw,5.5rem)] font-medium leading-[1.03] tracking-tight [overflow-wrap:anywhere]">{story.title}</h1>
+            <p className="mt-4 text-sm text-stone-500">By <Link to="/about" className="underline">Pranay Agrawal</Link></p>
             {story.subtitle && <p className="mt-6 max-w-[740px] font-newsreader text-2xl leading-snug text-stone-600 dark:text-stone-300 md:text-3xl">{story.subtitle}</p>}
             {story.excerpt && <p className="mt-5 max-w-[65ch] text-base leading-7 text-stone-600 dark:text-stone-400">{story.excerpt}</p>}
             <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-sm text-stone-500 dark:text-stone-400"><span>{story.date}</span><span>{readingTime} min read</span></div>

@@ -37,7 +37,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
             </Suspense>
             <Suspense fallback={null}>
               <OfflineIndicator />
-              <div className="pb-16 sm:pb-0">{children}</div>
+            </Suspense>
+            <div className="pb-16 sm:pb-0">{children}</div>
+            <Suspense fallback={null}>
               <MobileBottomNav />
             </Suspense>
             <Toaster />

@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import { WifiOff, Wifi } from "lucide-react";
 
 export function OfflineIndicator() {
-    const [isOffline, setIsOffline] = useState(!navigator.onLine);
+    const [isOffline, setIsOffline] = useState(false);
     const [showBanner, setShowBanner] = useState(false);
 
     useEffect(() => {
+        setIsOffline(!navigator.onLine);
+        setShowBanner(!navigator.onLine);
         const handleOffline = () => {
             setIsOffline(true);
             setShowBanner(true);
@@ -41,7 +43,7 @@ export function OfflineIndicator() {
             {isOffline ? (
                 <>
                     <WifiOff className="w-4 h-4" />
-                    <span>You're offline — cached articles are still available</span>
+                    <span>You&apos;re offline — cached articles are still available</span>
                 </>
             ) : (
                 <>

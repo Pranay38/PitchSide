@@ -19,6 +19,15 @@ vi.mock("fs", () => ({
 }));
 
 describe("Sitemap", () => {
+  it("includes the newsletter and does not fabricate static modification dates", async () => {
+    const entries = await sitemap();
+    expect(entries.find(e => e.url.endsWith("/subscribe"))).toBeDefined();
+    expect(entries.find(e => e.url.endsWith("/about"))?.lastModified).toBeUndefined();
+    expect(entries.find(e => e.url.endsWith("/post/post-2"))?.lastModified).toEqual(new Date("2023-01-02T00:00:00Z"));
+    for (const entry of entries) {
+      if (entry.lastModified) expect(Number.isFinite(new Date(entry.lastModified).getTime())).toBe(true);
+    }
+  });
   it("generates sitemap with static and dynamic routes", async () => {
     const sitemapData = await sitemap();
     

@@ -1,5 +1,6 @@
 "use client";
 
+import { PUBLICATION_DESCRIPTION } from "../lib/publication";
 import { useNewsletterTracking } from "../hooks/useNewsletterTracking";
 
 import { useState } from "react";
@@ -90,7 +91,7 @@ export function Footer({ hideNewsletter = false }: { hideNewsletter?: boolean })
               </span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-              The tactical detail your pundit missed. Sharp analysis, bold opinions, and the football debates that actually matter.
+              {PUBLICATION_DESCRIPTION}
             </p>
             <div className="flex items-center gap-3">
               <a href="https://x.com/TouchlineDribbl" target="_blank" rel="noopener noreferrer"

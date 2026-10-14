@@ -11,7 +11,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from '@/lib/router-compat';
+import { Link, usePathname } from '@/lib/router-compat';
 import { gsap } from 'gsap';
 import { List, X } from '@phosphor-icons/react';
 
@@ -62,8 +62,8 @@ export const PillNav: React.FC<PillNavProps> = ({
 }) => {
   const resolvedPillTextColor = pillTextColor ?? 'var(--pill-text)';
   const [isMobileListOpen, setIsMobileListOpen] = useState(false);
-  const location = useLocation();
-  const activeHref = location.pathname;
+  const pathname = usePathname() || "/";
+  const activeHref = pathname;
   
   const circleRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const tlRefs = useRef<Array<gsap.core.Timeline | null>>([]);

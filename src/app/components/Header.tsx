@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "@/lib/router-compat";
+import { useEffect, useState, Suspense } from "react";
+import { Link, useNavigate } from "@/lib/router-compat";
 import { useTheme } from "../hooks/useTheme";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationBell } from "./NotificationBell";
@@ -20,6 +20,17 @@ import {
 import { ClubOnboardingModal } from "./ClubOnboardingModal";
 
 import Image from "next/image";
+import { usePathname, useSearchParams } from "next/navigation";
+
+function ArchiveQuerySync({ onQuery }: { onQuery: (query: string) => void }) {
+  const pathname = usePathname();
+  const search = useSearchParams();
+  useEffect(() => {
+    if (pathname === "/archive") onQuery(search?.get("q") || "");
+  }, [pathname, search, onQuery]);
+  return null;
+}
+
 
 /** Returns true if Clerk string is configured */
 function useClerkAvailable(): boolean {
@@ -109,7 +120,6 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
   const [briefcaseOpen, setBriefcaseOpen] = useState(false);
   const [archiveQuery, setArchiveQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
   const club = favoriteClub ? getClubByName(favoriteClub) : null;
   const { savedPosts, fanClub } = useUserPreferences();
@@ -128,10 +138,6 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
     icon: link.icon
   }));
 
-  useEffect(() => {
-    if (location.pathname !== "/archive") return;
-    setArchiveQuery(new URLSearchParams(location.search).get("q") || "");
-  }, [location.pathname, location.search]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -157,6 +163,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
 
   return (
     <>
+      <Suspense fallback={null}><ArchiveQuerySync onQuery={setArchiveQuery} /></Suspense>
       <ClubOnboardingModal open={clubPickerOpen} onClose={() => setClubPickerOpen(false)} />
       <BriefcaseDrawer isOpen={briefcaseOpen} onClose={() => setBriefcaseOpen(false)} />
       
@@ -213,7 +220,7 @@ export function Header({ onChangeClub, favoriteClub }: HeaderProps) {
           {/* Desktop Right side — Login right after nav, then utilities */}
           <div className="hidden xl:flex items-center justify-end gap-2 lg:gap-3 flex-shrink-0 relative z-10">
             <AuthButton />
-            <DesktopCommandPalette />
+            <Suspense fallback={null}><DesktopCommandPalette /></Suspense>
 
             {/* Club badge */}
             {favoriteClub && (

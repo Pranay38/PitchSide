@@ -1,14 +1,14 @@
-import { Link, useLocation } from "@/lib/router-compat";
+import { Link, usePathname } from "@/lib/router-compat";
 import { Home, Newspaper, Flame, User, Shield } from "lucide-react";
 import { useUserPreferences } from "../hooks/useUserPreferences";
 import { topicPath } from "../lib/contentPaths";
 
 export function MobileBottomNav() {
-    const location = useLocation();
+    const pathname = usePathname() || "/";
     const { fanClub } = useUserPreferences();
 
     // Hide on admin page
-    if (location.pathname.includes("pitchside-manage")) return null;
+    if (pathname.includes("pitchside-manage")) return null;
 
     const tabs = [
         { to: "/", label: "Home", icon: Home },
@@ -34,8 +34,8 @@ export function MobileBottomNav() {
                 <div className="flex items-center justify-around px-2 py-2">
                     {tabs.map((tab) => {
                         const isActive = tab.to === "/"
-                            ? location.pathname === "/"
-                            : location.pathname.startsWith(tab.to);
+                            ? pathname === "/"
+                            : pathname.startsWith(tab.to);
 
                         return (
                             <Link

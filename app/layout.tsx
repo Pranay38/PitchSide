@@ -1,7 +1,9 @@
+import { PUBLICATION_DESCRIPTION, PUBLICATION_ID, WEBSITE_ID } from "@/app/lib/publication";
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import Script from "next/script";
+import Link from "next/link";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "./providers";
@@ -41,7 +43,7 @@ export const metadata: Metadata = {
     template: "%s | The Touchline Dribble",
   },
   description:
-    "Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and bold opinions for die-hard football fans. ⚽",
+    PUBLICATION_DESCRIPTION,
   metadataBase: new URL("https://www.thetouchlinedribble.in"),
   alternates: {
     types: {
@@ -53,13 +55,13 @@ export const metadata: Metadata = {
     siteName: "The Touchline Dribble",
     title: "The Touchline Dribble — Football Tactics & Bold Opinions",
     description:
-      "Tactical breakdowns your pundit missed. Post-match analysis, formation deep dives, manager pressure watches, and bold opinions for die-hard football fans. ⚽",
+      PUBLICATION_DESCRIPTION,
     images: [
       {
         url: "/og-default.png",
         width: 1200,
         height: 630,
-        alt: "The Touchline Dribble — Tactical breakdowns your pundit missed",
+        alt: "The Touchline Dribble — Independent football opinions and explainers",
       },
     ],
   },
@@ -127,11 +129,12 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
+              "@id": WEBSITE_ID,
+              publisher: { "@id": PUBLICATION_ID },
               name: "The Touchline Dribble",
-              alternateName: "PitchSide",
               url: "https://www.thetouchlinedribble.in",
               description:
-                "From the touchline to your timeline — tactical breakdowns, bold football opinions, and the analysis your pundit missed.",
+                PUBLICATION_DESCRIPTION,
               potentialAction: {
                 "@type": "SearchAction",
                 target:
@@ -149,12 +152,12 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
+              "@id": PUBLICATION_ID,
               name: "The Touchline Dribble",
-              alternateName: "PitchSide",
               url: "https://www.thetouchlinedribble.in",
               logo: "https://www.thetouchlinedribble.in/logo.png",
               description:
-                "Conviction-led football analysis — tactical breakdowns, bold opinions, and the takes your pundit is too safe to make.",
+                PUBLICATION_DESCRIPTION,
               foundingDate: "2026",
               sameAs: [
                 "https://x.com/TouchlineDribbl",
@@ -246,29 +249,26 @@ export default function RootLayout({
               background: "#0B1120",
             }}
           >
-            <h1>
-              The Touchline Dribble — Football Tactics &amp; Bold Opinions
-            </h1>
+            <p><strong>The Touchline Dribble</strong></p>
             <p>
-              Tactical breakdowns your pundit missed. Post-match analysis,
-              formation deep dives, manager pressure watches, and the bold
-              opinions that fuel your group chat.
+              {PUBLICATION_DESCRIPTION}
             </p>
             <nav>
               <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/daily-fix">Daily Fix</a></li>
+                <li><Link href="/">Home</Link></li>
+                <li><Link href="/learn">Learn football</Link></li>
+                <li><Link href="/subscribe">The Weekly Whistle</Link></li>
 
-                <li><a href="/stories">Stories</a></li>
-                <li><a href="/debates">Debates</a></li>
-                <li><a href="/collections">Collections</a></li>
-                <li><a href="/archive">Archive</a></li>
-                <li><a href="/about">About</a></li>
+                <li><Link href="/stories">Stories</Link></li>
+                <li><Link href="/debates">Debates</Link></li>
+                <li><Link href="/collections">Collections</Link></li>
+                <li><Link href="/archive">Archive</Link></li>
+                <li><Link href="/about">About</Link></li>
               </ul>
             </nav>
             <p>
               Enable JavaScript for the full interactive experience, or
-              subscribe to our <a href="/api/rss">RSS feed</a>.
+              subscribe to our <Link href="/api/rss">RSS feed</Link>.
             </p>
           </div>
         </noscript>

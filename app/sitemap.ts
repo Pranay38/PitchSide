@@ -1,3 +1,4 @@
+import { validContentDate } from "@/app/lib/publication";
 import type { MetadataRoute } from 'next';
 import { getPublishedPostsServer, getSiteSettingsServer, getStoriesServer } from '@/lib/server-data';
 import { slugify } from '@/app/lib/contentPaths';
@@ -16,7 +17,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getSiteSettingsServer(),
   ]);
   const baseUrl = 'https://www.thetouchlinedribble.in';
-  const now = new Date();
   const nonClubLabels = new Set([
     'analysis',
     'champions league',
@@ -34,26 +34,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: now,
       changeFrequency: 'always',
       priority: 1,
     },
     {
       url: `${baseUrl}/stories`,
-      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.9,
     },
 
     {
       url: `${baseUrl}/tactics`,
-      lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/leaderboard`,
-      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.8,
     },
@@ -72,13 +68,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/collections`, priority: 0.6, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/pots`, priority: 0.6, changeFrequency: 'weekly' as const },
     { url: `${baseUrl}/world-cup-xi`, priority: 0.6, changeFrequency: 'weekly' as const },
+    { url: `${baseUrl}/subscribe`, priority: 0.6, changeFrequency: 'monthly' as const },
     { url: `${baseUrl}/about`, priority: 0.5, changeFrequency: 'monthly' as const },
-  ].map(p => ({ ...p, lastModified: now }));
+  ];
 
   // Article pages
   const postRoutes = posts.map((post: any) => ({
     url: `${baseUrl}/post/${post.slug || post.id}`,
-    lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(post.date),
+    lastModified: validContentDate(post.updatedAt) || validContentDate(post.publishAt || post.date),
     changeFrequency: 'daily' as const,
     priority: 0.8,
   }));
@@ -86,24 +83,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Story pages
   const storyRoutes = stories.map((story: any) => ({
     url: `${baseUrl}/stories/${story.slug}`,
-    lastModified: story.updatedAt ? new Date(story.updatedAt) : new Date(story.date),
+    lastModified: validContentDate(story.updatedAt) || validContentDate(story.publishedAt || story.date),
     changeFrequency: 'daily' as const,
     priority: 0.9,
   }));
 
   // Topic/tag pages. Keep one-post topic archives out of the sitemap; they are
   // useful for browsing, but too thin and duplicate-adjacent for Google.
-  const tagCounts = new Map<string, { tag: string; count: number; lastModified: Date }>();
+  const tagCounts = new Map<string, { tag: string; count: number; lastModified: Date | undefined }>();
   for (const post of posts) {
     for (const tag of post.tags || []) {
       const tagSlug = slugify(String(tag));
       if (!tagSlug) continue;
-      const postModified = post.updatedAt ? new Date(post.updatedAt) : new Date(post.date);
+      const postModified = validContentDate(post.updatedAt) || validContentDate(post.publishAt || post.date);
       const previous = tagCounts.get(tagSlug);
       tagCounts.set(tagSlug, {
         tag: String(tag),
         count: (previous?.count || 0) + 1,
-        lastModified: previous && previous.lastModified > postModified ? previous.lastModified : postModified,
+        lastModified: previous?.lastModified && (!postModified || previous.lastModified > postModified) ? previous.lastModified : postModified,
       });
     }
   }
@@ -121,7 +118,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .filter((club) => !nonClubLabels.has(String(club).trim().toLowerCase()));
   const clubRoutes: MetadataRoute.Sitemap = uniqueClubs.map((club: string) => ({
     url: `${baseUrl}/club/${slugify(club)}`,
-    lastModified: now,
     changeFrequency: 'daily' as const,
     priority: 0.7,
   }));
@@ -136,7 +132,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const managerData = JSON.parse(fs.readFileSync(managerDataPath, 'utf-8'));
       managerRoutes = Object.keys(managerData).map((slug) => ({
         url: `${baseUrl}/managers/${slug}`,
-        lastModified: managerData[slug].lastUpdated ? new Date(managerData[slug].lastUpdated) : new Date(),
+        lastModified: validContentDate(managerData[slug].lastUpdated),
         changeFrequency: 'daily' as const,
         priority: 0.8,
       }));
@@ -153,7 +149,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const matchupData = JSON.parse(fs.readFileSync(matchupDataPath, 'utf-8'));
       matchupRoutes = Object.keys(matchupData).map((slug) => ({
         url: `${baseUrl}/matchups/${slug}`,
-        lastModified: matchupData[slug].lastUpdated ? new Date(matchupData[slug].lastUpdated) : now,
+        lastModified: validContentDate(matchupData[slug].lastUpdated),
         changeFrequency: 'daily' as const,
         priority: 0.8,
       }));
@@ -164,7 +160,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const glossaryRoutes: MetadataRoute.Sitemap = footballGlossary.map((entry) => ({
     url: `${baseUrl}/glossary/${termSlug(entry.term)}`,
-    lastModified: now,
     changeFrequency: 'monthly' as const,
     priority: 0.5,
   }));
@@ -177,7 +172,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const comparisonData = JSON.parse(fs.readFileSync(comparisonDataPath, 'utf-8'));
       comparisonRoutes = comparisonData.map((c: any) => ({
         url: `${baseUrl}/vs/${c.slug}`,
-        lastModified: c.lastUpdated ? new Date(c.lastUpdated) : now,
+        lastModified: validContentDate(c.lastUpdated),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
       }));
@@ -194,7 +189,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const playerData = JSON.parse(fs.readFileSync(playerDataPath, 'utf-8'));
       playerRoutes = playerData.map((p: any) => ({
         url: `${baseUrl}/players/${p.slug}`,
-        lastModified: p.lastUpdated ? new Date(p.lastUpdated) : now,
+        lastModified: validContentDate(p.lastUpdated),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
       }));
@@ -207,7 +202,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const leagueSlugs = ['premier-league', 'la-liga', 'serie-a', 'bundesliga', 'ligue-1'];
   const leagueRoutes: MetadataRoute.Sitemap = leagueSlugs.map(slug => ({
     url: `${baseUrl}/league/${slug}`,
-    lastModified: now,
     changeFrequency: 'daily' as const,
     priority: 0.8,
   }));

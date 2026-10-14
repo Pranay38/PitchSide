@@ -322,7 +322,7 @@ function TeamCard({ team, teams, position, expanded, onToggle }: { team: any, te
             <div style={{ fontSize: 10, fontWeight: 700,
               textTransform: "uppercase", letterSpacing: 1.5,
               color: team.color, marginBottom: 4 }}>
-              Pitchside verdict
+              Touchline verdict
             </div>
             <p style={{ fontSize: 13, color: "#CBD5E1",
               margin: 0, lineHeight: 1.6 }}>
