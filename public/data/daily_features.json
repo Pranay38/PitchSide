@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-10-13T12:25:37.715604",
+  "lastUpdated": "2026-10-14T09:53:31.058918",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Aston Villa planning Endrick move - Monday's gossip",
+    "text": "Porro eyes La Liga return - Wednesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 97
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 96
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 66
-    },
-    {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 62
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 90
     },
     {
       "name": "Marco Rose (BOU)",
-      "pressureScore": 60
+      "pressureScore": 88
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 60
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 85
     }
   ]
 }
