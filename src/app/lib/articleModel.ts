@@ -1,3 +1,4 @@
+import { splitHtmlSections } from "./htmlSection";
 import { isHtmlDocument } from "./htmlDocument";
 import type { BlogPost } from "../data/posts";
 import {
@@ -27,7 +28,8 @@ export type PlainBlock =
 
 export type RichBlock =
   | { type: "html"; content: string }
-  | { type: "tweet"; id: string };
+  | { type: "tweet"; id: string }
+  | { type: "html-section"; content: string };
 
 export interface ArticleContentModel {
   isRich: boolean;
@@ -72,6 +74,22 @@ export function getTopLevelText(node: Element): string {
 }
 
 export function buildHtmlEditorialModel(content: string): ArticleContentModel {
+  const sections = splitHtmlSections(content);
+  if (sections.some(section => section.type === "html-section")) {
+    const richBlocks: RichBlock[] = [];
+    const headings: ContentHeading[] = [];
+    const editorialKinds: EditorialBlock["kind"][] = [];
+    for (const section of sections) {
+      if (section.type === "html-section") richBlocks.push(section);
+      else {
+        const model = buildHtmlEditorialModel(section.content);
+        richBlocks.push(...(model.richBlocks || [{ type: "html" as const, content: model.html || "" }]));
+        headings.push(...model.headings);
+        editorialKinds.push(...model.editorialKinds);
+      }
+    }
+    return { isRich: true, richBlocks, headings, editorialKinds };
+  }
   if (isHtmlDocument(content) || typeof DOMParser === "undefined") {
     return { isRich: true, html: content, headings: [], editorialKinds: [] };
   }

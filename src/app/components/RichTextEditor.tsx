@@ -1,5 +1,7 @@
 "use client";
 
+import { HtmlSectionExtension } from "./extensions/HtmlSectionExtension";
+import { HtmlUpload } from "./editor/HtmlUpload";
 import { useEditor, EditorContent } from "@tiptap/react";
 import { TableKit } from "@tiptap/extension-table";
 import { TaskList, TaskItem } from "@tiptap/extension-list";
@@ -49,6 +51,7 @@ interface RichTextEditorProps {
     content: string;
     onChange: (html: string) => void;
     existingPosts?: BlogPost[];
+    allowHtmlSections?: boolean;
 }
 
 /** Compress and convert an image file to a base64 data URL */
@@ -83,7 +86,7 @@ function compressImage(file: File, maxWidth = 900, quality = 0.75): Promise<stri
 import { ToolbarButton, ToolbarDivider } from "./editor/EditorToolbar";
 import { LinkControl } from "./editor/LinkControl";
 
-export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTextEditorProps) {
+export function RichTextEditor({ content, onChange, existingPosts = [], allowHtmlSections = false }: RichTextEditorProps) {
     const imageInputRef = useRef<HTMLInputElement>(null);
     const [showEmbedModal, setShowEmbedModal] = useState(false);
     const [embedSrc, setEmbedSrc] = useState("");
@@ -145,6 +148,7 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
             }),
             SocialEmbed,
             EmbeddedImage,
+            HtmlSectionExtension,
             EditorialBlockExtension,
             GlossaryHighlightExtension.configure({
                 active: true,
@@ -254,6 +258,9 @@ export function RichTextEditor({ content, onChange, existingPosts = [] }: RichTe
                 onChange={handleImageUpload}
             />
 
+            {allowHtmlSections && <div className="border-b border-slate-200 p-3">
+                <HtmlUpload onImport={source => editor.chain().focus().insertContent([{ type: "htmlSection", attrs: { source } }, { type: "paragraph" }]).run()} />
+            </div>}
             {/* Toolbar */}
             <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 bg-white dark:bg-[#1E293B] border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
                 {/* Undo/Redo */}

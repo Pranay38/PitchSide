@@ -159,7 +159,9 @@ export function ArticleContentRenderer({
                 const isMidpoint = !isServerGated && i === Math.floor(richBlocks!.length / 2) && i > 1;
                 let element = null;
 
-                if (block.type === "tweet") {
+                if (block.type === "html-section") {
+                  element = <HtmlDocumentFrame key={`section-${i}`} content={block.content} />;
+                } else if (block.type === "tweet") {
                   element = (
                     <div key={`tweet-${i}`} className="my-8 flex justify-center">
                       <div className="w-full max-w-lg dark:text-neutral-200">

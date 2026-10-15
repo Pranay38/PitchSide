@@ -1,7 +1,6 @@
 import { isHtmlDocument } from "../../lib/htmlDocument";
 import { HtmlDocumentFrame } from "../HtmlDocumentFrame";
 import { MarkdownUpload } from "./MarkdownUpload";
-import { HtmlUpload } from "./HtmlUpload";
 import { FileText, CheckCircle2, MessageSquare } from "lucide-react";
 import { calculateReadTime, getAllPosts } from "../../lib/postStorage";
 import { SpellcheckBar } from "../admin/SpellcheckBar";
@@ -61,9 +60,8 @@ export function EditorCanvas({
             {errors.content && (
                 <p className="text-red-500 text-xs mb-2">{errors.content}</p>
             )}
-            <div className="mb-4 grid gap-4 sm:grid-cols-2">
+            <div className="mb-4">
                 <MarkdownUpload content={content} onImport={setContent} />
-                <HtmlUpload content={content} onImport={setContent} />
             </div>
             {preservedHtml ? (
                 <div>
@@ -83,6 +81,7 @@ export function EditorCanvas({
                 }}
             />
             <RichTextEditor
+                allowHtmlSections
                 content={content}
                 onChange={setContent}
                 existingPosts={getAllPosts()}
