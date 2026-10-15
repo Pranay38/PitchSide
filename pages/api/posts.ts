@@ -10,6 +10,12 @@ import { blogPosts as defaultPosts } from "../../src/app/data/posts";
 
 const COLLECTION = "posts";
 
+// Match the editor's 3 MiB payload budget. Next's default 1 MiB parser limit
+// otherwise rejects image-heavy posts before the database handler runs.
+export const config = {
+    api: { bodyParser: { sizeLimit: "3mb" } },
+};
+
 /**
  * Ping Google and Bing to re-crawl the sitemap.
  * Fire-and-forget — errors are silently swallowed so publishing never fails.
