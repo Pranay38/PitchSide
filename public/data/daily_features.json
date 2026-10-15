@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-10-14T09:53:31.058918",
+  "lastUpdated": "2026-10-15T09:34:31.157471",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Porro eyes La Liga return - Wednesday's gossip",
-    "sentimentScore": 41
+    "text": "Martinez's future at Man Utd in doubt - Thursday's gossip",
+    "sentimentScore": 25
   },
   "managerPressure": [
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 96
-    },
-    {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 90
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 92
     },
     {
       "name": "Marco Rose (BOU)",
-      "pressureScore": 88
+      "pressureScore": 85
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 85
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 80
+    },
+    {
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 78
+    },
+    {
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 72
     }
   ]
 }
