@@ -180,7 +180,7 @@ export async function addPostAsync(
   post: Omit<BlogPost, "id">
 ): Promise<BlogPost[]> {
   if (!(await isApiAvailable())) {
-    return addPostLocal(post);
+    throw new Error("The publishing server is unavailable. Your post was not published; please try again.");
   }
 
   const res = await fetch(`${API_BASE}/posts`, {
@@ -229,7 +229,7 @@ export async function updatePostAsync(
   updates: Partial<BlogPost>
 ): Promise<BlogPost[]> {
   if (!(await isApiAvailable())) {
-    return updatePostLocal(id, updates);
+    throw new Error("The publishing server is unavailable. Your changes were not published; please try again.");
   }
 
   const res = await fetch(`${API_BASE}/posts`, {
@@ -282,7 +282,7 @@ function updatePostLocal(id: string, updates: Partial<BlogPost>): BlogPost[] {
  */
 export async function deletePostAsync(id: string): Promise<BlogPost[]> {
   if (!(await isApiAvailable())) {
-    return deletePostLocal(id);
+    throw new Error("The publishing server is unavailable. The post was not deleted; please try again.");
   }
 
   const res = await fetch(`${API_BASE}/posts?id=${encodeURIComponent(id)}`, {

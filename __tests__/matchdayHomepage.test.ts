@@ -104,6 +104,19 @@ describe("matchday homepage selection", () => {
       ),
     ).toBe(false);
   });
+  it("shows a newly published post ahead of older homepage selections", () => {
+    const result = selectMatchdayContent(
+      [
+        post("new", { date: "2026-09-27" }),
+        post("old", { date: "2026-09-01" }),
+        post("lead", { date: "2026-08-01", mainStory: true }),
+      ],
+      [],
+      { latestPostIds: ["old"] },
+      now,
+    );
+    expect(result.latest[0]?.id).toBe("new");
+  });
   it("handles unknown story dates without inventing an edition", () => {
     expect(storyEdition(story("unknown", "invalid"))).toBe("Monthly story");
   });

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { HomePageClient } from "./HomePageClient";
 import { getPublishedPostsServer, getStoriesServer, getSiteSettingsServer } from "@/lib/server-data";
 
-export const revalidate = 3600; // ISR: revalidate every hour to save Vercel ISR Write limits
+export const dynamic = "force-dynamic"; // Show newly published posts in the server-rendered homepage.
 
 export const metadata: Metadata = {
   title: "The Touchline Dribble — Football Tactics, Analysis & Bold Opinions",

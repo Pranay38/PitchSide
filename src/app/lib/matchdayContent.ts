@@ -115,11 +115,13 @@ export function selectMatchdayContent(
     )
     .slice(0, 2);
   const reserved = new Set(archiveCandidates.map((p) => p.id));
+  const latestCandidates = available.filter((p) => !reserved.has(p.id));
+  const newestUnplaced = latestCandidates.find((p) => !used.has(p.id));
   const latest = take(
-    ordered(
-      available.filter((p) => !reserved.has(p.id)),
-      curation.latestPostIds,
-    ),
+    [
+      ...(newestUnplaced ? [newestUnplaced] : []),
+      ...ordered(latestCandidates.filter((p) => p.id !== newestUnplaced?.id), curation.latestPostIds),
+    ],
     4,
   );
   const archive = take(archiveCandidates, 2);
