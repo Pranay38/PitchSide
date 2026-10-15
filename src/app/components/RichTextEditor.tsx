@@ -87,6 +87,7 @@ import { ToolbarButton, ToolbarDivider } from "./editor/EditorToolbar";
 import { LinkControl } from "./editor/LinkControl";
 
 export function RichTextEditor({ content, onChange, existingPosts = [], allowHtmlSections = false }: RichTextEditorProps) {
+    const lastAppliedContent = useRef(content || "");
     const imageInputRef = useRef<HTMLInputElement>(null);
     const [showEmbedModal, setShowEmbedModal] = useState(false);
     const [embedSrc, setEmbedSrc] = useState("");
@@ -156,7 +157,9 @@ export function RichTextEditor({ content, onChange, existingPosts = [], allowHtm
         ],
         content: content || "",
         onUpdate: ({ editor }) => {
-            onChange(editor.getHTML());
+            const html = editor.getHTML();
+            lastAppliedContent.current = html;
+            onChange(html);
         },
         editorProps: {
             attributes: {
@@ -173,8 +176,9 @@ export function RichTextEditor({ content, onChange, existingPosts = [], allowHtm
 
     useEffect(() => {
         if (!editor) return;
-        if (editor.getHTML() === (content || "")) return;
+        if (lastAppliedContent.current === (content || "")) return;
         editor.commands.setContent(content || "", { emitUpdate: false });
+        lastAppliedContent.current = content || "";
     }, [content, editor]);
 
     if (!editor) return null;

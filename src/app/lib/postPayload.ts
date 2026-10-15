@@ -3,9 +3,9 @@ export const MAX_POST_BODY_BYTES = 3 * 1024 * 1024;
 const IMAGE_DATA_URL = /data:image\/[a-zA-Z0-9.+-]+;base64,[a-zA-Z0-9+/=]+/g;
 const bodyBytes = (body: string) => new TextEncoder().encode(body).length;
 
-async function resizeImage(src: string, width: number, quality: number): Promise<string> {
+export async function resizeImage(src: string, width: number, quality: number): Promise<string> {
     // Preserve animated GIFs rather than silently flattening them.
-    if (src.startsWith("data:image/gif;")) return src;
+    if (/^data:image\/(gif|svg\+xml);/i.test(src)) return src;
     return new Promise((resolve) => {
         const image = new Image();
         image.onload = () => {

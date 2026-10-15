@@ -17,7 +17,7 @@ export function SpellcheckBar({ content, onFix }: SpellcheckBarProps) {
   // Debounced scan
   useEffect(() => {
     const timer = setTimeout(() => {
-      const found = findMisspellings(content);
+      const found = findMisspellings(content.replace(/<[^>]*>/g, " "));
       setIssues(found);
     }, 800);
     return () => clearTimeout(timer);

@@ -11,7 +11,7 @@ export function MarkdownUpload({ content, onImport, replacementMessage = "Replac
     const [error, setError] = useState("");
     return (
         <div>
-            <input ref={input} type="file" accept=".md,.markdown,image/*" multiple className="hidden" aria-label="Upload Markdown and images"
+            <input disabled={busy} ref={input} type="file" accept=".md,.markdown,image/*" multiple className="hidden" aria-label="Upload Markdown and images"
                 onChange={async event => {
                     const files = Array.from(event.target.files || []);
                     event.target.value = "";
@@ -19,12 +19,12 @@ export function MarkdownUpload({ content, onImport, replacementMessage = "Replac
                     setBusy(true);
                     setError("");
                     try {
+                        if (content.trim() && !window.confirm(replacementMessage)) return;
+                        // Give the busy indicator a frame before parsing the document.
+                        await new Promise<void>(resolve => setTimeout(resolve, 0));
                         const result = await importMarkdownFiles(files);
                         if (result.missingImages.length) {
                             throw new Error(`Select the .md file again together with these images: ${result.missingImages.join(", ")}`);
-                        }
-                        if (content.replace(/<[^>]*>/g, "").trim() || /<(img|table|div)\b/i.test(content)) {
-                            if (!window.confirm(replacementMessage)) return;
                         }
                         onImport(result.html);
                         toast.success(successMessage);
