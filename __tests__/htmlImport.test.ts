@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { TableKit } from "@tiptap/extension-table";
-import { importHtmlFile } from "../src/app/lib/htmlImport";
+import { importHtmlFile, MAX_HTML_IMPORT_MB } from "../src/app/lib/htmlImport";
 
 function file(source: string, name = "article.html") {
     const result = new File([source], name, { type: "text/html" });
@@ -34,12 +34,23 @@ describe("HTML article import", () => {
         expect(html).not.toMatch(/script|onclick|style=|iframe|display:none/);
     });
 
+    it("imports HTML larger than 5 MB", async () => {
+        const source = '<p>' + 'a'.repeat(6 * 1024 * 1024) + '</p>';
+        expect(await importHtmlFile(file(source))).toBe(source);
+    });
+
+    it("accepts files at the maximum import size", async () => {
+        const boundary = file('<p>Article</p>');
+        Object.defineProperty(boundary, 'size', { value: MAX_HTML_IMPORT_MB * 1024 * 1024 });
+        expect(await importHtmlFile(boundary)).toContain('Article');
+    });
+
     it("accepts htm fragments and rejects wrong, empty, and oversized files", async () => {
         expect(await importHtmlFile(file('<p>Fragment</p>', 'article.HTM'))).toContain('Fragment');
         await expect(importHtmlFile(file('text', 'article.txt'))).rejects.toThrow('HTML');
         await expect(importHtmlFile(file('<script>alert(1)</script>'))).rejects.toThrow('empty');
         const oversized = file('text');
-        Object.defineProperty(oversized, 'size', { value: 6 * 1024 * 1024 });
-        await expect(importHtmlFile(oversized)).rejects.toThrow('5 MB');
+        Object.defineProperty(oversized, 'size', { value: MAX_HTML_IMPORT_MB * 1024 * 1024 + 1 });
+        await expect(importHtmlFile(oversized)).rejects.toThrow('50 MB');
     });
 });
