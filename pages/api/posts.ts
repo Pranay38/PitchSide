@@ -91,14 +91,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(200).json(sanitizePostResponse(draft));
             }
 
-            let posts = await collection.find({}).sort({ _id: -1 }).toArray();
+            // Listing cards need metadata, not every article body. Keep this
+            // response below the serverless response limit as the archive grows.
+            const summaryOnly = req.query.summary === "1";
+            const findOptions = summaryOnly
+                ? { projection: { content: 0, html: 0, blocks: 0, richBlocks: 0 } }
+                : {};
+            let posts = await collection.find({}, findOptions).sort({ _id: -1 }).toArray();
 
             // If empty, seed with defaults
             if (posts.length === 0 && defaultPosts.length > 0) {
                 await collection.insertMany(
                     defaultPosts.map((p) => ({ ...p, _id: p.id as any }))
                 );
-                posts = await collection.find({}).sort({ _id: -1 }).toArray();
+                posts = await collection.find({}, findOptions).sort({ _id: -1 }).toArray();
             }
 
             // Map _id → id for client compatibility
@@ -106,7 +112,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             // Admin-authenticated requests can see everything. Public requests
             // should not receive drafts or future-scheduled posts.
-            const isAdmin = (await hasAdminAuth(req));
+            const isAdmin = !summaryOnly && (await hasAdminAuth(req));
             if (!isAdmin) {
                 const now = new Date();
                 result = result.filter((p: any) => {

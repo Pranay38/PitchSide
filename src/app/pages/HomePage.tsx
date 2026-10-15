@@ -26,7 +26,7 @@ import type { BlogPost } from "../data/posts";
 import type { StoryFeature } from "../data/stories";
 
 async function fetchPublishedFeed<T>(path: string): Promise<T[]> {
-  const response = await fetch(path);
+  const response = await fetch(path, { cache: "no-store" });
   if (!response.ok) throw new Error("The published feed is unavailable");
   const data = await response.json();
   if (!Array.isArray(data)) throw new Error("The published feed is invalid");
@@ -130,7 +130,7 @@ export function HomePage({
     error,
   } = useQuery({
     queryKey: ["posts"],
-    queryFn: () => fetchPublishedFeed<BlogPost>("/api/posts"),
+    queryFn: () => fetchPublishedFeed<BlogPost>("/api/posts?summary=1"),
     initialData: serverPosts,
     staleTime: 0,
     refetchOnMount: "always",
