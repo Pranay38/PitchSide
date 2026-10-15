@@ -122,7 +122,10 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
     const [submitAction, setSubmitAction] = useState<SubmitAction | null>(null);
     const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const saveFeedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const previewArticleModel = useMemo(() => getArticleContentModel(content), [content]);
+    const previewArticleModel = useMemo(
+        () => showPreview ? getArticleContentModel(content) : null,
+        [showPreview, content],
+    );
 
 
 
@@ -629,7 +632,7 @@ export function PostEditor({ post, allPosts, onSave, onCancel }: PostEditorProps
 
                             {/* Article Body */}
                             <div ref={previewContentRef}>
-                                <ArticleContentRenderer model={previewArticleModel} />
+                                {previewArticleModel && <ArticleContentRenderer model={previewArticleModel} />}
                             </div>
 
                             {/* Media Embed */}

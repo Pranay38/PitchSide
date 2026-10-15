@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { isHtmlDocument } from "../../lib/htmlDocument";
 import { HtmlDocumentFrame } from "../HtmlDocumentFrame";
 import { MarkdownUpload } from "./MarkdownUpload";
@@ -21,6 +22,9 @@ export function EditorCanvas({
     handleCopyAsThread,
     copiedThread,
 }: EditorCanvasProps) {
+    // The link picker needs a snapshot, not a fresh parse of every cached post
+    // on each keystroke (which can include megabytes of embedded image data).
+    const [existingPosts] = useState(() => getAllPosts());
     const preservedHtml = isHtmlDocument(content);
     return (
         <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
@@ -84,7 +88,7 @@ export function EditorCanvas({
                 allowHtmlSections
                 content={content}
                 onChange={setContent}
-                existingPosts={getAllPosts()}
+                existingPosts={existingPosts}
             />
             </>}
         </div>
