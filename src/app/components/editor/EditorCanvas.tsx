@@ -1,3 +1,5 @@
+import { isHtmlDocument } from "../../lib/htmlDocument";
+import { HtmlDocumentFrame } from "../HtmlDocumentFrame";
 import { MarkdownUpload } from "./MarkdownUpload";
 import { HtmlUpload } from "./HtmlUpload";
 import { FileText, CheckCircle2, MessageSquare } from "lucide-react";
@@ -20,6 +22,7 @@ export function EditorCanvas({
     handleCopyAsThread,
     copiedThread,
 }: EditorCanvasProps) {
+    const preservedHtml = isHtmlDocument(content);
     return (
         <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-sm p-6 transition-colors duration-300">
             <div className="flex flex-wrap items-center justify-between mb-3 gap-2">
@@ -44,7 +47,7 @@ export function EditorCanvas({
                         )}
                     </button>
                     <span className="text-xs font-medium text-[#94A3B8] dark:text-gray-500">
-                        {calculateReadTime(content.replace(/<[^>]*>/g, " "))}
+                        {preservedHtml ? "HTML document" : calculateReadTime(content.replace(/<[^>]*>/g, " "))}
                     </span>
                 </div>
             </div>
@@ -62,6 +65,12 @@ export function EditorCanvas({
                 <MarkdownUpload content={content} onImport={setContent} />
                 <HtmlUpload content={content} onImport={setContent} />
             </div>
+            {preservedHtml ? (
+                <div>
+                    <p className="mb-3 text-xs text-slate-500">Original HTML preview. To change its text or graphics, edit the source file and upload it again, or reimport in editable-text mode.</p>
+                    <HtmlDocumentFrame content={content} />
+                </div>
+            ) : <>
             <SpellcheckBar
                 content={content}
                 onFix={(found, replacement) => {
@@ -78,6 +87,7 @@ export function EditorCanvas({
                 onChange={setContent}
                 existingPosts={getAllPosts()}
             />
+            </>}
         </div>
     );
 }

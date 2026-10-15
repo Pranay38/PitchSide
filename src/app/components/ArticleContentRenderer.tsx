@@ -1,4 +1,6 @@
 "use client";
+import { isHtmlDocument } from "../lib/htmlDocument";
+import { HtmlDocumentFrame } from "./HtmlDocumentFrame";
 import DOMPurify from "isomorphic-dompurify";
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
 import { usePostHog } from "posthog-js/react";
@@ -138,6 +140,12 @@ export function ArticleContentRenderer({
     const onSignupStarted = () => {
       posthog?.capture("signup_started");
     };
+
+    if (model.html && isHtmlDocument(model.html)) {
+      return <div className={className}>
+        {isServerGated ? <GatedInlineWall onSignupStarted={onSignupStarted} /> : <HtmlDocumentFrame content={model.html} />}
+      </div>;
+    }
 
     let richBlocks = model.richBlocks;
 

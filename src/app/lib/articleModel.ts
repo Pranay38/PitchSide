@@ -1,3 +1,4 @@
+import { isHtmlDocument } from "./htmlDocument";
 import type { BlogPost } from "../data/posts";
 import {
   buildEditorialBlock,
@@ -71,7 +72,7 @@ export function getTopLevelText(node: Element): string {
 }
 
 export function buildHtmlEditorialModel(content: string): ArticleContentModel {
-  if (typeof DOMParser === "undefined") {
+  if (isHtmlDocument(content) || typeof DOMParser === "undefined") {
     return { isRich: true, html: content, headings: [], editorialKinds: [] };
   }
 

@@ -12,6 +12,22 @@ function file(source: string, name = "article.html") {
 }
 
 describe("HTML article import", () => {
+    it("preserves graphics, styles and scripts without parsing the document into editor nodes", async () => {
+        const source = '<style>.stat{color:red}</style><svg><circle r="10" /></svg><canvas id="chart"></canvas><script>document.querySelector("canvas").dataset.ready="yes"</script>';
+        const { readHtmlDocument } = await import('../src/app/lib/htmlDocument');
+        const { getArticleContentModel } = await import('../src/app/lib/articleModel');
+        const content = await importHtmlFile(file(source), 'preserve');
+        expect(readHtmlDocument(content)).toBe(source);
+        const model = getArticleContentModel(content);
+        expect(model.html).toBe(content);
+        expect(model.richBlocks).toBeUndefined();
+    });
+
+    it("rejects missing local assets and empty documents in preserve mode", async () => {
+        await expect(importHtmlFile(file('<img src="hero.png">'), 'preserve')).rejects.toThrow('local image paths');
+        await expect(importHtmlFile(file('  '), 'preserve')).rejects.toThrow('empty');
+    });
+
     it("imports document body as editable content that survives save and reload", async () => {
         const html = await importHtmlFile(file('<!doctype html><html><head><title>Metadata</title></head><body><h2>Match report</h2><p>Original text</p><ul><li>One point</li></ul><table><tr><th>Club</th></tr><tr><td>Arsenal</td></tr></table></body></html>'));
         const editor = new Editor({ extensions: [StarterKit, TableKit], content: html });
