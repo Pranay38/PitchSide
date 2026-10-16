@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-10-15T09:34:31.157471",
+  "lastUpdated": "2026-10-16T09:27:32.645825",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Martinez's future at Man Utd in doubt - Thursday's gossip",
-    "sentimentScore": 25
+    "text": "Kane poised to extend Bayern stay - Friday's gossip",
+    "sentimentScore": 62
   },
   "managerPressure": [
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 92
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 95
     },
     {
       "name": "Marco Rose (BOU)",
-      "pressureScore": 85
+      "pressureScore": 95
     },
     {
-      "name": "Oliver Glasner (NFO)",
+      "name": "Michael Carrick (MUN)",
       "pressureScore": 80
     },
     {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 78
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 69
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 72
+      "name": "David Moyes (EVE)",
+      "pressureScore": 67
     }
   ]
 }
