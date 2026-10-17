@@ -23,7 +23,12 @@ export function NotificationBell() {
     const [isSubscribed, setIsSubscribed] = useState(false);
 
     // Check if push is supported
-    const isSupported = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+    const isSupported =
+        typeof navigator !== "undefined" &&
+        typeof window !== "undefined" &&
+        "serviceWorker" in navigator &&
+        "PushManager" in window &&
+        "Notification" in window;
 
     useEffect(() => {
         if (!isSupported) {
