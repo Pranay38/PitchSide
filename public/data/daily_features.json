@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-10-16T09:27:32.645825",
+  "lastUpdated": "2026-10-17T08:58:46.398175",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Kane poised to extend Bayern stay - Friday's gossip",
-    "sentimentScore": 62
+    "text": "Bellingham agrees new Real deal - Saturday's gossip",
+    "sentimentScore": 51
   },
   "managerPressure": [
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 95
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 88
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 95
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 81
     },
     {
       "name": "Michael Carrick (MUN)",
-      "pressureScore": 80
+      "pressureScore": 75
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 69
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 67
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 68
     }
   ]
 }
