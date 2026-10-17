@@ -24,3 +24,5 @@ jobs:
         run: npm run test
       - name: Build
         run: npm run build
+        env:
+          JWT_SECRET: ci-build-only-not-for-runtime
