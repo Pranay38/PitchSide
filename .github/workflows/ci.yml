@@ -26,3 +26,4 @@ jobs:
         run: npm run build
         env:
           JWT_SECRET: ci-build-only-not-for-runtime
+          ADMIN_PASSWORD: ci-build-only-not-for-runtime
