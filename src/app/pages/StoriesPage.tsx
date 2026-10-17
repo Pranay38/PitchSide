@@ -8,12 +8,13 @@ import { StoryFeatureCard } from "../components/StoryFeatureCard";
 import { getAllStories, getAllStoriesAsync, sortStories } from "../lib/storyStorage";
 import type { StoryFeature } from "../data/stories";
 
-export function StoriesPage() {
-  const [stories, setStories] = useState<StoryFeature[]>(() => getAllStories());
+export function StoriesPage({ initialStories }: { initialStories?: StoryFeature[] }) {
+  const [stories, setStories] = useState<StoryFeature[]>(() => initialStories ?? getAllStories());
   const [loading, setLoading] = useState(stories.length === 0);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("newest");
   useEffect(() => {
+    if (initialStories?.length) return;
     let mounted = true;
     getAllStoriesAsync().then(next => { if (mounted) setStories(next); }).finally(() => { if (mounted) setLoading(false); });
     return () => { mounted = false; };

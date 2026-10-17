@@ -132,8 +132,8 @@ export function HomePage({
     queryKey: ["posts"],
     queryFn: () => fetchPublishedFeed<BlogPost>("/api/posts?summary=1"),
     initialData: serverPosts,
-    staleTime: 0,
-    refetchOnMount: "always",
+    // Server-rendered posts are fresh; avoid fetching the same feed during hydration.
+    staleTime: 60_000,
     refetchOnWindowFocus: true,
   });
   const { data: stories = [] } = useQuery({

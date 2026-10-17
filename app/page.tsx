@@ -1,9 +1,17 @@
 import { PUBLICATION_DESCRIPTION } from "@/app/lib/publication";
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import { HomePageClient } from "./HomePageClient";
 import { getPublishedPostsServer, getStoriesServer, getSiteSettingsServer } from "@/lib/server-data";
 
-export const dynamic = "force-dynamic"; // Show newly published posts in the server-rendered homepage.
+// Keep the page dynamic so builds without database access cannot cache an empty page.
+export const dynamic = "force-dynamic";
+
+const getHomepageData = unstable_cache(
+  () => Promise.all([getPublishedPostsServer(), getStoriesServer(), getSiteSettingsServer()]),
+  ["public-homepage-data"],
+  { revalidate: 60 },
+);
 
 export const metadata: Metadata = {
   title: "The Touchline Dribble — Football Tactics, Analysis & Bold Opinions",
@@ -39,11 +47,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [posts, stories, siteSettings] = await Promise.all([
-    getPublishedPostsServer(),
-    getStoriesServer(),
-    getSiteSettingsServer(),
-  ]);
+  const [posts, stories, siteSettings] = await getHomepageData();
 
   return (
     <HomePageClient

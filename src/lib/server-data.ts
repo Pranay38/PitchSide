@@ -141,7 +141,8 @@ export async function getStoriesServer() {
         content: 0,
         html: 0,
         blocks: 0,
-        richBlocks: 0
+        richBlocks: 0,
+        chapters: 0,
       }
     }).sort({ publishedAt: -1, updatedAt: -1, _id: -1 }).toArray();
     return stories.map(sanitizePost);
