@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-10-18T09:17:55.468428",
+  "lastUpdated": "2026-10-19T10:27:49.483196",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Gyokeres pushing for Arsenal exit - Sunday's gossip",
+    "text": "Ramos could make La Liga return - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 84
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 74
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 71
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 72
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 64
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 68
     }
   ]
 }
