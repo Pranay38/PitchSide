@@ -1,33 +1,33 @@
 {
-  "lastUpdated": "2026-10-21T09:47:41.749931",
+  "lastUpdated": "2026-10-22T09:48:20.877690",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd revisit deal for Hall - Wednesday gossip",
+    "text": "Chelsea eye Brighton's Ayari - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 98
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 74
+    },
+    {
+      "name": "Sergej Jakirovi\u0107 (HUL)",
+      "pressureScore": 71
+    },
+    {
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 66
+    },
+    {
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 62
     },
     {
       "name": "Xabi Alonso (CHE)",
-      "pressureScore": 90
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 82
-    },
-    {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 66
-    },
-    {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 66
+      "pressureScore": 60
     }
   ]
 }
