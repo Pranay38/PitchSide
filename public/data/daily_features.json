@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-10-23T09:43:04.907057",
+  "lastUpdated": "2026-10-24T09:15:47.030747",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd chief keen on Howe - Friday's gossip",
-    "sentimentScore": 60
+    "text": "Villa could reconsider Garnacho deal - Saturday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "David Moyes (EVE)",
-      "pressureScore": 99
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 97
     },
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 89
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 95
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 73
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 62
     }
   ]
 }
