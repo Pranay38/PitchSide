@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-10-24T09:15:47.030747",
+  "lastUpdated": "2026-10-25T09:32:41.422779",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Villa could reconsider Garnacho deal - Saturday's gossip",
-    "sentimentScore": 41
+    "text": "Liverpool among clubs keen on Vuskovic - Sunday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 97
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 76
     },
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 95
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 74
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 62
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 74
+    },
+    {
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 66
+    },
+    {
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 60
     }
   ]
 }
