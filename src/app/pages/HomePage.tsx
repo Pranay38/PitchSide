@@ -196,7 +196,7 @@ export function HomePage({
               description="Football opinions, useful explainers, and a monthly story."
             />
           )}
-          {true && (
+          {content.verdicts.length > 0 && (
             <section
               className="py-24 md:py-32"
               aria-label="Our Verdict"
@@ -222,7 +222,7 @@ export function HomePage({
             linkLabel="Explore the explainers"
             placement="understand"
           />
-          {true && (
+          {content.monthlyStory && (
             <section
               className="py-24 md:py-32"
               aria-labelledby="monthly-story-heading"
