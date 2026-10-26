@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-10-25T09:32:41.422779",
+  "lastUpdated": "2026-10-26T10:43:32.321350",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool among clubs keen on Vuskovic - Sunday's gossip",
-    "sentimentScore": 60
+    "text": "Howe open to Man Utd talks - Monday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 76
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 88
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 74
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 70
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 74
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 67
     },
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 66
-    },
-    {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 60
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 63
     }
   ]
 }
