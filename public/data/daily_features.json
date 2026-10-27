@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-10-26T10:43:32.321350",
+  "lastUpdated": "2026-10-27T10:10:29.049821",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Howe open to Man Utd talks - Monday's gossip",
+    "text": "Arsenal eye Monza striker Varela - Tuesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 88
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 70
-    },
-    {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 67
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 94
     },
     {
       "name": "Mikel Arteta (ARS)",
-      "pressureScore": 63
+      "pressureScore": 93
+    },
+    {
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 70
     }
   ]
 }
