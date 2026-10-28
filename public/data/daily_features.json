@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-10-27T10:10:29.049821",
+  "lastUpdated": "2026-10-28T10:56:33.027957",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal eye Monza striker Varela - Tuesday's gossip",
-    "sentimentScore": 41
+    "text": "Liverpool keen on Stuttgart defender Jeltsch - Wednesday's gossip",
+    "sentimentScore": 64
   },
   "managerPressure": [
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 94
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 86
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 93
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 74
     },
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 70
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 65
     }
   ]
 }
