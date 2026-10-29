@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-10-28T10:56:33.027957",
+  "lastUpdated": "2026-10-29T11:15:30.546087",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool keen on Stuttgart defender Jeltsch - Wednesday's gossip",
-    "sentimentScore": 64
+    "text": "Sancho rejects Getafe - Thursday's gossip",
+    "sentimentScore": 20
   },
   "managerPressure": [
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 86
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 90
     },
     {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 74
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 77
     },
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 65
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 71
     }
   ]
 }
