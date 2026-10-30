@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-10-29T11:15:30.546087",
+  "lastUpdated": "2026-10-30T11:08:53.206400",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Sancho rejects Getafe - Thursday's gossip",
-    "sentimentScore": 20
+    "text": "Chelsea linked with Alexander-Arnold - Friday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 90
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 96
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 77
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 91
     },
     {
       "name": "Andoni Iraola (LIV)",
-      "pressureScore": 71
+      "pressureScore": 69
+    },
+    {
+      "name": "Mikel Arteta (ARS)",
+      "pressureScore": 65
+    },
+    {
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 60
     }
   ]
 }
