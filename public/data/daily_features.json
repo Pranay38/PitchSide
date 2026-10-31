@@ -1,33 +1,25 @@
 {
-  "lastUpdated": "2026-10-30T11:08:53.206400",
+  "lastUpdated": "2026-10-31T10:42:07.464528",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Chelsea linked with Alexander-Arnold - Friday's gossip",
+    "text": "Man Utd target Barcelona's Lopez - Saturday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 96
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 88
     },
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 91
-    },
-    {
-      "name": "Andoni Iraola (LIV)",
-      "pressureScore": 69
-    },
-    {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 65
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 79
     },
     {
       "name": "Daniel Farke (LEE)",
-      "pressureScore": 60
+      "pressureScore": 64
     }
   ]
 }
