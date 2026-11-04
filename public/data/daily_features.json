@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-11-03T12:34:43.629116",
+  "lastUpdated": "2026-11-04T12:44:41.943797",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal want Kroupi in January - Tuesday's gossip",
-    "sentimentScore": 44
+    "text": "Man Utd eye Man City's Ait-Nouri - Wednesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
+      "name": "Matthias Jaissle (NEW)",
       "pressureScore": 84
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 81
+      "name": "Enzo Maresca (MCI)",
+      "pressureScore": 74
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 78
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 68
     }
   ]
 }
