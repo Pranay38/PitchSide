@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-11-07T11:27:22.722822",
+  "lastUpdated": "2026-11-08T11:39:26.413055",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Real Madrid and PSG keen on Suzuki - Saturday's gossip",
-    "sentimentScore": 60
+    "text": "Liverpool considering Verbruggen move - Sunday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Michael Carrick (MUN)",
-      "pressureScore": 90
-    },
-    {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 82
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 80
     },
     {
       "name": "Enzo Maresca (MCI)",
-      "pressureScore": 77
+      "pressureScore": 79
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 62
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 78
     },
     {
-      "name": "Mikel Arteta (ARS)",
-      "pressureScore": 60
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 74
     }
   ]
 }
