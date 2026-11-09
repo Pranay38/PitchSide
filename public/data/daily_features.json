@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-11-08T11:39:26.413055",
+  "lastUpdated": "2026-11-09T13:34:00.074326",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool considering Verbruggen move - Sunday's gossip",
+    "text": "Villa's Kamara on Chelsea watchlist - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 80
-    },
-    {
-      "name": "Enzo Maresca (MCI)",
-      "pressureScore": 79
-    },
-    {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 78
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 94
     },
     {
       "name": "Gary O'Neil (IPS)",
-      "pressureScore": 74
+      "pressureScore": 92
+    },
+    {
+      "name": "Michael Carrick (MUN)",
+      "pressureScore": 73
     }
   ]
 }
