@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-11-09T13:34:00.074326",
+  "lastUpdated": "2026-11-10T13:13:00.761022",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Villa's Kamara on Chelsea watchlist - Monday's gossip",
+    "text": "Atletico target Zubimendi move - Tuesday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 94
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 87
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 92
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 81
+    },
+    {
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 69
     },
     {
       "name": "Michael Carrick (MUN)",
-      "pressureScore": 73
+      "pressureScore": 69
     }
   ]
 }
