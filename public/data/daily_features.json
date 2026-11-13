@@ -1,25 +1,33 @@
 {
-  "lastUpdated": "2026-11-12T13:29:55.877952",
+  "lastUpdated": "2026-11-13T12:49:15.007438",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal join Scott chase - Thursday's gossip",
-    "sentimentScore": 56
+    "text": "Man Utd & Man City in Gusto battle - Friday's gossip",
+    "sentimentScore": 24
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 87
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 91
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 82
+      "name": "Pierre Sage (CRY)",
+      "pressureScore": 88
     },
     {
       "name": "Unai Emery (AVL)",
-      "pressureScore": 67
+      "pressureScore": 82
+    },
+    {
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 73
+    },
+    {
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 72
     }
   ]
 }
