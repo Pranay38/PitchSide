@@ -1,32 +1,24 @@
 {
-  "lastUpdated": "2026-11-13T12:49:15.007438",
+  "lastUpdated": "2026-11-14T11:54:29.703580",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd & Man City in Gusto battle - Friday's gossip",
-    "sentimentScore": 24
+    "text": "Man Utd want Paz, Chelsea target Kounde - Saturday's gossip",
+    "sentimentScore": 44
   },
   "managerPressure": [
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 91
-    },
-    {
-      "name": "Pierre Sage (CRY)",
-      "pressureScore": 88
-    },
-    {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 82
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 83
     },
     {
       "name": "Gary O'Neil (IPS)",
-      "pressureScore": 73
+      "pressureScore": 77
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
+      "name": "Matthias Jaissle (NEW)",
       "pressureScore": 72
     }
   ]
