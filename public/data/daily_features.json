@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-11-14T11:54:29.703580",
+  "lastUpdated": "2026-11-15T12:26:54.938919",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd want Paz, Chelsea target Kounde - Saturday's gossip",
-    "sentimentScore": 44
+    "text": "Arsenal target Nusa could cost \u00c2\u00a366m - Sunday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 83
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 94
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 77
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 89
     },
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 72
+      "name": "Roberto De Zerbi (TOT)",
+      "pressureScore": 80
+    },
+    {
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 65
     }
   ]
 }
