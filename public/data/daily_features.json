@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-11-15T12:26:54.938919",
+  "lastUpdated": "2026-11-16T13:19:02.905637",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Arsenal target Nusa could cost \u00c2\u00a366m - Sunday's gossip",
+    "text": "Man Utd target Fulham's Bassey - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 94
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 99
     },
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 89
+      "name": "Mauricio Pochettino (MUN)",
+      "pressureScore": 92
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
+      "name": "Fabian H\u00fcrzeler (BHA)",
       "pressureScore": 80
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 65
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 76
     }
   ]
 }
