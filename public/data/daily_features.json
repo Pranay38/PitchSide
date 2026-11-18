@@ -1,25 +1,29 @@
 {
-  "lastUpdated": "2026-11-17T14:03:25.467545",
+  "lastUpdated": "2026-11-18T13:37:56.754014",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd to resurrect Hall interest - Tuesday's gossip",
-    "sentimentScore": 65
+    "text": "Liverpool lead Chelsea in Camara race - Wednesday's gossip",
+    "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 86
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 92
     },
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 77
+      "name": "Mauricio Pochettino (MUN)",
+      "pressureScore": 90
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 72
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 88
+    },
+    {
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 69
     }
   ]
 }
