@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-11-18T13:37:56.754014",
+  "lastUpdated": "2026-11-19T14:04:48.935401",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Liverpool lead Chelsea in Camara race - Wednesday's gossip",
+    "text": "Man Utd pursuing Como's Paz - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 92
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 77
     },
     {
-      "name": "Mauricio Pochettino (MUN)",
-      "pressureScore": 90
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 73
     },
     {
-      "name": "Matthias Jaissle (NEW)",
-      "pressureScore": 88
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 70
     },
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 69
+      "name": "Thomas Frank (CRY)",
+      "pressureScore": 63
     }
   ]
 }
