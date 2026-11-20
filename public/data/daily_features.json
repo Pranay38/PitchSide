@@ -1,29 +1,29 @@
 {
-  "lastUpdated": "2026-11-19T14:04:48.935401",
+  "lastUpdated": "2026-11-20T13:47:09.181840",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd pursuing Como's Paz - Thursday's gossip",
+    "text": "Barcelona target Man Utd's Martinez - Friday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 77
+      "name": "Keith Andrews (BRE)",
+      "pressureScore": 99
     },
     {
-      "name": "Gary O'Neil (IPS)",
-      "pressureScore": 73
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 81
     },
     {
-      "name": "Unai Emery (AVL)",
-      "pressureScore": 70
+      "name": "Frank Lampard (COV)",
+      "pressureScore": 74
     },
     {
-      "name": "Thomas Frank (CRY)",
-      "pressureScore": 63
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 66
     }
   ]
 }
