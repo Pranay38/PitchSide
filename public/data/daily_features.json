@@ -1,29 +1,25 @@
 {
-  "lastUpdated": "2026-11-20T13:47:09.181840",
+  "lastUpdated": "2026-11-21T13:12:27.954842",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Barcelona target Man Utd's Martinez - Friday's gossip",
-    "sentimentScore": 41
+    "text": "Osimhen keen on Man Utd move - Saturday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
-      "name": "Keith Andrews (BRE)",
-      "pressureScore": 99
+      "name": "Xabi Alonso (CHE)",
+      "pressureScore": 95
     },
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 81
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 84
     },
     {
       "name": "Frank Lampard (COV)",
-      "pressureScore": 74
-    },
-    {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 66
+      "pressureScore": 65
     }
   ]
 }
