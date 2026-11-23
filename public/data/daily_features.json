@@ -1,29 +1,33 @@
 {
-  "lastUpdated": "2026-11-22T13:01:01.441488",
+  "lastUpdated": "2026-11-23T15:38:10.853123",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "AC Milan monitoring Man Utd's Fernandes - Sunday's gossip",
+    "text": "Man Utd plotting Toney move - Monday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 95
+      "name": "Oliver Glasner (NFO)",
+      "pressureScore": 78
     },
     {
-      "name": "Sergej Jakirovi\u0107 (HUL)",
-      "pressureScore": 93
+      "name": "Fabian H\u00fcrzeler (BHA)",
+      "pressureScore": 76
     },
     {
-      "name": "Xabi Alonso (CHE)",
-      "pressureScore": 85
+      "name": "Daniel Farke (LEE)",
+      "pressureScore": 71
     },
     {
-      "name": "Roberto De Zerbi (TOT)",
-      "pressureScore": 67
+      "name": "Mauricio Pochettino (MUN)",
+      "pressureScore": 65
+    },
+    {
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 63
     }
   ]
 }
