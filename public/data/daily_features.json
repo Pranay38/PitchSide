@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-11-23T15:38:10.853123",
+  "lastUpdated": "2026-11-24T15:29:04.595062",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd plotting Toney move - Monday's gossip",
-    "sentimentScore": 41
+    "text": "Arsenal and PSG keen on Nusa - Tuesday's gossip",
+    "sentimentScore": 60
   },
   "managerPressure": [
     {
-      "name": "Oliver Glasner (NFO)",
-      "pressureScore": 78
+      "name": "Marco Rose (BOU)",
+      "pressureScore": 90
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 76
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 89
     },
     {
       "name": "Daniel Farke (LEE)",
-      "pressureScore": 71
+      "pressureScore": 88
     },
     {
-      "name": "Mauricio Pochettino (MUN)",
-      "pressureScore": 65
-    },
-    {
-      "name": "\u00c1lvaro Arbeloa (FUL)",
-      "pressureScore": 63
+      "name": "R\u00e9gis Le Bris (SUN)",
+      "pressureScore": 83
     }
   ]
 }
