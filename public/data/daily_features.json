@@ -1,25 +1,25 @@
 {
-  "lastUpdated": "2026-11-25T15:15:29.489078",
+  "lastUpdated": "2026-11-26T14:40:45.114167",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Man Utd target Collins - Wednesday's gossip",
+    "text": "Liverpool mull Quansah return - Thursday's gossip",
     "sentimentScore": 41
   },
   "managerPressure": [
     {
+      "name": "\u00c1lvaro Arbeloa (FUL)",
+      "pressureScore": 93
+    },
+    {
       "name": "Marco Rose (BOU)",
-      "pressureScore": 97
+      "pressureScore": 81
     },
     {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 65
-    },
-    {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 64
+      "name": "Matthias Jaissle (NEW)",
+      "pressureScore": 70
     }
   ]
 }
