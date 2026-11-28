@@ -1,33 +1,29 @@
 {
-  "lastUpdated": "2026-11-27T14:38:24.701687",
+  "lastUpdated": "2026-11-28T13:50:16.671984",
   "onThisDay": {
     "year": "2026",
     "event": "A quiet day in football history, but the beautiful game continues on pitches worldwide."
   },
   "rumorMill": {
-    "text": "Haaland considers Man City exit - Friday's gossip",
-    "sentimentScore": 41
+    "text": "Champions League to be a factor in Paz move - Saturday's gossip",
+    "sentimentScore": 70
   },
   "managerPressure": [
     {
-      "name": "Marco Rose (BOU)",
-      "pressureScore": 97
+      "name": "Andoni Iraola (LIV)",
+      "pressureScore": 90
     },
     {
-      "name": "Fabian H\u00fcrzeler (BHA)",
-      "pressureScore": 89
+      "name": "Unai Emery (AVL)",
+      "pressureScore": 76
     },
     {
-      "name": "Frank Lampard (COV)",
-      "pressureScore": 78
+      "name": "Gary O'Neil (IPS)",
+      "pressureScore": 67
     },
     {
-      "name": "R\u00e9gis Le Bris (SUN)",
-      "pressureScore": 71
-    },
-    {
-      "name": "Daniel Farke (LEE)",
-      "pressureScore": 62
+      "name": "Mauricio Pochettino (MUN)",
+      "pressureScore": 67
     }
   ]
 }
